@@ -2,6 +2,7 @@ package com.web.ndolphin.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -11,9 +12,10 @@ import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class CustomOAuth2User implements OAuth2User {
 
-    private String userId;
+    private Long userId;
 
     @Override
     public Map<String, Object> getAttributes() {
@@ -27,6 +29,6 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public String getName() {
-        return this.userId;
+        return String.valueOf(userId);
     }
 }

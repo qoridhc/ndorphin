@@ -41,8 +41,11 @@ public class WebSecurityConfig {
                 .csrf(CsrfConfigurer::disable) // CSRF 보호 비활성화
                 .httpBasic(httpBasicCustomizer -> httpBasicCustomizer.disable()) // 기본 인증 방식 (Basic Auth) 비활성화 -> Bearer 인증 방식을 사용하기 위해
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리 정책을 무상태로 설정
-                .authorizeHttpRequests(request -> request
-                                .anyRequest().permitAll() // 일단 모든 권한 허용 -> 추후 유저 권한 구현 완료 시 변경
+                .authorizeHttpRequests(request -> request.requestMatchers("/", "/api/v1/auth/**", "/oauth2/**","/swagger-ui/**", "/error").permitAll().anyRequest().permitAll() // 이 경로는 인증 없이 접근 허용
+
+//                        .authorizeHttpRequests(request -> request
+//                                .requestMatchers("api/v1.**", "/error", "/**").permitAll()
+//                                .anyRequest().permitAll() // 일단 모든 권한 허용 -> 추후 유저 권한 구현 완료 시 변경
 
 //                        .requestMatchers("/", "/api/v1/auth/**", "/oauth2/**").permitAll() // 이 경로는 인증 없이 접근 허용
 //                        .requestMatchers("/api/v1/user/**").hasRole("USER") // 이 경로는 ROLE_USER 권한이 있어야 접근 가능

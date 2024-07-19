@@ -1,10 +1,10 @@
 package com.web.ndolphin.domain;
 
-import com.web.ndolphin.dto.auth.request.SignUpRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class User {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +33,7 @@ public class User {
 
     private int nPoint;
 
-    private int type;
+    private LoginType type;
 
     private RoleType role;
 
@@ -62,20 +63,10 @@ public class User {
     private List<Follow> followings = new ArrayList<>();
     //
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_id")
-    private Certification certification;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favorite> favorites = new ArrayList<>();
 
     @OneToMany(mappedBy = "user",  cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Love> loves = new ArrayList<>();
-    // 회원가입을 위한 생성자
-    // 회원가입을 위한 기본 정보 생성
-    public User(SignUpRequestDto dto) {
-        this.email = dto.getEmail();
-        this.password = dto.getPassword();
-        this.role = RoleType.USER;
-    }
+
 }
