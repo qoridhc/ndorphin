@@ -28,6 +28,8 @@ public class Board {
 
     private String content;
 
+    private String summary;
+
     private int hit;
 
     @Enumerated(EnumType.STRING)
