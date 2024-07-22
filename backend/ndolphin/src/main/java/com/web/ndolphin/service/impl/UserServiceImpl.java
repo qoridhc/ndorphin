@@ -1,9 +1,11 @@
 package com.web.ndolphin.service.impl;
 
+import com.web.ndolphin.domain.Token;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.auth.response.OAuth2ResponseDto;
 import com.web.ndolphin.provider.JwtProvider;
+import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+    private final TokenRepository tokenRepository;
 
     @Override
     public ResponseEntity<ResponseDto> signIn(Long userId) {
@@ -24,20 +27,14 @@ public class UserServiceImpl implements UserService {
 
         try {
             user = userRepository.findByUserId(userId);
-
-            String token = jwtProvider.create(String.valueOf(userId));
-
-            user.setToken(token);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        userRepository.save(user);
+        Token token = tokenRepository.findByUserId(userId);
 
-        return OAuth2ResponseDto.success(user.getUserId(), user.getEmail(), user.getToken(), user.getType());
+        return OAuth2ResponseDto.success(user.getUserId(), user.getEmail(), token.getAccessToken(), user.getType());
     }
-
 
 
 }

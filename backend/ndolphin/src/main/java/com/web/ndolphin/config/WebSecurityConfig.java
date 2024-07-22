@@ -1,5 +1,7 @@
 package com.web.ndolphin.config;
 
+import com.web.ndolphin.common.ResponseCode;
+import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.filter.JwtAutheticationFilter;
 import com.web.ndolphin.handler.OAuth2SuccessHandler;
 import jakarta.servlet.ServletException;
@@ -41,7 +43,9 @@ public class WebSecurityConfig {
                 .csrf(CsrfConfigurer::disable) // CSRF 보호 비활성화
                 .httpBasic(httpBasicCustomizer -> httpBasicCustomizer.disable()) // 기본 인증 방식 (Basic Auth) 비활성화 -> Bearer 인증 방식을 사용하기 위해
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리 정책을 무상태로 설정
-                .authorizeHttpRequests(request -> request.requestMatchers("/", "/api/v1/auth/**", "/oauth2/**","/swagger-ui/**", "/error").permitAll().anyRequest().permitAll() // 이 경로는 인증 없이 접근 허용
+                .authorizeHttpRequests(request -> request
+                                .requestMatchers("/api/v1/user/*").authenticated()
+                                .requestMatchers("/", "/api/v1/auth/**", "/oauth2/**", "/swagger-ui/**", "/error").permitAll().anyRequest().permitAll() // 이 경로는 인증 없이 접근 허용
 
 //                        .authorizeHttpRequests(request -> request
 //                                .requestMatchers("api/v1.**", "/error", "/**").permitAll()
@@ -84,7 +88,8 @@ class FailedAuthenticatoinEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         response.setContentType("application/json"); // 응답 콘텐츠 타입을 JSON으로 설정
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 응답 상태 코드를 403으로 설정
-        response.getWriter().write("{\"code\" : \"NP\", \"message\" : \"No Permission.\"}"); // 응답 바디에 JSON 형태로 메시지 작성
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 응답 상태 코드를 401으로 설정
+        response.getWriter().write("{\"code\" : \"UA\", \"message\" : \"UnAuthorized.\"}"); // 응답 바디에 JSON 형태로 메시지 작성
+
     }
 }

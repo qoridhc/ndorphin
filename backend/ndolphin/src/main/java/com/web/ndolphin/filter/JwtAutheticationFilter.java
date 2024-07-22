@@ -3,6 +3,7 @@ package com.web.ndolphin.filter;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.provider.JwtProvider;
 import com.web.ndolphin.repository.UserRepository;
+import com.web.ndolphin.util.LogUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,6 +38,9 @@ public class JwtAutheticationFilter extends OncePerRequestFilter {
 
             // 요청에서 Bearer 토큰을 파싱
             String token = parseBearerToken(request);
+
+            LogUtil.info("token: " + token);
+
             if (token == null) {
                 // 토큰이 없으면 다음 필터로 넘어감
                 filterChain.doFilter(request, response);

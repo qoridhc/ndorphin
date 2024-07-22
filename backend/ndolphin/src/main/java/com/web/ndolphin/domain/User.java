@@ -17,7 +17,8 @@ import java.util.List;
 @ToString
 public class User {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId; //user_id
 
@@ -36,8 +37,6 @@ public class User {
     private LoginType type;
 
     private RoleType role;
-
-    private String token;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -66,7 +65,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favorite> favorites = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user",  cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Love> loves = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user")
+    private Token token;
 
 }

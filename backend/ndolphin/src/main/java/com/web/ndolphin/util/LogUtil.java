@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Arrays;
 
 @Slf4j
+
 public class LogUtil {
 
     public static void info(String message, Object... args) {
@@ -24,12 +25,31 @@ public class LogUtil {
     }
 
     private static String format(String message, Object... args) {
-        StackTraceElement element = Thread.currentThread().getStackTrace()[3];
-        String className = element.getClassName();
-        String methodName = element.getMethodName();
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 
-        // Format the message with class name, method name, and arguments
-        return String.format("[LOG] %s %s - %s : %s", className, methodName, message, Arrays.toString(args));
+        StackTraceElement caller = null;
+        for (int i = 1; i < stackTrace.length; i++) {
+            if (!stackTrace[i].getClassName().equals(LogUtil.class.getName())) {
+                caller = stackTrace[i];
+                break;
+            }
+        }
+
+        if (caller != null) {
+            String className = caller.getClassName();
+            String methodName = caller.getMethodName();
+
+            return String.format("[LOG] %s %s - %s : %s", getSimpleClassName(className), methodName, message, Arrays.toString(args));
+        } else {
+            return String.format("[LOG] %s - %s : %s", "UnknownClass", "UnknownMethod", message, Arrays.toString(args));
+        }
     }
 
+    private static String getSimpleClassName(String className) {
+        int lastDotIndex = className.lastIndexOf('.');
+        if (lastDotIndex != -1 && lastDotIndex < className.length() - 1) {
+            return className.substring(lastDotIndex + 1);
+        }
+        return className;
+    }
 }

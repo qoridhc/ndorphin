@@ -15,6 +15,9 @@ public interface ResponseMessage {
 
     String MAIL_FAIL = "Mail send failed.";
 
+    //401
+    String UNAUTHORIZED = "Unauthorized";
+
     // 500
     String DATABASE_ERROR = "Database Error";
 }
