@@ -55,6 +55,6 @@ public class AuthController {
 
         LogUtil.info("user", user.toString());
 
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
+        return ResponseDto.success();
     }
 }

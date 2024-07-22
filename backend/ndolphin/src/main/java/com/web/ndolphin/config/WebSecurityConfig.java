@@ -1,7 +1,5 @@
 package com.web.ndolphin.config;
 
-import com.web.ndolphin.common.ResponseCode;
-import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.filter.JwtAutheticationFilter;
 import com.web.ndolphin.handler.OAuth2SuccessHandler;
 import jakarta.servlet.ServletException;
@@ -45,7 +43,8 @@ public class WebSecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리 정책을 무상태로 설정
                 .authorizeHttpRequests(request -> request
                                 .requestMatchers("/api/v1/user/*").authenticated()
-                                .requestMatchers("/", "/api/v1/auth/**", "/oauth2/**", "/swagger-ui/**", "/error").permitAll().anyRequest().permitAll() // 이 경로는 인증 없이 접근 허용
+                                .requestMatchers("/api/v1/auth/token/reissue").permitAll()
+                                .requestMatchers("/", "/api/v1/auth/**", "/oauth2/**", "/swagger-ui/**", "/error").permitAll() // 이 경로는 인증 없이 접근 허용
 
 //                        .authorizeHttpRequests(request -> request
 //                                .requestMatchers("api/v1.**", "/error", "/**").permitAll()

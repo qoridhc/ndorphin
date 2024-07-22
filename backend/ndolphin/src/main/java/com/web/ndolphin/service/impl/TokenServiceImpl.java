@@ -35,7 +35,7 @@ public class TokenServiceImpl implements TokenService {
 
         // Refresh Token 검증
         if (userId == null) {
-            return TokenResponseDto.certificationFail();
+            return TokenResponseDto.unAuthorized();
         }
 
         Token token = tokenRepository.findByUserId(Long.valueOf(userId));

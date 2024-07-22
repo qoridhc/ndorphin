@@ -28,8 +28,8 @@ public class TokenResponseDto {
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    public static ResponseEntity<ResponseDto> certificationFail() {
-        ResponseDto responseBody = new ResponseDto(ResponseCode.CERTIFICATION_FAIL, ResponseMessage.CERTIFICATION_FAIL);
+    public static ResponseEntity<ResponseDto> unAuthorized() {
+        ResponseDto responseBody = new ResponseDto(ResponseCode.UNAUTHORIZED, ResponseMessage.UNAUTHORIZED);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
     }
 }
