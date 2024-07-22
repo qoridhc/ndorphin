@@ -34,6 +34,7 @@ public class User {
 
     private int nPoint;
 
+    @Enumerated(EnumType.STRING)
     private LoginType type;
 
     private RoleType role;
