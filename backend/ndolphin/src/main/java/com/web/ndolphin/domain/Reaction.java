@@ -23,6 +23,7 @@ public class Reaction {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Enumerated(EnumType.STRING)
     private ReactionType reactionType;
 
     private LocalDateTime createdAt;

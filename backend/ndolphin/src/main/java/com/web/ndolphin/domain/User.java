@@ -18,7 +18,7 @@ public class User {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long userId; //user_id
+    private Long userId;
 
     private String email;
 
@@ -36,22 +36,19 @@ public class User {
 
     private RoleType role;
 
-    private String token;
-
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
+
     private LocalDateTime nickNameUpdatedAt;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Board> boards = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reaction> reactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<VoteContent> voteContents = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vote> votes = new ArrayList<>();
 
     //
@@ -62,10 +59,6 @@ public class User {
     private List<Follow> followings = new ArrayList<>();
     //
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_id")
-    private Certification certification;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favorite> favorites = new ArrayList<>();
 
@@ -73,6 +66,13 @@ public class User {
     private List<Love> loves = new ArrayList<>();
     // 회원가입을 위한 생성자
     // 회원가입을 위한 기본 정보 생성
+
+    @OneToMany(mappedBy = "user")
+    private List<NPoint> nPoints = new ArrayList<>();
+
+    @OneToMany(mappedBy = "notification_id", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications = new ArrayList<>();
+
     public User(SignUpRequestDto dto) {
         this.email = dto.getEmail();
         this.password = dto.getPassword();
