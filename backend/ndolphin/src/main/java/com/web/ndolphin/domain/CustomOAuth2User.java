@@ -17,7 +17,9 @@ public class CustomOAuth2User implements OAuth2User {
 
     private Long userId;
 
-    private String token;
+    private String accessToken;
+
+    private String refreshToken;
 
     @Override
     public Map<String, Object> getAttributes() {

@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
 
         Token token = tokenRepository.findByUserId(userId);
 
-        return OAuth2ResponseDto.success(user.getUserId(), user.getEmail(), token.getAccessToken(), user.getType());
+        return OAuth2ResponseDto.success(token);
     }
 
 

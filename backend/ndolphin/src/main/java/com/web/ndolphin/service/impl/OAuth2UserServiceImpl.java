@@ -93,7 +93,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
 
         tokenService.saveOrUpdateToken(new Token(user, accessToken, refreshToken));
 
-        return new CustomOAuth2User(user.getUserId(), accessToken);
+        return new CustomOAuth2User(user.getUserId(), accessToken, refreshToken);
     }
 
 }
