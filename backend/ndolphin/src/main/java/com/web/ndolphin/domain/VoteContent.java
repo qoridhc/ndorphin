@@ -21,14 +21,12 @@ public class VoteContent {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @OneToMany(mappedBy = "voteContent", fetch = FetchType.LAZY)
-    private List<Vote> votes = new ArrayList<>();
-
     private String content;
+
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "voteContent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Vote> votes = new ArrayList<>();
 }

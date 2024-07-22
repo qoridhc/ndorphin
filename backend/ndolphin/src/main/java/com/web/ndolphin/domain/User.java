@@ -20,7 +20,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long userId; //user_id
+    private Long userId;
 
     private String email;
 
@@ -39,19 +39,18 @@ public class User {
     private RoleType role;
 
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
+
     private LocalDateTime nickNameUpdatedAt;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Board> boards = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reaction> reactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<VoteContent> voteContents = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vote> votes = new ArrayList<>();
 
     //
@@ -67,8 +66,28 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Love> loves = new ArrayList<>();
+<<<<<<< HEAD
+    // 회원가입을 위한 생성자
+    // 회원가입을 위한 기본 정보 생성
 
+<<<<<<< HEAD
     @OneToOne(mappedBy = "user")
     private Token token;
 
+=======
+    @OneToMany(mappedBy = "user")
+    private List<NPoint> nPoints = new ArrayList<>();
+
+    @OneToMany(mappedBy = "notification_id", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications = new ArrayList<>();
+
+    public User(SignUpRequestDto dto) {
+        this.email = dto.getEmail();
+        this.password = dto.getPassword();
+        this.role = RoleType.USER;
+    }
+=======
+
+>>>>>>> beea9da2cc5fd10095ad0b00d4ac3d3bfae1f70f
+>>>>>>> 4fdba20a7445701b9d9506d320a67c06ef29582a
 }

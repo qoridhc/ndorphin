@@ -21,13 +21,16 @@ public class Comment {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     private String content;
 
-    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY)
-    private List<CommentFileInfo> commentFileInfos = new ArrayList<>();
+    private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY)
+    private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Love> loves = new ArrayList<>();
 }
