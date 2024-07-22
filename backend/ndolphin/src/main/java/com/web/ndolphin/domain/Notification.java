@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 @Setter
 public class Notification {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_id")
     private Long id;
 

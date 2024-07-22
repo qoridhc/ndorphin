@@ -13,7 +13,8 @@ import java.util.List;
 @Setter
 public class VoteContent {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "vote_content_id")
     private Long id;
 

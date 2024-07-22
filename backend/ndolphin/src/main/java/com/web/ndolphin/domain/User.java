@@ -24,8 +24,6 @@ public class User {
 
     private String email;
 
-    private String password;
-
     private String profileImage;
 
     private String nickName;
@@ -34,6 +32,7 @@ public class User {
 
     private int nPoint;
 
+    @Enumerated(EnumType.STRING)
     private LoginType type;
 
     private RoleType role;

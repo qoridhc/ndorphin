@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 @Setter
 public class Reaction {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reaction_id")
     private Long id;
 

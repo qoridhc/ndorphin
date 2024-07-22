@@ -39,6 +39,8 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
 
         User user = new User();
 
+        LogUtil.info("oauthClientName", oauthClientName);
+
         try {
 
             Map<String, Object> responseMap;
@@ -49,18 +51,21 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
 
                 Map<String, Object> kakaoAccount = (Map<String, Object>) responseMap.get("kakao_account");
 
-                LogUtil.info("responseMap", responseMap);
-                LogUtil.info("kakaoAccount", kakaoAccount);
-
                 user.setEmail((String) kakaoAccount.get("email"));
                 user.setType(LoginType.KAKAO);
+            }
+
+            // 구글 로그인 처리
+            if (oauthClientName.equals("Google")) {
+                responseMap = (Map<String, Object>) oAuth2User.getAttributes();
+
+                user.setEmail((String) responseMap.get("email"));
+                user.setType(LoginType.GOOGLE);
             }
 
             // 네이버 로그인 처리
             if (oauthClientName.equals("naver")) {
                 responseMap = (Map<String, Object>) oAuth2User.getAttributes().get("response");
-
-                LogUtil.info("responseMap: {}", responseMap);
 
                 user.setEmail((String) responseMap.get("email"));
                 user.setType(LoginType.NAVER);
