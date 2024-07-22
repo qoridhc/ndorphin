@@ -9,16 +9,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Getter
-@AllArgsConstructor
 @ToString
-public class ResponseDto {
+public class ResponseDto<T> {
 
     private String code;
     private String message;
+    private T data;
 
-    public ResponseDto(){
-        this.code = ResponseCode.SUCCESS;
-        this.message = ResponseMessage.SUCCESS;
+    // 기본 생성자
+    public ResponseDto() {
+        this(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, null);
+    }
+
+    // 사용자 정의 생성자
+    public ResponseDto(String code, String message) {
+        this(code, message, null);
+    }
+
+    // 사용자 정의 생성자 (모든 필드를 지정할 수 있는 생성자)
+    public ResponseDto(String code, String message, T data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
     }
 
     public static ResponseEntity<ResponseDto> databaseError(){

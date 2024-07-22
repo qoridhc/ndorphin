@@ -24,7 +24,12 @@ public class LogUtil {
     }
 
     private static String format(String message, Object... args) {
-        return String.format("[LOG] %s - %s : %s", Thread.currentThread().getStackTrace()[3].getMethodName(), message, Arrays.toString(args));
+        StackTraceElement element = Thread.currentThread().getStackTrace()[3];
+        String className = element.getClassName();
+        String methodName = element.getMethodName();
+
+        // Format the message with class name, method name, and arguments
+        return String.format("[LOG] %s %s - %s : %s", className, methodName, message, Arrays.toString(args));
     }
 
 }
