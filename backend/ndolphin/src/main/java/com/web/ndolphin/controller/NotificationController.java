@@ -5,6 +5,7 @@ import com.web.ndolphin.dto.notification.request.NotificationRequestDto;
 import com.web.ndolphin.service.impl.NotificationServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +22,7 @@ public class NotificationController {
 
   @PostMapping("/{userId}")
   public ResponseEntity<ResponseDto> createNotification(
-      @PathVariable("userId") Long userId,
+      @PathVariable Long userId,
       @RequestBody NotificationRequestDto dto
   ) {
 
@@ -31,12 +32,20 @@ public class NotificationController {
   }
 
   @GetMapping("/{userId}")
-  public ResponseEntity<ResponseDto> getAllNotification(@PathVariable("userId") Long userId) {
+  public ResponseEntity<ResponseDto> getAllNotification(@PathVariable Long userId) {
 
     ResponseEntity<ResponseDto> response = notificationService.selectAllByUserId(userId);
 
     return response;
-
   }
+
+  @DeleteMapping("/{notificationId}")
+  public ResponseEntity<ResponseDto> deleteNotification(@PathVariable Long notificationId) {
+
+    ResponseEntity<ResponseDto> response = notificationService.delete(notificationId);
+
+    return response;
+  }
+
 
 }

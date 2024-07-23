@@ -61,4 +61,16 @@ public class NotificationServiceImpl implements NotificationService {
     }
   }
 
+  @Override
+  public ResponseEntity<ResponseDto> delete(Long notificationId) {
+
+    try {
+      notificationRepository.deleteById(notificationId);
+    } catch (Exception e) {
+      return ResponseDto.databaseError();
+    }
+
+    return ResponseDto.success();
+  }
+
 }
