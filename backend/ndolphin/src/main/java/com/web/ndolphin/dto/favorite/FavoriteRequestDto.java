@@ -14,7 +14,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 public class FavoriteRequestDto {
 
-    private final Long user_id;
-    private final Long board_id;
+    private final Long userId;
+    private final Long boardId;
 
 }
