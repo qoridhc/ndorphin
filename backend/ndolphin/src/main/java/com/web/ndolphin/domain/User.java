@@ -35,6 +35,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private LoginType type;
 
+    @Enumerated(EnumType.STRING)
     private RoleType role;
 
     private LocalDateTime createdAt;
