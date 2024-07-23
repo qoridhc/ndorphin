@@ -22,8 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -51,6 +53,8 @@ public class UserServiceImpl implements UserService {
 
         return OAuth2ResponseDto.success(token);
     }
+
+
 
     @Override
     @Transactional
@@ -114,6 +118,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<Favorite> getFavorites(Long userId) {
+        return favoriteRepository.findByUserId(userId);
+    }
+
+    @Override
     public void addFavorite(FavoriteRequestDto favoriteRequestDto) {
         User user = userRepository.findById(favoriteRequestDto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
@@ -153,5 +162,6 @@ public class UserServiceImpl implements UserService {
 
         return userDto;
     }
+
 
 }

@@ -1,5 +1,6 @@
 package com.web.ndolphin.controller;
 
+import com.web.ndolphin.domain.Favorite;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -22,6 +25,12 @@ public class UserController {
     }
 
     private final UserService userService;
+
+    @GetMapping("/{userId}/favorites")
+    public ResponseEntity<List<Favorite>> getFavoritesByUserId(@PathVariable Long userId) {
+        List<Favorite> favorites = userService.getFavorites(userId);
+        return ResponseEntity.ok(favorites);
+    }
 
     @PostMapping("/{userId}/favorites")
     public ResponseEntity<Void> addFavorite(@RequestBody FavoriteRequestDto favoriteRequestDto) {
