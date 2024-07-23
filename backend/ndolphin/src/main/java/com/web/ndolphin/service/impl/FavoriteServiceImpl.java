@@ -35,4 +35,12 @@ public class FavoriteServiceImpl implements FavoriteService {
         favoriteRepository.save(favorite);
     }
 
+    @Override
+    public void removeFavorite(FavoriteRequestDto favoriteRequestDto) {
+        Favorite favorite = favoriteRepository.findByUserIdAndBoardId(favoriteRequestDto.getUserId(), favoriteRequestDto.getBoardId())
+                .orElseThrow(() -> new IllegalArgumentException("Favorite not found"));
+
+        favoriteRepository.delete(favorite);
+    }
+
 }

@@ -6,6 +6,8 @@ public interface FavoriteService {
 
     void addFavorite(FavoriteRequestDto favoriteRequestDto);
 
+    void removeFavorite(FavoriteRequestDto favoriteRequestDto);
+
 }
 
 
