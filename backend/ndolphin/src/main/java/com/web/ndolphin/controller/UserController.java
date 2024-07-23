@@ -1,6 +1,8 @@
 package com.web.ndolphin.controller;
 
+import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
+import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
 import com.web.ndolphin.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,17 @@ public class UserController {
     public ResponseEntity<Void> removeFavorite(@RequestParam Long userId, @RequestParam Long boardId) {
         userService.removeFavorite(userId, boardId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<ResponseDto> deleteUser(@PathVariable("userId") Long userId) {
+        return userService.deleteUser(userId);
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<ResponseDto> updateUser(@PathVariable("userId") Long userId, @RequestBody UserUpdateRequestDto updateDto) {
+        return userService.updateUser(userId, updateDto);
     }
 
 }
