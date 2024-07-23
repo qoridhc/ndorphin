@@ -9,6 +9,7 @@ import com.web.ndolphin.service.TokenService;
 import com.web.ndolphin.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -81,6 +82,8 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
                 user = userRepository.findByEmail(user.getEmail());
             } else {
                 // DB에 유저 정보 저장 (회원가입)
+                user.setCreatedAt(LocalDateTime.now());
+                user.setProfileImage("/images/default_profile.png");
                 user = userRepository.save(user);
             }
 
@@ -93,7 +96,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
 
         tokenService.saveOrUpdateToken(new Token(user, accessToken, refreshToken));
 
-        return new CustomOAuth2User(user.getUserId(), accessToken);
+        return new CustomOAuth2User(user.getUserId(), accessToken, refreshToken);
     }
 
 }

@@ -35,6 +35,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private LoginType type;
 
+    @Enumerated(EnumType.STRING)
     private RoleType role;
 
     private LocalDateTime createdAt;
@@ -66,7 +67,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Love> loves = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Token token;
 
     @OneToMany(mappedBy = "user")
