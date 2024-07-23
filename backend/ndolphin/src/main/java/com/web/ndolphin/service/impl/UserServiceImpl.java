@@ -67,7 +67,6 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto) {
         try {
 
-            System.out.println("=================================");
             // 유저를 조회
             User existingUser = userRepository.findByUserId(userId);
 
@@ -94,38 +93,33 @@ public class UserServiceImpl implements UserService {
 
             existingUser.setUpdatedAt(LocalDateTime.now());
 
-            LogUtil.info("UserRequestDto", dto);
-            LogUtil.info("existingUser", existingUser);
-
             userRepository.save(existingUser);
             // DTO 변환
             UserDto userResponseDto = convertToUserDto(existingUser);
 
-            LogUtil.info("userResponseDto", userResponseDto);
-
             ResponseDto<UserDto> responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, userResponseDto);
 
-            System.out.println("=================================");
-
-            
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         } catch (Exception e) {
             return ResponseDto.databaseError();
         }
     }
-
+    .
     // DTO 변환 헬퍼 메서드
     private UserDto convertToUserDto(User user) {
         UserDto userDto = new UserDto();
+
         userDto.setUserId(user.getUserId());
         userDto.setEmail(user.getEmail());
         userDto.setProfileImage(user.getProfileImage());
         userDto.setNickName(user.getNickName());
         userDto.setMbti(user.getMbti());
+        userDto.setType(user.getType());
         userDto.setNPoint(user.getNPoint());
         userDto.setUpdatedAt(user.getUpdatedAt());
         userDto.setNickNameUpdatedAt(user.getNickNameUpdatedAt());
         userDto.setRole(user.getRole());
+        userDto.setCreatedAt(user.getCreatedAt());
 
         return userDto;
     }
