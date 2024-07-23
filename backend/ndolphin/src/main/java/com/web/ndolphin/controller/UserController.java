@@ -30,11 +30,10 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}/favorites/{boardId}")
-    public ResponseEntity<Void> removeFavorite(@RequestParam Long userId, @RequestParam Long boardId) {
+    public ResponseEntity<Void> removeFavorite(@PathVariable Long userId, @PathVariable Long boardId) {
         userService.removeFavorite(userId, boardId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<ResponseDto> deleteUser(@PathVariable("userId") Long userId) {
