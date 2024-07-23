@@ -1,2 +1,4 @@
-package com.web.ndolphin.service.interfaces;public interface favoriteService {
+package com.web.ndolphin.service.interfaces;
+
+public interface FavoriteService {
 }
