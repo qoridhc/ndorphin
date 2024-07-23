@@ -28,7 +28,7 @@ public class JwtProvider {
     // 만료 시간 30분
     public String generateAccessToken(String userId) {
         // 만료시간 -> 현재시간 + 1시간뒤
-        Date expiredDate = Date.from(Instant.now().plus(30, ChronoUnit.DAYS));
+        Date expiredDate = Date.from(Instant.now().plus(30, ChronoUnit.MINUTES));
 
         // 빌더로 JWT 생성
         String jwt = Jwts.builder()
