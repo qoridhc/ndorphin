@@ -12,8 +12,10 @@ import com.web.ndolphin.provider.JwtProvider;
 import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.UserService;
+import com.web.ndolphin.util.LogUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -64,6 +66,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto) {
         try {
+
+            System.out.println("=================================");
             // 유저를 조회
             User existingUser = userRepository.findByUserId(userId);
 
@@ -84,21 +88,30 @@ public class UserServiceImpl implements UserService {
             if (dto.getNPoint() != null) {
                 existingUser.setNPoint(dto.getNPoint());
             }
+            if (dto.getRole() != null) {
+                existingUser.setRole(dto.getRole());
+            }
 
             existingUser.setUpdatedAt(LocalDateTime.now());
+
+            LogUtil.info("UserRequestDto", dto);
+            LogUtil.info("existingUser", existingUser);
 
             userRepository.save(existingUser);
             // DTO 변환
             UserDto userResponseDto = convertToUserDto(existingUser);
 
+            LogUtil.info("userResponseDto", userResponseDto);
+
             ResponseDto<UserDto> responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, userResponseDto);
 
+            System.out.println("=================================");
+
+            
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseDto.databaseError();
         }
-
     }
 
     // DTO 변환 헬퍼 메서드
@@ -112,6 +125,8 @@ public class UserServiceImpl implements UserService {
         userDto.setNPoint(user.getNPoint());
         userDto.setUpdatedAt(user.getUpdatedAt());
         userDto.setNickNameUpdatedAt(user.getNickNameUpdatedAt());
+        userDto.setRole(user.getRole());
+
         return userDto;
     }
 

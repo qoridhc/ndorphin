@@ -21,4 +21,6 @@ public class UserUpdateRequestDto {
     private String mbti;
 
     private Integer nPoint;
+
+    private RoleType role;
 }

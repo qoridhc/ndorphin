@@ -1,5 +1,6 @@
 package com.web.ndolphin.config;
 
+import com.web.ndolphin.domain.RoleType;
 import com.web.ndolphin.filter.JwtAutheticationFilter;
 import com.web.ndolphin.handler.OAuth2SuccessHandler;
 import jakarta.servlet.ServletException;
@@ -42,27 +43,15 @@ public class WebSecurityConfig {
                 .httpBasic(httpBasicCustomizer -> httpBasicCustomizer.disable()) // 기본 인증 방식 (Basic Auth) 비활성화 -> Bearer 인증 방식을 사용하기 위해
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리 정책을 무상태로 설정
                 .authorizeHttpRequests(request -> request
-                                .requestMatchers("/api/v1/user/*").authenticated()
-                                .requestMatchers("/api/v1/auth/token/reissue").permitAll()
-                                .requestMatchers("/", "/api/v1/auth/**", "/oauth2/**", "/swagger-ui/**", "/error").permitAll() // 이 경로는 인증 없이 접근 허용
-
-//                        .authorizeHttpRequests(request -> request
-//                                .requestMatchers("api/v1.**", "/error", "/**").permitAll()
-//                                .anyRequest().permitAll() // 일단 모든 권한 허용 -> 추후 유저 권한 구현 완료 시 변경
-
+                                .requestMatchers("/api/v1/auth/**", "/oauth2/**", "/swagger-ui/**", "/error", "/error").permitAll() // 인증 없이 접근 허용
+                                .requestMatchers("/api/v1/user").hasRole(String.valueOf(RoleType.ADMIN))
+                                .anyRequest().authenticated() // 나머지는 인증 해야 접근 가능
 //                        .requestMatchers("/", "/api/v1/auth/**", "/oauth2/**").permitAll() // 이 경로는 인증 없이 접근 허용
 //                        .requestMatchers("/api/v1/user/**").hasRole("USER") // 이 경로는 ROLE_USER 권한이 있어야 접근 가능
 //                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN") // 이 경로는 ROLE_ADMIN 권한이 있어야 접근 가능
 //                        .anyRequest().authenticated() // 나머지 모든 요청은 인증해야 접근 가능
 //
-                ).oauth2Login(oauth2 -> oauth2
-                        .authorizationEndpoint(endPoint -> endPoint.baseUri("/api/v1/auth/oauth2"))
-                        .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
-                        .userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService))
-                        .successHandler(oAuth2SuccessHandler)
-                )
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(new FailedAuthenticatoinEntryPoint()) // 인증 실패 시 처리할 엔트리 포인트 설정
+                ).oauth2Login(oauth2 -> oauth2.authorizationEndpoint(endPoint -> endPoint.baseUri("/api/v1/auth/oauth2")).redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*")).userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService)).successHandler(oAuth2SuccessHandler)).exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(new FailedAuthenticatoinEntryPoint()) // 인증 실패 시 처리할 엔트리 포인트 설정
                 ).addFilterBefore(jwtAutheticationFilter, UsernamePasswordAuthenticationFilter.class); // JWT 인증 필터를 UsernamePasswordAuthenticationFilter 앞에 추가
 
         return httpSecurity.build(); // 설정을 기반으로 SecurityFilterChain 빌드
