@@ -3,11 +3,13 @@ package com.web.ndolphin.filter;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.provider.JwtProvider;
 import com.web.ndolphin.repository.UserRepository;
-import com.web.ndolphin.util.LogUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,10 +22,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 public class JwtAutheticationFilter extends OncePerRequestFilter {
@@ -32,17 +30,15 @@ public class JwtAutheticationFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+        throws ServletException, IOException {
 
         try {
-
             // 요청에서 Bearer 토큰을 파싱
             String token = parseBearerToken(request);
 
-            LogUtil.info("token: " + token);
-
+            // 토큰이 없으면 다음 필터로 넘어감
             if (token == null) {
-                // 토큰이 없으면 다음 필터로 넘어감
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -50,8 +46,8 @@ public class JwtAutheticationFilter extends OncePerRequestFilter {
             // JWT 유효성 검증
             String userId = jwtProvider.validate(token);
 
+            // 유효하지 않은 토큰이면 다음 필터로 넘어감
             if (userId == null) {
-                // 유효하지 않은 토큰이면 다음 필터로 넘어감
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -68,7 +64,8 @@ public class JwtAutheticationFilter extends OncePerRequestFilter {
             // 새로운 SecurityContext 생성
             SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
             // 사용자 ID와 권한으로 UsernamePasswordAuthenticationToken 생성
-            AbstractAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+            AbstractAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(userId, null, authorities);
 
             // 요청의 세부 정보를 설정
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -91,16 +88,19 @@ public class JwtAutheticationFilter extends OncePerRequestFilter {
         // 실제 값이 있는지 검증 -> null, 길이 0, 공백으로만 : false , 아니면 true
         boolean hasAuthorization = StringUtils.hasText(authorization);
 
-        if (!hasAuthorization)
+        if (!hasAuthorization) {
             return null;
+        }
 
         // 문자열이 'Bearer ' 로 시작되는지 체크 -> 정상적인 Bearer 토큰인지 검증
         boolean isBearer = authorization.startsWith("Bearer ");
 
-        if (!isBearer)
+        if (!isBearer) {
             return null;
+        }
 
         String token = authorization.substring(7);
+        
         return token;
     }
 
