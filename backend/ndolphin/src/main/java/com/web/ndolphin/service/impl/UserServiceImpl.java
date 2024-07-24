@@ -42,6 +42,25 @@ public class UserServiceImpl implements UserService {
         return OAuth2ResponseDto.success(token);
     }
 
+    public ResponseEntity<ResponseDto> getUser(Long userId) {
+
+        try {
+            User user = userRepository.findByUserId(userId);
+
+            UserDto userDto = UserMapper.toDto(user);
+
+            ResponseDto<UserDto> responseBody = new ResponseDto<>(
+                ResponseCode.SUCCESS,
+                ResponseMessage.SUCCESS,
+                userDto
+            );
+
+            return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+        } catch (Exception e) {
+            return ResponseDto.databaseError();
+        }
+    }
+
     @Override
     @Transactional
     public ResponseEntity<ResponseDto> deleteUser(Long userId) {
@@ -97,7 +116,7 @@ public class UserServiceImpl implements UserService {
 
             userRepository.save(existingUser);
 
-            UserDto userDto = UserMapper.convertToUserDto(existingUser);
+            UserDto userDto = UserMapper.toDto(existingUser);
 
             ResponseDto<UserDto> responseBody = new ResponseDto<>(
                 ResponseCode.SUCCESS,

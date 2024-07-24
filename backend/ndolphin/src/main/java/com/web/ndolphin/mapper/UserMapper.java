@@ -5,7 +5,7 @@ import com.web.ndolphin.dto.user.UserDto;
 
 public class UserMapper {
 
-    public static UserDto convertToUserDto(User user) {
+    public static UserDto toDto(User user) {
         UserDto userDto = new UserDto();
 
         userDto.setUserId(user.getUserId());
