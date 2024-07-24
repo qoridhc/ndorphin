@@ -1,6 +1,5 @@
 package com.web.ndolphin.domain;
 
-import com.web.ndolphin.dto.notification.request.NotificationRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,12 +31,5 @@ public class Notification {
   private String content;
   private LocalDateTime createdAt;
   private boolean isRead;
-
-  public Notification(User user, NotificationRequestDto dto) {
-    this.user = user;
-    this.content = dto.getContent();
-    this.createdAt = LocalDateTime.now();
-    this.isRead = false;
-  }
 
 }

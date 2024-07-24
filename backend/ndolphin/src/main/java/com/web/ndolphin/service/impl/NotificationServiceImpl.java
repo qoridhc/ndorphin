@@ -1,17 +1,19 @@
 package com.web.ndolphin.service.impl;
 
-import static java.util.stream.Collectors.toList;
-
+import com.web.ndolphin.common.ResponseCode;
+import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.domain.Notification;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.notification.request.NotificationRequestDto;
 import com.web.ndolphin.dto.notification.response.NotificationResponseDto;
+import com.web.ndolphin.mapper.NotificationMapper;
 import com.web.ndolphin.repository.NotificationRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.NotificationService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +34,7 @@ public class NotificationServiceImpl implements NotificationService {
         return ResponseDto.databaseError();
       }
 
-      Notification notification = new Notification(user, dto);
+      Notification notification = NotificationMapper.toEntity(user, dto);
 
       notificationRepository.save(notification);
 
@@ -49,12 +51,15 @@ public class NotificationServiceImpl implements NotificationService {
     try {
       List<Notification> notifications = notificationRepository.findAllByUserId(userId);
 
-      List<NotificationResponseDto> responseDto = notifications
-          .stream()
-          .map(n -> new NotificationResponseDto(n))
-          .collect(toList());
+      List<NotificationResponseDto> responseList = NotificationMapper.toDtoList(notifications);
 
-      return NotificationResponseDto.success(responseDto);
+      ResponseDto<List<NotificationResponseDto>> responseDto = new ResponseDto<>(
+          ResponseCode.SUCCESS,
+          ResponseMessage.SUCCESS,
+          responseList
+      );
+
+      return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
     } catch (Exception e) {
       return ResponseDto.databaseError();
@@ -65,8 +70,10 @@ public class NotificationServiceImpl implements NotificationService {
   public ResponseEntity<ResponseDto> delete(Long notificationId) {
 
     try {
+      
       notificationRepository.deleteById(notificationId);
     } catch (Exception e) {
+
       return ResponseDto.databaseError();
     }
 
