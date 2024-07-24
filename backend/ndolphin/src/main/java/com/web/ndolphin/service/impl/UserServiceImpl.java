@@ -14,6 +14,7 @@ import com.web.ndolphin.dto.favorite.FavoriteResponseDto;
 import com.web.ndolphin.dto.user.UserDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
 import com.web.ndolphin.mapper.BoardConverter;
+import com.web.ndolphin.mapper.FavoriteMapper;
 import com.web.ndolphin.provider.JwtProvider;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.FavoriteRepository;
@@ -126,7 +127,7 @@ public class UserServiceImpl implements UserService {
             .map(favorite -> BoardConverter.convertToDto(favorite.getBoard()))
             .toList();
 
-        FavoriteResponseDto favoriteResponseDto = new FavoriteResponseDto(boardDtos);
+        FavoriteResponseDto favoriteResponseDto = FavoriteMapper.toDto(boardDtos);
 
         ResponseDto<FavoriteResponseDto> responseDto = new ResponseDto<>(
             ResponseCode.SUCCESS,
@@ -146,9 +147,7 @@ public class UserServiceImpl implements UserService {
             Board board = boardRepository.findById(favoriteRequestDto.getBoardId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
 
-            Favorite favorite = new Favorite();
-            favorite.setUser(user);
-            favorite.setBoard(board);
+            Favorite favorite = FavoriteMapper.toEntity(user, board);
 
             favoriteRepository.save(favorite);
 
