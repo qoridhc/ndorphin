@@ -18,11 +18,6 @@ public class UserController {
 
     private final UserServiceImpl userService;
 
-    @GetMapping("/test")
-    public String test() {
-        return "test 성공";
-    }
-
     @DeleteMapping("/{userId}")
     public ResponseEntity<ResponseDto> deleteUser(@PathVariable("userId") Long userId) {
         return userService.deleteUser(userId);
