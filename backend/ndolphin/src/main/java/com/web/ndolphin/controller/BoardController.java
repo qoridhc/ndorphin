@@ -3,72 +3,56 @@ package com.web.ndolphin.controller;
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.domain.Comment;
+import com.web.ndolphin.domain.User;
+import com.web.ndolphin.dto.ResponseDto;
+import com.web.ndolphin.dto.board.request.BoardUpdateRequestDto;
+import com.web.ndolphin.dto.comment.CommentDto;
+import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.BoardService;
+import com.web.ndolphin.service.impl.BoardServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/boards")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/boards")
 public class BoardController {
 
     private final BoardService boardService;
 
     // C - 게시물 생성
-    @PostMapping
-    public Board createBoard(@RequestBody Board board) {
-        return boardService.createBoard(board);
+    @PostMapping("/{userId}")
+    public ResponseEntity createBoard(@PathVariable("userId") Long userId,
+                                      @RequestBody BoardUpdateRequestDto boardUpdateRequestDto) {
+        return boardService.createBoard(userId, boardUpdateRequestDto);
     }
 
-    // R - 게시물 목록 조회 (타입별로 조회)
-    @GetMapping
-    public List<Board> getAllBoards(@RequestParam(required = false) BoardType type) {
-        if (type != null) {
-            return boardService.getBoardsByType(type);
-        }
-        return boardService.getAllBoards();
+    // R - 게시물 목록 조회 (타입별로 조회)/api/v1/boards?type={boardType}
+    @GetMapping()
+    public ResponseEntity<ResponseDto> getBoardsByType(@RequestParam("type") BoardType boardType) {
+        return boardService.getBoardsByType(boardType);
     }
 
-    // R - 게시물 상세 조회
+    // R - 게시물 상세 조회 /api/v1/boards/{boardId}
     @GetMapping("/{boardId}")
-    public Board getBoardById(@PathVariable("boardId") Long boardId) {
+    public ResponseEntity<ResponseDto> getBoardById(@PathVariable Long boardId) {
         return boardService.getBoardById(boardId);
     }
 
     // U - 게시물 수정
     @PutMapping("/{boardId}")
-    public Board updateBoard(@PathVariable("boardId") Long boardId, @RequestBody Board board) {
-        return boardService.updateBoard(boardId, board);
+    public ResponseEntity<ResponseDto> updateBoard(@PathVariable("boardId") Long boardId,
+                                                   @RequestBody BoardUpdateRequestDto boardUpdateRequestDto) {
+        return boardService.updateBoard(boardId, boardUpdateRequestDto);
     }
 
     // D - 게시물 삭제
     @DeleteMapping("/{boardId}")
-    public void deleteBoard(@PathVariable("boardId") Long boardId) {
-        boardService.deleteBoard(boardId);
-    }
-
-    // C - 특정 게시물에 댓글 추가
-    @PostMapping("/{boardId}/comments")
-    public Comment addCommentToBoard(@PathVariable("boardId") Long boardId, @RequestParam Long userId, @RequestParam String content) {
-        return boardService.addCommentToBoard(boardId, userId, content);
-    }
-
-    // R - 특정 게시물의 댓글 조회
-    @GetMapping("/{boardId}/comments")
-    public List<Comment> getCommentsByBoardId(@PathVariable("boardId") Long boardId) {
-        return boardService.getCommentsByBoardId(boardId);
-    }
-
-    // U - 특정 댓글 수정
-    @PutMapping("/comments/{id}")
-    public Comment updateComment(@PathVariable("boardId") Long id, @RequestParam String content) {
-        return boardService.updateComment(id, content);
-    }
-
-    // D - 특정 댓글 삭제
-    @DeleteMapping("/comments/{id}")
-    public void deleteComment(@PathVariable("boardId") Long id) {
-        boardService.deleteComment(id);
+    public ResponseEntity<ResponseDto> deleteBoard(@PathVariable("boardId") Long boardId) {
+        return boardService.deleteBoard(boardId);
     }
 }
