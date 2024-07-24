@@ -49,15 +49,30 @@ public class UserController {
         return response;
     }
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<ResponseDto> getUser(@PathVariable("userId") Long userId) {
+
+        ResponseEntity<ResponseDto> response = userService.getUser(userId);
+
+        return response;
+    }
+
     @DeleteMapping("/{userId}")
     public ResponseEntity<ResponseDto> deleteUser(@PathVariable("userId") Long userId) {
-        return userService.deleteUser(userId);
+
+        ResponseEntity<ResponseDto> response = userService.deleteUser(userId);
+
+        return response;
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<ResponseDto> updateUser(@PathVariable("userId") Long userId,
+    public ResponseEntity<ResponseDto> updateUser(
+        @PathVariable("userId") Long userId,
         @RequestBody UserUpdateRequestDto updateDto) {
-        return userService.updateUser(userId, updateDto);
+
+        ResponseEntity<ResponseDto> response = userService.updateUser(userId, updateDto);
+
+        return response;
     }
 
 }

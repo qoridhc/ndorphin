@@ -48,12 +48,31 @@ public class UserServiceImpl implements UserService {
         try {
             user = userRepository.findByUserId(userId);
         } catch (Exception e) {
-            e.printStackTrace();
+            return ResponseDto.databaseError();
         }
 
         Token token = tokenRepository.findByUserId(userId);
 
         return OAuth2ResponseDto.success(token);
+    }
+
+    public ResponseEntity<ResponseDto> getUser(Long userId) {
+
+        try {
+            User user = userRepository.findByUserId(userId);
+
+            UserDto userDto = UserMapper.toDto(user);
+
+            ResponseDto<UserDto> responseBody = new ResponseDto<>(
+                ResponseCode.SUCCESS,
+                ResponseMessage.SUCCESS,
+                userDto
+            );
+
+            return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+        } catch (Exception e) {
+            return ResponseDto.databaseError();
+        }
     }
 
     @Override
@@ -69,7 +88,7 @@ public class UserServiceImpl implements UserService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            return ResponseDto.databaseError();
         }
 
         return ResponseDto.success();
@@ -78,28 +97,31 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto) {
-        try {
 
-            // 유저를 조회
+        try {
             User existingUser = userRepository.findByUserId(userId);
 
-            // DTO를 사용하여 필드 업데이트
             if (dto.getEmail() != null) {
                 existingUser.setEmail(dto.getEmail());
             }
+
             if (dto.getProfileImage() != null) {
                 existingUser.setProfileImage(dto.getProfileImage());
             }
+
             if (dto.getNickName() != null) {
                 existingUser.setNickName(dto.getNickName());
                 existingUser.setNickNameUpdatedAt(LocalDateTime.now());
             }
+
             if (dto.getMbti() != null) {
                 existingUser.setMbti(dto.getMbti());
             }
+
             if (dto.getNPoint() != null) {
                 existingUser.setNPoint(dto.getNPoint());
             }
+
             if (dto.getRole() != null) {
                 existingUser.setRole(dto.getRole());
             }
@@ -107,11 +129,14 @@ public class UserServiceImpl implements UserService {
             existingUser.setUpdatedAt(LocalDateTime.now());
 
             userRepository.save(existingUser);
-            // DTO 변환
-            UserDto userResponseDto = convertToUserDto(existingUser);
 
-            ResponseDto<UserDto> responseBody = new ResponseDto<>(ResponseCode.SUCCESS,
-                ResponseMessage.SUCCESS, userResponseDto);
+            UserDto userDto = UserMapper.toDto(existingUser);
+
+            ResponseDto<UserDto> responseBody = new ResponseDto<>(
+                ResponseCode.SUCCESS,
+                ResponseMessage.SUCCESS,
+                userDto
+            );
 
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         } catch (Exception e) {
