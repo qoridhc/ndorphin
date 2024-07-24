@@ -24,6 +24,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -152,8 +153,10 @@ public class UserServiceImpl implements UserService {
             favoriteRepository.save(favorite);
 
             return ResponseDto.success(); // 성공 시 응답
+        } catch (DataIntegrityViolationException e) {
+            return ResponseDto.databaseError("Favorite already exists for this user and board");
         } catch (Exception e) {
-            return ResponseDto.databaseError(); // 예외 발생 시 데이터베이스 에러 응답
+            return ResponseDto.databaseError(e.getMessage()); // 예외 발생 시 데이터베이스 에러 응답
         }
     }
 
@@ -168,7 +171,7 @@ public class UserServiceImpl implements UserService {
 
             return ResponseDto.success();
         } catch (Exception e) {
-            return ResponseDto.databaseError();
+            return ResponseDto.databaseError(e.getMessage());
         }
     }
 
