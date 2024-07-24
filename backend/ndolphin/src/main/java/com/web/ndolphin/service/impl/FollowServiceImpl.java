@@ -11,7 +11,6 @@ import com.web.ndolphin.mapper.FollowMapper;
 import com.web.ndolphin.repository.FollowRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.FollowService;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,11 +32,9 @@ public class FollowServiceImpl implements FollowService {
             User followBy = userRepository.findByUserId(userId);
             User followTo = userRepository.findByUserId(dto.getFollowingId());
 
-            follow.setFollower(followBy);
-            follow.setFollowing(followTo);
-            follow.setCreatedAt(LocalDateTime.now());
-            
-            followRepository.save(follow);
+            Follow followEntity = FollowMapper.toEntity(followBy, followTo);
+
+            followRepository.save(followEntity);
 
             FollowDto followDto = FollowMapper.toDto(follow);
 
