@@ -1,14 +1,12 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import Header from "./components/common/Header";
+import Header from "./components/home/Header";
 
 function App() {
   return (
     <div>
       <Header></Header>
       <BrowserRouter>
-        <Routes>
-          {/* <Route path="/" element={<A />} /> */}
-        </Routes>
+        <Routes></Routes>
       </BrowserRouter>
     </div>
   );
