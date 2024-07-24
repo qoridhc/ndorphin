@@ -27,16 +27,11 @@ const RankingDate = (props: Props) => {
     ${today.getFullYear()}.${today.getMonth() + 1 < 10 ? "0" + (today.getMonth() + 1) : today.getMonth() + 1}.${today.getDate() < 10 ? "0" + today.getDate() : today.getDate()}
   `;
 
-  switch (props.type) {
-    case "일간":
-      return <p>{formattedDay}</p>;
-    case "주간":
-      return <p>{formattedWeek}</p>;
-    case "월간":
-      return <p>{formattedMonth}</p>;
-    default:
-      return null;
-  }
+  return (
+    <>
+      <p className="text-sm font-medium text-[#565656]">{props.type === "일간" ? formattedDay : props.type === "주간" ? formattedWeek : formattedMonth}</p>
+    </>
+  );
 };
 
 export default RankingDate;
