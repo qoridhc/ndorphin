@@ -1,6 +1,10 @@
-package com.web.ndolphin.domain;
+package com.web.ndolphin.dto;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class File {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "file_id")
     private Long id;
 
@@ -27,9 +32,9 @@ public class File {
     @Override
     public String toString() {
         return "FileEntity{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", s3Url='" + s3Url + '\'' +
-                '}';
+            "id=" + id +
+            ", title='" + title + '\'' +
+            ", s3Url='" + s3Url + '\'' +
+            '}';
     }
 }

@@ -172,16 +172,17 @@ package com.web.ndolphin.service;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ListObjectsV2Request;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -197,6 +198,7 @@ public class S3Service {
     }
 
     public List<String> uploadFiles(List<MultipartFile> multipartFiles) throws IOException {
+
         List<String> uploadedUrls = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             String url = uploadSingleFile(multipartFile);
@@ -241,7 +243,7 @@ public class S3Service {
             metadata.setContentType(contentType);
             System.out.println("folder = " + folder);
             amazonS3.putObject(new PutObjectRequest(bucket, fullFileName, multipartFile.getInputStream(), metadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
+                .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (AmazonServiceException e) {
             e.printStackTrace();
         } catch (SdkClientException e) {
