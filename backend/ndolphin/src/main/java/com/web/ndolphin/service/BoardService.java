@@ -11,9 +11,9 @@ import java.util.List;
 public interface BoardService {
     ResponseEntity<ResponseDto> createBoard(Long userId, BoardUpdateRequestDto boardUpdateRequestDto);
 
-    /*ResponseEntity<ResponseDto> getBoardsByType(BoardType type);
+    ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType);
 
-    ResponseEntity<ResponseDto> getBoardById(Long boardId);*/
+    ResponseEntity<ResponseDto> getBoardById(Long boardId);
 
     ResponseEntity<ResponseDto> updateBoard(Long boardId, BoardUpdateRequestDto boardUpdateRequestDto);
 

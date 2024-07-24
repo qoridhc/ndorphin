@@ -19,6 +19,4 @@ public class BoardDto {
     private LocalDateTime updatedAt;
 
     private List<CommentDto> comments;
-
-    // Getters and Setters
 }

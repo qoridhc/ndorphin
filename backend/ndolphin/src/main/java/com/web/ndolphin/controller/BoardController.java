@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/boards")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/boards")
 public class BoardController {
 
     private final BoardService boardService;
@@ -31,9 +31,17 @@ public class BoardController {
         return boardService.createBoard(userId, boardUpdateRequestDto);
     }
 
-    /*R - 게시물 목록 조회 (타입별로 조회)
+    // R - 게시물 목록 조회 (타입별로 조회)/api/v1/boards?type={boardType}
+    @GetMapping()
+    public ResponseEntity<ResponseDto> getBoardsByType(@RequestParam("type") BoardType boardType) {
+        return boardService.getBoardsByType(boardType);
+    }
 
-    R - 게시물 상세 조회*/
+    // R - 게시물 상세 조회 /api/v1/boards/{boardId}
+    @GetMapping("/{boardId}")
+    public ResponseEntity<ResponseDto> getBoardById(@PathVariable Long boardId) {
+        return boardService.getBoardById(boardId);
+    }
 
     // U - 게시물 수정
     @PutMapping("/{boardId}")
