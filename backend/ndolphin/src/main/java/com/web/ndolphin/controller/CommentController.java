@@ -1,6 +1,7 @@
 package com.web.ndolphin.controller;
 
 import com.web.ndolphin.dto.ResponseDto;
+import com.web.ndolphin.dto.comment.CommentRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
