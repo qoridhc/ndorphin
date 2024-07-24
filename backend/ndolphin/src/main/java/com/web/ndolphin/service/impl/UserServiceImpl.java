@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
             return ResponseDto.databaseError();
         }
     }
-    .
+
     // DTO 변환 헬퍼 메서드
     private UserDto convertToUserDto(User user) {
         UserDto userDto = new UserDto();
