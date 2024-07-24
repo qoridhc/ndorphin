@@ -1,9 +1,32 @@
+import Filter from "../common/Filter";
+import Book from "./Book";
+import Paging from "../../components/common/Paging";
+
 function Done() {
-    return (
-      <div className="flex justify-center"> 
-        <p>완료된 책 목록입니다.</p>
+  return (
+    <div>
+      <Filter />
+      <div className="flex justify-center">
+        <Book />
+        <Book />
+        <Book />
+        <Book />
       </div>
-    )
-  }
-  
-  export default Done;
+      <div className="flex justify-center">
+        <Book />
+        <Book />
+        <Book />
+        <Book />
+      </div>
+      <div className="flex justify-center">
+        <Book />
+        <Book />
+        <Book />
+        <Book />
+      </div>
+      <Paging />
+    </div>
+  );
+}
+
+export default Done;
