@@ -2,13 +2,9 @@ package com.web.ndolphin.mapper;
 
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.BoardType;
-import com.web.ndolphin.domain.Comment;
-import com.web.ndolphin.dto.board.BoardDto;
 import com.web.ndolphin.domain.User;
+import com.web.ndolphin.dto.board.BoardDto;
 import com.web.ndolphin.dto.board.request.BoardUpdateRequestDto;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class BoardConverter {
 
@@ -16,18 +12,18 @@ public class BoardConverter {
     public static BoardDto convertToDto(Board board) {
         BoardDto dto = new BoardDto();
 
-        dto.setId(board.getId());
-        dto.setUserId(board.getUser().getUserId());
-        dto.setSubject(board.getSubject());
-        dto.setContent(board.getContent());
-        dto.setSummary(board.getSummary());
-        dto.setHit(board.getHit());
-        dto.setBoardType(board.getBoardType().toString());
-        dto.setCreatedAt(board.getCreatedAt());
-        dto.setUpdatedAt(board.getUpdatedAt());
-        dto.setComments(board.getComments().stream()
-                .map(CommentConverter::convertToDto)
-                .collect(Collectors.toList()));
+//        dto.setId(board.getId());
+//        dto.setUserId(board.getUser().getUserId());
+//        dto.setSubject(board.getSubject());
+//        dto.setContent(board.getContent());
+//        dto.setSummary(board.getSummary());
+//        dto.setHit(board.getHit());
+//        dto.setBoardType(board.getBoardType().toString());
+//        dto.setCreatedAt(board.getCreatedAt());
+//        dto.setUpdatedAt(board.getUpdatedAt());
+//        dto.setComments(board.getComments().stream()
+//            .map(CommentMapper::toDto)
+//            .collect(Collectors.toList()));
         return dto;
     }
 
