@@ -8,9 +8,12 @@ import com.web.ndolphin.domain.Token;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.auth.response.OAuth2ResponseDto;
+import com.web.ndolphin.dto.board.BoardDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
+import com.web.ndolphin.dto.favorite.FavoriteResponseDto;
 import com.web.ndolphin.dto.user.UserDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
+import com.web.ndolphin.mapper.BoardConverter;
 import com.web.ndolphin.provider.JwtProvider;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.FavoriteRepository;
@@ -20,7 +23,6 @@ import com.web.ndolphin.service.interfaces.UserService;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -116,31 +118,58 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Favorite> getFavorites(Long userId) {
-        return favoriteRepository.findByUserId(userId);
+    public ResponseEntity<ResponseDto> getFavorites(Long userId) {
+
+        List<Favorite> favorites = favoriteRepository.findByUserId(userId);
+        List<BoardDto> boardDtos = favorites.stream()
+            .map(favorite -> BoardConverter.convertToDto(favorite.getBoard()))
+            .toList();
+
+        FavoriteResponseDto favoriteResponseDto = new FavoriteResponseDto(boardDtos);
+
+        ResponseDto<FavoriteResponseDto> responseDto = new ResponseDto<>(
+            ResponseCode.SUCCESS,
+            ResponseMessage.SUCCESS,
+            favoriteResponseDto
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     @Override
-    public void addFavorite(FavoriteRequestDto favoriteRequestDto) {
-        User user = userRepository.findById(favoriteRequestDto.getUserId())
-            .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
-        Board board = boardRepository.findById(favoriteRequestDto.getBoardId())
-            .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
+    public ResponseEntity<ResponseDto> addFavorite(FavoriteRequestDto favoriteRequestDto) {
 
-        Favorite favorite = new Favorite();
-        favorite.setUser(user);
-        favorite.setBoard(board);
+        try {
+            User user = userRepository.findById(favoriteRequestDto.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+            Board board = boardRepository.findById(favoriteRequestDto.getBoardId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
 
-        favoriteRepository.save(favorite);
+            Favorite favorite = new Favorite();
+            favorite.setUser(user);
+            favorite.setBoard(board);
+
+            favoriteRepository.save(favorite);
+
+            return ResponseDto.success(); // 성공 시 응답
+        } catch (Exception e) {
+            return ResponseDto.databaseError(); // 예외 발생 시 데이터베이스 에러 응답
+        }
     }
 
     @Override
-    public void removeFavorite(Long userId, Long boardId) {
-        Optional<Favorite> favorite = Optional.ofNullable(
-            favoriteRepository.findByUserIdAndBoardId(userId, boardId)
-                .orElseThrow(() -> new IllegalArgumentException("Favorite not found")));
+    public ResponseEntity<ResponseDto> removeFavorite(Long userId, Long boardId) {
 
-        favoriteRepository.delete(favorite.get());
+        try {
+            Favorite favorite = favoriteRepository.findByUserIdAndBoardId(userId, boardId)
+                .orElseThrow(() -> new IllegalArgumentException("Favorite not found"));
+
+            favoriteRepository.delete(favorite);
+
+            return ResponseDto.success();
+        } catch (Exception e) {
+            return ResponseDto.databaseError();
+        }
     }
 
     // DTO 변환 헬퍼 메서드

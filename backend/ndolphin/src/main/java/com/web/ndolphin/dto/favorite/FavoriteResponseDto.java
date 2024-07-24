@@ -1,17 +1,18 @@
 package com.web.ndolphin.dto.favorite;
 
-import com.web.ndolphin.domain.Board;
+import com.web.ndolphin.dto.board.BoardDto;
+import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @RequiredArgsConstructor
 public class FavoriteResponseDto {
 
-    private final List<Board> boards;
+    private final List<BoardDto> BoardDtos;
 
 }

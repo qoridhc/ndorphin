@@ -1,13 +1,10 @@
 package com.web.ndolphin.controller;
 
-import com.web.ndolphin.domain.Favorite;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
 import com.web.ndolphin.service.interfaces.UserService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,22 +23,30 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{userId}/favorites")
-    public ResponseEntity<List<Favorite>> getFavoritesByUserId(@PathVariable Long userId) {
-        List<Favorite> favorites = userService.getFavorites(userId);
-        return ResponseEntity.ok(favorites);
+    public ResponseEntity<ResponseDto> getFavoritesByUserId(@PathVariable Long userId) {
+
+        ResponseEntity<ResponseDto> response = userService.getFavorites(userId);
+
+        return response;
     }
 
     @PostMapping("/{userId}/favorites")
-    public ResponseEntity<Void> addFavorite(@RequestBody FavoriteRequestDto favoriteRequestDto) {
-        userService.addFavorite(favoriteRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<ResponseDto> addFavorite(
+        @RequestBody FavoriteRequestDto favoriteRequestDto) {
+
+        ResponseEntity<ResponseDto> response = userService.addFavorite(favoriteRequestDto);
+
+        return response;
     }
 
     @DeleteMapping("/{userId}/favorites/{boardId}")
-    public ResponseEntity<Void> removeFavorite(@PathVariable Long userId,
+    public ResponseEntity<ResponseDto> removeFavorite(
+        @PathVariable Long userId,
         @PathVariable Long boardId) {
-        userService.removeFavorite(userId, boardId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+        ResponseEntity<ResponseDto> response = userService.removeFavorite(userId, boardId);
+
+        return response;
     }
 
     @DeleteMapping("/{userId}")
