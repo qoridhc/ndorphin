@@ -8,19 +8,17 @@ import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.auth.response.OAuth2ResponseDto;
 import com.web.ndolphin.dto.user.UserDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
+import com.web.ndolphin.mapper.UserMapper;
 import com.web.ndolphin.provider.JwtProvider;
 import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.UserService;
-import com.web.ndolphin.util.LogUtil;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -52,8 +50,9 @@ public class UserServiceImpl implements UserService {
             int deleteCnt = userRepository.deleteUserByUserId(userId);
 
             // 삭제 실패
-            if (deleteCnt <= 0)
+            if (deleteCnt <= 0) {
                 return ResponseDto.databaseError();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -94,10 +93,14 @@ public class UserServiceImpl implements UserService {
             existingUser.setUpdatedAt(LocalDateTime.now());
 
             userRepository.save(existingUser);
-            // DTO 변환
-            UserDto userResponseDto = convertToUserDto(existingUser);
 
-            ResponseDto<UserDto> responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, userResponseDto);
+            UserDto userDto = UserMapper.convertToUserDto(existingUser);
+
+            ResponseDto<UserDto> responseBody = new ResponseDto<>(
+                ResponseCode.SUCCESS,
+                ResponseMessage.SUCCESS,
+                userDto
+            );
 
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         } catch (Exception e) {
@@ -105,23 +108,5 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    // DTO 변환 헬퍼 메서드
-    private UserDto convertToUserDto(User user) {
-        UserDto userDto = new UserDto();
-
-        userDto.setUserId(user.getUserId());
-        userDto.setEmail(user.getEmail());
-        userDto.setProfileImage(user.getProfileImage());
-        userDto.setNickName(user.getNickName());
-        userDto.setMbti(user.getMbti());
-        userDto.setType(user.getType());
-        userDto.setNPoint(user.getNPoint());
-        userDto.setUpdatedAt(user.getUpdatedAt());
-        userDto.setNickNameUpdatedAt(user.getNickNameUpdatedAt());
-        userDto.setRole(user.getRole());
-        userDto.setCreatedAt(user.getCreatedAt());
-
-        return userDto;
-    }
 
 }
