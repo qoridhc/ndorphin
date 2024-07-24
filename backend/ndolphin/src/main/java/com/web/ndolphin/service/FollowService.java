@@ -10,4 +10,6 @@ public interface FollowService {
 
     ResponseEntity<ResponseDto> getFollowers(Long userId);
 
+    ResponseEntity<ResponseDto> getFollowings(Long userId);
+
 }

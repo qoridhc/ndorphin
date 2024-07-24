@@ -35,4 +35,12 @@ public class FollowController {
         return response;
     }
 
+    @GetMapping("/followings/{userId}")
+    public ResponseEntity<ResponseDto> getFollowings(@PathVariable Long userId) {
+
+        ResponseEntity<ResponseDto> response = followService.getFollowings(userId);
+
+        return response;
+    }
+
 }

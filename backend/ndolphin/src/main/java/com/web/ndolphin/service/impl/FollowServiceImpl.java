@@ -57,9 +57,9 @@ public class FollowServiceImpl implements FollowService {
     public ResponseEntity<ResponseDto> getFollowers(Long userId) {
 
         try {
-            List<Follow> follwers = followRepository.findAllByFollowing_UserId(userId);
+            List<Follow> followers = followRepository.findAllByFollowing_UserId(userId);
 
-            List<FollowDto> followDtoList = FollowMapper.toDtoList(follwers);
+            List<FollowDto> followDtoList = FollowMapper.toDtoList(followers);
 
             ResponseDto<List<FollowDto>> responseDto = new ResponseDto<>(
                 ResponseCode.SUCCESS,
@@ -72,4 +72,26 @@ public class FollowServiceImpl implements FollowService {
             return ResponseDto.databaseError();
         }
     }
+
+    @Override
+    public ResponseEntity<ResponseDto> getFollowings(Long userId) {
+
+        try {
+            List<Follow> followings = followRepository.findAllByFollower_UserId(userId);
+
+            List<FollowDto> followDtoList = FollowMapper.toDtoList(followings);
+
+            ResponseDto<List<FollowDto>> responseDto = new ResponseDto<>(
+                ResponseCode.SUCCESS,
+                ResponseMessage.SUCCESS,
+                followDtoList
+            );
+
+            return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+        } catch (Exception e) {
+            return ResponseDto.databaseError();
+        }
+    }
+
+
 }
