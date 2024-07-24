@@ -1,160 +1,129 @@
 package com.web.ndolphin.service.impl;
 
+import com.web.ndolphin.common.ResponseCode;
+import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.BoardType;
-import com.web.ndolphin.domain.Comment;
 import com.web.ndolphin.domain.User;
+import com.web.ndolphin.dto.ResponseDto;
+import com.web.ndolphin.dto.board.BoardDto;
+import com.web.ndolphin.dto.board.request.BoardUpdateRequestDto;
+import com.web.ndolphin.dto.board.response.BoardUpdateResponseDto;
+import com.web.ndolphin.mapper.BoardConverter;
 import com.web.ndolphin.repository.BoardRepository;
-import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static com.web.ndolphin.domain.BoardType.*;
 
 @Service
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
 
-    private final BoardRepository boardRepository;
-    private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final BoardRepository boardRepository;
 
-    // R - 모든 게시물 조회
-    @Transactional(readOnly = true)
-    public List<Board> getAllBoards() {
-        return boardRepository.findAll();
-    }
+    @Override
+    public ResponseEntity<ResponseDto> createBoard(Long userId, BoardUpdateRequestDto boardUpdateRequestDto) {
+        // User 객체를 조회
+        Optional<User> optionalUser = userRepository.findById(userId);
 
-    // R - 특정 타입의 게시물 조회
-    @Transactional(readOnly = true)
-    public List<Board> getBoardsByType(BoardType type) {
-        return boardRepository.findByBoardType(type);
-    }
+        if (optionalUser.isEmpty()) {
+            return ResponseDto.validationFail();  // User not found 응답
+        }
+        User user = optionalUser.get();
 
-    // R - 특정 게시물 조회
-    @Transactional(readOnly = true)
-    public Board getBoardById(Long id) {
-        return boardRepository.findById(id).orElse(null);
-    }
-
-    // C - 게시물 생성
-    @Transactional
-    public Board createBoard(Board board) {
-        board.setCreatedAt(LocalDateTime.now());
-        board = boardRepository.save(board);
-
-        // 게시판 타입에 따른 특화된 로직 추가
-        if (board.getBoardType() == BoardType.VOTE_BOARD) {
-            // 만약에(투표) 게시판에 특화된 로직
-        } else if (board.getBoardType() == BoardType.OPINION_BOARD) {
-            // 만약에(의견) 게시판에 특화된 로직
-        } else if (board.getBoardType() == BoardType.RELAY_BOARD) {
-            // 릴레이 게시판에 특화된 로직
-        } else if (board.getBoardType() == BoardType.OK_BOARD) {
-            // 괜찮아 게시판에 특화된 로직
-        } else if (board.getBoardType() == BoardType.BYE_BOARD) {
-            // 작별 게시판에 특화된 로직
+        // 게시판 타입에 따른 분기 처리
+        switch (BoardType.valueOf(boardUpdateRequestDto.getBoardType())) {
+            case VOTE_BOARD:
+                // 투표 게시판 - 이미지 첨부 가능
+                break;
+            case OPINION_BOARD:
+                // 의견 게시판 - 댓글 가능
+                break;
+            case RELAY_BOARD:
+                // 릴레이 게시판 - 댓글 및 이미지 첨부 가능
+                break;
+            case OK_BOARD:
+                // 괜찮아 게시판 - 댓글 가능
+                break;
+            case BYE_BOARD:
+                // 작별 게시판 - 댓글 및 이미지 첨부 가능
+                break;
+            default:
+                return ResponseDto.validationFail();
         }
 
-        return board;
+        // User 객체를 convertToEntity 메서드에 전달
+        Board board = BoardConverter.convertToEntity(boardUpdateRequestDto, user);
+
+        boardRepository.save(board);
+
+        ResponseDto<BoardDto> responseBody= new ResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardUpdateRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    // U - 게시물 수정
-    @Transactional
-    public Board updateBoard(Long id, Board boardDetails) {
-        Board board = boardRepository.findById(id).orElse(null);
-        if (board != null) {
-            board.setSubject(boardDetails.getSubject());
-            board.setContent(boardDetails.getContent());
-            board.setBoardType(boardDetails.getBoardType());
-            board.setUpdatedAt(LocalDateTime.now());
-            board = boardRepository.save(board);
+    @Override
+    public ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType) {
+        List<Board> boards = boardRepository.findByBoardType(boardType);
+        List<BoardDto> boardDtos = new ArrayList<>();
 
-            // 게시판 타입에 따른 특화된 로직 추가
-            if (board.getBoardType() == BoardType.VOTE_BOARD) {
-                // 만약에(투표) 게시판에 특화된 로직
-            } else if (board.getBoardType() == BoardType.OPINION_BOARD) {
-                // 만약에(의견) 게시판에 특화된 로직
-            } else if (board.getBoardType() == BoardType.RELAY_BOARD) {
-                // 릴레이 게시판에 특화된 로직
-            } else if (board.getBoardType() == BoardType.OK_BOARD) {
-                // 괜찮아 게시판에 특화된 로직
-            } else if (board.getBoardType() == BoardType.BYE_BOARD) {
-                // 작별 게시판에 특화된 로직
-            }
-
-            return board;
-        }
-        return null;
-    }
-
-    // D - 게시물 삭제
-    @Transactional
-    public void deleteBoard(Long id) {
-        boardRepository.deleteById(id);
-    }
-
-    // C - 댓글 추가
-    @Transactional
-    public Comment addCommentToBoard(Long boardId, Long userId, String content) {
-        Board board = boardRepository.findById(boardId).orElse(null);
-        if (board == null) {
-            return null; // 게시판이 존재하지 않는 경우 처리
+        for (Board board : boards) {
+            BoardDto boardDto = BoardConverter.convertToDto(board);
+            boardDtos.add(boardDto);
         }
 
-        User user = userRepository.findByUserId(userId);
-        if (user == null) {
-            return null; // 유저가 존재하지 않는 경우 처리
-        }
-
-        Comment comment = new Comment();
-        comment.setBoard(board);
-        comment.setUser(user);
-        comment.setContent(content);
-        comment.setCreatedAt(LocalDateTime.now());
-        comment = commentRepository.save(comment);
-
-        // 게시판 타입에 따른 특화된 로직 추가
-        if (board.getBoardType() == BoardType.VOTE_BOARD) {
-            // 만약에(투표) 게시판에 특화된 로직
-        } else if (board.getBoardType() == BoardType.OPINION_BOARD) {
-            // 만약에(의견) 게시판에 특화된 로직
-        } else if (board.getBoardType() == BoardType.RELAY_BOARD) {
-            // 릴레이 게시판에 특화된 로직
-        } else if (board.getBoardType() == BoardType.OK_BOARD) {
-            // 괜찮아 게시판에 특화된 로직
-        } else if (board.getBoardType() == BoardType.BYE_BOARD) {
-            // 작별 게시판에 특화된 로직
-        }
-
-        return comment;
+        ResponseDto<BoardDto> responseBody= new ResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardDtos);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    // R - 특정 게시물의 댓글 조회
-    @Transactional(readOnly = true)
-    public List<Comment> getCommentsByBoardId(Long boardId) {
-        return commentRepository.findByBoardId(boardId);
-    }
+    @Override
+    public ResponseEntity<ResponseDto> getBoardById(Long boardId) {
+        Optional<Board> optionalBoard = boardRepository.findById(boardId);
 
-    // U - 댓글 수정
-    @Transactional
-    public Comment updateComment(Long id, String content) {
-        Comment comment = commentRepository.findById(id).orElse(null);
-        if (comment != null) {
-            comment.setContent(content);
-            comment.setUpdatedAt(LocalDateTime.now());
-            return commentRepository.save(comment);
+        if (optionalBoard.isEmpty()) {
+            return ResponseDto.databaseError();
         }
-        return null;
+
+        Board board = optionalBoard.get();
+        BoardDto boardDto = BoardConverter.convertToDto(board);
+        ResponseDto<BoardDto> responseBody= new ResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    // D - 댓글 삭제
-    @Transactional
-    public void deleteComment(Long id) {
-        commentRepository.deleteById(id);
+    public ResponseEntity<ResponseDto> updateBoard(Long boardId, BoardUpdateRequestDto boardUpdateRequestDto) {
+        // 기존 엔티티를 가져오기
+        Optional<Board> optionalBoard = boardRepository.findById(boardId);
+
+        if (optionalBoard.isEmpty()) {
+            return ResponseDto.databaseError();
+        }
+
+        Board existingBoard = optionalBoard.get();
+        existingBoard.setSubject(boardUpdateRequestDto.getSubject());
+        existingBoard.setContent(boardUpdateRequestDto.getContent());
+        existingBoard.setUpdatedAt(LocalDateTime.now());
+
+        boardRepository.save(existingBoard);
+
+        BoardDto boardDto = BoardConverter.convertToDto(existingBoard);
+        ResponseDto<BoardDto> responseBody= new ResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    }
+
+    @Override
+    public ResponseEntity<ResponseDto> deleteBoard(Long boardId) {
+        boardRepository.deleteById(boardId);
+
+        return ResponseDto.success();
     }
 }

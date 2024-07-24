@@ -5,24 +5,23 @@ import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
 import com.web.ndolphin.service.interfaces.UserService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
-@Slf4j
+@RequestMapping("/api/v1/user")
 public class UserController {
-
-    @GetMapping("/test")
-    public String test() {
-        return "test 성공";
-    }
 
     private final UserService userService;
 
@@ -39,7 +38,8 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}/favorites/{boardId}")
-    public ResponseEntity<Void> removeFavorite(@PathVariable Long userId, @PathVariable Long boardId) {
+    public ResponseEntity<Void> removeFavorite(@PathVariable Long userId,
+        @PathVariable Long boardId) {
         userService.removeFavorite(userId, boardId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -50,7 +50,8 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<ResponseDto> updateUser(@PathVariable("userId") Long userId, @RequestBody UserUpdateRequestDto updateDto) {
+    public ResponseEntity<ResponseDto> updateUser(@PathVariable("userId") Long userId,
+        @RequestBody UserUpdateRequestDto updateDto) {
         return userService.updateUser(userId, updateDto);
     }
 

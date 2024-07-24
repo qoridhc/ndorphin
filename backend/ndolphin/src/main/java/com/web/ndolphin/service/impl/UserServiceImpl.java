@@ -18,15 +18,13 @@ import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.UserService;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -54,8 +52,6 @@ public class UserServiceImpl implements UserService {
         return OAuth2ResponseDto.success(token);
     }
 
-
-
     @Override
     @Transactional
     public ResponseEntity<ResponseDto> deleteUser(Long userId) {
@@ -64,8 +60,9 @@ public class UserServiceImpl implements UserService {
             int deleteCnt = userRepository.deleteUserByUserId(userId);
 
             // 삭제 실패
-            if (deleteCnt <= 0)
+            if (deleteCnt <= 0) {
                 return ResponseDto.databaseError();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,7 +106,8 @@ public class UserServiceImpl implements UserService {
             // DTO 변환
             UserDto userResponseDto = convertToUserDto(existingUser);
 
-            ResponseDto<UserDto> responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, userResponseDto);
+            ResponseDto<UserDto> responseBody = new ResponseDto<>(ResponseCode.SUCCESS,
+                ResponseMessage.SUCCESS, userResponseDto);
 
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         } catch (Exception e) {
@@ -125,9 +123,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addFavorite(FavoriteRequestDto favoriteRequestDto) {
         User user = userRepository.findById(favoriteRequestDto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+            .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
         Board board = boardRepository.findById(favoriteRequestDto.getBoardId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
+            .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
 
         Favorite favorite = new Favorite();
         favorite.setUser(user);
@@ -138,7 +136,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void removeFavorite(Long userId, Long boardId) {
-        Optional<Favorite> favorite = Optional.ofNullable(favoriteRepository.findByUserIdAndBoardId(userId, boardId)
+        Optional<Favorite> favorite = Optional.ofNullable(
+            favoriteRepository.findByUserIdAndBoardId(userId, boardId)
                 .orElseThrow(() -> new IllegalArgumentException("Favorite not found")));
 
         favoriteRepository.delete(favorite.get());
@@ -162,6 +161,5 @@ public class UserServiceImpl implements UserService {
 
         return userDto;
     }
-
 
 }
