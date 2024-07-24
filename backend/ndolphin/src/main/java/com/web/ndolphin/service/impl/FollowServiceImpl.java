@@ -11,6 +11,8 @@ import com.web.ndolphin.mapper.FollowMapper;
 import com.web.ndolphin.repository.FollowRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.FollowService;
+import com.web.ndolphin.util.LogUtil;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,8 @@ public class FollowServiceImpl implements FollowService {
 
             Follow followEntity = FollowMapper.toEntity(followBy, followTo);
 
+            LogUtil.info("followEntity", followEntity);
+
             followRepository.save(followEntity);
 
             FollowDto followDto = FollowMapper.toDto(follow);
@@ -50,4 +54,22 @@ public class FollowServiceImpl implements FollowService {
         }
     }
 
+    public ResponseEntity<ResponseDto> getFollowers(Long userId) {
+
+        try {
+            List<Follow> follwers = followRepository.findAllByFollowing_UserId(userId);
+
+            List<FollowDto> followDtoList = FollowMapper.toDtoList(follwers);
+
+            ResponseDto<List<FollowDto>> responseDto = new ResponseDto<>(
+                ResponseCode.SUCCESS,
+                ResponseMessage.SUCCESS,
+                followDtoList
+            );
+
+            return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+        } catch (Exception e) {
+            return ResponseDto.databaseError();
+        }
+    }
 }

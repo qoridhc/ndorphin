@@ -5,6 +5,7 @@ import com.web.ndolphin.dto.follow.request.FollowRequestDto;
 import com.web.ndolphin.service.impl.FollowServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,14 @@ public class FollowController {
     public ResponseEntity<ResponseDto> follow(@PathVariable Long userId, @RequestBody FollowRequestDto dto) {
 
         ResponseEntity<ResponseDto> response = followService.createFollow(userId, dto);
+
+        return response;
+    }
+
+    @GetMapping("/followers/{userId}")
+    public ResponseEntity<ResponseDto> getFollowers(@PathVariable Long userId) {
+
+        ResponseEntity<ResponseDto> response = followService.getFollowers(userId);
 
         return response;
     }

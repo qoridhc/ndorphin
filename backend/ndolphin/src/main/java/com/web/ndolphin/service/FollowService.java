@@ -8,4 +8,6 @@ public interface FollowService {
 
     ResponseEntity<ResponseDto> createFollow(Long userId, FollowRequestDto dto);
 
+    ResponseEntity<ResponseDto> getFollowers(Long userId);
+
 }
