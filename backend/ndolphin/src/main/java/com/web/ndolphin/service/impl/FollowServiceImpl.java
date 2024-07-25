@@ -7,6 +7,8 @@ import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.follow.FollowDto;
 import com.web.ndolphin.dto.follow.request.FollowRequestDto;
+import com.web.ndolphin.dto.follow.response.FollowerReponseDto;
+import com.web.ndolphin.dto.follow.response.FollowingResponseDto;
 import com.web.ndolphin.mapper.FollowMapper;
 import com.web.ndolphin.repository.FollowRepository;
 import com.web.ndolphin.repository.UserRepository;
@@ -59,17 +61,18 @@ public class FollowServiceImpl implements FollowService {
         }
     }
 
+    @Override
     public ResponseEntity<ResponseDto> getFollowers(Long userId) {
 
         try {
             List<Follow> followers = followRepository.findAllByFollowing_UserId(userId);
 
-            List<FollowDto> followDtoList = FollowMapper.toDtoList(followers);
+            List<FollowerReponseDto> followerDtoList = FollowMapper.toFollwerResponseDtoList(followers);
 
-            ResponseDto<List<FollowDto>> responseDto = new ResponseDto<>(
+            ResponseDto<List<FollowerReponseDto>> responseDto = new ResponseDto<>(
                 ResponseCode.SUCCESS,
                 ResponseMessage.SUCCESS,
-                followDtoList
+                followerDtoList
             );
 
             return ResponseEntity.status(HttpStatus.OK).body(responseDto);
@@ -84,9 +87,9 @@ public class FollowServiceImpl implements FollowService {
         try {
             List<Follow> followings = followRepository.findAllByFollower_UserId(userId);
 
-            List<FollowDto> followDtoList = FollowMapper.toDtoList(followings);
+            List<FollowingResponseDto> followDtoList = FollowMapper.toFollwingResponseDtoList(followings);
 
-            ResponseDto<List<FollowDto>> responseDto = new ResponseDto<>(
+            ResponseDto<List<FollowingResponseDto>> responseDto = new ResponseDto<>(
                 ResponseCode.SUCCESS,
                 ResponseMessage.SUCCESS,
                 followDtoList
