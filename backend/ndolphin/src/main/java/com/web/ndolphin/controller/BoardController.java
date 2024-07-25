@@ -22,12 +22,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/boards")
 public class BoardController {
-
+    
     private final BoardService boardService;
 
     // C - 게시물 생성
     @PostMapping("/{userId}")
-    public ResponseEntity createBoard(
+    public ResponseEntity<ResponseDto> createBoard(
         @PathVariable("userId") Long userId,
         @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
         @RequestPart(name = "request") BoardUpdateRequestDto boardUpdateRequestDto) throws IOException {

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -43,6 +44,21 @@ public class FileInfoServiceImpl implements FileInfoService {
             fileInfo.setUpdateAt(fileInfoResponseDtos.get(i).getUpdateAt());
 
             fileInfoRepository.save(fileInfo);
+        }
+    }
+
+    @Transactional
+    public void deleteAndDeleteFiles(Long entityId, EntityType entityType) throws IOException {
+
+        // 파일 정보 검색
+        List<FileInfo> fileInfos = fileInfoRepository.findByEntityIdAndEntityType(entityId, entityType);
+
+        // 파일 정보 삭제
+        for (FileInfo fileInfo : fileInfos) {
+            // AWS S3 bucket에서 삭제
+            s3Service.deleteSingleFile(fileInfo.getFileUrl());
+            // 데이터베이스에서 파일 정보 삭제
+            fileInfoRepository.delete(fileInfo);
         }
     }
 }

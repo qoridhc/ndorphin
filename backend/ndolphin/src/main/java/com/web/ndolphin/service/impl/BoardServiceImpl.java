@@ -34,7 +34,6 @@ public class BoardServiceImpl implements BoardService {
 
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
-    private final FileInfoRepository fileInfoRepository;
     private final FileInfoService fileInfoService;
 
     @Override
@@ -146,10 +145,15 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public ResponseEntity<ResponseDto> deleteBoard(Long boardId) {
+
         // 게시글 삭제
         boardRepository.deleteById(boardId);
-        // TODO: 파일 삭제
-
+        // 파일 삭제
+        try{
+            fileInfoService.deleteAndDeleteFiles(boardId, EntityType.POST);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return ResponseDto.success();
     }
 }
