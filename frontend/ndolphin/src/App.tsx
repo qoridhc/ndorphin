@@ -2,8 +2,9 @@
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./components/home/Header";
+import RelayBookList from "./pages/relay/RelayBookList";
+import RelayBookStart from "./pages/relay/RelayBookStart";
 import Home from "./pages/Home";
-import Relaybooklist from "./pages/relay/RelayBookList";
 
 function App() {
   return (
@@ -11,8 +12,9 @@ function App() {
       <BrowserRouter>
         <Header />
         <Routes>
+          <Route path="/relaybooklist" element={<RelayBookList />}></Route>
+          <Route path="/relaybookstart" element={<RelayBookStart />}></Route>
           <Route path="/" element={<Home />}></Route>
-          <Route path="/relaybooklist" element={<Relaybooklist />}></Route>
         </Routes>
       </BrowserRouter>
     </div>

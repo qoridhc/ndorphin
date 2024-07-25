@@ -1,5 +1,5 @@
 import exp from "constants";
-import './Paging.css'
+import '../../css/Paging.css'
 import { useState } from "react";
 import Pagination from "react-js-pagination";
 
