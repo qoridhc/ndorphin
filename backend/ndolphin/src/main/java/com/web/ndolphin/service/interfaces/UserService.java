@@ -15,6 +15,8 @@ public interface UserService {
 
     ResponseEntity<ResponseDto> removeFavorite(Long userId, Long boardId);
 
+    ResponseEntity<ResponseDto> getUser(Long userId);
+
     ResponseEntity<ResponseDto> deleteUser(Long userId);
 
     ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto);

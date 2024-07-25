@@ -15,6 +15,7 @@ import com.web.ndolphin.dto.user.UserDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
 import com.web.ndolphin.mapper.BoardConverter;
 import com.web.ndolphin.mapper.FavoriteMapper;
+import com.web.ndolphin.mapper.UserMapper;
 import com.web.ndolphin.provider.JwtProvider;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.FavoriteRepository;
