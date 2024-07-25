@@ -1,4 +1,4 @@
-package com.web.ndolphin.service;
+package com.web.ndolphin.service.interfaces;
 
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.follow.request.FollowRequestDto;

@@ -3,7 +3,7 @@ package com.web.ndolphin.controller;
 import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.board.request.BoardUpdateRequestDto;
-import com.web.ndolphin.service.BoardService;
+import com.web.ndolphin.service.interfaces.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

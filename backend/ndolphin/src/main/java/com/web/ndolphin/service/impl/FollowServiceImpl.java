@@ -12,7 +12,7 @@ import com.web.ndolphin.dto.follow.response.FollowingResponseDto;
 import com.web.ndolphin.mapper.FollowMapper;
 import com.web.ndolphin.repository.FollowRepository;
 import com.web.ndolphin.repository.UserRepository;
-import com.web.ndolphin.service.FollowService;
+import com.web.ndolphin.service.interfaces.FollowService;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +55,8 @@ public class FollowServiceImpl implements FollowService {
 
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         } catch (DataIntegrityViolationException e) {
-            return ResponseDto.databaseError("You are already following this user: : " + dto.getFollowingId());
+            return ResponseDto.databaseError(
+                "You are already following this user: : " + dto.getFollowingId());
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage());
         }
@@ -67,7 +68,8 @@ public class FollowServiceImpl implements FollowService {
         try {
             List<Follow> followers = followRepository.findAllByFollowing_UserId(userId);
 
-            List<FollowerReponseDto> followerDtoList = FollowMapper.toFollwerResponseDtoList(followers);
+            List<FollowerReponseDto> followerDtoList = FollowMapper.toFollwerResponseDtoList(
+                followers);
 
             ResponseDto<List<FollowerReponseDto>> responseDto = new ResponseDto<>(
                 ResponseCode.SUCCESS,
@@ -87,7 +89,8 @@ public class FollowServiceImpl implements FollowService {
         try {
             List<Follow> followings = followRepository.findAllByFollower_UserId(userId);
 
-            List<FollowingResponseDto> followDtoList = FollowMapper.toFollwingResponseDtoList(followings);
+            List<FollowingResponseDto> followDtoList = FollowMapper.toFollwingResponseDtoList(
+                followings);
 
             ResponseDto<List<FollowingResponseDto>> responseDto = new ResponseDto<>(
                 ResponseCode.SUCCESS,
@@ -119,6 +122,5 @@ public class FollowServiceImpl implements FollowService {
             return ResponseDto.databaseError(e.getMessage());
         }
     }
-
 
 }
