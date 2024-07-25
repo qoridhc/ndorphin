@@ -53,13 +53,9 @@ public class FollowServiceImpl implements FollowService {
 
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         } catch (DataIntegrityViolationException e) {
-
-            // 유니크 제약 조건 위반 처리
-            ResponseDto responseBody = new ResponseDto("UC", "Duplilcate Follow");
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
+            return ResponseDto.databaseError("You are already following this user: : " + dto.getFollowingId());
         } catch (Exception e) {
-            return ResponseDto.databaseError();
+            return ResponseDto.databaseError(e.getMessage());
         }
     }
 
