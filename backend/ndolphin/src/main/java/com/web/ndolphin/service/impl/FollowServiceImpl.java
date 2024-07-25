@@ -11,9 +11,10 @@ import com.web.ndolphin.mapper.FollowMapper;
 import com.web.ndolphin.repository.FollowRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.FollowService;
-import com.web.ndolphin.util.LogUtil;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,13 +35,15 @@ public class FollowServiceImpl implements FollowService {
             User followBy = userRepository.findByUserId(userId);
             User followTo = userRepository.findByUserId(dto.getFollowingId());
 
-            Follow followEntity = FollowMapper.toEntity(followBy, followTo);
+            if (followBy == null || followTo == null) {
+                return ResponseDto.databaseError();
+            }
 
-            LogUtil.info("followEntity", followEntity);
+            Follow followEntity = FollowMapper.toEntity(followBy, followTo);
 
             followRepository.save(followEntity);
 
-            FollowDto followDto = FollowMapper.toDto(follow);
+            FollowDto followDto = FollowMapper.toDto(followEntity);
 
             ResponseDto<FollowDto> responseBody = new ResponseDto<>(
                 ResponseCode.SUCCESS,
@@ -49,6 +52,12 @@ public class FollowServiceImpl implements FollowService {
             );
 
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+        } catch (DataIntegrityViolationException e) {
+
+            // 유니크 제약 조건 위반 처리
+            ResponseDto responseBody = new ResponseDto("UC", "Duplilcate Follow");
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         } catch (Exception e) {
             return ResponseDto.databaseError();
         }
@@ -90,6 +99,25 @@ public class FollowServiceImpl implements FollowService {
             return ResponseEntity.status(HttpStatus.OK).body(responseDto);
         } catch (Exception e) {
             return ResponseDto.databaseError();
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDto> deleteFollow(Long boardId) {
+
+        try {
+            boolean existFollowId = followRepository.existsById(boardId);
+
+            // 엔티티가 존재하지 않으면 예외를 던짐
+            if (!existFollowId) {
+                throw new EntityNotFoundException("The followId does not exist: " + boardId);
+            }
+
+            followRepository.deleteById(boardId);
+
+            return ResponseDto.success();
+        } catch (EntityNotFoundException e) {
+            return ResponseDto.databaseError(e.getMessage());
         }
     }
 
