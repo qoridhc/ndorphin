@@ -20,6 +20,4 @@ public interface UserService {
     ResponseEntity<ResponseDto> deleteUser(Long userId);
 
     ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto);
-
-    ResponseEntity<ResponseDto> getUser(Long userId);
 }
