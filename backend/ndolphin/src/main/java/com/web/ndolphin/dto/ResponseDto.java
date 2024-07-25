@@ -55,8 +55,12 @@ public class ResponseDto<T> {
     }
 
     public static ResponseEntity<ResponseDto> validationFail() {
-        ResponseDto responseBody = new ResponseDto(ResponseCode.VALIDATION_FAIL,
-            ResponseMessage.VALIDATION_FAIL);
+
+        ResponseDto responseBody = new ResponseDto(
+            ResponseCode.VALIDATION_FAIL,
+            ResponseMessage.VALIDATION_FAIL
+        );
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
     }
 }
