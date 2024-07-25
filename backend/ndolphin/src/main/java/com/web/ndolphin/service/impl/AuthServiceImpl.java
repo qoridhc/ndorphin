@@ -1,6 +1,6 @@
 package com.web.ndolphin.service.impl;
 
-import com.web.ndolphin.service.AuthService;
+import com.web.ndolphin.service.interfaces.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

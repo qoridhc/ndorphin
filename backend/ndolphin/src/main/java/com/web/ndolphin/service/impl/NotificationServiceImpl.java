@@ -10,7 +10,7 @@ import com.web.ndolphin.dto.notification.response.NotificationResponseDto;
 import com.web.ndolphin.mapper.NotificationMapper;
 import com.web.ndolphin.repository.NotificationRepository;
 import com.web.ndolphin.repository.UserRepository;
-import com.web.ndolphin.service.NotificationService;
+import com.web.ndolphin.service.interfaces.NotificationService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,7 +50,8 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             List<Notification> notifications = notificationRepository.findAllByUserId(userId);
 
-            List<NotificationResponseDto> responseList = NotificationMapper.toDtoList(notifications);
+            List<NotificationResponseDto> responseList = NotificationMapper.toDtoList(
+                notifications);
 
             ResponseDto<List<NotificationResponseDto>> responseDto = new ResponseDto<>(
                 ResponseCode.SUCCESS,

@@ -1,6 +1,7 @@
 package com.web.ndolphin.common;
 
 public interface ResponseMessage {
+
     // 200
     String SUCCESS = "Success";
 
