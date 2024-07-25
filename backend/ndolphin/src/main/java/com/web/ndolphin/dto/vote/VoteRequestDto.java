@@ -11,4 +11,6 @@ import lombok.ToString;
 @RequiredArgsConstructor
 public class VoteRequestDto {
 
+    Long userId;
+    Long voteContentId;
 }
