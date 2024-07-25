@@ -8,17 +8,22 @@ import com.web.ndolphin.service.impl.TokenServiceImpl;
 import com.web.ndolphin.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final UserServiceImpl userService;
-    private final UserRepository userRepository;
     private final AuthServiceImpl authService;
     private final TokenServiceImpl tokenService;
+    private final UserRepository userRepository;
 
     @GetMapping("/oauth-response/{userId}")
     public ResponseEntity<ResponseDto> oauthResponse(@PathVariable("userId") Long userId) {

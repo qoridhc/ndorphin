@@ -1,4 +1,4 @@
-package com.web.ndolphin.service;
+package com.web.ndolphin.service.interfaces;
 
 import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.dto.ResponseDto;

@@ -8,22 +8,18 @@ import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.board.BoardDto;
 import com.web.ndolphin.dto.board.request.BoardUpdateRequestDto;
-import com.web.ndolphin.dto.board.response.BoardUpdateResponseDto;
 import com.web.ndolphin.mapper.BoardConverter;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.UserRepository;
-import com.web.ndolphin.service.BoardService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
+import com.web.ndolphin.service.interfaces.BoardService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static com.web.ndolphin.domain.BoardType.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +29,8 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
 
     @Override
-    public ResponseEntity<ResponseDto> createBoard(Long userId, BoardUpdateRequestDto boardUpdateRequestDto) {
+    public ResponseEntity<ResponseDto> createBoard(Long userId,
+        BoardUpdateRequestDto boardUpdateRequestDto) {
         // User 객체를 조회
         Optional<User> optionalUser = userRepository.findById(userId);
 
@@ -68,7 +65,8 @@ public class BoardServiceImpl implements BoardService {
 
         boardRepository.save(board);
 
-        ResponseDto<BoardDto> responseBody= new ResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardUpdateRequestDto);
+        ResponseDto<BoardDto> responseBody = new ResponseDto(ResponseCode.SUCCESS,
+            ResponseMessage.SUCCESS, boardUpdateRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
@@ -82,7 +80,8 @@ public class BoardServiceImpl implements BoardService {
             boardDtos.add(boardDto);
         }
 
-        ResponseDto<BoardDto> responseBody= new ResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardDtos);
+        ResponseDto<BoardDto> responseBody = new ResponseDto(ResponseCode.SUCCESS,
+            ResponseMessage.SUCCESS, boardDtos);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
@@ -96,11 +95,13 @@ public class BoardServiceImpl implements BoardService {
 
         Board board = optionalBoard.get();
         BoardDto boardDto = BoardConverter.convertToDto(board);
-        ResponseDto<BoardDto> responseBody= new ResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardDto);
+        ResponseDto<BoardDto> responseBody = new ResponseDto(ResponseCode.SUCCESS,
+            ResponseMessage.SUCCESS, boardDto);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    public ResponseEntity<ResponseDto> updateBoard(Long boardId, BoardUpdateRequestDto boardUpdateRequestDto) {
+    public ResponseEntity<ResponseDto> updateBoard(Long boardId,
+        BoardUpdateRequestDto boardUpdateRequestDto) {
         // 기존 엔티티를 가져오기
         Optional<Board> optionalBoard = boardRepository.findById(boardId);
 
@@ -116,7 +117,8 @@ public class BoardServiceImpl implements BoardService {
         boardRepository.save(existingBoard);
 
         BoardDto boardDto = BoardConverter.convertToDto(existingBoard);
-        ResponseDto<BoardDto> responseBody= new ResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardDto);
+        ResponseDto<BoardDto> responseBody = new ResponseDto(ResponseCode.SUCCESS,
+            ResponseMessage.SUCCESS, boardDto);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
