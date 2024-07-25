@@ -1,7 +1,6 @@
 package com.web.ndolphin.dto.comment;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,5 +15,5 @@ public class CommentResponseDto {
     private Long loveCnt = 0L;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<String> filePaths;
+    private String fileUrl;
 }

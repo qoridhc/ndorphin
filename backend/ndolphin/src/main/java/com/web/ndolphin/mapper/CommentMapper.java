@@ -8,25 +8,27 @@ import com.web.ndolphin.dto.comment.CommentResponseDto;
 
 public class CommentMapper {
 
-    public static CommentResponseDto toDto(Comment comment) {
+    public static CommentResponseDto toDto(Comment comment, String nickName, Long loveCnt,
+        String url) {
 
         CommentResponseDto commentResponseDto = new CommentResponseDto();
 
-//        commentResponseDto.setId(comment.getId());
-//        commentResponseDto.setBoardId(comment);
-//        commentResponseDto.setUser(user);
-//        commentResponseDto.setContent(dto.getContent());
+        commentResponseDto.setNickName(nickName);
+        commentResponseDto.setContent(comment.getContent());
+        commentResponseDto.setLoveCnt(loveCnt);
+        commentResponseDto.setFileUrl(url);
+        commentResponseDto.setCreatedAt(comment.getCreatedAt());
+        commentResponseDto.setUpdatedAt(comment.getUpdatedAt());
 
         return commentResponseDto;
     }
 
-    public static Comment toEntity(CommentRequestDto dto, Board board, User user) {
+    public static Comment toEntity(CommentRequestDto dto, User user, Board board) {
 
         Comment comment = new Comment();
 
-        comment.setId(dto.getId());
-        comment.setBoard(board);
         comment.setUser(user);
+        comment.setBoard(board);
         comment.setContent(dto.getContent());
 
         return comment;

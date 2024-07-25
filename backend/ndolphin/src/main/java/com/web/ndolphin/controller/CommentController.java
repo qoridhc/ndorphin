@@ -2,6 +2,7 @@ package com.web.ndolphin.controller;
 
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.comment.CommentRequestDto;
+import com.web.ndolphin.service.interfaces.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,30 +20,32 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping("/{commentId}")
-    public ResponseEntity<ResponseDto> addFavorite(
+    @PostMapping
+    public ResponseEntity<ResponseDto> addComment(
+        @PathVariable Long boardId,
         @RequestBody CommentRequestDto commentRequestDto) {
 
-        ResponseEntity<ResponseDto> response = commentService.addComment(commentRequestDto);
+        ResponseEntity<ResponseDto> response = commentService.addComment(boardId,
+            commentRequestDto);
 
         return response;
     }
 
     @PutMapping("/{commentId}")
-    public ResponseEntity<ResponseDto> addFavorite(
+    public ResponseEntity<ResponseDto> updateComment(
+        @PathVariable Long commentId,
         @RequestBody CommentRequestDto commentRequestDto) {
 
-        ResponseEntity<ResponseDto> response = commentService.updateComment(commentRequestDto);
+        ResponseEntity<ResponseDto> response = commentService.updateComment(commentId,
+            commentRequestDto);
 
         return response;
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<ResponseDto> removeFavorite(
-        @PathVariable Long userId,
-        @PathVariable Long commentId) {
+    public ResponseEntity<ResponseDto> deleteComment(@PathVariable Long commentId) {
 
-        ResponseEntity<ResponseDto> response = commentService.removeComment(userId, commentId);
+        ResponseEntity<ResponseDto> response = commentService.deleteComment(commentId);
 
         return response;
     }
