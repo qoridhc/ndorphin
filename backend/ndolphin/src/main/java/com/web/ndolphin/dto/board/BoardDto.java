@@ -1,13 +1,14 @@
 package com.web.ndolphin.dto.board;
 
 import com.web.ndolphin.dto.comment.CommentDto;
-import lombok.Data;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class BoardDto {
+
     private Long id;
     private Long userId;
     private String subject;
@@ -17,6 +18,6 @@ public class BoardDto {
     private String boardType;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
+    private List<MultipartFile> files;
     private List<CommentDto> comments;
 }

@@ -1,11 +1,12 @@
 package com.web.ndolphin.dto.board.response;
 
 import com.web.ndolphin.dto.comment.CommentDto;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 public class BoardUpdateResponseDto {
+
     private Long id;
     private Long userId;
     private String subject;
@@ -15,5 +16,6 @@ public class BoardUpdateResponseDto {
     private String boardType;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<MultipartFile> files;
     private List<CommentDto> comments;
 }

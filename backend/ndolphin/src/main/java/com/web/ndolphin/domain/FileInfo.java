@@ -1,17 +1,23 @@
 package com.web.ndolphin.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
 public class FileInfo {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "file_info_id")
     private Long id;
 
@@ -23,9 +29,10 @@ public class FileInfo {
 
     private String fileType;
 
+    @Enumerated(EnumType.STRING)
     private EntityType entityType;
 
-    private int entityId;
+    private Long entityId;
 
     private LocalDateTime createdAt;
 
