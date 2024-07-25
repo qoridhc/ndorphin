@@ -16,6 +16,7 @@ public class ResponseDto<T> {
     private String code;
     private String message;
     private T data;
+    private String errorDetail;
 
     // 기본 생성자
     public ResponseDto(String code, String message) {
@@ -30,34 +31,26 @@ public class ResponseDto<T> {
         this.data = data;
     }
 
+    public ResponseDto(String code, String message, String errorDetail) {
+        this.code = code;
+        this.message = message;
+        this.errorDetail = errorDetail;
+    }
+
     public static ResponseEntity<ResponseDto> success() {
-
         ResponseDto responseBody = new ResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
-
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
     public static ResponseEntity<ResponseDto> databaseError() {
-
-        try {
-            ResponseDto responseBody = new ResponseDto(
-                ResponseCode.DATABASE_ERROR,
-                ResponseMessage.DATABASE_ERROR
-            );
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        ResponseDto responseBody = new ResponseDto(ResponseCode.DATABASE_ERROR,
+            ResponseMessage.DATABASE_ERROR);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
     }
 
-    public static ResponseEntity<ResponseDto> databaseError(String errorMessage) {
-
-        ResponseDto responseBody = new ResponseDto(
-            ResponseCode.DATABASE_ERROR,
-            errorMessage
-        );
-
+    public static ResponseEntity<ResponseDto> databaseError(String errorInfo) {
+        ResponseDto responseBody = new ResponseDto(ResponseCode.DATABASE_ERROR,
+            ResponseMessage.DATABASE_ERROR, errorInfo);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
     }
 
