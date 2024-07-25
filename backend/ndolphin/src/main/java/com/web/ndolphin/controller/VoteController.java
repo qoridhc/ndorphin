@@ -5,7 +5,6 @@ import com.web.ndolphin.dto.vote.VoteRequestDto;
 import com.web.ndolphin.service.interfaces.VoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,11 +18,9 @@ public class VoteController {
     private final VoteService voteService;
 
     @PostMapping
-    public ResponseEntity<ResponseDto> addVote(
-        @PathVariable Long boardId,
-        @RequestBody VoteRequestDto voteRequestDto) {
+    public ResponseEntity<ResponseDto> addVote(@RequestBody VoteRequestDto voteRequestDto) {
 
-        ResponseEntity<ResponseDto> response = VoteService.addVote(boardId, voteRequestDto);
+        ResponseEntity<ResponseDto> response = voteService.addVote(voteRequestDto);
 
         return response;
     }

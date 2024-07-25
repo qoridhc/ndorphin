@@ -1,9 +1,10 @@
 package com.web.ndolphin.mapper;
 
-import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.domain.Vote;
+import com.web.ndolphin.domain.VoteContent;
 import com.web.ndolphin.dto.board.BoardDto;
+import com.web.ndolphin.dto.vote.VoteRequestDto;
 import com.web.ndolphin.dto.vote.VoteResponseDto;
 import java.util.List;
 
@@ -14,9 +15,14 @@ public class VoteMapper {
         return null;
     }
 
-    public static Vote toEntity(User user, Board board) {
+    public static Vote toEntity(VoteRequestDto voteRequestDto, User user, VoteContent voteContent) {
 
-        return null;
+        Vote vote = new Vote();
+
+        vote.setUser(user);
+        vote.setVoteContent(voteContent);
+
+        return vote;
     }
 
 }
