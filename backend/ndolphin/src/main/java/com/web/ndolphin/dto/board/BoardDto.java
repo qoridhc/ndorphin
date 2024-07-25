@@ -1,13 +1,13 @@
 package com.web.ndolphin.dto.board;
 
-import com.web.ndolphin.dto.comment.CommentDto;
-import lombok.Data;
-
+import com.web.ndolphin.dto.comment.CommentResponseDto;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Data;
 
 @Data
 public class BoardDto {
+
     private Long id;
     private Long userId;
     private String subject;
@@ -18,5 +18,5 @@ public class BoardDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private List<CommentDto> comments;
+    private List<CommentResponseDto> comments;
 }
