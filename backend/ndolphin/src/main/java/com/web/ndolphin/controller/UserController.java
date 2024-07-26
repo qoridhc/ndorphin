@@ -2,6 +2,7 @@ package com.web.ndolphin.controller;
 
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
+import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
 import com.web.ndolphin.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,34 @@ public class UserController {
 
     private final UserService userService;
 
+    // ====== User CRUD ======
+    @GetMapping("/{userId}")
+    public ResponseEntity<ResponseDto> getUser(@PathVariable("userId") Long userId) {
+
+        ResponseEntity<ResponseDto> response = userService.getUser(userId);
+
+        return response;
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<ResponseDto> deleteUser(@PathVariable("userId") Long userId) {
+
+        ResponseEntity<ResponseDto> response = userService.deleteUser(userId);
+
+        return response;
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<ResponseDto> updateUser(
+        @PathVariable("userId") Long userId,
+        @RequestBody UserUpdateRequestDto updateDto) {
+
+        ResponseEntity<ResponseDto> response = userService.updateUser(userId, updateDto);
+
+        return response;
+    }
+
+    // ====== Favorite CRUD ======
     @GetMapping("/{userId}/favorites")
     public ResponseEntity<ResponseDto> getFavoritesByUserId(@PathVariable Long userId) {
 
@@ -49,28 +78,14 @@ public class UserController {
         return response;
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<ResponseDto> getUser(@PathVariable("userId") Long userId) {
+    // ====== nPoint CRUD ======
+    @PostMapping("/{userId}/npoint")
+    public ResponseEntity<ResponseDto> addNPoint(
+        @PathVariable Long userId,
+        @RequestBody NPointRequestDto nPointRequestDto
+    ) {
 
-        ResponseEntity<ResponseDto> response = userService.getUser(userId);
-
-        return response;
-    }
-
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<ResponseDto> deleteUser(@PathVariable("userId") Long userId) {
-
-        ResponseEntity<ResponseDto> response = userService.deleteUser(userId);
-
-        return response;
-    }
-
-    @PutMapping("/{userId}")
-    public ResponseEntity<ResponseDto> updateUser(
-        @PathVariable("userId") Long userId,
-        @RequestBody UserUpdateRequestDto updateDto) {
-
-        ResponseEntity<ResponseDto> response = userService.updateUser(userId, updateDto);
+        ResponseEntity<ResponseDto> response = userService.addNPoint(userId, nPointRequestDto);
 
         return response;
     }
