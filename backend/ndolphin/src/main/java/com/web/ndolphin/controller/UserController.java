@@ -2,6 +2,7 @@ package com.web.ndolphin.controller;
 
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
+import com.web.ndolphin.dto.npoint.request.NPointDeleteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
 import com.web.ndolphin.service.interfaces.UserService;
@@ -86,6 +87,17 @@ public class UserController {
     ) {
 
         ResponseEntity<ResponseDto> response = userService.addNPoint(userId, nPointRequestDto);
+
+        return response;
+    }
+
+    @DeleteMapping("/{userId}/npoint")
+    public ResponseEntity<ResponseDto> deleteNPoint(
+        @PathVariable Long userId,
+        @RequestBody NPointDeleteRequestDto nPointDeleteRequestDto
+    ) {
+
+        ResponseEntity<ResponseDto> response = userService.deleteNPoint(userId, nPointDeleteRequestDto);
 
         return response;
     }

@@ -13,6 +13,7 @@ import com.web.ndolphin.dto.auth.response.OAuth2ResponseDto;
 import com.web.ndolphin.dto.board.BoardDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.favorite.FavoriteResponseDto;
+import com.web.ndolphin.dto.npoint.request.NPointDeleteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
 import com.web.ndolphin.dto.npoint.resopnse.NPointResponseDto;
 import com.web.ndolphin.dto.user.UserDto;
@@ -240,6 +241,35 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         } catch (IllegalArgumentException e) {
             return ResponseDto.databaseError(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDto> deleteNPoint(Long userId, NPointDeleteRequestDto dto) {
+
+        try {
+
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+
+            NPoint nPoint = nPointRepository.findById(dto.getPointId())
+                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+
+            user.setNPoint(user.getNPoint() - nPoint.getPointRule().getPoint());
+
+            userRepository.save(user);
+
+            nPointRepository.deleteById(dto.getPointId());
+
+            NPointResponseDto nPointResponseDto = NPointMapper.toNPointResponseDto(user.getUserId(), user.getNPoint());
+
+            ResponseDto<NPointResponseDto> responseBody = new ResponseDto<>(
+                ResponseCode.SUCCESS,
+                ResponseMessage.SUCCESS,
+                nPointResponseDto
+            );
+
+            return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage());
         }
