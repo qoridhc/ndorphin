@@ -2,7 +2,7 @@ package com.web.ndolphin.controller;
 
 import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.dto.ResponseDto;
-import com.web.ndolphin.dto.board.request.BoardUpdateRequestDto;
+import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.service.BoardService;
 import java.io.IOException;
 import java.util.List;
@@ -27,12 +27,12 @@ public class BoardController {
 
     // C - 게시물 생성
     @PostMapping("/{userId}")
-    public ResponseEntity createBoard(
+    public ResponseEntity<ResponseDto> createBoard(
         @PathVariable("userId") Long userId,
-        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
-        @RequestPart(name = "request") BoardUpdateRequestDto boardUpdateRequestDto) throws IOException {
+        @RequestPart(name = "request") BoardRequestDto boardRequestDto,
+        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles) throws IOException {
 
-        ResponseEntity<ResponseDto> response = boardService.createBoard(userId, boardUpdateRequestDto, multipartFiles);
+        ResponseEntity<ResponseDto> response = boardService.createBoard(userId, boardRequestDto, multipartFiles);
         return response;
     }
 

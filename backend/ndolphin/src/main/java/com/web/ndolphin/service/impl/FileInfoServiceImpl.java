@@ -23,9 +23,11 @@ public class FileInfoServiceImpl implements FileInfoService {
     public void uploadAndSaveFiles(Long entityId, EntityType entityType, List<MultipartFile> multipartFiles)
         throws IOException {
 
+        // upload to AWS S3
         List<FileInfoResponseDto> fileInfoResponseDtos = s3Service.uploadMultipleFiles(entityId, entityType,
             multipartFiles);
 
+        // save to MySQL
         for (int i = 0; i < fileInfoResponseDtos.size(); i++) {
             System.out.println("fileInfoResponseDtos.get(i) " + fileInfoResponseDtos);
 
@@ -45,4 +47,6 @@ public class FileInfoServiceImpl implements FileInfoService {
             fileInfoRepository.save(fileInfo);
         }
     }
+
+    
 }

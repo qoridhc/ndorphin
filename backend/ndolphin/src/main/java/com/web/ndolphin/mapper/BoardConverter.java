@@ -2,12 +2,9 @@ package com.web.ndolphin.mapper;
 
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.BoardType;
-import com.web.ndolphin.domain.Comment;
-import com.web.ndolphin.dto.board.BoardDto;
 import com.web.ndolphin.domain.User;
-import com.web.ndolphin.dto.board.request.BoardUpdateRequestDto;
-
-import java.util.List;
+import com.web.ndolphin.dto.board.BoardDto;
+import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import java.util.stream.Collectors;
 
 public class BoardConverter {
@@ -26,13 +23,13 @@ public class BoardConverter {
         dto.setCreatedAt(board.getCreatedAt());
         dto.setUpdatedAt(board.getUpdatedAt());
         dto.setComments(board.getComments().stream()
-                .map(CommentConverter::convertToDto)
-                .collect(Collectors.toList()));
+            .map(CommentConverter::convertToDto)
+            .collect(Collectors.toList()));
         return dto;
     }
 
     // Dto를 엔티티로 변환하는 메서드
-    public static Board convertToEntity(BoardUpdateRequestDto dto, User user) {
+    public static Board convertToEntity(User user, BoardRequestDto dto) {
         Board board = new Board();
 
 //        board.setId(dto.getId());

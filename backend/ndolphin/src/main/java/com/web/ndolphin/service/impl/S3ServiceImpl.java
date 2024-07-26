@@ -31,6 +31,8 @@ public class S3ServiceImpl implements S3Service {
 
     private final AmazonS3 amazonS3;
 
+    // amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+
     public FileInfoResponseDto uploadSingleFile(Long entityId, EntityType entityType,
         MultipartFile multipartFile)
         throws IOException {

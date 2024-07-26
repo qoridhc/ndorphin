@@ -8,7 +8,7 @@ import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.board.BoardDto;
-import com.web.ndolphin.dto.board.request.BoardUpdateRequestDto;
+import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.mapper.BoardConverter;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.FileInfoRepository;
@@ -38,7 +38,7 @@ public class BoardServiceImpl implements BoardService {
     private final FileInfoService fileInfoService;
 
     @Override
-    public ResponseEntity<ResponseDto> createBoard(Long userId, BoardUpdateRequestDto boardUpdateRequestDto,
+    public ResponseEntity<ResponseDto> createBoard(Long userId, BoardRequestDto boardRequestDto,
         List<MultipartFile> multipartFiles) {
 
         // User 객체를 조회
@@ -70,7 +70,7 @@ public class BoardServiceImpl implements BoardService {
         }*/
 
         // 게시글 처리
-        Board board = BoardConverter.convertToEntity(boardUpdateRequestDto, user); // TODO: 파라미터 순서
+        Board board = BoardConverter.convertToEntity(user, boardRequestDto);
         board = boardRepository.save(board);
 
         // 파일 업로드 처리
@@ -115,7 +115,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public ResponseEntity<ResponseDto> updateBoard(Long boardId, BoardUpdateRequestDto boardUpdateRequestDto) {
+    public ResponseEntity<ResponseDto> updateBoard(Long boardId, BoardRequestDto boardRequestDto) {
         // 기존 엔티티를 가져오기
         Optional<Board> optionalBoard = boardRepository.findById(boardId);
         if (optionalBoard.isEmpty()) {
@@ -123,8 +123,8 @@ public class BoardServiceImpl implements BoardService {
         }
         Board existingBoard = optionalBoard.get();
 
-        existingBoard.setSubject(boardUpdateRequestDto.getSubject());
-        existingBoard.setContent(boardUpdateRequestDto.getContent());
+        existingBoard.setSubject(boardRequestDto.getSubject());
+        existingBoard.setContent(boardRequestDto.getContent());
         existingBoard.setUpdatedAt(LocalDateTime.now());
 
         boardRepository.save(existingBoard);
@@ -148,7 +148,9 @@ public class BoardServiceImpl implements BoardService {
     public ResponseEntity<ResponseDto> deleteBoard(Long boardId) {
         // 게시글 삭제
         boardRepository.deleteById(boardId);
-        // TODO: 파일 삭제
+        // TODO: 파일 삭제 -> fileInfoSerivce이용....
+        // entityType = POST
+        // entityId = boardId
 
         return ResponseDto.success();
     }
