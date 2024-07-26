@@ -9,5 +9,9 @@ public interface FileInfoService {
 
     void uploadAndSaveFiles(Long entityId, EntityType entityType, List<MultipartFile> multipartFiles)
         throws IOException;
+
+    // TODO: void findBy entityId, entityType...
     void deleteAndDeleteFiles(Long entityId, EntityType entityType) throws IOException;
+
+    void deleteAndDeleteFiles(Long entityId, EntityType entityType, List<String> fileNamesToDelete) throws IOException;
 }

@@ -9,7 +9,8 @@ import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.board.BoardDto;
 import com.web.ndolphin.dto.board.request.BoardRequestDto;
-import com.web.ndolphin.mapper.BoardConverter;
+import com.web.ndolphin.dto.board.response.ByeBoardDto;
+import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.BoardService;
@@ -47,7 +48,7 @@ public class BoardServiceImpl implements BoardService {
         User user = optionalUser.get();
 
         // 게시판 타입에 따른 분기 처리
-        /*        switch (BoardType.valueOf(boardUpdateRequestDto.getBoardType())) {
+        switch (BoardType.valueOf(String.valueOf(boardRequestDto.getBoardType()))) {
             case VOTE_BOARD:
                 // 투표 게시판 - 이미지 첨부 가능
                 break;
@@ -65,11 +66,19 @@ public class BoardServiceImpl implements BoardService {
                 break;
             default:
                 return ResponseDto.validationFail();
-        }*/
+        }
 
         // 게시글 처리
-        Board board = BoardConverter.convertToEntity(user, boardRequestDto);
-        board = boardRepository.save(board);
+        Board board = new Board();
+        board.setUser(user);
+        board.setSubject(boardRequestDto.getSubject());
+        board.setContent(boardRequestDto.getContent());
+        // TODO: summary -> AI 처리
+        board.setHit(0);
+        board.setBoardType(boardRequestDto.getBoardType());
+        board.setCreatedAt(LocalDateTime.now());
+        board.setUpdatedAt(LocalDateTime.now());
+        boardRepository.save(board);
 
         // 파일 업로드 처리
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
@@ -79,67 +88,121 @@ public class BoardServiceImpl implements BoardService {
                 throw new RuntimeException(e);
             }
         }
-
         return ResponseDto.success();
     }
 
     @Override
     public ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType) {
-        List<Board> boards = boardRepository.findByBoardType(boardType);
-        List<BoardDto> boardDtos = new ArrayList<>();
 
-        for (Board board : boards) {
-            BoardDto boardDto = BoardConverter.convertToDto(board);
-            boardDtos.add(boardDto);
+        ResponseDto<?> responseBody = null;
+
+        switch (boardType) {
+            case VOTE_BOARD:
+                // 투표 게시판 - 이미지 첨부 가능
+                break;
+            case OPINION_BOARD:
+                // 의견 게시판 - 댓글 가능
+                break;
+            case RELAY_BOARD:
+                // 릴레이 게시판 - 댓글 및 이미지 첨부 가능
+                break;
+            case OK_BOARD:
+                // 괜찮아 게시판 - 댓글 가능
+                break;
+            case BYE_BOARD:
+                // 작별 게시판
+                List<Board> boards = boardRepository.findByBoardType(boardType);
+                List<ByeBoardDto> byeBoardDtos = new ArrayList<>();
+                for (Board board : boards) {
+                    ByeBoardDto byeBoardDto = BoardMapper.ToByeBoardDto(board);
+                    byeBoardDtos.add(byeBoardDto);
+                }
+
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
+                    byeBoardDtos);
+                break;
+            default:
+                return ResponseDto.validationFail();
         }
-
-        ResponseDto<?> responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
-            boardDtos);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
     @Override
     public ResponseEntity<ResponseDto> getBoardById(Long boardId) {
-        Optional<Board> optionalBoard = boardRepository.findById(boardId);
 
+        ResponseDto<BoardDto> responseBody = null;
+        
+        Optional<Board> optionalBoard = boardRepository.findById(boardId);
         if (optionalBoard.isEmpty()) {
             return ResponseDto.databaseError();
         }
-
         Board board = optionalBoard.get();
-        BoardDto boardDto = BoardConverter.convertToDto(board);
-        ResponseDto<BoardDto> responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardDto);
+
+        board.setHit(board.getHit() + 1);
+        boardRepository.save(board);
+
+        switch (board.getBoardType()) {
+            case VOTE_BOARD:
+                // 투표 게시판 - 이미지 첨부 가능
+                break;
+            case OPINION_BOARD:
+                // 의견 게시판 - 댓글 가능
+                break;
+            case RELAY_BOARD:
+                // 릴레이 게시판 - 댓글 및 이미지 첨부 가능
+                break;
+            case OK_BOARD:
+                // 괜찮아 게시판 - 댓글 가능
+                break;
+            case BYE_BOARD:
+                // 작별 게시판
+                ByeBoardDto byeBoardDto = BoardMapper.ToByeBoardDto(board);
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
+                    byeBoardDto);
+                break;
+            default:
+                return ResponseDto.validationFail();
+        }
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
     @Override
-    public ResponseEntity<ResponseDto> updateBoard(Long boardId, BoardRequestDto boardRequestDto) {
-        // 기존 엔티티를 가져오기
+    public ResponseEntity<ResponseDto> updateBoard(Long boardId, BoardRequestDto boardRequestDto,
+        List<String> fileNamesToDelete,
+        List<MultipartFile> multipartFiles) {
+
+        // 게시글 처리
         Optional<Board> optionalBoard = boardRepository.findById(boardId);
         if (optionalBoard.isEmpty()) {
             return ResponseDto.databaseError();
         }
         Board existingBoard = optionalBoard.get();
-
         existingBoard.setSubject(boardRequestDto.getSubject());
         existingBoard.setContent(boardRequestDto.getContent());
+        existingBoard.setHit(existingBoard.getHit() + 1);
         existingBoard.setUpdatedAt(LocalDateTime.now());
-
         boardRepository.save(existingBoard);
 
-        // 파일 업로드 처리
-//        List<MultipartFile> files = boardUpdateRequestDto.getFiles();
-//        if (files != null && !files.isEmpty()) {
-//            try {
-//                fileInfoService.uploadAndSaveFiles(files, existingBoard);
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
+        // 2. 파일들 삭제
+        // TODO:
+        if (fileNamesToDelete != null && !fileNamesToDelete.isEmpty()) {
+            try {
+                fileInfoService.deleteAndDeleteFiles(boardId, EntityType.POST, fileNamesToDelete);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
-        BoardDto boardDto = BoardConverter.convertToDto(existingBoard);
-        ResponseDto<BoardDto> responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardDto);
-        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+        // 3. 새 파일들 추가
+        // TODO:
+        if (multipartFiles != null && !multipartFiles.isEmpty()) {
+            try {
+                fileInfoService.uploadAndSaveFiles(boardId, EntityType.POST, multipartFiles);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return ResponseDto.success();
     }
 
     @Override
@@ -154,7 +217,6 @@ public class BoardServiceImpl implements BoardService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return ResponseDto.success();
     }
 }

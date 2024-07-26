@@ -7,6 +7,7 @@ import com.web.ndolphin.repository.FileInfoRepository;
 import com.web.ndolphin.service.FileInfoService;
 import com.web.ndolphin.service.S3Service;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class FileInfoServiceImpl implements FileInfoService {
     private final S3Service s3Service;
     private final FileInfoRepository fileInfoRepository;
 
-    @Override
+    @Transactional
     public void uploadAndSaveFiles(Long entityId, EntityType entityType, List<MultipartFile> multipartFiles)
         throws IOException {
 
@@ -54,6 +55,25 @@ public class FileInfoServiceImpl implements FileInfoService {
 
         // 파일 정보 검색
         List<FileInfo> fileInfos = fileInfoRepository.findByEntityIdAndEntityType(entityId, entityType);
+
+        // 파일 정보 삭제
+        for (FileInfo fileInfo : fileInfos) {
+            // AWS S3 bucket에서 삭제
+            s3Service.deleteSingleFile(fileInfo.getFileUrl());
+            // 데이터베이스에서 파일 정보 삭제
+            fileInfoRepository.delete(fileInfo);
+        }
+    }
+
+    @Transactional
+    public void deleteAndDeleteFiles(Long entityId, EntityType entityType, List<String> fileNamesToDelete)
+        throws IOException {
+
+        List<FileInfo> fileInfos = new ArrayList<>();
+        // 파일 정보 검색
+        for (String s : fileNamesToDelete) {
+            fileInfos.add(fileInfoRepository.findByFileName(s));
+        }
 
         // 파일 정보 삭제
         for (FileInfo fileInfo : fileInfos) {

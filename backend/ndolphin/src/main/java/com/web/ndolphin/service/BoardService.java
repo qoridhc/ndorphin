@@ -16,7 +16,9 @@ public interface BoardService {
 
     ResponseEntity<ResponseDto> getBoardById(Long boardId);
 
-    ResponseEntity<ResponseDto> updateBoard(Long boardId, BoardRequestDto boardRequestDto);
+    ResponseEntity<ResponseDto> updateBoard(Long boardId, BoardRequestDto boardRequestDto,
+        List<String> fileNamesToDelete,
+        List<MultipartFile> multipartFiles);
 
     ResponseEntity<ResponseDto> deleteBoard(Long boardId);
 }
