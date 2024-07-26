@@ -10,6 +10,7 @@ import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.board.BoardDto;
 import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
+import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.UserRepository;
@@ -131,7 +132,7 @@ public class BoardServiceImpl implements BoardService {
     public ResponseEntity<ResponseDto> getBoardById(Long boardId) {
 
         ResponseDto<BoardDto> responseBody = null;
-        
+
         Optional<Board> optionalBoard = boardRepository.findById(boardId);
         if (optionalBoard.isEmpty()) {
             return ResponseDto.databaseError();
@@ -153,6 +154,8 @@ public class BoardServiceImpl implements BoardService {
                 break;
             case OK_BOARD:
                 // 괜찮아 게시판 - 댓글 가능
+                List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(boardId);
+                
                 break;
             case BYE_BOARD:
                 // 작별 게시판

@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FileInfoRepository extends JpaRepository<FileInfo, Long> {
 
+    // entityId로 FileInfo 찾기
+    List<FileInfo> findByEntityId(Long entityId);
+
     // entityId와 entityType으로 FileInfo 찾기
     List<FileInfo> findByEntityIdAndEntityType(Long entityId, EntityType entityType);
 

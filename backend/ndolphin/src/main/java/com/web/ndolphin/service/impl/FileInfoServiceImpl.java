@@ -3,6 +3,7 @@ package com.web.ndolphin.service.impl;
 import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.FileInfo;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
+import com.web.ndolphin.mapper.FileInfoMapper;
 import com.web.ndolphin.repository.FileInfoRepository;
 import com.web.ndolphin.service.FileInfoService;
 import com.web.ndolphin.service.S3Service;
@@ -20,6 +21,18 @@ public class FileInfoServiceImpl implements FileInfoService {
 
     private final S3Service s3Service;
     private final FileInfoRepository fileInfoRepository;
+
+    @Transactional(readOnly = true)
+    public List<FileInfoResponseDto> getFileInfos(Long entityId) {
+
+        List<FileInfo> fileInfos = fileInfoRepository.findByEntityId(entityId);
+        List<FileInfoResponseDto> fileInfoResponseDtos = new ArrayList<>();
+        for (FileInfo fileInfo : fileInfos) {
+            fileInfoResponseDtos.add(FileInfoMapper.toDto(fileInfo));
+        }
+
+        return fileInfoResponseDtos;
+    }
 
     @Transactional
     public void uploadAndSaveFiles(Long entityId, EntityType entityType, List<MultipartFile> multipartFiles)
