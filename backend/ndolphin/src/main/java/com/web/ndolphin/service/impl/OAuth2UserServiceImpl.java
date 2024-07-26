@@ -31,7 +31,8 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
 
         OAuth2User oAuth2User = super.loadUser(request);
-        String oauthClientName = request.getClientRegistration().getClientName(); // 어떤 OAuth 요청인지 naver, kakao...
+        String oauthClientName = request.getClientRegistration()
+            .getClientName(); // 어떤 OAuth 요청인지 naver, kakao...
 
         LogUtil.info("request", request);
 
@@ -47,7 +48,8 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
             if (oauthClientName.equals("kakao")) {
                 responseMap = oAuth2User.getAttributes();
 
-                Map<String, Object> kakaoAccount = (Map<String, Object>) responseMap.get("kakao_account");
+                Map<String, Object> kakaoAccount = (Map<String, Object>) responseMap.get(
+                    "kakao_account");
 
                 user.setEmail((String) kakaoAccount.get("email"));
                 user.setType(LoginType.KAKAO);

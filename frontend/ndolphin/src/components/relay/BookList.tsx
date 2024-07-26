@@ -1,8 +1,8 @@
-import Filter from "../common/Filter"
-import Book from "./Book"
-import Paging from "../../components/common/Paging";
+import Filter from "../common/Filter";
+import Book from "./Book";
+import Paging from "../common/Paging";
 
-function InProgress() {
+function BookList() {
   return (
     <div>
       <Filter />
@@ -29,4 +29,4 @@ function InProgress() {
   );
 }
 
-export default InProgress;
+export default BookList;

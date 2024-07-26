@@ -1,6 +1,5 @@
 import { useState } from "react";
-import InProgress from "../../components/relay/InProgress";
-import Done from "../../components/relay/Done";
+import BookList from "../../components/relay/BookList";
 import SearchBar from "../../components/relay/SearchBar";
 
 function Relaybooklist() {
@@ -37,7 +36,7 @@ function Relaybooklist() {
       <div className="px-28 text-right">
         <button className="px-7 py-1 shadow-md rounded-xl font-bold bg-amber-300 text-white">이야기 시작하기</button>
       </div>
-      {tabs === 0 ? <InProgress /> : <Done />}
+      <BookList />
     </div>
   );
 }
