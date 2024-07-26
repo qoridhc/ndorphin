@@ -11,7 +11,6 @@ import com.web.ndolphin.dto.board.BoardDto;
 import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.mapper.BoardConverter;
 import com.web.ndolphin.repository.BoardRepository;
-import com.web.ndolphin.repository.FileInfoRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.BoardService;
 import com.web.ndolphin.service.FileInfoService;
@@ -34,7 +33,6 @@ public class BoardServiceImpl implements BoardService {
 
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
-    private final FileInfoRepository fileInfoRepository;
     private final FileInfoService fileInfoService;
 
     @Override
@@ -146,11 +144,16 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public ResponseEntity<ResponseDto> deleteBoard(Long boardId) {
+
         // 게시글 삭제
         boardRepository.deleteById(boardId);
-        // TODO: 파일 삭제 -> fileInfoSerivce이용....
-        // entityType = POST
-        // entityId = boardId
+
+        // 파일 삭제
+        try {
+            fileInfoService.deleteAndDeleteFiles(boardId, EntityType.POST);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return ResponseDto.success();
     }

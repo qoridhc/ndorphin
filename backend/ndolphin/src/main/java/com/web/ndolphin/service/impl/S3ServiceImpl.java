@@ -3,11 +3,8 @@ package com.web.ndolphin.service.impl;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.*;
 import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.service.S3Service;
@@ -20,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @Service
 @RequiredArgsConstructor
@@ -137,4 +135,44 @@ public class S3ServiceImpl implements S3Service {
         return fileInfoResponseDtos;
     }
 
+    public void deleteSingleFile(String fileUrl) {
+
+        try {
+            // 버킷 URL 구성
+            String bucketUrl = "https://" + bucket + ".s3.amazonaws.com/";
+            log.info("bucketUrl: {}", bucketUrl);
+
+            // URL에서 파일의 키를 추출
+            String fileKey = fileUrl.replace(bucketUrl, "");
+
+            // 파일 키를 로그로 출력하여 확인
+            log.info("DeletingDeleting file with key: {}", fileKey);
+
+            // S3에서 파일 삭제
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileKey));
+            log.info("File deleted successfully: {}", fileUrl);
+        } catch (AmazonServiceException e) {
+            log.error("Failed to delete file: {}", fileUrl, e);
+            throw e;
+        } catch (SdkClientException e) {
+            log.error("Failed to delete file: {}", fileUrl, e);
+            throw e;
+        }
+    }
+
+    public void deleteMultipleFiles(List<String> fileUrls){
+
+        for (String fileUrl : fileUrls) {
+            try {
+                deleteSingleFile(fileUrl);
+                log.info("deleteSingleFile(fileUrl): {}", "성공!!!");
+            } catch (AmazonServiceException e) {
+                log.error("Failed to delete file: {}", fileUrl, e);
+                throw e;
+            } catch (SdkClientException e) {
+                log.error("Failed to delete file: {}", fileUrl, e);
+                throw e;
+            }
+        }
+    }
 }

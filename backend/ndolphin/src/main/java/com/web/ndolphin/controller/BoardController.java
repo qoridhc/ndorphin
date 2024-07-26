@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/boards")
 public class BoardController {
-
+    
     private final BoardService boardService;
 
     // C - 게시물 생성
