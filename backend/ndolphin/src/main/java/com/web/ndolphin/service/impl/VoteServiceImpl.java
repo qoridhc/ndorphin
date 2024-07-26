@@ -10,6 +10,7 @@ import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.repository.VoteContentRepository;
 import com.web.ndolphin.repository.VoteRepository;
 import com.web.ndolphin.service.interfaces.VoteService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,26 @@ public class VoteServiceImpl implements VoteService {
             voteRepository.save(vote);
 
             return ResponseDto.success(); // 성공 시 응답
+        } catch (Exception e) {
+            return ResponseDto.databaseError(e.getMessage()); // 예외 발생 시 데이터베이스 에러 응답
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<ResponseDto> updateVote(Long voteContentId,
+        VoteRequestDto voteRequestDto) {
+
+        try {
+            VoteContent voteContent = voteContentRepository.findById(voteContentId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid voteContentId ID"));
+            Vote vote = voteRepository.findByUser_UserIdAndVoteContent_Id(
+                    voteRequestDto.getUserId(), voteContentId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Vote info"));
+
+            vote.setVoteContent(voteContent);
+
+            return ResponseDto.success();
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage()); // 예외 발생 시 데이터베이스 에러 응답
         }
