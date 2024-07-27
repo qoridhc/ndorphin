@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -6,11 +6,23 @@ interface LoginModalProps {
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center" onClick={onClose}>
-      <div className="w-96 bg-white rounded-lg shadow-lg">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={onClose}>
+      <div className="w-96 bg-white rounded-lg shadow-lg" onClick={e => e.stopPropagation()}>
         <div className="p-4 border-b flex justify-between items-center">
           <div className="w-8"></div>
           <h2 className="text-lg font-semibold flex-grow text-center">로그인</h2>
@@ -30,17 +42,17 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           <div className="space-y-4">
             <p>
               <button>
-                <img src="../../../assets/login/web_light_sq_SU@2x.png" alt="구글로 로그인" />
+                <img src="../../../assets/user/googleloginbtn.png" alt="구글로 로그인" />
               </button>
             </p>
             <p>
               <button>
-                <img src="../../../assets/login/btnG_official.png" alt="네이버로 로그인" />
+                <img src="../../../assets/user/naverloginbtn.png" alt="네이버로 로그인" />
               </button>
             </p>
             <p>
               <button>
-                <img src="../../../assets/login/kakao_login_medium_narrow.png" alt="카카오로 로그인" />
+                <img src="../../../assets/user/kakaologinbtn.png" alt="카카오로 로그인" />
               </button>
             </p>
           </div>
