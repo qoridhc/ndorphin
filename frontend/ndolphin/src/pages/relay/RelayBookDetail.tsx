@@ -76,7 +76,8 @@ const MyAlbum: React.FC = () => {
           </Page>
           <Page number="4">
             <hr></hr>
-            <p contentEditable="true">릴레이 북 내용</p>
+            <button></button>
+            <p>버튼을 눌러 페이지 추가</p>
           </Page>
         </HTMLFlipBook>
         <div className="flex justify-center">

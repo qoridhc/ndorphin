@@ -1,7 +1,7 @@
 function BookImage() {
   return (
     <>
-      <div className="w-4/5 h-full mt-4 border border-zinc-950">
+      <div className="w-[45%] mx-[55%] mt-4 border border-zinc-950">
         <p className="m-3 text-xl font-bold">표지</p>
         <hr className="mx-3 my-2 border-zinc-900" />
         <div className="grid grid-rows-[60%_40%]">
@@ -9,7 +9,7 @@ function BookImage() {
             <img src="/assets/relayStartSample.png" alt="#" className="w-3/4 h-4/5 border rounded-md" />
           </div>
 
-          <div className="h-full grid grid-cols-[49%_2%_49%]">
+          <div className="py-11 h-full grid grid-cols-[49%_2%_49%]">
             <div className="flex flex-col items-center justify-center">
               <button className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
                 <img src="/assets/aiImageIcon.png" className="w-5" alt="#"></img>
