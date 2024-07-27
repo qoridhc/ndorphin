@@ -1,12 +1,71 @@
 import React from "react";
 
-const MainRelayBook = () => {
+interface Props {
+  mainIndex: number;
+}
+
+const MainRelayBook = (props: Props) => {
+  const bookList = [
+    {
+      id: 1,
+      title: "코딱지 대장 버티 1",
+      imgUrl: "https://image.yes24.com/Goods/72214794/L",
+    },
+    {
+      id: 2,
+      title: "코딱지 대장 버티 2",
+      imgUrl: "https://image.yes24.com/goods/33350436/L",
+    },
+    {
+      id: 3,
+      title: "코딱지 대장 버티 3",
+      imgUrl: "https://image.yes24.com/goods/36916976/L",
+    },
+    {
+      id: 4,
+      title: "코딱지 대장 버티 4",
+      imgUrl: "https://image.yes24.com/goods/96352123/L",
+    },
+    {
+      id: 5,
+      title: "수상한 편의점",
+      imgUrl: "https://image.yes24.com/goods/36917053/L",
+    },
+    {
+      id: 6,
+      title: "코딱지 대장 버티 1",
+      imgUrl: "https://image.yes24.com/goods/45370178/L",
+    },
+    {
+      id: 7,
+      title: "수상한 편의점",
+      imgUrl: "https://image.yes24.com/goods/45370179/L",
+    },
+    {
+      id: 8,
+      title: "코딱지 대장 버티 1",
+      imgUrl: "https://image.yes24.com/goods/101477745/L",
+    },
+    {
+      id: 9,
+      title: "수상한 편의점",
+      imgUrl: "https://image.yes24.com/goods/101477743/L",
+    },
+    {
+      id: 10,
+      title: "코딱지 대장 버티 1",
+      imgUrl: "https://image.yes24.com/goods/34151542/L",
+    },
+  ];
+
+  console.log(props.mainIndex);
+
   return (
-    <div className="grid grid-cols-2">
-      <img className="w-[90%] rounded-xl shadow-[5px_5px_5px_5px_rgba(150,150,150,0.3)]" src="assets/sampleBook1.png" alt="" />
+    <div className="grid grid-cols-2 ease-in">
+      <img className="w-[90%] rounded-xl shadow-[5px_5px_5px_5px_rgba(150,150,150,0.3)]" src={bookList[props.mainIndex].imgUrl} alt="" />
       <div className="grid grid-rows-[auto_auto_auto_auto_auto]">
         <div className="flex items-end">
-          <p className="text-6xl font-bold">1</p>
+          <p className="text-6xl font-bold">{bookList[props.mainIndex].id}</p>
           <p className="text-xl font-semibold">코딱지 대장 버티 1</p>
         </div>
         <div className="flex items-center">
