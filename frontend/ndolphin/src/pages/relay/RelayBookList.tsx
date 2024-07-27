@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import BookList from "../../components/relay/BookList";
 import SearchBar from "../../components/relay/SearchBar";
 
 function Relaybooklist() {
+  const navigate = useNavigate()
   const [tabs, setTabs] = useState<number>(0);
   const underline = "underline underline-offset-8 decoration-4 decoration-yellow-300";
+
 
   return (
     <div>
@@ -34,7 +37,10 @@ function Relaybooklist() {
         </button>
       </div>
       <div className="px-28 text-right">
-        <button className="px-7 py-1 shadow-md rounded-xl font-bold bg-amber-300 text-white">이야기 시작하기</button>
+        <button
+          className="px-7 py-1 shadow-md rounded-xl font-bold bg-amber-300 text-white"
+          onClick={() => {navigate("/relaybookstart");}}
+        >이야기 시작하기</button>
       </div>
       <BookList />
     </div>
