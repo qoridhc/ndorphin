@@ -1,7 +1,7 @@
 function BookImage() {
   return (
     <>
-      <div className="w-[45%] mx-[55%] mt-4 border border-zinc-950">
+      <div className="w-[53%] mx-[47.5%] mt-4 border border-zinc-950">
         <p className="m-3 text-xl font-bold">표지</p>
         <hr className="mx-3 my-2 border-zinc-900" />
         <div className="grid grid-rows-[60%_40%]">
