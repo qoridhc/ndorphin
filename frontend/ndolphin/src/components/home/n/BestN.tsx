@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import RankingFilter from "../RankingFilter";
 import RankingDate from "../RankingDate";
+import BestProfile from "./BestProfile";
 
 const BestN = () => {
   const [rankingType, setRankingType] = useState("일간");
@@ -14,6 +15,9 @@ const BestN = () => {
       <div className="py-4">
         <RankingDate type={rankingType} />
       </div>
+      
+      <hr />
+      <BestProfile />
     </div>
   );
 };
