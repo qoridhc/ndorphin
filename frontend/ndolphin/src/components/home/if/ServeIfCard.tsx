@@ -53,7 +53,7 @@ const ServeIfCard = (props: Props) => {
         </div>
         <IoIosArrowForward className="text-2xl" />
       </div>
-      <p className="font-medium text-justify line-clamp-3 hover:underline hover:underline-offset-2">{cardList[props.serveIndex].content}</p>
+      <p className="font-medium text-justify line-clamp-3">{cardList[props.serveIndex].content}</p>
       <div className="flex justify-end items-end">
         {cardList[props.serveIndex].isVote ? (
           <p className="text-sm text-[#F07676] font-semibold text-right">투표수 {cardList[props.serveIndex].joinCount}회</p>
