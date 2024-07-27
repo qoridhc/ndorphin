@@ -13,7 +13,7 @@ const BestRelay = () => {
   const visibleBooksCount = 3;
 
   const handlePrevClick = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === 0 ? bookListLength - visibleBooksCount : prevIndex - 1));
+    setCurrentIndex((prevIndex) => (prevIndex === 0 ? bookListLength - 1 : prevIndex - 1));
     setMainIndex((prevIndex) => (prevIndex === 0 ? bookListLength - 1 : prevIndex - 1));
   };
 
