@@ -30,7 +30,7 @@ const Header = () => {
 
   return (
     <>
-      <div className="w-full h-20 px-28 flex justify-between items-center shadow-[0_2px_5px_0_rgba(0,0,0,0.2)]">
+      <div className="w-full h-20 px-44 flex justify-between items-center shadow-[0_2px_5px_0_rgba(0,0,0,0.2)]">
         <div className="w-1/2 flex justify-between">
           <img className="w-48 h-12" src="/assets/logo.PNG" alt="" />
           <div className="w-2/3 flex justify-around items-center text-[#6C6C6C] font-semibold">
