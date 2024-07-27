@@ -6,7 +6,7 @@ function BookImage() {
         <hr className="mx-3 my-2 border-zinc-900" />
         <div className="grid grid-rows-[60%_40%]">
           <div className="flex justify-center items-center">
-            <img src="/assets/wolf.png" alt="#" className="w-3/4 h-4/5 border rounded-md" />
+            <img src="/assets/relayStartSample.png" alt="#" className="w-3/4 h-4/5 border rounded-md" />
           </div>
 
           <div className="h-full grid grid-cols-[49%_2%_49%]">

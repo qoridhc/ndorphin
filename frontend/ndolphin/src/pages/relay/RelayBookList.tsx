@@ -3,7 +3,7 @@ import BookList from "../../components/relay/BookList";
 import SearchBar from "../../components/relay/SearchBar";
 
 function Relaybooklist() {
-  const [tabs, setTabs] = useState(0);
+  const [tabs, setTabs] = useState<number>(0);
   const underline = "underline underline-offset-8 decoration-4 decoration-yellow-300";
 
   return (
@@ -17,7 +17,7 @@ function Relaybooklist() {
           <SearchBar />
         </div>
       </div>
-      <div className="px-28 flex justify-center">
+      <div className="px-48 flex justify-center">
         <button
           className={`px-10 py-5 font-semibold ${tabs === 0 ? underline : "text-[#6C6C6C]"}`}
           onClick={() => {
