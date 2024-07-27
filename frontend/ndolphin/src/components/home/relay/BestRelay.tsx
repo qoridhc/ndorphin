@@ -10,7 +10,6 @@ const BestRelay = () => {
   const [currentIndex, setCurrentIndex] = useState(1);
   const [mainIndex, setMainIndex] = useState(0);
   const bookListLength = 10;
-  const visibleBooksCount = 3;
 
   const handlePrevClick = () => {
     setCurrentIndex((prevIndex) => (prevIndex === 0 ? bookListLength - 1 : prevIndex - 1));
