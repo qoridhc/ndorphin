@@ -3,7 +3,7 @@ import "./App.css";
 import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
 import Header from "./components/home/Header";
 import RelayBookList from "./pages/relay/RelayBookList";
-import RelayBookStart from "./components/relay/BookStartContainer";
+import RelayBookStart from "./pages/relay/RelayBookStart";
 import RelayBookDetail from "./pages/relay/RelayBookDetail";
 import Home from "./pages/Home";
 
