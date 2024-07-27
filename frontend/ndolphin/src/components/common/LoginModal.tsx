@@ -30,17 +30,17 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           <div className="space-y-4">
             <p>
               <button>
-                <img src="../../../assets/login/web_light_sq_SU@2x.png" alt="구글로 로그인" />
+                <img src="../../../assets/user/web_light_sq_SU@2x.png" alt="구글로 로그인" />
               </button>
             </p>
             <p>
               <button>
-                <img src="../../../assets/login/btnG_official.png" alt="네이버로 로그인" />
+                <img src="../../../assets/user/btnG_official.png" alt="네이버로 로그인" />
               </button>
             </p>
             <p>
               <button>
-                <img src="../../../assets/login/kakao_login_medium_narrow.png" alt="카카오로 로그인" />
+                <img src="../../../assets/user/kakao_login_medium_narrow.png" alt="카카오로 로그인" />
               </button>
             </p>
           </div>
