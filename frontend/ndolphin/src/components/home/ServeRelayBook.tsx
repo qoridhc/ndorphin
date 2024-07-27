@@ -63,7 +63,7 @@ const ServeRelayBook = (props: Props) => {
   return (
     <div className="grid grid-cols-3 gap-x-2 ">
       {visibleBooks.map((book) => (
-        <div className="">
+        <div key={book.id}>
           <img className="rounded-xl" src={book.imgUrl} alt="" />
           <div className="pt-1 flex font-semibold">
             <p className="pr-1">{book.id}</p>
