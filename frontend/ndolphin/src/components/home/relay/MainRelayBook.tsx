@@ -1,6 +1,6 @@
 import React from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import "../../css/home/MainRelayBook.css";
+import "../../../css/home/MainRelayBook.css";
 
 interface Props {
   mainIndex: number;
@@ -71,7 +71,7 @@ const MainRelayBook = (props: Props) => {
               <p className="text-xl font-semibold">{bookList[props.mainIndex].title}</p>
             </div>
             <div className="flex items-center">
-              <img className="w-10 h-10 rounded-[50%]" src="assets/profile1.png" alt="" />
+              <img className="w-10 h-10 rounded-[50%]" src="assets/profile/profile5.png" alt="" />
               <p className="pl-4 font-semibold">상상의 나무꾼</p>
             </div>
             <p className="text-justify">편의점에 근무하는 사람들이 모두 수상한 점을 하나씩 가지고 있는 내용이다. 뭐가 그렇게 수상한걸까..</p>
