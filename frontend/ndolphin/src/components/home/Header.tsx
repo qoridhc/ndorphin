@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import LoginModal from "../common/LoginModal";
+import UserInfoEditModal from "../common/UserInfoEditModal";
 
 const Header = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isUserInfoEditModalOpen, setIsUserInfoEditModalOpen] = useState(false);
 
   const menuList = [
     { id: 1, text: "릴레이북" },
@@ -12,8 +14,15 @@ const Header = () => {
     { id: 5, text: "공지사항" },
   ];
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const openLoginModal = () => setIsLoginModalOpen(true);
+  const closeLoginModal = () => setIsLoginModalOpen(false);
+
+  const handleLoginSuccess = () => {
+    closeLoginModal();
+    setIsUserInfoEditModalOpen(true);
+  };
+
+  const closeUserInfoEditModal = () => setIsUserInfoEditModalOpen(false);
 
   return (
     <>
@@ -28,12 +37,11 @@ const Header = () => {
             ))}
           </div>
         </div>
-        <button onClick={openModal} className="px-2 py-1 border-2 border-[#FFDE2F] text-[#6C6C6C] font-semibold rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
-          로그인
-        </button>
+        <button className="px-2 py-1 border-2 border-[#FFDE2F] text-[#6C6C6C] font-semibold rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200" onClick={openLoginModal}>로그인</button>
       </div>
 
-      <LoginModal isOpen={isModalOpen} onClose={closeModal} />
+      <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} onLoginSuccess={handleLoginSuccess} />
+      <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onClose={closeUserInfoEditModal} />
     </>
   );
 };
