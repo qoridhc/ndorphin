@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import RankingFilter from "./RankingFilter";
-import RankingDate from "./RankingDate";
+import RankingFilter from "../RankingFilter";
+import RankingDate from "../RankingDate";
 
 const BestIf = () => {
   const [rankingType, setRankingType] = useState("일간");

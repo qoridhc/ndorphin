@@ -1,7 +1,7 @@
 import React from "react";
-import BestRelay from "../components/home/BestRelay";
-import BestIf from "../components/home/BestIf";
-import BestN from "../components/home/BestN";
+import BestRelay from "../components/home/relay/BestRelay";
+import BestIf from "../components/home/if/BestIf";
+import BestN from "../components/home/n/BestN";
 
 const Home = () => {
   return (

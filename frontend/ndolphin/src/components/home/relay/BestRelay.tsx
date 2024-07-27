@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { IoIosArrowDropleft, IoIosArrowDropright } from "react-icons/io";
-import RankingFilter from "./RankingFilter";
-import RankingDate from "./RankingDate";
+import RankingFilter from "../RankingFilter";
+import RankingDate from "../RankingDate";
 import MainRelayBook from "./MainRelayBook";
 import ServeRelayBook from "./ServeRelayBook";
 
