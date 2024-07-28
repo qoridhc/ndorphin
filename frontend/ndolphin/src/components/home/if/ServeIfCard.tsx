@@ -45,7 +45,7 @@ const ServeIfCard = (props: Props) => {
   ];
 
   return (
-    <div className="w-[40%] h-52 p-5 border-solid border-[1px] border-[#565656] rounded-[10px] grid grid-rows-[35%_auto_20%] opacity-70">
+    <div className="w-[40%] h-52 p-5 border-solid border-[1px] border-[#565656] rounded-[10px] shadow-[2px_3px_5px_rgb(0,0,0,0.2)] grid grid-rows-[35%_auto_20%] opacity-70">
       <div className="flex justify-between items-start">
         <div className="flex items-center">
           <img className="w-9 h-9 mr-3 rounded-[50%]" src={`/assets/profile/profile${cardList[props.serveIndex].id}.png`} alt="" />
