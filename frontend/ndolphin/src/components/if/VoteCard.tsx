@@ -34,7 +34,7 @@ const VoteCard = ({ vote }: Props) => {
       <div className={`grid ${voteGrids[vote.category.length - 2]} gap-1`}>
         {vote.category.map((item) => (
           <div className={`border-solid border-2 ${voteColors[item.id - 1]} rounded-[10px] flex justify-center items-center`}>
-            <p className={`truncate`} key={item.id}>
+            <p className="px-3 text-sm text-[#565656] text-center line-clamp-1" key={item.id}>
               {item.content}
             </p>
           </div>
