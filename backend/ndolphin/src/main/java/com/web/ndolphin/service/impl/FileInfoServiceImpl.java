@@ -72,7 +72,7 @@ public class FileInfoServiceImpl implements FileInfoService {
         // 파일 정보 삭제
         for (FileInfo fileInfo : fileInfos) {
             // AWS S3 bucket에서 삭제
-            s3Service.deleteSingleFile(fileInfo.getFileUrl());
+            s3Service.deleteSingleFile(fileInfo.getFileName(), fileInfo.getFileType());
             // 데이터베이스에서 파일 정보 삭제
             fileInfoRepository.delete(fileInfo);
         }
@@ -91,7 +91,7 @@ public class FileInfoServiceImpl implements FileInfoService {
         // 파일 정보 삭제
         for (FileInfo fileInfo : fileInfos) {
             // AWS S3 bucket에서 삭제
-            s3Service.deleteSingleFile(fileInfo.getFileUrl());
+            s3Service.deleteSingleFile(fileInfo.getFileName(), fileInfo.getFileType());
             // 데이터베이스에서 파일 정보 삭제
             fileInfoRepository.delete(fileInfo);
         }

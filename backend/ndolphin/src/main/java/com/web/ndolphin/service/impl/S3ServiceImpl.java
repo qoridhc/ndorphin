@@ -46,19 +46,19 @@ public class S3ServiceImpl implements S3Service {
         switch (ext) {
             case "jpeg":
                 contentType = "image/jpeg";
-                folder = "img/";
+                folder = "image/";
                 break;
             case "jpg":
                 contentType = "image/jpg";
-                folder = "img/";
+                folder = "image/";
                 break;
             case "png":
                 contentType = "image/png";
-                folder = "img/";
+                folder = "image/";
                 break;
             case "txt":
                 contentType = "text/plain";
-                folder = "txt/";
+                folder = "text/";
                 break;
             case "csv":
                 contentType = "text/csv";
@@ -135,44 +135,51 @@ public class S3ServiceImpl implements S3Service {
         return fileInfoResponseDtos;
     }
 
-    public void deleteSingleFile(String fileUrl) {
+    public void deleteSingleFile(String fileName, String fileType) {
 
         try {
-            // 버킷 URL 구성
-            String bucketUrl = "https://" + bucket + ".s3.amazonaws.com/";
-            log.info("bucketUrl: {}", bucketUrl);
+            // fileType에서 '/' 앞부분 추출
+            String prefix = fileType.contains("/") ? fileType.substring(0, fileType.indexOf("/")) : fileType;
+            // prefix와 fileName을 이어붙여 key 생성
+            String key = prefix + "/" + fileName;
 
-            // URL에서 파일의 키를 추출
-            String fileKey = fileUrl.replace(bucketUrl, "");
-
+            // key를 로그로 출력
+            log.info("Generated key: {}", key);
             // 파일 키를 로그로 출력하여 확인
-            log.info("DeletingDeleting file with key: {}", fileKey);
+            log.info("Deleting file with key: {}", key);
 
             // S3에서 파일 삭제
-            amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileKey));
-            log.info("File deleted successfully: {}", fileUrl);
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+            log.info("File deleted successfully: {}", key);
         } catch (AmazonServiceException e) {
-            log.error("Failed to delete file: {}", fileUrl, e);
+            e.printStackTrace();
             throw e;
         } catch (SdkClientException e) {
-            log.error("Failed to delete file: {}", fileUrl, e);
+            e.printStackTrace();
             throw e;
         }
     }
 
-    public void deleteMultipleFiles(List<String> fileUrls){
-
-        for (String fileUrl : fileUrls) {
-            try {
-                deleteSingleFile(fileUrl);
-                log.info("deleteSingleFile(fileUrl): {}", "성공!!!");
-            } catch (AmazonServiceException e) {
-                log.error("Failed to delete file: {}", fileUrl, e);
-                throw e;
-            } catch (SdkClientException e) {
-                log.error("Failed to delete file: {}", fileUrl, e);
-                throw e;
-            }
-        }
-    }
+//    public void deleteMultipleFiles(List<String> fileNames, List<String> fileTypes, List<String> fileUrls, String bucket) {
+//        if (fileNames.size() != fileTypes.size() || fileNames.size() != fileUrls.size()) {
+//            throw new IllegalArgumentException("fileNames, fileTypes, and fileUrls must have the same size");
+//        }
+//
+//        for (int i = 0; i < fileNames.size(); i++) {
+//            String fileName = fileNames.get(i);
+//            String fileType = fileTypes.get(i);
+//            String fileUrl = fileUrls.get(i);
+//
+//            try {
+//                deleteSingleFile(fileName, fileType);
+//                log.info("deleteSingleFile(fileName: {}, fileType: {}, fileUrl: {}): 성공!!!", fileName, fileType, fileUrl);
+//            } catch (AmazonServiceException e) {
+//                log.error("Failed to delete file: {}", fileUrl, e);
+//                throw e;
+//            } catch (SdkClientException e) {
+//                log.error("Failed to delete file: {}", fileUrl, e);
+//                throw e;
+//            }
+//        }
+//    }
 }

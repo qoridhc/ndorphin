@@ -14,6 +14,6 @@ public interface S3Service {
     List<FileInfoResponseDto> uploadMultipleFiles(Long entityId, EntityType entityType,
         List<MultipartFile> multipartFiles) throws IOException;
 
-    void deleteSingleFile(String fileUrl) throws IOException;
-    void deleteMultipleFiles(List<String> fileUrls) throws IOException;
+    void deleteSingleFile(String fileName, String fileType) throws IOException;
+//    void deleteMultipleFiles(List<String> fileName, List<String> fileType) throws IOException;
 }
