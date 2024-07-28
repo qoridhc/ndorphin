@@ -5,7 +5,7 @@ function Filter() {
   const textStyle = "font-bold";
 
   return (
-    <div className="flex px-28">
+    <div className="flex px-44">
       <div className="w-56 flex justify-between">
         <div>
           <input type="checkbox" id="my" className="mr-2"></input>

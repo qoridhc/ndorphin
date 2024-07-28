@@ -48,7 +48,7 @@ const Header = () => {
             <button
               className="hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
               onClick={() => {
-                navigate("/if");
+                navigate("/iflist");
               }}>
               만약에
             </button>
