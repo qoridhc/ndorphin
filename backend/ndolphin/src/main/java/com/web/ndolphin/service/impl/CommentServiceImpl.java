@@ -32,7 +32,7 @@ public class CommentServiceImpl implements CommentService {
 
         try {
             Long userId = tokenService.getUserIdFromToken(request);
-            
+
             User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
             Board board = boardRepository.findById(boardId)
@@ -56,24 +56,10 @@ public class CommentServiceImpl implements CommentService {
         try {
             Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid comment ID"));
-//            String nickName = userRepository.findNickNameById(comment.getUser().getUserId());
-//            Long loveCnt = commentRepository.countLovesByCommentId(commentId);
-//            String url = FileInfoRepository.getFile();
-//            String url = null;
 
             comment.setContent(commentRequestDto.getContent());
 
-//            CommentResponseDto commentResponseDto = CommentMapper.toDto(comment, nickName,
-//                loveCnt, url);
-//
-//            ResponseDto<CommentResponseDto> responseBody = new ResponseDto<>(
-//                ResponseCode.SUCCESS,
-//                ResponseMessage.SUCCESS,
-//                commentResponseDto
-//            );
-
             return ResponseDto.success();
-//            return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage()); // 예외 발생 시 데이터베이스 에러 응답
         }
