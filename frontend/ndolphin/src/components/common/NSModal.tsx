@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface NSModalProps {
   isOpen: boolean;
@@ -12,6 +12,12 @@ interface NSItem {
 
 const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose }) => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedItems([]);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -52,18 +58,9 @@ const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose }) => {
           <p className="mb-4 font-semibold">거의 다 됐어요!</p>
           <div className="grid grid-cols-4 gap-2">
             {nsItems.map((item) => (
-              <div
-                key={item.id}
-                className="relative w-full h-24 bg-blue-100 rounded-lg flex items-center justify-center cursor-pointer"
-                onClick={() => handleItemClick(item.id)}
-              >
+              <div className="relative w-full h-24 bg-blue-100 rounded-lg flex items-center justify-center cursor-pointer" key={item.id} onClick={() => handleItemClick(item.id)}>
                 {selectedItems.includes(item.id) && (
-                  <img
-                    src="/assets/user/stamp.png"
-                    alt="도장"
-                    className="absolute inset-0 w-full h-full"
-                    style={{ objectFit: 'contain' }}
-                  />
+                  <img className="absolute inset-0 w-full h-full" src="/assets/user/stamp.png" alt="도장" style={{ objectFit: 'contain' }} />
                 )}
                 <span className="relative z-10">{item.text}</span>
               </div>
