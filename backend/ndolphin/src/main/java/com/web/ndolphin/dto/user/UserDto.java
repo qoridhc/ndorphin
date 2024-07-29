@@ -2,16 +2,14 @@ package com.web.ndolphin.dto.user;
 
 import com.web.ndolphin.domain.LoginType;
 import com.web.ndolphin.domain.RoleType;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 public class UserDto {
+
     private Long userId;
 
     private String email;
@@ -22,7 +20,7 @@ public class UserDto {
 
     private String mbti;
 
-    private int nPoint;
+    private Long nPoint;
 
     private LoginType type;
 
