@@ -13,4 +13,8 @@ public interface CommentService {
     ResponseEntity<ResponseDto> updateComment(Long commentId, CommentRequestDto commentRequestDto);
 
     ResponseEntity<ResponseDto> deleteComment(Long commentId);
+
+    ResponseEntity<ResponseDto> likeComment(HttpServletRequest request, Long commentId);
+
+    ResponseEntity<ResponseDto> unlikeComment(HttpServletRequest request, Long commentId);
 }

@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/boards/{boardId}/comments")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/boards/{boardId}/comments")
 public class CommentController {
 
     private final CommentService commentService;
@@ -48,6 +48,16 @@ public class CommentController {
     public ResponseEntity<ResponseDto> deleteComment(@PathVariable Long commentId) {
 
         ResponseEntity<ResponseDto> response = commentService.deleteComment(commentId);
+
+        return response;
+    }
+
+    @PostMapping("/{commentId}/like")
+    public ResponseEntity<ResponseDto> likeComment(
+        HttpServletRequest request,
+        @PathVariable Long commentId) {
+
+        ResponseEntity<ResponseDto> response = commentService.likeComment(request, commentId);
 
         return response;
     }
