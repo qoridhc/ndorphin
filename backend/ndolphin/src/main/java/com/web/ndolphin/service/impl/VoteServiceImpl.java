@@ -6,6 +6,7 @@ import com.web.ndolphin.domain.User;
 import com.web.ndolphin.domain.Vote;
 import com.web.ndolphin.domain.VoteContent;
 import com.web.ndolphin.dto.ResponseDto;
+import com.web.ndolphin.dto.vote.VoteCount;
 import com.web.ndolphin.dto.vote.request.VoteRequestDto;
 import com.web.ndolphin.dto.vote.response.VoteResponseDto;
 import com.web.ndolphin.mapper.VoteMapper;
@@ -43,9 +44,10 @@ public class VoteServiceImpl implements VoteService {
             voteRepository.save(vote);
 
             Long boardId = voteContent.getBoard().getId();
-            List<VoteResponseDto> voteResponseDto = voteRepository.countVotesByBoardId(boardId);
+            List<VoteCount> voteCounts = voteRepository.countVotesByBoardId(boardId);
+            VoteResponseDto voteResponseDto = VoteMapper.toDto(vote, voteCounts);
 
-            ResponseDto<List<VoteResponseDto>> responseBody = new ResponseDto<>(
+            ResponseDto<VoteResponseDto> responseBody = new ResponseDto<>(
                 ResponseCode.SUCCESS,
                 ResponseMessage.SUCCESS,
                 voteResponseDto
@@ -73,9 +75,10 @@ public class VoteServiceImpl implements VoteService {
             voteRepository.save(vote);
 
             Long boardId = newVoteContent.getBoard().getId();
-            List<VoteResponseDto> voteResponseDto = voteRepository.countVotesByBoardId(boardId);
+            List<VoteCount> voteCounts = voteRepository.countVotesByBoardId(boardId);
+            VoteResponseDto voteResponseDto = VoteMapper.toDto(vote, voteCounts);
 
-            ResponseDto<List<VoteResponseDto>> responseBody = new ResponseDto<>(
+            ResponseDto<VoteResponseDto> responseBody = new ResponseDto<>(
                 ResponseCode.SUCCESS,
                 ResponseMessage.SUCCESS,
                 voteResponseDto
