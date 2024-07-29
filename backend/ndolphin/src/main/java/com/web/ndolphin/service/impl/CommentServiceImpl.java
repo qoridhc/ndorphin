@@ -10,6 +10,8 @@ import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.CommentService;
+import com.web.ndolphin.service.interfaces.TokenService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +24,16 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final TokenService tokenService;
 
     @Override
-    public ResponseEntity<ResponseDto> addComment(Long boardId,
+    public ResponseEntity<ResponseDto> addComment(HttpServletRequest request, Long boardId,
         CommentRequestDto commentRequestDto) {
 
         try {
-            User user = userRepository.findById(commentRequestDto.getUserId())
+            Long userId = tokenService.getUserIdFromToken(request);
+            
+            User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
             Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));

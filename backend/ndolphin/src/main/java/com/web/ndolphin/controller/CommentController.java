@@ -3,6 +3,7 @@ package com.web.ndolphin.controller;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.comment.CommentRequestDto;
 import com.web.ndolphin.service.interfaces.CommentService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,10 +23,11 @@ public class CommentController {
 
     @PostMapping
     public ResponseEntity<ResponseDto> addComment(
+        HttpServletRequest request,
         @PathVariable Long boardId,
         @RequestBody CommentRequestDto commentRequestDto) {
 
-        ResponseEntity<ResponseDto> response = commentService.addComment(boardId,
+        ResponseEntity<ResponseDto> response = commentService.addComment(request, boardId,
             commentRequestDto);
 
         return response;

@@ -10,6 +10,7 @@ import lombok.ToString;
 @ToString
 public class CommentResponseDto {
 
+    private String commentId;
     private String nickName;
     private String content;
     private Long loveCnt = 0L;
