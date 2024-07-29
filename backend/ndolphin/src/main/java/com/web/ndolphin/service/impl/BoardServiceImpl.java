@@ -10,6 +10,7 @@ import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.board.BoardDto;
 import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
+import com.web.ndolphin.dto.board.response.OkBoardDto;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.repository.BoardRepository;
@@ -97,6 +98,8 @@ public class BoardServiceImpl implements BoardService {
 
         ResponseDto<?> responseBody = null;
 
+        List<Board> boards = boardRepository.findByBoardType(boardType);
+
         switch (boardType) {
             case VOTE_BOARD:
                 // 투표 게시판 - 이미지 첨부 가능
@@ -109,16 +112,33 @@ public class BoardServiceImpl implements BoardService {
                 break;
             case OK_BOARD:
                 // 괜찮아 게시판 - 댓글 가능
+                List<OkBoardDto> okBoardDtos = new ArrayList<>();
+                for (Board board : boards) {
+                    // 파일 정보를 가져오기
+                    List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(board.getId());
+
+                    // 파일명과 파일 URL 리스트 생성
+                    List<String> fileNames = new ArrayList<>();
+                    List<String> fileUrls = new ArrayList<>();
+
+                    for (FileInfoResponseDto fileInfoResponseDto : fileInfoResponseDtos) {
+                        fileNames.add(fileInfoResponseDto.getFileName());
+                        fileUrls.add(fileInfoResponseDto.getFileUrl());
+                    }
+
+                    // Board와 파일 정보를 사용하여 OkBoardDto 생성
+                    OkBoardDto okBoardDto = BoardMapper.toOkBoardDto(board, fileNames, fileUrls);
+                    okBoardDtos.add(okBoardDto);
+                }
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, okBoardDtos);
                 break;
             case BYE_BOARD:
                 // 작별 게시판
-                List<Board> boards = boardRepository.findByBoardType(boardType);
                 List<ByeBoardDto> byeBoardDtos = new ArrayList<>();
                 for (Board board : boards) {
-                    ByeBoardDto byeBoardDto = BoardMapper.ToByeBoardDto(board);
+                    ByeBoardDto byeBoardDto = BoardMapper.toByeBoardDto(board);
                     byeBoardDtos.add(byeBoardDto);
                 }
-
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     byeBoardDtos);
                 break;
@@ -155,11 +175,23 @@ public class BoardServiceImpl implements BoardService {
             case OK_BOARD:
                 // 괜찮아 게시판 - 댓글 가능
                 List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(boardId);
-                
+
+                // 파일명과 파일 URL 리스트 생성
+                List<String> fileNames = new ArrayList<>();
+                List<String> fileUrls = new ArrayList<>();
+
+                for (FileInfoResponseDto fileInfoResponseDto : fileInfoResponseDtos) {
+                    fileNames.add(fileInfoResponseDto.getFileName());
+                    fileUrls.add(fileInfoResponseDto.getFileUrl());
+                }
+
+                // Board와 파일 정보를 사용하여 OkBoardDto 생성
+                OkBoardDto okBoardDto = BoardMapper.toOkBoardDto(board, fileNames, fileUrls);
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, okBoardDto);
                 break;
             case BYE_BOARD:
                 // 작별 게시판
-                ByeBoardDto byeBoardDto = BoardMapper.ToByeBoardDto(board);
+                ByeBoardDto byeBoardDto = BoardMapper.toByeBoardDto(board);
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     byeBoardDto);
                 break;
@@ -171,8 +203,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public ResponseEntity<ResponseDto> updateBoard(Long boardId, BoardRequestDto boardRequestDto,
-        List<String> fileNamesToDelete,
-        List<MultipartFile> multipartFiles) {
+        List<MultipartFile> multipartFiles, List<String> fileNamesToDelete) {
 
         // 게시글 처리
         Optional<Board> optionalBoard = boardRepository.findById(boardId);
@@ -211,15 +242,22 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public ResponseEntity<ResponseDto> deleteBoard(Long boardId) {
 
-        // 게시글 삭제
-        boardRepository.deleteById(boardId);
-
-        // 파일 삭제
         try {
+            // 유효한 boardId 확인
+            Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
+
+            // 게시글 삭제
+            boardRepository.delete(board);
+
+            // 파일 삭제
             fileInfoService.deleteAndDeleteFiles(boardId, EntityType.POST);
+
+            return ResponseDto.success(); // 성공 시 응답
+        } catch (IllegalArgumentException e) {
+            return ResponseDto.validationFail(); // 유효하지 않은 boardId 에러 응답
         } catch (Exception e) {
-            e.printStackTrace();
+            return ResponseDto.databaseError(); // 기타 예외 발생 시 데이터베이스 에러 응답
         }
-        return ResponseDto.success();
     }
 }

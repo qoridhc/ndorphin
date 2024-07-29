@@ -3,8 +3,12 @@ package com.web.ndolphin.service.impl;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.service.S3Service;
@@ -17,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.S3Client;
 
 @Service
 @RequiredArgsConstructor
@@ -159,27 +162,4 @@ public class S3ServiceImpl implements S3Service {
             throw e;
         }
     }
-
-//    public void deleteMultipleFiles(List<String> fileNames, List<String> fileTypes, List<String> fileUrls, String bucket) {
-//        if (fileNames.size() != fileTypes.size() || fileNames.size() != fileUrls.size()) {
-//            throw new IllegalArgumentException("fileNames, fileTypes, and fileUrls must have the same size");
-//        }
-//
-//        for (int i = 0; i < fileNames.size(); i++) {
-//            String fileName = fileNames.get(i);
-//            String fileType = fileTypes.get(i);
-//            String fileUrl = fileUrls.get(i);
-//
-//            try {
-//                deleteSingleFile(fileName, fileType);
-//                log.info("deleteSingleFile(fileName: {}, fileType: {}, fileUrl: {}): 성공!!!", fileName, fileType, fileUrl);
-//            } catch (AmazonServiceException e) {
-//                log.error("Failed to delete file: {}", fileUrl, e);
-//                throw e;
-//            } catch (SdkClientException e) {
-//                log.error("Failed to delete file: {}", fileUrl, e);
-//                throw e;
-//            }
-//        }
-//    }
 }

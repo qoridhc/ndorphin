@@ -1,5 +1,7 @@
 package com.web.ndolphin.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.board.request.BoardRequestDto;
@@ -26,7 +28,6 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    // 게시물 생성
     @PostMapping("/{userId}")
     public ResponseEntity<ResponseDto> createBoard(
         @PathVariable("userId") Long userId,
@@ -37,8 +38,6 @@ public class BoardController {
         return response;
     }
 
-
-    // 게시물 목록 조회
     @GetMapping()
     public ResponseEntity<ResponseDto> getBoardsByType(@RequestParam("type") BoardType boardType) {
 
@@ -46,28 +45,32 @@ public class BoardController {
         return response;
     }
 
-    // 게시물 상세 조회
     @GetMapping("/{boardId}")
     public ResponseEntity<ResponseDto> getBoardById(@PathVariable Long boardId) {
 
         ResponseEntity<ResponseDto> response = boardService.getBoardById(boardId);
         return response;
     }
-
-    // 게시물 수정
+    
     @PutMapping("/{boardId}")
     public ResponseEntity<ResponseDto> updateBoard(
         @PathVariable("boardId") Long boardId,
         @RequestPart(name = "request") BoardRequestDto boardRequestDto,
-        @RequestPart(name = "deleteFiles", required = false) List<String> fileNamesToDelete,
-        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles) throws IOException {
+        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
+        @RequestParam(name = "deleteFiles", required = false) String deleteFilesJson) throws IOException {
 
-        ResponseEntity<ResponseDto> response = boardService.updateBoard(boardId, boardRequestDto, fileNamesToDelete,
-            multipartFiles);
+        List<String> fileNamesToDelete = null;
+        if (deleteFilesJson != null) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            fileNamesToDelete = objectMapper.readValue(deleteFilesJson, new TypeReference<List<String>>() {
+            });
+        }
+
+        ResponseEntity<ResponseDto> response = boardService.updateBoard(boardId, boardRequestDto, multipartFiles,
+            fileNamesToDelete);
         return response;
     }
 
-    // 게시물 삭제
     @DeleteMapping("/{boardId}")
     public ResponseEntity<ResponseDto> deleteBoard(@PathVariable("boardId") Long boardId) {
 

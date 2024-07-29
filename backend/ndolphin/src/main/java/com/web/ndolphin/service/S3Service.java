@@ -15,5 +15,4 @@ public interface S3Service {
         List<MultipartFile> multipartFiles) throws IOException;
 
     void deleteSingleFile(String fileName, String fileType) throws IOException;
-//    void deleteMultipleFiles(List<String> fileName, List<String> fileType) throws IOException;
 }
