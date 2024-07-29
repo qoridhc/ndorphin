@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginModal from "../common/LoginModal";
 import UserInfoEditModal from "../common/UserInfoEditModal";
@@ -9,9 +9,13 @@ const Header = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserInfoEditModalOpen, setIsUserInfoEditModalOpen] = useState(false);
   const [isNSModalOpen, setIsNSModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
   const openLoginModal = () => setIsLoginModalOpen(true);
   const closeLoginModal = () => setIsLoginModalOpen(false);
+  const openUserInfoEditModalOpen = () => setIsUserInfoEditModalOpen(true);
   const closeUserInfoEditModal = () => setIsUserInfoEditModalOpen(false);
   const closeNSModal = () => setIsNSModalOpen(false);
 
@@ -24,6 +28,37 @@ const Header = () => {
     closeUserInfoEditModal();
     setIsNSModalOpen(true);
   };
+
+  const handleFinish = () => {
+    closeNSModal();
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setShowProfileDropdown(false);
+  };
+
+  const handleProfileDropdownClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setShowProfileDropdown(!showProfileDropdown);
+  };
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    setShowProfileDropdown(false);
+  };
+
+  useEffect(() => {
+    if (showProfileDropdown) {
+      document.addEventListener("click", handleOutsideClick);
+    } else {
+      document.removeEventListener("click", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, [showProfileDropdown]);
 
   return (
     <>
@@ -75,14 +110,41 @@ const Header = () => {
             </button>
           </div>
         </div>
-        <button className="px-2 py-1 border-2 border-[#FFDE2F] text-[#6C6C6C] font-semibold rounded-md hover:bg-[#FFDE2F] hover:text-white duration-200" onClick={openLoginModal}>
-          로그인
-        </button>
+        {isLoggedIn ? (
+          <div className="relative">
+            <img className="w-10 h-10 rounded-full cursor-pointer" src={profileImage || "/assets/user/profile.png"} alt="Profile" onClick={handleProfileDropdownClick} />
+            {showProfileDropdown && (
+              <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg z-50" onClick={(e) => e.stopPropagation()}>
+                <div className="p-4 flex items-center">
+                  <img className="w-20 h-20 rounded-full" src={profileImage || "assets/user/profile.png"} alt="Profile" />
+                  <div className="ml-3">
+                    <div className="font-semibold">닉네임</div>
+                    <div className="text-sm text-gray-500">test@test.com</div>
+                  </div>
+                </div>
+                <hr />
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-200">프로필</button>
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={openUserInfoEditModalOpen}>
+                  계정 관리
+                </button>
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-200">찜 목록</button>
+                <hr />
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={handleLogout}>
+                  로그아웃
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <button className="px-2 py-1 border-2 border-[#FFDE2F] text-[#6C6C6C] font-semibold rounded-md hover:bg-[#FFDE2F] hover:text-white duration-200" onClick={openLoginModal}>
+            로그인
+          </button>
+        )}
       </div>
 
       <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} onLoginSuccess={handleLoginSuccess} />
-      <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onNext={handleNext} />
-      <NSModal isOpen={isNSModalOpen} onClose={closeNSModal} />
+      <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onNext={handleNext} setProfileImage={setProfileImage} />
+      <NSModal isOpen={isNSModalOpen} onClose={handleFinish} />
     </>
   );
 };
