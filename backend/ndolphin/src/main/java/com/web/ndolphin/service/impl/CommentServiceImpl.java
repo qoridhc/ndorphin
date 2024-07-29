@@ -2,6 +2,7 @@ package com.web.ndolphin.service.impl;
 
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.Comment;
+import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.Likes;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
@@ -12,13 +13,17 @@ import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.LikesRepository;
 import com.web.ndolphin.repository.UserRepository;
+import com.web.ndolphin.service.FileInfoService;
 import com.web.ndolphin.service.interfaces.CommentService;
 import com.web.ndolphin.service.interfaces.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -28,11 +33,13 @@ public class CommentServiceImpl implements CommentService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
     private final LikesRepository likesRepository;
+    private final FileInfoService fileInfoService;
     private final TokenService tokenService;
 
     @Override
+    @Transactional
     public ResponseEntity<ResponseDto> addComment(HttpServletRequest request, Long boardId,
-        CommentRequestDto commentRequestDto) {
+        CommentRequestDto commentRequestDto, List<MultipartFile> multipartFiles) {
 
         try {
             Long userId = tokenService.getUserIdFromToken(request);
@@ -46,6 +53,15 @@ public class CommentServiceImpl implements CommentService {
 
             commentRepository.save(comment);
 
+            if (multipartFiles != null && !multipartFiles.isEmpty()) {
+                try {
+                    fileInfoService.uploadAndSaveFiles(comment.getId(), EntityType.COMMENT,
+                        multipartFiles);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
             return ResponseDto.success(); // 성공 시 응답
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage()); // 예외 발생 시 데이터베이스 에러 응답
@@ -55,13 +71,32 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public ResponseEntity<ResponseDto> updateComment(Long commentId,
-        CommentRequestDto commentRequestDto) {
+        CommentRequestDto commentRequestDto, List<MultipartFile> multipartFiles,
+        List<String> fileNamesToDelete) {
 
         try {
             Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid comment ID"));
 
             comment.setContent(commentRequestDto.getContent());
+
+            commentRepository.save(comment);
+
+            try {
+                // 파일 삭제
+                if (fileNamesToDelete != null && !fileNamesToDelete.isEmpty()) {
+                    fileInfoService.deleteAndDeleteFiles(commentId, EntityType.COMMENT,
+                        fileNamesToDelete);
+                }
+
+                // 새 파일 추가
+                if (multipartFiles != null && !multipartFiles.isEmpty()) {
+                    fileInfoService.uploadAndSaveFiles(commentId, EntityType.COMMENT,
+                        multipartFiles);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Error handling files", e);
+            }
 
             return ResponseDto.success();
         } catch (Exception e) {
@@ -77,6 +112,8 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
 
             commentRepository.delete(comment);
+
+            fileInfoService.deleteAndDeleteFiles(commentId, EntityType.COMMENT);
 
             return ResponseDto.success();
         } catch (Exception e) {
