@@ -72,9 +72,21 @@ const MyAlbum: React.FC = () => {
   };
 
   return (
-    <div style={{ backgroundColor: "white" }}>
-      <div>
-        <br></br>
+    <div className="relative" style={{ backgroundColor: "white" }}>
+      {/* 좌우 이동 버튼 */}
+      <div className="h-full w-1/6 absolute top-0 hover:cursor-pointer hover:bg-zinc-300 hover:opacity-40" onClick={(e) => onPrev("Y")}>
+        <button className="mt-[22rem] absolute left-5 ">
+          <img className="w-20" src="/assets/relay/prevButton.png" alt="prev" />
+        </button>
+      </div>
+      <div className="h-full w-1/6 absolute top-0 right-0 hover:cursor-pointer hover:bg-zinc-300 hover:opacity-40" onClick={(e) => onNext("Y")}>
+        <button className="mt-[22rem] absolute right-5">
+          <img className="w-20" src="/assets/relay/nextButton.png" alt="next" />
+        </button>
+      </div>
+
+      <div className="mt-[0.4rem] pt-[2.91rem] pb-[2.95rem]">
+        {/* 책 라이브러리 내부 */}
         {/* @ts-ignore */}
         <HTMLFlipBook
           ref={bookRef}
@@ -91,8 +103,7 @@ const MyAlbum: React.FC = () => {
           maxShadowOpacity={0.5}
           className="album-web"
           onFlip={onFlip}
-          useMouseEvents={false}
-        >
+          useMouseEvents={false}>
           <PageCover></PageCover>
           <Page number="1">
             <hr></hr>
@@ -123,18 +134,15 @@ const MyAlbum: React.FC = () => {
             <hr></hr>
             <AddPage />
           </Page>
-          <PageEndCover></PageEndCover>
+          {/* 페이지가 짝수일 경우 마지막 커버 표시 */}
+          {totalPage % 2 == 0 ? <PageEndCover></PageEndCover> : <></>}
         </HTMLFlipBook>
-        <div className="h-full w-1/5 absolute top-0" onClick={(e) => onPrev("Y")}>
-          <button className="mt-[26rem]">이전</button>
-        </div>
-        <div className="h-full w-1/5 absolute top-0 right-0" onClick={(e) => onNext("Y")}>
-          <button className="mt-[26rem] ml-[90%]">다음</button>
-        </div>
-        <div className="flex justify-center">
-          [<span>{page}</span> of
-          <span> {totalPage}</span>]
-        </div>
+      </div>
+
+      {/* 페이지 쪽수 표시 */}
+      <div className="h-[3.7rem] flex justify-center items-center bg-zinc-200">
+        [<span>{page}</span> of
+        <span> {totalPage}</span>]
       </div>
     </div>
   );
