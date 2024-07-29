@@ -45,13 +45,12 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     @Transactional
-    public ResponseEntity<ResponseDto> updateVote(Long voteContentId,
+    public ResponseEntity<ResponseDto> updateVote(Long voteId,
         VoteRequestDto voteRequestDto) {
 
         try {
-            Vote vote = voteRepository.findByUser_UserIdAndVoteContent_Id(
-                    voteRequestDto.getUserId(), voteContentId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Vote info"));
+            Vote vote = voteRepository.findById(voteId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Vote ID"));
             VoteContent newVoteContent = voteContentRepository.findById(
                     voteRequestDto.getVoteContentId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid newVoteContentId ID"));

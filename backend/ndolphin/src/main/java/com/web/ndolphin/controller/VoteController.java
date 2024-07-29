@@ -28,12 +28,12 @@ public class VoteController {
         return response;
     }
 
-    @PutMapping("/{voteContentId}")
+    @PutMapping("/{voteId}")
     public ResponseEntity<ResponseDto> updateVote(
-        @PathVariable Long voteContentId,
+        @PathVariable Long voteId,
         @RequestBody VoteRequestDto voteRequestDto) {
 
-        ResponseEntity<ResponseDto> response = voteService.updateVote(voteContentId,
+        ResponseEntity<ResponseDto> response = voteService.updateVote(voteId,
             voteRequestDto);
 
         return response;

@@ -8,7 +8,7 @@ public interface VoteService {
 
     ResponseEntity<ResponseDto> addVote(VoteRequestDto voteRequestDto);
 
-    ResponseEntity<ResponseDto> updateVote(Long voteContentId, VoteRequestDto voteRequestDto);
+    ResponseEntity<ResponseDto> updateVote(Long voteId, VoteRequestDto voteRequestDto);
 
-    ResponseEntity<ResponseDto> deleteVote(Long voteContentId);
+    ResponseEntity<ResponseDto> deleteVote(Long voteId);
 }
