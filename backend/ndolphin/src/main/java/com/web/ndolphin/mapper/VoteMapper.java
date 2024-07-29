@@ -4,8 +4,8 @@ import com.web.ndolphin.domain.User;
 import com.web.ndolphin.domain.Vote;
 import com.web.ndolphin.domain.VoteContent;
 import com.web.ndolphin.dto.board.BoardDto;
-import com.web.ndolphin.dto.vote.VoteRequestDto;
-import com.web.ndolphin.dto.vote.VoteResponseDto;
+import com.web.ndolphin.dto.vote.request.VoteRequestDto;
+import com.web.ndolphin.dto.vote.response.VoteResponseDto;
 import java.util.List;
 
 public class VoteMapper {

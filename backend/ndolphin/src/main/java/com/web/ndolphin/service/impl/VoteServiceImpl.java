@@ -1,17 +1,22 @@
 package com.web.ndolphin.service.impl;
 
+import com.web.ndolphin.common.ResponseCode;
+import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.domain.Vote;
 import com.web.ndolphin.domain.VoteContent;
 import com.web.ndolphin.dto.ResponseDto;
-import com.web.ndolphin.dto.vote.VoteRequestDto;
+import com.web.ndolphin.dto.vote.request.VoteRequestDto;
+import com.web.ndolphin.dto.vote.response.VoteResponseDto;
 import com.web.ndolphin.mapper.VoteMapper;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.repository.VoteContentRepository;
 import com.web.ndolphin.repository.VoteRepository;
 import com.web.ndolphin.service.interfaces.VoteService;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -56,8 +61,18 @@ public class VoteServiceImpl implements VoteService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid newVoteContentId ID"));
 
             vote.setVoteContent(newVoteContent);
+            voteRepository.save(vote);
 
-            return ResponseDto.success();
+            Long boardId = newVoteContent.getBoard().getId();
+            List<VoteResponseDto> voteResponseDto = voteRepository.countVotesByBoardId(boardId);
+
+            ResponseDto<List<VoteResponseDto>> responseBody = new ResponseDto<>(
+                ResponseCode.SUCCESS,
+                ResponseMessage.SUCCESS,
+                voteResponseDto
+            );
+
+            return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage()); // 예외 발생 시 데이터베이스 에러 응답
         }

@@ -1,7 +1,7 @@
 package com.web.ndolphin.service.interfaces;
 
 import com.web.ndolphin.dto.ResponseDto;
-import com.web.ndolphin.dto.vote.VoteRequestDto;
+import com.web.ndolphin.dto.vote.request.VoteRequestDto;
 import org.springframework.http.ResponseEntity;
 
 public interface VoteService {

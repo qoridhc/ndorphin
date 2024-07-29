@@ -1,7 +1,7 @@
 package com.web.ndolphin.controller;
 
 import com.web.ndolphin.dto.ResponseDto;
-import com.web.ndolphin.dto.vote.VoteRequestDto;
+import com.web.ndolphin.dto.vote.request.VoteRequestDto;
 import com.web.ndolphin.service.interfaces.VoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

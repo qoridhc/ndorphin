@@ -1,4 +1,4 @@
-package com.web.ndolphin.dto.vote;
+package com.web.ndolphin.dto.vote.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,4 +11,6 @@ import lombok.ToString;
 @RequiredArgsConstructor
 public class VoteResponseDto {
 
+    private final Long voteContentId;
+    private final Long voteCount;
 }

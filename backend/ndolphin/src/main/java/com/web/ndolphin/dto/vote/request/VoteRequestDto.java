@@ -1,4 +1,4 @@
-package com.web.ndolphin.dto.vote;
+package com.web.ndolphin.dto.vote.request;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
