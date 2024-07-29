@@ -33,7 +33,7 @@ const BestProfile = () => {
     <>
       {userList.map((user) => (
         <>
-          <div className="px-14 py-2 grid grid-cols-[10%_75%_15%] hover:scale-110 duration-200">
+          <div className="px-14 py-2 grid grid-cols-[10%_75%_15%] hover:scale-110 duration-200" key={user.id}>
             <div className="flex items-center">
               <p className="text-2xl font-bold">{user.id}</p>
             </div>
