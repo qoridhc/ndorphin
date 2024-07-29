@@ -108,7 +108,9 @@ const IfStart = () => {
               )}
             </div>
           ) : (
-            "의견입니다"
+            <div className="px-1 py-2 border border-[#9E9E9E] rounded-sm">
+              <p className="text-sm text-[#565656] font-medium text-center">의견 방식은 추가로 작성할 내용이 없습니다. 지금 바로 등록을 눌러주세요!</p>
+            </div>
           )}
         </div>
       </div>
