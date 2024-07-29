@@ -18,6 +18,7 @@ import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
 import com.web.ndolphin.dto.npoint.resopnse.NPointResponseDto;
 import com.web.ndolphin.dto.user.UserDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
+import com.web.ndolphin.mapper.BoardConverter;
 import com.web.ndolphin.mapper.FavoriteMapper;
 import com.web.ndolphin.mapper.NPointMapper;
 import com.web.ndolphin.mapper.UserMapper;
