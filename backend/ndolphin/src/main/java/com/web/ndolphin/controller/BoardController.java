@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.board.request.BoardRequestDto;
-import com.web.ndolphin.service.BoardService;
+import com.web.ndolphin.service.interfaces.BoardService;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ public class BoardController {
         ResponseEntity<ResponseDto> response = boardService.getBoardById(boardId);
         return response;
     }
-    
+
     @PutMapping("/{boardId}")
     public ResponseEntity<ResponseDto> updateBoard(
         @PathVariable("boardId") Long boardId,

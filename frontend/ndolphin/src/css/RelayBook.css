@@ -1,0 +1,57 @@
+.album-web {
+  background: #f8f8f8;
+  text-align: center;
+}
+
+.page {
+  box-shadow: 0 1.5em 3em -1em rgb(70, 69, 69);
+}
+
+.page-footer {
+  /* height: 100%; */
+  position: absolute;
+  bottom: 0px;
+  margin: 20px;
+}
+
+.cover-align {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.cover {
+  background-color: rgb(255, 224, 124);
+  box-shadow: 0 1.5em 2em -1.5em rgb(70, 69, 69);
+}
+
+.btn,
+.form-control {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  appearance: none;
+  font-size: 1em;
+  line-height: 1.2;
+  padding: 0.5em var(--padding-x);
+  border-width: 2px;
+  border-style: solid;
+}
+
+.form-control {
+  --padding-x: 0.5em;
+}
+
+input {
+  text-align: center;
+}
+
+.formContainer {
+  align-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

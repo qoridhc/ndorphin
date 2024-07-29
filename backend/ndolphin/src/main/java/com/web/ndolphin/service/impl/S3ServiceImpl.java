@@ -11,7 +11,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
-import com.web.ndolphin.service.S3Service;
+import com.web.ndolphin.service.interfaces.S3Service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -14,37 +14,36 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/notification")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/notification")
 public class NotificationController {
 
-  private final NotificationServiceImpl notificationService;
+    private final NotificationServiceImpl notificationService;
 
-  @PostMapping("/{userId}")
-  public ResponseEntity<ResponseDto> createNotification(
-      @PathVariable Long userId,
-      @RequestBody NotificationRequestDto dto
-  ) {
+    @PostMapping("/{userId}")
+    public ResponseEntity<ResponseDto> createNotification(
+        @PathVariable Long userId,
+        @RequestBody NotificationRequestDto dto) {
 
-    ResponseEntity<ResponseDto> response = notificationService.create(userId, dto);
+        ResponseEntity<ResponseDto> response = notificationService.create(userId, dto);
 
-    return response;
-  }
+        return response;
+    }
 
-  @GetMapping("/{userId}")
-  public ResponseEntity<ResponseDto> getAllNotification(@PathVariable Long userId) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<ResponseDto> getAllNotification(@PathVariable Long userId) {
 
-    ResponseEntity<ResponseDto> response = notificationService.selectAllByUserId(userId);
+        ResponseEntity<ResponseDto> response = notificationService.selectAllByUserId(userId);
 
-    return response;
-  }
+        return response;
+    }
 
-  @DeleteMapping("/{notificationId}")
-  public ResponseEntity<ResponseDto> deleteNotification(@PathVariable Long notificationId) {
+    @DeleteMapping("/{notificationId}")
+    public ResponseEntity<ResponseDto> deleteNotification(@PathVariable Long notificationId) {
 
-    ResponseEntity<ResponseDto> response = notificationService.delete(notificationId);
+        ResponseEntity<ResponseDto> response = notificationService.delete(notificationId);
 
-    return response;
-  }
+        return response;
+    }
 
 }

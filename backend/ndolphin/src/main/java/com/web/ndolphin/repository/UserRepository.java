@@ -11,23 +11,26 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-  boolean existsByEmail(String email);
+    boolean existsByEmail(String email);
 
-  User findByEmail(String email);
+    User findByEmail(String email);
 
-  User findByUserId(Long userId);
+    User findByUserId(Long userId);
 
-  int deleteUserByUserId(Long userId);
+    int deleteUserByUserId(Long userId);
 
-  @Modifying
-  @Transactional
-  @Query("UPDATE User u SET u.email = :email, u.profileImage = :profileImage, u.nickName = :nickName, u.mbti = :mbti, u.nPoint = :nPoint WHERE u.userId = :userId")
-  int updateUserByUserId(
-      @Param("userId") Long userId,
-      @Param("email") String email,
-      @Param("profileImage") String profileImage,
-      @Param("nickName") String nickName,
-      @Param("mbti") String mbti,
-      @Param("nPoint") int nPoint
-  );
+    @Modifying
+    @Transactional
+    @Query("UPDATE User u SET u.email = :email, u.profileImage = :profileImage, u.nickName = :nickName, u.mbti = :mbti, u.nPoint = :nPoint WHERE u.userId = :userId")
+    int updateUserByUserId(
+        @Param("userId") Long userId,
+        @Param("email") String email,
+        @Param("profileImage") String profileImage,
+        @Param("nickName") String nickName,
+        @Param("mbti") String mbti,
+        @Param("nPoint") int nPoint
+    );
+
+    @Query("SELECT u.nickName FROM User u WHERE u.userId = :userId")
+    String findNickNameById(@Param("userId") Long userId);
 }
