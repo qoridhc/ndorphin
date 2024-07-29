@@ -47,11 +47,13 @@ const ServeIfCard = (props: Props) => {
   return (
     <div className="w-[40%] h-52 p-5 border-solid border-[1px] border-[#565656] rounded-[10px] shadow-[2px_3px_5px_rgb(0,0,0,0.2)] grid grid-rows-[35%_auto_20%] opacity-70">
       <div className="flex justify-between items-start">
-        <div className="flex items-center">
+        <div className="w-full flex items-center">
           <img className="w-9 h-9 mr-3 rounded-[50%]" src={`/assets/profile/profile${cardList[props.serveIndex].id}.png`} alt="" />
-          <p className="font-semibold">{cardList[props.serveIndex].name}</p>
+          <div className="w-full flex justify-between">
+            <p className="font-semibold">{cardList[props.serveIndex].name}</p>
+            <IoIosArrowForward className="text-2xl" />
+          </div>
         </div>
-        <IoIosArrowForward className="text-2xl" />
       </div>
       <p className="font-medium text-justify line-clamp-3">{cardList[props.serveIndex].content}</p>
       <div className="flex justify-end items-end">
