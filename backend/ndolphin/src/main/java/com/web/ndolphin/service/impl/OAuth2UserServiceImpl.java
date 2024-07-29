@@ -74,6 +74,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
             boolean isExistUserEmail = userRepository.existsByEmail(user.getEmail());
 
             user.setRole(RoleType.USER);
+            user.setNPoint(0L);
 
             // 이미 회원가입 된 아이디 -> DB 저장 필요 X
             if (isExistUserEmail) {
