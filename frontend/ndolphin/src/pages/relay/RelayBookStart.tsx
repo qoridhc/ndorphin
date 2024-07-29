@@ -2,6 +2,7 @@ import HTMLFlipBook from "react-pageflip";
 import React, { ForwardedRef } from "react";
 import "../../css/RelayBook.css";
 import "../../css/Notes.css";
+import "../../css/InputPlaceHolder.css";
 import BookImage from "../../components/relay/BookImage";
 import EndPage from "../../components/relay/EndPage";
 
@@ -38,6 +39,8 @@ const MyAlbum: React.FC = () => {
           </Page>
         </HTMLFlipBook>
       </div>
+
+    {/* 구분선 및 등록 버튼 */}
       <div className="mt-[2.8%]  col-start-1 row-start-1 z-10">
         <div className="flex justify-center items-center">
           <div className="mr-[7%] flex flex-col items-end w-full">
@@ -47,11 +50,15 @@ const MyAlbum: React.FC = () => {
                 <input className="w-full my-4 p-1 rounded-lg focus:outline-none bg-yellow-200 text-left" type="text" placeholder="제목을 입력해 주세요 (최대 30자)" />
               </div>
             </div>
+
+            {/* 본문 작성 form */}
             <div className="w-[53%] border border-zinc-950">
               <p className="m-3 text-xl font-bold">본문</p>
               <hr className="mx-3 my-2 border-zinc-900" />
               <textarea className="notes w-full h-[370px] resize-none focus:outline-none placeholder:text-zinc-400" placeholder="이야기가 시작될 '만약에~' 내용을 입력해 주세요 (최소 글자수 100자 이상)"></textarea>
             </div>
+
+            {/* 종료 장수 선택 form */}
             <div className="w-[53%] mt-3 border border-zinc-950">
               <p className="m-3 text-xl font-bold">종료장수</p>
               <hr className="mx-3 border-zinc-900" />
@@ -62,6 +69,8 @@ const MyAlbum: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* 표지 첨부 form */}
           <div className="w-full flex flex-col items-end ">
             <BookImage />
           </div>

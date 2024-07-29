@@ -19,7 +19,7 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>((pr
     <div className="page" ref={ref}>
       {props.number == props.totalPage + 1 ? <></> : <UserInfo user={props.page.user} userId={props.page.userId} />}
       <div className="h-full">{props.children}</div>
-      <div className="page-footer">{props.number}</div>
+      {props.number == props.totalPage + 1 ? <></> : <div className="page-footer">{props.number}</div>}
     </div>
   );
 });

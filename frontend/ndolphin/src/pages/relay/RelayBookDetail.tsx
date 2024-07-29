@@ -7,6 +7,7 @@ import BookDetailPage from "../../components/relay/BookDetailPage";
 import BookPageCover from "../../components/relay/BookPageCover";
 
 
+// 마지막 페이지 이후 나오는 책 커버
 const PageEndCover = React.forwardRef<HTMLDivElement>((props, ref: ForwardedRef<HTMLDivElement>) => {
   return <div className="cover" ref={ref} data-density="hard"></div>;
 });
@@ -17,10 +18,12 @@ const RelayBookDetail: React.FC = () => {
   const [totalPage, setTotalPage] = useState<number>(6);
   const bookRef = useRef<typeof HTMLFlipBook>();
 
+  // 페이지 넘어갈 시 page를 현재 페이지 쪽수로 업데이트
   const onFlip = useCallback((e: { data: number }) => {
     setPage(e.data);
   }, []);
 
+  // 이전 버튼
   const onPrev = (hasFlip = "N") => {
     if (bookRef.current) {
       // @ts-ignore
@@ -35,6 +38,7 @@ const RelayBookDetail: React.FC = () => {
     }
   };
 
+  // 이후 버튼
   const onNext = (hasFlip = "N") => {
     // @ts-ignore
     const pageIndex = bookRef.current.pageFlip().getCurrentPageIndex();
