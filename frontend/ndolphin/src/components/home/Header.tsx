@@ -37,6 +37,7 @@ const Header = () => {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setShowProfileDropdown(false);
+    navigate("/");
   };
 
   const handleProfileDropdownClick = (event: React.MouseEvent) => {
@@ -123,7 +124,7 @@ const Header = () => {
                   </div>
                 </div>
                 <hr />
-                <button className="w-full text-left px-4 py-2 hover:bg-gray-200">프로필</button>
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => {navigate("/profile")}}>프로필</button>
                 <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={openUserInfoEditModalOpen}>
                   계정 관리
                 </button>
