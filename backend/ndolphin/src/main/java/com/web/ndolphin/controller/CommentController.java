@@ -61,4 +61,14 @@ public class CommentController {
 
         return response;
     }
+
+    @DeleteMapping("/{commentId}/like")
+    public ResponseEntity<ResponseDto> unlikeComment(
+        HttpServletRequest request,
+        @PathVariable Long commentId) {
+
+        ResponseEntity<ResponseDto> response = commentService.unlikeComment(request, commentId);
+
+        return response;
+    }
 }

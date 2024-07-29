@@ -10,7 +10,7 @@ import com.web.ndolphin.mapper.CommentMapper;
 import com.web.ndolphin.mapper.LikeMapper;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.CommentRepository;
-import com.web.ndolphin.repository.LikeRepository;
+import com.web.ndolphin.repository.LikesRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.CommentService;
 import com.web.ndolphin.service.interfaces.TokenService;
@@ -27,7 +27,7 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
-    private final LikeRepository likeRepository;
+    private final LikesRepository likesRepository;
     private final TokenService tokenService;
 
     @Override
@@ -97,7 +97,7 @@ public class CommentServiceImpl implements CommentService {
 
             Likes like = LikeMapper.toEntity(user, comment);
 
-            likeRepository.save(like);
+            likesRepository.save(like);
 
             return ResponseDto.success(); // 성공 시 응답
         } catch (Exception e) {
@@ -107,6 +107,18 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public ResponseEntity<ResponseDto> unlikeComment(HttpServletRequest request, Long commentId) {
-        return null;
+
+        try {
+            Long userId = tokenService.getUserIdFromToken(request);
+
+            Likes like = likesRepository.findByUser_UserIdAndComment_Id(userId, commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Like not found"));
+
+            likesRepository.delete(like);
+
+            return ResponseDto.success();
+        } catch (Exception e) {
+            return ResponseDto.databaseError(e.getMessage());
+        }
     }
 }
