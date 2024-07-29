@@ -1,4 +1,20 @@
+import React, { useState, ChangeEvent } from "react";
+
 function BookImage() {
+  const [image, setImage] = useState<string | null>(null);
+
+  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setImage(result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <>
       <div className="w-[53%] mx-[47.5%] mt-4 border border-zinc-950">
@@ -6,10 +22,12 @@ function BookImage() {
         <hr className="mx-3 my-2 border-zinc-900" />
         <div className="grid grid-rows-[60%_40%]">
           <div className="flex justify-center items-center">
-            <img src="/assets/relayStartSample.png" alt="#" className="w-3/4 h-4/5 border rounded-md" />
+            <img src={image || "/assets/relayStartSample.png"} alt="#" className="w-[22rem] h-72 border rounded-md" />
           </div>
 
-          <div className="py-11 h-full grid grid-cols-[49%_2%_49%]">
+          {/* 이미지 첨부 버튼 */}
+          <div className="pt-10 pb-16 h-full grid grid-cols-[49%_2%_49%]">
+            {/* AI 이미지 첨부 버튼 */}
             <div className="flex flex-col items-center justify-center">
               <button className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
                 <img src="/assets/aiImageIcon.png" className="w-5" alt="#"></img>
@@ -27,11 +45,16 @@ function BookImage() {
               <hr className="h-36 border-l border-dashed border-zinc-400"></hr>
             </div>
 
+            {/* 직접 사진 첨부 버튼 */}
             <div className="flex flex-col items-center justify-center">
-              <button className="w-32 px-2 py-1 flex items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
-                <img src="/assets/addImageIcon.png" className="w-5" alt="#"></img>
-                <p className="ml-5 text-xs">사진 첨부</p>
-              </button>
+              <label htmlFor="image-input">
+                <div className="w-32 px-2 py-1 flex items-center cursor-pointer rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
+                  <img src="/assets/addImageIcon.png" className="w-5" alt="#"></img>
+                  <p className="ml-5 text-xs">사진 첨부</p>
+                </div>
+              </label>
+              <input className="hidden" id="image-input" type="file" accept="image/*" onChange={handleImageChange} />
+
               <div className="my-5 flex flex-col items-center">
                 <span>
                   표지 이미지<span className="font-bold"> 직접</span> 첨부

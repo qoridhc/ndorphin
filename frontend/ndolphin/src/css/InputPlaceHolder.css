@@ -5,3 +5,11 @@ input::placeholder {
 input:focus::placeholder {
   color: transparent;
 }
+
+textarea::placeholder {
+  color: #999;
+}
+
+textarea:focus::placeholder {
+  color: transparent;
+}
