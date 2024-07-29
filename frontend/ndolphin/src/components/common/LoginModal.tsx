@@ -30,7 +30,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
       // 로그인 성공을 시뮬레이션
       setTimeout(() => {
         onLoginSuccess();
-      }, 2000);
+      }, 100);
     }
   };
 
