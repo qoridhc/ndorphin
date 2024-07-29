@@ -3,15 +3,18 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { FaPlus } from "react-icons/fa6";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import InsertionImage from "../../components/common/InsertionImage";
+import { useNavigate } from "react-router";
 
 const IfStart = () => {
+  const navigate = useNavigate();
   const [inputType, setInputType] = useState("투표");
   const [voteCategoryList, setVoteCategoryList] = useState([
     { id: 1, text: "" },
     { id: 2, text: "" },
   ]);
-  const boxClass = "p-5 mb-3 border border-[#9E9E9E]";
-  const inputClass = "w-full px-3 py-1 text-left border border-[#9E9E9E] rounded-sm outline-none";
+  const boxClass = "mb-3 border border-[#9E9E9E]";
+  const boxContentClass = "p-5";
+  const inputClass = "w-full p-1 text-left border border-[#9E9E9E] rounded-sm outline-none";
   const titleClass = "text-lg font-bold";
   const hrClass = "h-[1px] mt-1 mb-4 bg-[#9E9E9E]";
 
@@ -33,71 +36,87 @@ const IfStart = () => {
   console.log(voteCategoryList);
 
   return (
-    <div className="px-[30%]">
-      <div className="py-8 flex">
+    <div className="px-[30%] py-5">
+      <button className="py-4 flex" onClick={() => navigate("/iflist")}>
         <FaArrowLeftLong className="text-3xl" />
-        <button className="px-3 text-xl font-bold">만약에 게시판</button>
-      </div>
+        <p className="px-3 text-xl font-bold">만약에 게시판</p>
+      </button>
 
       <div className={`${boxClass}`}>
-        <div>
+        <div className={`${boxContentClass}`}>
           <p className={`${titleClass}`}>제목</p>
           <hr className={`${hrClass}`} />
           <input className={`${inputClass}`} type="text " />
         </div>
 
-        <div>
+        <div className={`${boxContentClass}`}>
           <p className={`${titleClass}`}>만약에</p>
           <hr className={`${hrClass}`} />
-          <textarea className={`${inputClass}`} />
+          <textarea className={`h-40 ${inputClass}`} />
         </div>
       </div>
 
       <div className={`${boxClass}`}>
-        <p className={`${titleClass}`}>이미지</p>
-        <hr className={`${hrClass}`} />
-        <InsertionImage />
+        <div className={`${boxContentClass}`}>
+          <p className={`${titleClass}`}>이미지</p>
+          <hr className={`${hrClass}`} />
+          <InsertionImage />
+        </div>
       </div>
 
       <div className={`${boxClass}`}>
-        <p className={`${titleClass}`}>종류</p>
-        <hr className={`${hrClass}`} />
-        <div className="flex justify-end">
-          <div>
-            <input type="radio" name="input_type" id="vote" value={"투표"} onChange={(e) => setInputType(e.target.value)} checked={inputType === "투표"} />
-            <label htmlFor="vote">투표</label>
-          </div>
-          <div>
-            <input type="radio" name="input_type" id="opinion" value={"의견"} onChange={(e) => setInputType(e.target.value)} checked={inputType === "의견"} />
-            <label htmlFor="opinion">의견</label>
-          </div>
-        </div>
-
-        {inputType === "투표" ? (
-          <div className="grid grid-cols-1 gap-2">
-            {voteCategoryList.map((category) => (
-              <div key={category.id}>
-                <input className={`${inputClass}`} type="text" value={category.text} placeholder="항목" onChange={(e) => updateVoteCategoryList(e.target.value, category.id)} />
-                {category.id <= 2 ? (
-                  <></>
-                ) : (
-                  <button onClick={() => deleteVoteCategoryList(category.id)}>
-                    <RiDeleteBin6Line />
-                  </button>
-                )}
+        <div className={`${boxContentClass}`}>
+          <p className={`${titleClass}`}>종류</p>
+          <hr className={`${hrClass}`} />
+          <div className="pb-1 grid grid-cols-[90%_10%]">
+            <div className="flex justify-end">
+              <div className="px-3">
+                <input className="mx-2" type="radio" name="input_type" id="vote" value={"투표"} onChange={(e) => setInputType(e.target.value)} checked={inputType === "투표"} />
+                <label htmlFor="vote">투표</label>
               </div>
-            ))}
-            {voteCategoryList.length < 4 ? (
-              <button onClick={() => addVoteCategoryList()}>
-                <FaPlus />
-              </button>
-            ) : (
-              <></>
-            )}
+              <div>
+                <input className="mx-2" type="radio" name="input_type" id="opinion" value={"의견"} onChange={(e) => setInputType(e.target.value)} checked={inputType === "의견"} />
+                <label htmlFor="opinion">의견</label>
+              </div>
+            </div>
           </div>
-        ) : (
-          "의견입니다"
-        )}
+
+          {inputType === "투표" ? (
+            <div className="grid grid-cols-1 gap-2">
+              {voteCategoryList.map((category) => (
+                <div className="grid grid-cols-[90%_10%]" key={category.id}>
+                  <input className={`${inputClass}`} type="text" value={category.text} placeholder="항목" onChange={(e) => updateVoteCategoryList(e.target.value, category.id)} />
+                  {category.id <= 2 ? (
+                    <button className="flex justify-center items-center" onClick={() => alert("기본 항목은 삭제할 수 없습니다.")}>
+                      <RiDeleteBin6Line className="text-xl opacity-20" />
+                    </button>
+                  ) : (
+                    <button className="flex justify-center items-center" onClick={() => deleteVoteCategoryList(category.id)}>
+                      <RiDeleteBin6Line className="text-xl" />
+                    </button>
+                  )}
+                </div>
+              ))}
+              {voteCategoryList.length < 4 ? (
+                <div className="grid grid-cols-[90%_10%]">
+                  <button className="p-1 text-xl border border-[#9E9E9E] rounded-sm flex justify-center" onClick={() => addVoteCategoryList()}>
+                    <FaPlus />
+                  </button>
+                </div>
+              ) : (
+                <></>
+              )}
+            </div>
+          ) : (
+            <div className="px-1 py-2 border border-[#9E9E9E] rounded-sm">
+              <p className="text-sm text-[#565656] font-medium text-center">의견 방식은 추가로 작성할 내용이 없습니다. 지금 바로 등록을 눌러주세요!</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex justify-end">
+        <button className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">등록</button>
       </div>
     </div>
   );

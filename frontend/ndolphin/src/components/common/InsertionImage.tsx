@@ -2,7 +2,7 @@ import React from "react";
 
 const InsertionImage = () => {
   return (
-    <div className="py-11 h-full grid grid-cols-[49%_2%_49%]">
+    <div className="h-full grid grid-cols-[49%_2%_49%]">
       <div className="flex flex-col items-center justify-center">
         <button className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
           <img src="/assets/aiImageIcon.png" className="w-5" alt="#"></img>
