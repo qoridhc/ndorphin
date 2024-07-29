@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### AWS ###
-/src/main/resources/application-private.yaml
+#/src/main/resources/application-private.yaml
