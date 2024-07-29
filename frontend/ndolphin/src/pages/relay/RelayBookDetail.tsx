@@ -3,41 +3,18 @@ import React, { useRef, useState, useCallback, ForwardedRef } from "react";
 import "../../css/RelayBook.css";
 import { useParams } from "react-router";
 import AddPage from "../../components/relay/AddPage";
+import BookDetailPage from "../../components/relay/BookDetailPage";
+import BookPageCover from "../../components/relay/BookPageCover";
 
-interface PageProps {
-  number?: string;
-  children?: React.ReactNode;
-}
-
-const PageCover = React.forwardRef<HTMLDivElement>((props, ref: ForwardedRef<HTMLDivElement>) => {
-  return (
-    <div className="cover" ref={ref} data-density="hard">
-      <div className="h-full flex flex-col items-center justify-around">
-        <img src="/assets/relayStartSample.png" width="300px" alt="#"></img>
-        <h2>책 표지</h2>
-      </div>
-    </div>
-  );
-});
 
 const PageEndCover = React.forwardRef<HTMLDivElement>((props, ref: ForwardedRef<HTMLDivElement>) => {
   return <div className="cover" ref={ref} data-density="hard"></div>;
 });
 
-const Page = React.forwardRef<HTMLDivElement, PageProps>((props, ref: ForwardedRef<HTMLDivElement>) => {
-  return (
-    <div className="page" ref={ref}>
-      <h1>사용자 정보 표시</h1>
-      <div className="h-full">{props.children}</div>
-      <div className="page-footer">{props.number}</div>
-    </div>
-  );
-});
 
-const MyAlbum: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+const RelayBookDetail: React.FC = () => {
   const [page, setPage] = useState<number>(1);
-  const [totalPage, setTotalPage] = useState<number>(4);
+  const [totalPage, setTotalPage] = useState<number>(6);
   const bookRef = useRef<typeof HTMLFlipBook>();
 
   const onFlip = useCallback((e: { data: number }) => {
@@ -70,6 +47,51 @@ const MyAlbum: React.FC = () => {
       bookRef.current.pageFlip().turnToNextPage();
     }
   };
+
+  const PageList = [
+    {
+      id: 1,
+      userId: 1,
+      user: "삶은계란",
+      content: "내용입니다1",
+      pageImage: "/assets/relayStartSample.png",
+    },
+    {
+      id: 2,
+      userId: 2,
+      user: "만약핑인데",
+      content: "내용입니다2",
+      pageImage: "/assets/relayStartSample.png",
+    },
+    {
+      id: 3,
+      userId: 3,
+      user: "별이 빛나는 밤",
+      content: "내용입니다3",
+      pageImage: "/assets/relayStartSample.png",
+    },
+    {
+      id: 4,
+      userId: 4,
+      user: "코에촉촉",
+      content: "내용입니다4",
+      pageImage: "/assets/relayStartSample.png",
+    },
+    {
+      id: 5,
+      userId: 5,
+      user: "상상의 나무꾼",
+      content: "내용입니다5",
+      pageImage: "/assets/relayStartSample.png",
+    },
+    {
+      id: 6,
+      userId: 6,
+      user: "상상의 나무꾼",
+      content: "내용입니다5",
+      pageImage: "/assets/relayStartSample.png",
+    },
+  ];
 
   return (
     <div className="relative" style={{ backgroundColor: "white" }}>
@@ -104,36 +126,27 @@ const MyAlbum: React.FC = () => {
           className="album-web"
           onFlip={onFlip}
           useMouseEvents={false}>
-          <PageCover></PageCover>
-          <Page number="1">
-            <hr></hr>
-            <div className="w-full flex justify-center">
-              <img className="w-4/5" src="/assets/relayStartSample.png" alt="" />
-            </div>
-            <p contentEditable="true">릴레이 북 내용</p>
-          </Page>
-          <Page number="2">
-            <hr></hr>
-            <div className="w-full flex justify-center">
-              <img className="w-4/5" src="/assets/relayStartSample.png" alt="" />
-            </div>
-            <p contentEditable="true">릴레이 북 내용</p>
-          </Page>
-          <Page number="3">
-            <hr></hr>
-            <div className="w-full flex justify-center">
-              <img className="w-4/5" src="/assets/relayStartSample.png" alt="" />
-            </div>
-            <p contentEditable="true">릴레이 북 내용</p>
-          </Page>
-          <Page number="4">
-            <hr></hr>
-            <p contentEditable="true">릴레이 북 내용</p>
-          </Page>
-          <Page number="5">
+          <BookPageCover></BookPageCover>
+
+          {/* 페이지 매핑 */}
+          {PageList.map((page) => (
+            <BookDetailPage number={page.id} page={page} totalPage={PageList.length}>
+              <div>
+                <hr></hr>
+                <div className="w-full flex justify-center">
+                  <img className="w-4/5" src="/assets/relayStartSample.png" alt="" />
+                </div>
+                <p>{page.content}</p>
+              </div>
+            </BookDetailPage>
+          ))}
+
+          {/* 페이지 추가 페이지 */}
+          <BookDetailPage number={PageList.length + 1} page={PageList[0]} totalPage={PageList.length}>
             <hr></hr>
             <AddPage />
-          </Page>
+          </BookDetailPage>
+
           {/* 페이지가 짝수일 경우 마지막 커버 표시 */}
           {totalPage % 2 == 0 ? <PageEndCover></PageEndCover> : <></>}
         </HTMLFlipBook>
@@ -148,4 +161,4 @@ const MyAlbum: React.FC = () => {
   );
 };
 
-export default MyAlbum;
+export default RelayBookDetail;
