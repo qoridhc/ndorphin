@@ -12,20 +12,24 @@ function Filter() {
           <label htmlFor="my">내 글 보기</label>
         </div>
         <p className="">|</p>
-        <button
-          className={`${tabs === 0 ? textStyle : "text-gray-400"}`}
-          onClick={() => {
-            setTabs(0);
-          }}>
-          인기순
-        </button>
-        <button
-          className={`${tabs === 1 ? textStyle : "text-gray-400"}`}
-          onClick={() => {
-            setTabs(1);
-          }}>
-          최신순
-        </button>
+        <div>
+          <button
+            className={`${tabs === 0 ? textStyle : "text-gray-400"}`}
+            onClick={() => {
+              setTabs(0);
+            }}>
+            인기순
+          </button>
+        </div>
+        <div>
+          <button
+            className={`${tabs === 1 ? textStyle : "text-gray-400"}`}
+            onClick={() => {
+              setTabs(1);
+            }}>
+            최신순
+          </button>
+        </div>
       </div>
     </div>
   );

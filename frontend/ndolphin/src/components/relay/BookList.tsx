@@ -4,21 +4,17 @@ import Paging from "../common/Paging";
 
 function BookList() {
   return (
-    <div>
+    <div className="grid grid-rows-[5%_80%_15%]">
       <Filter />
-      <div className="flex justify-center">
+      <div className="px-24 grid grid-cols-4 gap-y-20">
         <Book />
         <Book />
         <Book />
         <Book />
-      </div>
-      <div className="flex justify-center">
         <Book />
         <Book />
         <Book />
         <Book />
-      </div>
-      <div className="flex justify-center">
         <Book />
         <Book />
         <Book />

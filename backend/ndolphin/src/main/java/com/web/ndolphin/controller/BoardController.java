@@ -1,9 +1,13 @@
 package com.web.ndolphin.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.dto.ResponseDto;
-import com.web.ndolphin.dto.board.request.BoardUpdateRequestDto;
+import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.service.interfaces.BoardService;
+import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,10 +15,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,17 +28,16 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    // C - 게시물 생성
     @PostMapping("/{userId}")
-    public ResponseEntity createBoard(@PathVariable("userId") Long userId,
-        @RequestBody BoardUpdateRequestDto boardUpdateRequestDto) {
+    public ResponseEntity<ResponseDto> createBoard(
+        @PathVariable("userId") Long userId,
+        @RequestPart(name = "request") BoardRequestDto boardRequestDto,
+        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles) throws IOException {
 
-        ResponseEntity<ResponseDto> response = boardService.createBoard(userId,
-            boardUpdateRequestDto);
+        ResponseEntity<ResponseDto> response = boardService.createBoard(userId, boardRequestDto, multipartFiles);
         return response;
     }
 
-    // R - 게시물 목록 조회 (타입별로 조회)/api/v1/boards?type={boardType}
     @GetMapping()
     public ResponseEntity<ResponseDto> getBoardsByType(@RequestParam("type") BoardType boardType) {
 
@@ -41,7 +45,6 @@ public class BoardController {
         return response;
     }
 
-    // R - 게시물 상세 조회 /api/v1/boards/{boardId}
     @GetMapping("/{boardId}")
     public ResponseEntity<ResponseDto> getBoardById(@PathVariable Long boardId) {
 
@@ -49,21 +52,29 @@ public class BoardController {
         return response;
     }
 
-    // U - 게시물 수정
     @PutMapping("/{boardId}")
-    public ResponseEntity<ResponseDto> updateBoard(@PathVariable("boardId") Long boardId,
-        @RequestBody BoardUpdateRequestDto boardUpdateRequestDto) {
+    public ResponseEntity<ResponseDto> updateBoard(
+        @PathVariable("boardId") Long boardId,
+        @RequestPart(name = "request") BoardRequestDto boardRequestDto,
+        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
+        @RequestParam(name = "deleteFiles", required = false) String deleteFilesJson) throws IOException {
 
-        ResponseEntity<ResponseDto> resonse = boardService.updateBoard(boardId,
-            boardUpdateRequestDto);
-        return resonse;
+        List<String> fileNamesToDelete = null;
+        if (deleteFilesJson != null) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            fileNamesToDelete = objectMapper.readValue(deleteFilesJson, new TypeReference<List<String>>() {
+            });
+        }
+
+        ResponseEntity<ResponseDto> response = boardService.updateBoard(boardId, boardRequestDto, multipartFiles,
+            fileNamesToDelete);
+        return response;
     }
 
-    // D - 게시물 삭제
     @DeleteMapping("/{boardId}")
-    public ResponseEntity<ResponseDto> deeteBoard(@PathVariable("boardId") Long boardId) {
+    public ResponseEntity<ResponseDto> deleteBoard(@PathVariable("boardId") Long boardId) {
 
-        ResponseEntity<ResponseDto> resonse = boardService.deleteBoard(boardId);
-        return resonse;
+        ResponseEntity<ResponseDto> response = boardService.deleteBoard(boardId);
+        return response;
     }
 }

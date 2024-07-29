@@ -1,17 +1,13 @@
 package com.web.ndolphin.dto.user.request;
 
-import com.web.ndolphin.domain.LoginType;
 import com.web.ndolphin.domain.RoleType;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 public class UserUpdateRequestDto {
+
     private String email;
 
     private String profileImage;
@@ -20,7 +16,7 @@ public class UserUpdateRequestDto {
 
     private String mbti;
 
-    private Integer nPoint;
+    private Long nPoint;
 
     private RoleType role;
 }
