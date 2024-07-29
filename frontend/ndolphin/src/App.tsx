@@ -9,6 +9,7 @@ import RelayBookDetail from "./pages/relay/RelayBookDetail";
 import RelayBookPageForm from "./pages/relay/RelayBookPageForm";
 import IfList from "./pages/if/IfList";
 import IfStart from "./pages/if/IfStart";
+import Profile from "./pages/user/Profile";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/relaybookaddpage/:id" element={<RelayBookPageForm />}></Route>
           <Route path="/iflist" element={<IfList />}></Route>
           <Route path="/ifstart" element={<IfStart />}></Route>
+          <Route path="/profile" element={<Profile />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
