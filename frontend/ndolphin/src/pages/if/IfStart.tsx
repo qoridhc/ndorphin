@@ -85,7 +85,7 @@ const IfStart = () => {
             <div className="grid grid-cols-1 gap-2">
               {voteCategoryList.map((category) => (
                 <div className="grid grid-cols-[90%_10%]" key={category.id}>
-                  <input className={`${inputClass}`} type="text" value={category.text} placeholder="항목" onChange={(e) => updateVoteCategoryList(e.target.value, category.id)} />
+                  <input className={`${inputClass}`} type="text" value={category.text} placeholder="항목" max={40} onChange={(e) => updateVoteCategoryList(e.target.value, category.id)} />
                   {category.id <= 2 ? (
                     <button className="flex justify-center items-center" onClick={() => alert("기본 항목은 삭제할 수 없습니다.")}>
                       <RiDeleteBin6Line className="text-xl opacity-20" />
