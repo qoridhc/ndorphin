@@ -1,7 +1,7 @@
 import React from "react";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 
-const MeatballsMenu = () => {
+const SettingsMenu = () => {
   return (
     <ul className="menu menu-horizontal bg-base-200 rounded-box px-2 py-1">
       <li>
@@ -18,4 +18,4 @@ const MeatballsMenu = () => {
   );
 };
 
-export default MeatballsMenu;
+export default SettingsMenu;

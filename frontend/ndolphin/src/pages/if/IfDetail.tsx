@@ -1,7 +1,7 @@
 import React from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router";
-import UserDocSettings from "../../components/common/MeatballsMenu";
+import UserDocSettings from "../../components/common/SettingsMenu";
 
 const IfDetail = () => {
   const navigate = useNavigate();
