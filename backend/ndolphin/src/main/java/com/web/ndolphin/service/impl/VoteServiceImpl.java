@@ -49,13 +49,14 @@ public class VoteServiceImpl implements VoteService {
         VoteRequestDto voteRequestDto) {
 
         try {
-            VoteContent voteContent = voteContentRepository.findById(voteContentId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid voteContentId ID"));
             Vote vote = voteRepository.findByUser_UserIdAndVoteContent_Id(
                     voteRequestDto.getUserId(), voteContentId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Vote info"));
+            VoteContent newVoteContent = voteContentRepository.findById(
+                    voteRequestDto.getVoteContentId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid newVoteContentId ID"));
 
-            vote.setVoteContent(voteContent);
+            vote.setVoteContent(newVoteContent);
 
             return ResponseDto.success();
         } catch (Exception e) {
