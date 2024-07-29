@@ -1,5 +1,6 @@
 import React from "react";
 import { IoIosArrowForward } from "react-icons/io";
+import { useNavigate } from "react-router";
 
 interface Props {
   opinion: {
@@ -13,8 +14,13 @@ interface Props {
 }
 
 const OpinionCard = ({ opinion }: Props) => {
+  const navigate = useNavigate();
+  const goToDetail = (id: number, type: string) => {
+    navigate(`/ifdetail/${id}?type=${type}`);
+  };
+
   return (
-    <div className="h-80 p-5 border-solid border-[#565656] border-[1px] rounded-lg grid grid-rows-[15%_25%_60%] cursor-pointer">
+    <div className="h-80 p-5 border-solid border-[#565656] border-[1px] rounded-lg grid grid-rows-[15%_25%_60%] cursor-pointer" onClick={() => goToDetail(opinion.id, "opinion")}>
       <div className="w-full flex items-center">
         <img className="w-9 h-9 mr-3 rounded-[50%]" src={`/assets/profile/${opinion.profileImgUrl}.png`} alt="" />
         <div className="w-full flex justify-between">
