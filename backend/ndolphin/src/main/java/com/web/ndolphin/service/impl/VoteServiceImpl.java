@@ -29,6 +29,7 @@ public class VoteServiceImpl implements VoteService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public ResponseEntity<ResponseDto> addVote(VoteRequestDto voteRequestDto) {
 
         try {
@@ -39,10 +40,18 @@ public class VoteServiceImpl implements VoteService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid voteContent ID"));
 
             Vote vote = VoteMapper.toEntity(voteRequestDto, user, voteContent);
-
             voteRepository.save(vote);
 
-            return ResponseDto.success(); // 성공 시 응답
+            Long boardId = voteContent.getBoard().getId();
+            List<VoteResponseDto> voteResponseDto = voteRepository.countVotesByBoardId(boardId);
+
+            ResponseDto<List<VoteResponseDto>> responseBody = new ResponseDto<>(
+                ResponseCode.SUCCESS,
+                ResponseMessage.SUCCESS,
+                voteResponseDto
+            );
+
+            return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage()); // 예외 발생 시 데이터베이스 에러 응답
         }
