@@ -9,4 +9,6 @@ public interface VoteService {
     ResponseEntity<ResponseDto> addVote(VoteRequestDto voteRequestDto);
 
     ResponseEntity<ResponseDto> updateVote(Long voteContentId, VoteRequestDto voteRequestDto);
+
+    ResponseEntity<ResponseDto> deleteVote(Long voteContentId);
 }

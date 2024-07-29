@@ -63,4 +63,16 @@ public class VoteServiceImpl implements VoteService {
             return ResponseDto.databaseError(e.getMessage()); // 예외 발생 시 데이터베이스 에러 응답
         }
     }
+
+    @Override
+    public ResponseEntity<ResponseDto> deleteVote(Long voteId) {
+
+        try {
+            voteRepository.deleteById(voteId);
+
+            return ResponseDto.success();
+        } catch (Exception e) {
+            return ResponseDto.databaseError(e.getMessage());
+        }
+    }
 }
