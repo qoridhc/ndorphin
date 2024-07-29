@@ -18,7 +18,6 @@ import com.web.ndolphin.service.interfaces.CommentService;
 import com.web.ndolphin.service.interfaces.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -52,15 +51,7 @@ public class CommentServiceImpl implements CommentService {
             Comment comment = CommentMapper.toEntity(commentRequestDto, user, board);
 
             commentRepository.save(comment);
-
-            if (multipartFiles != null && !multipartFiles.isEmpty()) {
-                try {
-                    fileInfoService.uploadAndSaveFiles(comment.getId(), EntityType.COMMENT,
-                        multipartFiles);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            fileInfoService.uploadFiles(comment.getId(), EntityType.COMMENT, multipartFiles);
 
             return ResponseDto.success(); // 성공 시 응답
         } catch (Exception e) {
@@ -72,7 +63,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public ResponseEntity<ResponseDto> updateComment(Long commentId,
         CommentRequestDto commentRequestDto, List<MultipartFile> multipartFiles,
-        List<String> fileNamesToDelete) {
+        String deleteFilesJson) {
 
         try {
             Comment comment = commentRepository.findById(commentId)
@@ -82,21 +73,9 @@ public class CommentServiceImpl implements CommentService {
 
             commentRepository.save(comment);
 
-            try {
-                // 파일 삭제
-                if (fileNamesToDelete != null && !fileNamesToDelete.isEmpty()) {
-                    fileInfoService.deleteAndDeleteFiles(commentId, EntityType.COMMENT,
-                        fileNamesToDelete);
-                }
-
-                // 새 파일 추가
-                if (multipartFiles != null && !multipartFiles.isEmpty()) {
-                    fileInfoService.uploadAndSaveFiles(commentId, EntityType.COMMENT,
-                        multipartFiles);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException("Error handling files", e);
-            }
+            List<String> fileNamesToDelete = fileInfoService.parseDeleteFilesJson(deleteFilesJson);
+            fileInfoService.deleteFiles(commentId, EntityType.COMMENT, fileNamesToDelete);
+            fileInfoService.uploadFiles(commentId, EntityType.COMMENT, multipartFiles);
 
             return ResponseDto.success();
         } catch (Exception e) {

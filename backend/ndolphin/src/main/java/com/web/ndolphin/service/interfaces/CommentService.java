@@ -13,7 +13,7 @@ public interface CommentService {
         CommentRequestDto commentRequestDto, List<MultipartFile> multipartFiles);
 
     ResponseEntity<ResponseDto> updateComment(Long commentId, CommentRequestDto commentRequestDto,
-        List<MultipartFile> multipartFiles, List<String> fileNamesToDelete);
+        List<MultipartFile> multipartFiles, String deleteFilesJson);
 
     ResponseEntity<ResponseDto> deleteComment(Long commentId);
 

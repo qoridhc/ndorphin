@@ -1,5 +1,8 @@
 package com.web.ndolphin.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.FileInfo;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
@@ -9,6 +12,7 @@ import com.web.ndolphin.service.FileInfoService;
 import com.web.ndolphin.service.interfaces.S3Service;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,7 @@ public class FileInfoServiceImpl implements FileInfoService {
 
     private final S3Service s3Service;
     private final FileInfoRepository fileInfoRepository;
+    private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
     public List<FileInfoResponseDto> getFileInfos(Long entityId) {
@@ -35,11 +40,13 @@ public class FileInfoServiceImpl implements FileInfoService {
     }
 
     @Transactional
-    public void uploadAndSaveFiles(Long entityId, EntityType entityType, List<MultipartFile> multipartFiles)
+    public void uploadAndSaveFiles(Long entityId, EntityType entityType,
+        List<MultipartFile> multipartFiles)
         throws IOException {
 
         // upload to AWS S3
-        List<FileInfoResponseDto> fileInfoResponseDtos = s3Service.uploadMultipleFiles(entityId, entityType,
+        List<FileInfoResponseDto> fileInfoResponseDtos = s3Service.uploadMultipleFiles(entityId,
+            entityType,
             multipartFiles);
 
         // save to MySQL
@@ -67,7 +74,8 @@ public class FileInfoServiceImpl implements FileInfoService {
     public void deleteAndDeleteFiles(Long entityId, EntityType entityType) throws IOException {
 
         // 파일 정보 검색
-        List<FileInfo> fileInfos = fileInfoRepository.findByEntityIdAndEntityType(entityId, entityType);
+        List<FileInfo> fileInfos = fileInfoRepository.findByEntityIdAndEntityType(entityId,
+            entityType);
 
         // 파일 정보 삭제
         for (FileInfo fileInfo : fileInfos) {
@@ -79,7 +87,8 @@ public class FileInfoServiceImpl implements FileInfoService {
     }
 
     @Transactional
-    public void deleteAndDeleteFiles(Long entityId, EntityType entityType, List<String> fileNamesToDelete)
+    public void deleteAndDeleteFiles(Long entityId, EntityType entityType,
+        List<String> fileNamesToDelete)
         throws IOException {
 
         List<FileInfo> fileInfos = new ArrayList<>();
@@ -94,6 +103,33 @@ public class FileInfoServiceImpl implements FileInfoService {
             s3Service.deleteSingleFile(fileInfo.getFileName(), fileInfo.getFileType());
             // 데이터베이스에서 파일 정보 삭제
             fileInfoRepository.delete(fileInfo);
+        }
+    }
+
+    public void deleteFiles(Long entityId, EntityType entityType, List<String> fileNamesToDelete)
+        throws IOException {
+        if (fileNamesToDelete != null && !fileNamesToDelete.isEmpty()) {
+            deleteAndDeleteFiles(entityId, entityType, fileNamesToDelete);
+        }
+    }
+
+    public void uploadFiles(Long entityId, EntityType entityType,
+        List<MultipartFile> multipartFiles) throws IOException {
+        if (multipartFiles != null && !multipartFiles.isEmpty()) {
+            uploadAndSaveFiles(entityId, entityType, multipartFiles);
+        }
+    }
+
+    public List<String> parseDeleteFilesJson(String deleteFilesJson) {
+        if (deleteFilesJson == null) {
+            return Collections.emptyList();
+        }
+
+        try {
+            return objectMapper.readValue(deleteFilesJson, new TypeReference<>() {
+            });
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Invalid JSON format for deleteFiles", e);
         }
     }
 }

@@ -1,8 +1,5 @@
 package com.web.ndolphin.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.comment.CommentRequestDto;
 import com.web.ndolphin.service.interfaces.CommentService;
@@ -46,19 +43,10 @@ public class CommentController {
         @PathVariable Long commentId,
         @RequestBody CommentRequestDto commentRequestDto,
         @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
-        @RequestParam(name = "deleteFiles", required = false) String deleteFilesJson)
-        throws JsonProcessingException {
-
-        List<String> fileNamesToDelete = null;
-        if (deleteFilesJson != null) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            fileNamesToDelete = objectMapper.readValue(deleteFilesJson,
-                new TypeReference<List<String>>() {
-                });
-        }
+        @RequestParam(name = "deleteFiles", required = false) String deleteFilesJson) {
 
         ResponseEntity<ResponseDto> response = commentService.updateComment(commentId,
-            commentRequestDto, multipartFiles, fileNamesToDelete);
+            commentRequestDto, multipartFiles, deleteFilesJson);
 
         return response;
     }
