@@ -1,6 +1,5 @@
 import React from "react";
 import { IoIosArrowForward } from "react-icons/io";
-import { BsFire } from "react-icons/bs";
 
 interface Props {
   opinion: {

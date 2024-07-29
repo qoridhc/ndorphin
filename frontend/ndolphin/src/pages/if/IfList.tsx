@@ -41,7 +41,7 @@ const IfList = () => {
         <button
           className="px-7 py-1 shadow-md rounded-xl font-bold bg-amber-300 text-white"
           onClick={() => {
-            navigate("/relaybookstart");
+            navigate("/ifstart");
           }}>
           만약에 등록
         </button>
