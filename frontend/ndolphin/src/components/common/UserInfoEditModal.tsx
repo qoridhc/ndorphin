@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent } from "react";
+import React, { useEffect, useState, ChangeEvent, FocusEvent } from "react";
 
 interface UserInfoEditModalProps {
   isOpen: boolean;
@@ -8,6 +8,7 @@ interface UserInfoEditModalProps {
 const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext }) => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [nicknamePlaceholder, setNicknamePlaceholder] = useState<string>("닉네임을 입력해 주세요(2~10글자)");
 
   useEffect(() => {
     if (isOpen) {
@@ -29,6 +30,16 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext })
         setProfileImage(reader.result as string);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleFocus = (event: FocusEvent<HTMLInputElement>) => {
+    setNicknamePlaceholder("");
+  };
+
+  const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
+    if (event.target.value === "") {
+      setNicknamePlaceholder("닉네임을 입력해 주세요(2~10글자)");
     }
   };
 
@@ -55,7 +66,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext })
               </label>
               <input className="hidden" id="profile-image-input" type="file" accept="image/*" onChange={handleImageChange} />
             </div>
-            <input className="w-72 border-b rounded-lg text-center text-sm focus:outline-none" type="text" placeholder="닉네임을 입력해 주세요(2~10글자)" />
+            <input className="w-72 border-b rounded-lg text-center text-sm focus:outline-none" type="text" placeholder={nicknamePlaceholder} onFocus={handleFocus} onBlur={handleBlur} />
             <button className="border rounded-lg px-3 py-1 text-xs">중복확인</button>
           </div>
           <div className="mt-4 flex justify-center space-x-2">
