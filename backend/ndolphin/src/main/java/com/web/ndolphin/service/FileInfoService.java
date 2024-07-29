@@ -10,10 +10,20 @@ public interface FileInfoService {
 
     List<FileInfoResponseDto> getFileInfos(Long entityId);
 
-    void uploadAndSaveFiles(Long entityId, EntityType entityType, List<MultipartFile> multipartFiles)
+    void uploadAndSaveFiles(Long entityId, EntityType entityType,
+        List<MultipartFile> multipartFiles)
         throws IOException;
 
     void deleteAndDeleteFiles(Long entityId, EntityType entityType) throws IOException;
 
-    void deleteAndDeleteFiles(Long entityId, EntityType entityType, List<String> fileNamesToDelete) throws IOException;
+    void deleteAndDeleteFiles(Long entityId, EntityType entityType, List<String> fileNamesToDelete)
+        throws IOException;
+
+    void deleteFiles(Long entityId, EntityType entityType, List<String> fileNamesToDelete)
+        throws IOException;
+
+    void uploadFiles(Long entityId, EntityType entityType, List<MultipartFile> multipartFiles)
+        throws IOException;
+
+    List<String> parseDeleteFilesJson(String deleteFilesJson);
 }

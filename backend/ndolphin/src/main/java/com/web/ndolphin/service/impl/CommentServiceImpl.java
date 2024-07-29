@@ -2,6 +2,7 @@ package com.web.ndolphin.service.impl;
 
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.Comment;
+import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.Likes;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
@@ -12,13 +13,16 @@ import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.LikesRepository;
 import com.web.ndolphin.repository.UserRepository;
+import com.web.ndolphin.service.FileInfoService;
 import com.web.ndolphin.service.interfaces.CommentService;
 import com.web.ndolphin.service.interfaces.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -28,11 +32,13 @@ public class CommentServiceImpl implements CommentService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
     private final LikesRepository likesRepository;
+    private final FileInfoService fileInfoService;
     private final TokenService tokenService;
 
     @Override
+    @Transactional
     public ResponseEntity<ResponseDto> addComment(HttpServletRequest request, Long boardId,
-        CommentRequestDto commentRequestDto) {
+        CommentRequestDto commentRequestDto, List<MultipartFile> multipartFiles) {
 
         try {
             Long userId = tokenService.getUserIdFromToken(request);
@@ -45,6 +51,7 @@ public class CommentServiceImpl implements CommentService {
             Comment comment = CommentMapper.toEntity(commentRequestDto, user, board);
 
             commentRepository.save(comment);
+            fileInfoService.uploadFiles(comment.getId(), EntityType.COMMENT, multipartFiles);
 
             return ResponseDto.success(); // 성공 시 응답
         } catch (Exception e) {
@@ -55,13 +62,20 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public ResponseEntity<ResponseDto> updateComment(Long commentId,
-        CommentRequestDto commentRequestDto) {
+        CommentRequestDto commentRequestDto, List<MultipartFile> multipartFiles,
+        String deleteFilesJson) {
 
         try {
             Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid comment ID"));
 
             comment.setContent(commentRequestDto.getContent());
+
+            commentRepository.save(comment);
+
+            List<String> fileNamesToDelete = fileInfoService.parseDeleteFilesJson(deleteFilesJson);
+            fileInfoService.deleteFiles(commentId, EntityType.COMMENT, fileNamesToDelete);
+            fileInfoService.uploadFiles(commentId, EntityType.COMMENT, multipartFiles);
 
             return ResponseDto.success();
         } catch (Exception e) {
@@ -77,6 +91,8 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
 
             commentRepository.delete(comment);
+
+            fileInfoService.deleteAndDeleteFiles(commentId, EntityType.COMMENT);
 
             return ResponseDto.success();
         } catch (Exception e) {
