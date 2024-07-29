@@ -3,10 +3,11 @@ import React, { useEffect, useState, ChangeEvent, FocusEvent } from "react";
 interface UserInfoEditModalProps {
   isOpen: boolean;
   onNext: () => void;
+  setProfileImage: (image: string) => void;
 }
 
-const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext }) => {
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, setProfileImage }) => {
+  const [profileImage, localSetProfileImage] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [nicknamePlaceholder, setNicknamePlaceholder] = useState<string>("닉네임을 입력해 주세요(2~10글자)");
 
@@ -27,7 +28,9 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext })
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfileImage(reader.result as string);
+        const result = reader.result as string;
+        localSetProfileImage(result);
+        setProfileImage(result);
       };
       reader.readAsDataURL(file);
     }

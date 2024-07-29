@@ -1,5 +1,6 @@
 import React from "react";
 import { IoIosArrowForward } from "react-icons/io";
+import { useNavigate } from "react-router";
 
 interface Props {
   vote: {
@@ -16,11 +17,15 @@ interface Props {
 }
 
 const VoteCard = ({ vote }: Props) => {
+  const navigate = useNavigate();
   const voteGrids = ["grid-rows-2", "grid-rows-3", "grid-rows-4"];
   const voteColors = ["border-[#E4AE3A]", "border-[#4298B4]", "border-[#88619A]", "border-[#33A474]"];
+  const goToDetail = (id: number, type: string) => {
+    navigate(`/ifdetail/${id}?type=${type}`);
+  };
 
   return (
-    <div className="h-80 p-5 border-solid border-[#565656] border-[1px] rounded-lg grid grid-rows-[15%_25%_10%_50%]">
+    <div className="h-80 p-5 border-solid border-[#565656] border-[1px] rounded-lg grid grid-rows-[15%_25%_10%_50%] cursor-pointer" onClick={() => goToDetail(vote.id, "vote")}>
       <div className="w-full flex items-center">
         <img className="w-9 h-9 mr-3 rounded-[50%]" src={`/assets/profile/${vote.profileImgUrl}.png`} alt="" />
         <div className="w-full flex justify-between">
@@ -28,7 +33,7 @@ const VoteCard = ({ vote }: Props) => {
           <IoIosArrowForward className="text-2xl" />
         </div>
       </div>
-      <p className="my-3 text-justify line-clamp-2  ">{vote.title}</p>
+      <p className="my-[10px] text-justify line-clamp-2 hover:underline hover:underline-offset-2">{vote.title}</p>
       <p className="py-1 text-sm font-semibold text-[#565656] text-right">투표수 {vote.joinCount}회</p>
 
       <div className={`grid ${voteGrids[vote.category.length - 2]} gap-1`}>
