@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BookList from "../../components/relay/BookList";
 
 interface BookList {
   id: number;
@@ -21,9 +22,9 @@ const WishList = () => {
   const fullHeart = "/assets/relay/fullheart.png";
   const emptyHeart = "/assets/relay/emptyheart.png";
 
-  const books: BookList[] = [];
+  const initialBooks: BookList[] = [];
   for (let i = 0; i < 5; i++) {
-    books.push({
+    initialBooks.push({
       id: i,
       bookImgUrl: "assets/cover.jpg",
       title: "제목",
@@ -37,13 +38,28 @@ const WishList = () => {
     });
   }
 
-  const handleLikeClick = (event: React.MouseEvent<HTMLImageElement>) => {
+  const [books, setBooks] = useState<BookList[]>(initialBooks);
+
+  const handleLikeClick = (id: number, event: React.MouseEvent<HTMLImageElement>) => {
     event.stopPropagation();
-    setIsLike(!isLike);
+    setBooks((prevBooks) =>
+      prevBooks.map((book) =>
+        book.id === id ? { ...book, isLike: !book.isLike } : book
+      )
+    );
   };
 
-  const handleMouseEnter = () => setIsHovered(true);
-  const handleMouseLeave = () => setIsHovered(false);
+  const handleMouseEnter = (id: number) => {
+    setBooks((prevBooks) =>
+      prevBooks.map((book) =>
+        book.id === id ? { ...book, isHovered: true } : book
+      )
+    );
+  };
+
+  const handleMouseLeave = (id: number) => {
+    setBooks((prevBooks) => prevBooks.map((book) => (book.id === id ? { ...book, isHovered: false } : book)));
+  };
 
   return (
     <div className="container mx-auto flex flex-col items-center">
@@ -69,12 +85,7 @@ const WishList = () => {
                 <p className="text-3xl font-semibold">{book.title}</p>
                 {book.isFinished ? <p className="text-gray-400 text-sm">완성</p> : <p className="text-gray-400 text-sm">미완성</p>}
               </div>
-              <img className="w-12 h-12 hover:cursor-pointer" src={book.isLike ? fullHeart : emptyHeart} alt="#" onClick={handleLikeClick} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
-              {/* {book.isLike ? (
-                <img className="w-12 h-12 hover:cursor-pointer" src="/assets/relay/fullheart.png" alt="#" onClick={() => setIsLike(false)} />
-              ) : (
-                <img className="w-12 h-12 hover:cursor-pointer" src={book.isHovered ? fullHeart : emptyHeart} alt="#" onClick={() => setIsLike(true)} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} />
-              )} */}
+              <img className="w-12 h-12 hover:cursor-pointer" src={book.isLike ? fullHeart : emptyHeart} alt="#" onClick={(event) => handleLikeClick(book.id, event)} onMouseEnter={() => handleMouseEnter(book.id)} onMouseLeave={() => handleMouseLeave(book.id)} />
             </div>
             <div className="mt-4 mb-20 gap-4 flex items-center">
               <img className="w-6 h-6 rounded-full" src={book.userProfileImg} alt="유저 프로필" />
