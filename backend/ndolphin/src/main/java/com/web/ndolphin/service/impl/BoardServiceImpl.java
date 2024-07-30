@@ -11,16 +11,19 @@ import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
+import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.dto.reaction.response.ReactionResponseDto;
 import com.web.ndolphin.dto.vote.VoteCount;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.repository.BoardRepository;
+import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.BoardService;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.ReactionService;
+import com.web.ndolphin.service.interfaces.UserService;
 import com.web.ndolphin.service.interfaces.VoteService;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -30,6 +33,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -42,8 +47,10 @@ public class BoardServiceImpl implements BoardService {
 
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
     private final FileInfoService fileInfoService;
     private final ReactionService reactionService;
+    private final UserService userService;
     private final VoteService voteService;
 
     @Override
@@ -82,10 +89,7 @@ public class BoardServiceImpl implements BoardService {
                     .map(board -> {
                         Long boardId = board.getId();
 
-                        List<FileInfoResponseDto> avatar = fileInfoService.getFileInfos(
-                            board.getUser().getUserId(),
-                            EntityType.USER);
-                        String avatarUrl = avatar.isEmpty() ? null : avatar.get(0).getFileUrl();
+                        String avatarUrl = userService.getAvatarUrl(board.getUser().getUserId());
 
                         List<VoteCount> voteCounts = voteService.getVoteContents(boardId);
 
@@ -106,10 +110,30 @@ public class BoardServiceImpl implements BoardService {
 
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     voteBoardResponseDtos);
-
                 break;
             case OPINION_BOARD:
                 // 총 댓글 수, 가장 좋아요를 많이 받은 댓글(좋아요 개수가 같으면 최신순)
+                List<OpinionBoardResponseDto> opinionBoardResponseDtos = boards.stream()
+                    .map(board -> {
+                        Long boardId = board.getId();
+
+                        String avatarUrl = userService.getAvatarUrl(board.getUser().getUserId());
+
+                        Pageable pageable = PageRequest.of(0, 1);
+                        List<String> bestComments = commentRepository.findTopCommentContentByLikes(
+                            boardId, pageable);
+
+                        String bestComment = bestComments.isEmpty() ? null : bestComments.get(0);
+
+                        Long commentCount = commentRepository.countCommentsByBoardId(boardId);
+
+                        return BoardMapper.toOpinionBoardResponseDto(board, bestComment,
+                            commentCount, avatarUrl);
+                    })
+                    .collect(Collectors.toList());
+
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
+                    opinionBoardResponseDtos);
                 break;
             case RELAY_BOARD:
                 // 요약, 사진, 참여 여부, 관심 여부

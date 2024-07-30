@@ -6,6 +6,7 @@ import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
+import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import java.util.List;
 
@@ -66,6 +67,19 @@ public class BoardMapper {
         voteBoardResponseDto.setAvatarUrl(avatarUrl);
 
         return voteBoardResponseDto;
+    }
+
+    public static OpinionBoardResponseDto toOpinionBoardResponseDto(Board board,
+        String bestComment, long commentCount, String avatarUrl) {
+
+        OpinionBoardResponseDto opinionBoardResponseDto = new OpinionBoardResponseDto();
+
+        mapCommonFields(board, opinionBoardResponseDto);
+        opinionBoardResponseDto.setBestComment(bestComment);
+        opinionBoardResponseDto.setCommentCount(commentCount);
+        opinionBoardResponseDto.setAvatarUrl(avatarUrl);
+
+        return opinionBoardResponseDto;
     }
 
     // DTO -> Entity 변환

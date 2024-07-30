@@ -3,6 +3,7 @@ package com.web.ndolphin.service.impl;
 import com.web.ndolphin.common.ResponseCode;
 import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.domain.Board;
+import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.Favorite;
 import com.web.ndolphin.domain.NPoint;
 import com.web.ndolphin.domain.PointRule;
@@ -13,6 +14,7 @@ import com.web.ndolphin.dto.auth.response.OAuth2ResponseDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.favorite.FavoriteResponseDto;
+import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.dto.npoint.request.NPointDeleteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
 import com.web.ndolphin.dto.npoint.resopnse.NPointResponseDto;
@@ -22,13 +24,13 @@ import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.mapper.FavoriteMapper;
 import com.web.ndolphin.mapper.NPointMapper;
 import com.web.ndolphin.mapper.UserMapper;
-import com.web.ndolphin.provider.JwtProvider;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.FavoriteRepository;
 import com.web.ndolphin.repository.NPointRepository;
 import com.web.ndolphin.repository.PointRuleRepository;
 import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
+import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.UserService;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -49,8 +51,7 @@ public class UserServiceImpl implements UserService {
     private final TokenRepository tokenRepository;
     private final NPointRepository nPointRepository;
     private final PointRuleRepository pointRuleRepository;
-
-    private final JwtProvider jwtProvider;
+    private final FileInfoService fileInfoService;
 
     @Override
     public ResponseEntity<ResponseDto> signIn(Long userId) {
@@ -281,4 +282,14 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public String getAvatarUrl(Long userId) {
+        List<FileInfoResponseDto> avatar = fileInfoService.getFileInfos(userId, EntityType.USER);
+
+        String avatarUrl = null;
+        if (!avatar.isEmpty()) {
+            avatar.get(0).getFileUrl();
+        }
+
+        return avatarUrl;
+    }
 }
