@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import SearchBar from "../../components/relay/SearchBar";
 import MiniSearchBar from "../../components/ok/MiniSearchBar";
 import OkContent from "../../components/ok/OkContent";
-import { useNavigate } from "react-router";
+import OkStartModal from "./OkStartModal";
 
 const OkList = () => {
-  const navigate = useNavigate();
+  const [isCreateModal, setIsCreateModal] = useState(false);
   const okContentList = [
     {
       id: 1,
@@ -110,13 +110,15 @@ const OkList = () => {
             <button
               className="w-full my-3 px-7 py-2 shadow-md rounded-2xl font-bold bg-amber-300 text-black"
               onClick={() => {
-                navigate("/okstart");
+                setIsCreateModal(true);
               }}>
               고민 작성하기
             </button>
           </div>
         </div>
       </div>
+
+      {isCreateModal && <OkStartModal />}
     </div>
   );
 };
