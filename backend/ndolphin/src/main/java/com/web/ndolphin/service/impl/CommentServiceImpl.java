@@ -13,7 +13,7 @@ import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.LikesRepository;
 import com.web.ndolphin.repository.UserRepository;
-import com.web.ndolphin.service.FileInfoService;
+import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.CommentService;
 import com.web.ndolphin.service.interfaces.TokenService;
 import jakarta.servlet.http.HttpServletRequest;

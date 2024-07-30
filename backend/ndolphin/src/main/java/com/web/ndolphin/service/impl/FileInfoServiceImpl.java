@@ -8,7 +8,7 @@ import com.web.ndolphin.domain.FileInfo;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.mapper.FileInfoMapper;
 import com.web.ndolphin.repository.FileInfoRepository;
-import com.web.ndolphin.service.FileInfoService;
+import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.S3Service;
 import java.io.IOException;
 import java.util.ArrayList;

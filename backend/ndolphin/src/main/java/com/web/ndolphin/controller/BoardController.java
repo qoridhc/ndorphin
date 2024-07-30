@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.board.request.BoardRequestDto;
+import com.web.ndolphin.dto.reaction.request.ReactionRequestDto;
 import com.web.ndolphin.service.interfaces.BoardService;
+import com.web.ndolphin.service.interfaces.ReactionService;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -27,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class BoardController {
 
     private final BoardService boardService;
+    private final ReactionService reactionService;
 
     @PostMapping("/{userId}")
     public ResponseEntity<ResponseDto> createBoard(
@@ -75,6 +80,17 @@ public class BoardController {
     public ResponseEntity<ResponseDto> deleteBoard(@PathVariable("boardId") Long boardId) {
 
         ResponseEntity<ResponseDto> response = boardService.deleteBoard(boardId);
+        return response;
+    }
+
+    @PostMapping("/{boardId}/reactions")
+    public ResponseEntity<ResponseDto> addReaction(
+        HttpServletRequest request,
+        @PathVariable("boardId") Long boardId,
+        @RequestBody ReactionRequestDto reactionRequestDto
+        ) {
+
+        ResponseEntity<ResponseDto> response = reactionService.addReaction(request, boardId, reactionRequestDto);
         return response;
     }
 }
