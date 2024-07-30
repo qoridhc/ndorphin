@@ -15,7 +15,7 @@ import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.UserRepository;
-import com.web.ndolphin.service.FileInfoService;
+import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.BoardService;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -194,6 +194,15 @@ public class BoardServiceImpl implements BoardService {
                 OkBoardDto okBoardDto = BoardMapper.toOkBoardDto(board, fileNames, fileUrls);
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     okBoardDto);
+
+                // 반응 정보 조회
+                ResponseEntity<ResponseDto> reactionResponse = reactionService.getReactionsByBoardId(boardId);
+                if (reactionResponse.getBody().getCode() == ResponseCode.SUCCESS) {
+                    List<ReactionResponseDto> reactions = (List<ReactionResponseDto>) reactionResponse.getBody().getData();
+                    okBoardDto.setReactionResponseDtos(reactions);
+                }
+
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, okBoardDto);
                 break;
             case BYE_BOARD:
                 // 작별 게시판
