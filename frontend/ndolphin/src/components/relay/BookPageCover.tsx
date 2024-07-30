@@ -1,11 +1,19 @@
 import React, { useRef, useState, useCallback, ForwardedRef } from "react";
+import DropDown from "./DropDown";
 
 const BookPageCover = React.forwardRef<HTMLDivElement>((props, ref: ForwardedRef<HTMLDivElement>) => {
+  
   return (
     <div className="cover" ref={ref} data-density="hard">
-      <div className="h-full flex flex-col items-center justify-around">
-        <img src="/assets/relayStartSample.png" width="300px" alt="#"></img>
-        <h2>책 표지</h2>
+      <div className="h-full flex flex-col justify-between">
+        <div className="pt-5 pr-5 ">
+          <DropDown />
+        </div>
+        <div className="flex justify-center">
+          <img src="/assets/relayStartSample.png" width="300px" alt="#"></img>
+        </div>
+        <p className="text-xl font-bold">책 제목</p>
+        <div className="w-full flex justify-end"></div>
       </div>
     </div>
   );

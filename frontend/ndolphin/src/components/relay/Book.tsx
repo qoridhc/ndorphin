@@ -12,7 +12,11 @@ interface BookProps {
 
 function Book({ book }: BookProps) {
   const [join, setJoin] = useState(false);
+  const [isLike, setIsLike] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
+  const fullHeart = "/assets/relay/fullheart.png";
+  const emptyHeart = "/assets/relay/emptyheart.png";
 
   const goBookDetail = (id: number) => {
     navigate(`/relaybookdetail/${id}`);
@@ -25,12 +29,36 @@ function Book({ book }: BookProps) {
       </div>
 
       <div className="relative">
-        <img src="/assets/heart.png" className="w-9 absolute top-4 right-3 z-10" alt="#" />
+        {isLike ? (
+          <img
+            onClick={() => {
+              setIsLike(false);
+            }}
+            src="/assets/relay/fullheart.png"
+            className="w-9 absolute top-4 right-3 z-10 hover:cursor-pointer"
+            alt="#"
+          />
+        ) : (
+          <img
+            onClick={() => {
+              setIsLike(true);
+            }}
+            onMouseEnter={() => {
+              setIsHovered(true);
+            }}
+            onMouseLeave={() => {
+              setIsHovered(false);
+            }}
+            src={isHovered ? fullHeart : emptyHeart}
+            className="w-9 absolute top-4 right-3 z-10 hover:cursor-pointer"
+            alt="#"
+          />
+        )}{" "}
         <img
           onClick={() => {
             goBookDetail(book.id);
           }}
-          src="/assets/cover.jpg"
+          src={book.bookImgUrl}
           className="hover:cursor-pointer w-full h-[20rem] rounded-md"
           alt="#"
         />
@@ -42,7 +70,7 @@ function Book({ book }: BookProps) {
             goBookDetail(book.id);
           }}
           className="hover:cursor-pointer font-bold text-lg">
-          혼자서 본 영화
+          {book.title}
         </span>
         <button className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border-2 border-solid border-zinc-300 font-bold text-zinc-800 mt-2">
           <img src="/assets/aiSummaryButton.png" className="w-5" alt="#" />
