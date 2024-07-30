@@ -12,11 +12,13 @@ import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
+import com.web.ndolphin.dto.reaction.response.ReactionResponseDto;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.UserRepository;
-import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.BoardService;
+import com.web.ndolphin.service.interfaces.FileInfoService;
+import com.web.ndolphin.service.interfaces.ReactionService;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ public class BoardServiceImpl implements BoardService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final FileInfoService fileInfoService;
+    private final ReactionService reactionService;
 
     @Override
     public ResponseEntity<ResponseDto> createBoard(Long userId, BoardRequestDto boardRequestDto,
@@ -46,48 +49,13 @@ public class BoardServiceImpl implements BoardService {
             User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
-            // 게시판 타입에 따른 분기 처리
-            switch (BoardType.valueOf(String.valueOf(boardRequestDto.getBoardType()))) {
-                case VOTE_BOARD:
-                    // 투표 게시판 - 이미지 첨부 가능
-                    break;
-                case OPINION_BOARD:
-                    // 의견 게시판 - 댓글 가능
-                    break;
-                case RELAY_BOARD:
-                    // 릴레이 게시판 - 댓글 및 이미지 첨부 가능
-                    break;
-                case OK_BOARD:
-                    // 괜찮아 게시판 - 댓글 가능
-                    break;
-                case BYE_BOARD:
-                    // 작별 게시판 - 댓글 및 이미지 첨부 가능
-                    break;
-                default:
-                    return ResponseDto.validationFail();
-            }
+            Board board = BoardMapper.toEntity(boardRequestDto, user);
 
             // 게시글 처리
-            Board board = new Board();
-            board.setUser(user);
-            board.setSubject(boardRequestDto.getSubject());
-            board.setContent(boardRequestDto.getContent());
-            // TODO: summary -> AI 처리
-            board.setHit(0);
-            board.setBoardType(boardRequestDto.getBoardType());
-            board.setCreatedAt(LocalDateTime.now());
-            board.setUpdatedAt(LocalDateTime.now());
             boardRepository.save(board);
 
             // 파일 업로드 처리
-            if (multipartFiles != null && !multipartFiles.isEmpty()) {
-                try {
-                    fileInfoService.uploadAndSaveFiles(board.getId(), EntityType.POST,
-                        multipartFiles);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            fileInfoService.uploadFiles(board.getId(), EntityType.POST, multipartFiles);
 
             return ResponseDto.success();
         } catch (Exception e) {
@@ -104,16 +72,16 @@ public class BoardServiceImpl implements BoardService {
 
         switch (boardType) {
             case VOTE_BOARD:
-                // 투표 게시판 - 이미지 첨부 가능
+                // 총 투표 수(투표 항목들의 투표 합), 투표 목록
                 break;
             case OPINION_BOARD:
-                // 의견 게시판 - 댓글 가능
+                // 총 댓글 수, 가장 좋아요를 많이 받은 댓글(좋아요 개수가 같으면 최신순)
                 break;
             case RELAY_BOARD:
-                // 릴레이 게시판 - 댓글 및 이미지 첨부 가능
+                // 요약, 사진, 참여 여부, 관심 여부
                 break;
             case OK_BOARD:
-                // 괜찮아 게시판 - 댓글 가능
+                // 댓글 수, 사진
                 List<OkBoardDto> okBoardDtos = new ArrayList<>();
                 for (Board board : boards) {
                     // 파일 정보를 가져오기
@@ -137,7 +105,7 @@ public class BoardServiceImpl implements BoardService {
                     okBoardDtos);
                 break;
             case BYE_BOARD:
-                // 작별 게시판
+                // (welcome, bye)각각의 반응 수, 반응 했는지, 어디에서 어디로 바뀌었는지
                 List<ByeBoardDto> byeBoardDtos = new ArrayList<>();
                 for (Board board : boards) {
                     ByeBoardDto byeBoardDto = BoardMapper.toByeBoardDto(board);
@@ -196,13 +164,16 @@ public class BoardServiceImpl implements BoardService {
                     okBoardDto);
 
                 // 반응 정보 조회
-                ResponseEntity<ResponseDto> reactionResponse = reactionService.getReactionsByBoardId(boardId);
+                ResponseEntity<ResponseDto> reactionResponse = reactionService.getReactionsByBoardId(
+                    boardId);
                 if (reactionResponse.getBody().getCode() == ResponseCode.SUCCESS) {
-                    List<ReactionResponseDto> reactions = (List<ReactionResponseDto>) reactionResponse.getBody().getData();
+                    List<ReactionResponseDto> reactions = (List<ReactionResponseDto>) reactionResponse.getBody()
+                        .getData();
                     okBoardDto.setReactionResponseDtos(reactions);
                 }
 
-                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, okBoardDto);
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
+                    okBoardDto);
                 break;
             case BYE_BOARD:
                 // 작별 게시판
