@@ -98,26 +98,26 @@ const RelayBookDetail: React.FC = () => {
   ];
 
   return (
-    <div className="relative" style={{ backgroundColor: "white" }}>
+    <div className="relative grid grid-rows-[93%_7%] overflow-hidden" style={{ backgroundColor: "white" }}>
       {/* 좌우 이동 버튼 */}
       <div className="h-full w-1/6 absolute top-0 hover:cursor-pointer hover:bg-zinc-300 hover:opacity-40" onClick={(e) => onPrev("Y")}>
-        <button className="mt-[22rem] absolute left-5 ">
-          <img className="w-20" src="/assets/relay/prevButton.png" alt="prev" />
+        <button className="mt-[18rem] absolute left-5 ">
+          <img className="w-16" src="/assets/relay/prevButton.png" alt="prev" />
         </button>
       </div>
       <div className="h-full w-1/6 absolute top-0 right-0 hover:cursor-pointer hover:bg-zinc-300 hover:opacity-40" onClick={(e) => onNext("Y")}>
-        <button className="mt-[22rem] absolute right-5">
-          <img className="w-20" src="/assets/relay/nextButton.png" alt="next" />
+        <button className="mt-[18rem] absolute right-5">
+          <img className="w-16" src="/assets/relay/nextButton.png" alt="next" />
         </button>
       </div>
 
-      <div className="mt-[0.4rem] pt-[2.91rem] pb-[2.95rem]">
+      <div className="mt-[0.4rem] pt-[1rem] pb-[0.9rem]">
         {/* 책 라이브러리 내부 */}
         {/* @ts-ignore */}
         <HTMLFlipBook
           ref={bookRef}
-          width={600}
-          height={680}
+          width={480}
+          height={550}
           minWidth={315}
           maxWidth={1000}
           minHeight={420}
@@ -157,7 +157,7 @@ const RelayBookDetail: React.FC = () => {
       </div>
 
       {/* 페이지 쪽수 표시 */}
-      <div className="h-[3.7rem] flex justify-center items-center bg-zinc-200">
+      <div className="py-6 flex justify-center items-center bg-zinc-200">
         [<span>{page}</span> of
         <span> {totalPage}</span>]
       </div>

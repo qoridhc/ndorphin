@@ -11,7 +11,7 @@ const Paging: React.FC = () => {
   }
 
   return (
-    <div className="mt-48 mb-16">
+    <div className="mt-24 pb-20">
       <Pagination
         activePage={page}
         itemsCountPerPage={12}

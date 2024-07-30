@@ -17,16 +17,16 @@ function BookImage() {
 
   return (
     <>
-      <div className="w-[53%] mx-[47.5%] mt-4 border border-zinc-950">
+      <div className="w-[88%] mt-3 border border-zinc-950">
         <p className="m-3 text-xl font-bold">표지</p>
         <hr className="mx-3 my-2 border-zinc-900" />
         <div className="grid grid-rows-[60%_40%]">
           <div className="flex justify-center items-center">
-            <img src={image || "/assets/relayStartSample.png"} alt="#" className="w-[22rem] h-72 border rounded-md" />
+            <img src={image || "/assets/relayStartSample.png"} alt="#" className="w-[22rem] h-64 border rounded-md" />
           </div>
 
           {/* 이미지 첨부 버튼 */}
-          <div className="pt-10 pb-16 h-full grid grid-cols-[49%_2%_49%]">
+          <div className="pt-4 pb-6 h-full grid grid-cols-[49%_2%_49%]">
             {/* AI 이미지 첨부 버튼 */}
             <div className="flex flex-col items-center justify-center">
               <button className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
