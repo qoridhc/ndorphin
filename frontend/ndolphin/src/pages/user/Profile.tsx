@@ -14,6 +14,8 @@ const Profile = () => {
           <h2 className="text-xl font-bold gap-2 flex items-center">
             행복한 구름
             <img className="ml-2 px-1 w-9 h-8" src="assets/user/nbadge.png" alt="nbadge" />
+            {/* 팔로우 버튼 예시, 본인 일 땐 표시 안 함 */}
+            <button className="ms-4 text-xs w-auto h-auto p-2 bg-blue-500 text-white rounded-lg border-none shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-200 ease-in-out">팔로우</button>
           </h2>
           <div className="flex mt-2 items-center space-x-10">
             <div className="flex flex-col items-center">
@@ -35,11 +37,21 @@ const Profile = () => {
       </div>
 
       <div className="mt-8 border-b space-x-4 flex justify-center">
-        <button className={buttonClass("릴레이")} onClick={() => setSelectedTab("릴레이")}>릴레이</button>
-        <button className={buttonClass("만약에")} onClick={() => setSelectedTab("만약에")}>만약에</button>
-        <button className={buttonClass("괜찮아")} onClick={() => setSelectedTab("괜찮아")}>괜찮아</button>
-        <button className={buttonClass("작별")} onClick={() => setSelectedTab("작별")}>작&nbsp;&nbsp;&nbsp;별</button>
+        <button className={buttonClass("릴레이")} onClick={() => setSelectedTab("릴레이")}>
+          릴레이
+        </button>
+        <button className={buttonClass("만약에")} onClick={() => setSelectedTab("만약에")}>
+          만약에
+        </button>
+        <button className={buttonClass("괜찮아")} onClick={() => setSelectedTab("괜찮아")}>
+          괜찮아
+        </button>
+        <button className={buttonClass("작별")} onClick={() => setSelectedTab("작별")}>
+          작&nbsp;&nbsp;&nbsp;별
+        </button>
       </div>
+
+      <div></div>
     </div>
   );
 };
