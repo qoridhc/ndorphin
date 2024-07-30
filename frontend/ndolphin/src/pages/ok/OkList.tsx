@@ -60,7 +60,7 @@ const OkList = () => {
         },
         {
           id: 2,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUzn7lDyMA6kHGqAVj_Gd3p59vnhMwuvXb-g&s",
+          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGa_e2SL0_u_Hb_SKanee1SDVSpUog7rdQMg&s",
         },
       ],
       joinCount: 5,

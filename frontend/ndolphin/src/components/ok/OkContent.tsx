@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaRegComment } from "react-icons/fa";
-import { IoMdClose, IoMdCloseCircleOutline } from "react-icons/io";
+import OkDetailModal from "./OkDetailModal";
 
 interface Props {
   content: {
@@ -18,18 +18,24 @@ interface Props {
 }
 
 const OkContent = ({ content }: Props) => {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImageList, setSelectedImageList] = useState<{ id: number; imgUrl: string }[] | null>(null);
+  const [selectedImageListIndex, setSelectedImageListIndex] = useState(0);
+
+  const handleselectedImageList = (currentIndex: number) => {
+    setSelectedImageList(content.imgList);
+    setSelectedImageListIndex(currentIndex);
+  };
 
   const renderImages = () => {
     switch (content.imgList.length) {
       case 1:
-        return <img className="w-full rounded-md object-cover cursor-pointer" src={`${content.imgList[0].imgUrl}`} alt="" onClick={() => setSelectedImage(content.imgList[0].imgUrl)} />;
+        return <img className="w-full rounded-md object-cover cursor-pointer" src={`${content.imgList[0].imgUrl}`} alt="" onClick={() => handleselectedImageList(0)} />;
 
       case 2:
         return (
           <div className="grid grid-cols-2 gap-1">
             {content.imgList.map((img, idx) => (
-              <img className={`w-full h-72 object-cover ${idx === 0 ? "rounded-tl-md rounded-bl-md" : "rounded-tr-md rounded-br-md"} cursor-pointer`} src={`${img.imgUrl}`} alt="" key={img.id} onClick={() => setSelectedImage(img.imgUrl)} />
+              <img className={`w-full h-72 object-cover ${idx === 0 ? "rounded-tl-md rounded-bl-md" : "rounded-tr-md rounded-br-md"} cursor-pointer`} src={`${img.imgUrl}`} alt="" key={img.id} onClick={() => handleselectedImageList(idx)} />
             ))}
           </div>
         );
@@ -37,9 +43,9 @@ const OkContent = ({ content }: Props) => {
       case 3:
         return (
           <div className="grid grid-rows-2 grid-cols-2 gap-1">
-            <img className="w-full h-full object-cover row-span-2 rounded-tl-md rounded-bl-md cursor-pointer" src={`${content.imgList[0].imgUrl}`} alt="" onClick={() => setSelectedImage(content.imgList[0].imgUrl)} />
-            <img className="w-full h-36 object-cover rounded-tr-md cursor-pointer" src={`${content.imgList[1].imgUrl}`} alt="" onClick={() => setSelectedImage(content.imgList[1].imgUrl)} />
-            <img className="w-full h-36 object-cover rounded-br-md cursor-pointer" src={`${content.imgList[2].imgUrl}`} alt="" onClick={() => setSelectedImage(content.imgList[2].imgUrl)} />
+            <img className="w-full h-full object-cover row-span-2 rounded-tl-md rounded-bl-md cursor-pointer" src={`${content.imgList[0].imgUrl}`} alt="" onClick={() => handleselectedImageList(0)} />
+            <img className="w-full h-36 object-cover rounded-tr-md cursor-pointer" src={`${content.imgList[1].imgUrl}`} alt="" onClick={() => handleselectedImageList(1)} />
+            <img className="w-full h-36 object-cover rounded-br-md cursor-pointer" src={`${content.imgList[2].imgUrl}`} alt="" onClick={() => handleselectedImageList(2)} />
           </div>
         );
 
@@ -52,16 +58,12 @@ const OkContent = ({ content }: Props) => {
                 src={`${img.imgUrl}`}
                 alt=""
                 key={img.id}
-                onClick={() => setSelectedImage(img.imgUrl)}
+                onClick={() => handleselectedImageList(idx)}
               />
             ))}
           </div>
         );
     }
-  };
-
-  const handleClose = () => {
-    setSelectedImage(null);
   };
 
   return (
@@ -88,16 +90,7 @@ const OkContent = ({ content }: Props) => {
         </div>
       </div>
 
-      {selectedImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="relative">
-            <img className="max-w-full max-h-screen" src={selectedImage} alt="" />
-            <button className="absolute top-2 right-2 bg-white opacity-80 p-1 rounded-full" onClick={handleClose}>
-              <IoMdClose className="text-2xl" />
-            </button>
-          </div>
-        </div>
-      )}
+      {selectedImageList && <OkDetailModal selectedImageList={selectedImageList} selectedImageListIndex={selectedImageListIndex} setSelectedImageList={setSelectedImageList} />}
     </div>
   );
 };
