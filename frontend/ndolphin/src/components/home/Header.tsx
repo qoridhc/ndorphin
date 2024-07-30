@@ -49,6 +49,11 @@ const Header = () => {
     setShowProfileDropdown(false);
   };
 
+  const handleDropdownbuttonClick = (callback: () => void) => {
+    callback();
+    setShowProfileDropdown(false);
+  };
+
   useEffect(() => {
     if (showProfileDropdown) {
       document.addEventListener("click", handleOutsideClick);
@@ -124,15 +129,11 @@ const Header = () => {
                   </div>
                 </div>
                 <hr />
-                <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => {navigate("/profile")}}>프로필</button>
-                <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={openUserInfoEditModalOpen}>
-                  계정 관리
-                </button>
-                <button className="w-full text-left px-4 py-2 hover:bg-gray-200">찜 목록</button>
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate("/profile"))}>프로필</button>
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(openUserInfoEditModalOpen)}>계정 관리</button>
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate("/wishlist"))}>찜 목록</button>
                 <hr />
-                <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={handleLogout}>
-                  로그아웃
-                </button>
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={handleLogout}>로그아웃</button>
               </div>
             )}
           </div>
