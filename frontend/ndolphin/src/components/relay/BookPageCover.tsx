@@ -1,8 +1,11 @@
 import React, { useRef, useState, useCallback, ForwardedRef } from "react";
-import DropDown from "./DropDown";
+import DropDown from "./relayBookCRUD/RelayBookDropDown";
 
-const BookPageCover = React.forwardRef<HTMLDivElement>((props, ref: ForwardedRef<HTMLDivElement>) => {
-  
+interface RelayBookPageUpdateProps {
+  bookId: string | undefined;
+}
+
+const BookPageCover = React.forwardRef<HTMLDivElement, RelayBookPageUpdateProps>((bookId, ref: ForwardedRef<HTMLDivElement>) => {
   return (
     <div className="cover" ref={ref} data-density="hard">
       <div className="h-full flex flex-col justify-between">

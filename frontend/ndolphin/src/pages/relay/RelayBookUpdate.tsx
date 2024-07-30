@@ -19,7 +19,7 @@ const Page = React.forwardRef<HTMLDivElement, PageProps>((props, ref: ForwardedR
   );
 });
 
-const MyAlbum: React.FC = () => {
+const RelayBookUpdate: React.FC = () => {
   return (
     <div className="mt-[1%] grid h-full" style={{ backgroundColor: "white" }}>
       <br></br>
@@ -59,7 +59,7 @@ const MyAlbum: React.FC = () => {
           <Page>
             <div className="flex flex-col items-center justify-center">
               <div className="flex justify-end w-full px-8 my-2">
-                <button className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">등록</button>
+                <button className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">수정</button>
               </div>
               <div className="w-full">
                 <div className="flex flex-col items-center">
@@ -75,4 +75,4 @@ const MyAlbum: React.FC = () => {
   );
 };
 
-export default MyAlbum;
+export default RelayBookUpdate;
