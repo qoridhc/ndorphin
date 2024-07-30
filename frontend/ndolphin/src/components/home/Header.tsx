@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import LoginModal from "../common/LoginModal";
-import UserInfoEditModal from "../common/UserInfoEditModal";
-import NSModal from "../common/NSModal";
+import LoginModal from "../user/LoginModal";
+import UserInfoEditModal from "../user/UserInfoEditModal";
+import NSModal from "../user/NSModal";
 
 const Header = () => {
   const navigate = useNavigate();
