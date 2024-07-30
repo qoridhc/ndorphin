@@ -11,19 +11,23 @@ import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
+import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.dto.reaction.response.ReactionResponseDto;
+import com.web.ndolphin.dto.vote.VoteCount;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.BoardService;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.ReactionService;
+import com.web.ndolphin.service.interfaces.VoteService;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -40,6 +44,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final FileInfoService fileInfoService;
     private final ReactionService reactionService;
+    private final VoteService voteService;
 
     @Override
     public ResponseEntity<ResponseDto> createBoard(Long userId, BoardRequestDto boardRequestDto,
@@ -73,6 +78,35 @@ public class BoardServiceImpl implements BoardService {
         switch (boardType) {
             case VOTE_BOARD:
                 // 총 투표 수(투표 항목들의 투표 합), 투표 목록
+                List<VoteBoardResponseDto> voteBoardResponseDtos = boards.stream()
+                    .map(board -> {
+                        Long boardId = board.getId();
+
+                        List<FileInfoResponseDto> avatar = fileInfoService.getFileInfos(
+                            board.getUser().getUserId(),
+                            EntityType.USER);
+                        String avatarUrl = avatar.isEmpty() ? null : avatar.get(0).getFileUrl();
+
+                        List<VoteCount> voteCounts = voteService.getVoteContents(boardId);
+
+                        // 모든 투표의 합 계산
+                        long totalVotes = voteCounts.stream()
+                            .mapToLong(VoteCount::getVoteCount)
+                            .sum();
+
+                        // VoteContent의 content만 모음
+                        List<String> voteContents = voteCounts.stream()
+                            .map(VoteCount::getVoteContent)
+                            .collect(Collectors.toList());
+
+                        return BoardMapper.toVoteBoardResponseDto(board, voteContents, totalVotes,
+                            avatarUrl);
+                    })
+                    .collect(Collectors.toList());
+
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
+                    voteBoardResponseDtos);
+
                 break;
             case OPINION_BOARD:
                 // 총 댓글 수, 가장 좋아요를 많이 받은 댓글(좋아요 개수가 같으면 최신순)
@@ -86,7 +120,7 @@ public class BoardServiceImpl implements BoardService {
                 for (Board board : boards) {
                     // 파일 정보를 가져오기
                     List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(
-                        board.getId());
+                        board.getId(), EntityType.POST);
 
                     // 파일명과 파일 URL 리스트 생성
                     List<String> fileNames = new ArrayList<>();
@@ -147,7 +181,7 @@ public class BoardServiceImpl implements BoardService {
             case OK_BOARD:
                 // 괜찮아 게시판 - 댓글 가능
                 List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(
-                    boardId);
+                    boardId, EntityType.POST);
 
                 // 파일명과 파일 URL 리스트 생성
                 List<String> fileNames = new ArrayList<>();

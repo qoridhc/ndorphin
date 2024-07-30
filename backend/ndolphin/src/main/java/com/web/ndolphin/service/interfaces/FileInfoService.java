@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface FileInfoService {
 
-    List<FileInfoResponseDto> getFileInfos(Long entityId);
+    List<FileInfoResponseDto> getFileInfos(Long entityId, EntityType entityType);
 
     void uploadAndSaveFiles(Long entityId, EntityType entityType,
         List<MultipartFile> multipartFiles)

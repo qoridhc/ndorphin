@@ -6,6 +6,7 @@ import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
+import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import java.util.List;
 
 public class BoardMapper {
@@ -15,9 +16,9 @@ public class BoardMapper {
 
         dto.setId(board.getId());
         dto.setUserId(board.getUser().getUserId());
+        dto.setNickName(board.getUser().getNickName());
         dto.setSubject(board.getSubject());
         dto.setContent(board.getContent());
-        dto.setSummary(board.getSummary());
         dto.setHit(board.getHit());
         dto.setBoardType(board.getBoardType());
         dto.setCreatedAt(board.getCreatedAt());
@@ -52,6 +53,19 @@ public class BoardMapper {
         dto.setFileUrls(fileUrls);
 
         return dto;
+    }
+
+    public static VoteBoardResponseDto toVoteBoardResponseDto(Board board,
+        List<String> voteContents, long totalVoteCnt, String avatarUrl) {
+
+        VoteBoardResponseDto voteBoardResponseDto = new VoteBoardResponseDto();
+
+        mapCommonFields(board, voteBoardResponseDto);
+        voteBoardResponseDto.setVoteContents(voteContents);
+        voteBoardResponseDto.setTotalVoteCnt(totalVoteCnt);
+        voteBoardResponseDto.setAvatarUrl(avatarUrl);
+
+        return voteBoardResponseDto;
     }
 
     // DTO -> Entity 변환

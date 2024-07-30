@@ -23,7 +23,7 @@ VALUES (1, 'dummy@example.com', 'dummy_nick', 'INTJ', 100, 1, 'USER', CURRENT_TI
 -- board 삽입
 INSERT IGNORE INTO `board` (`user_id`, `subject`, `content`, `summary`, `hit`, `board_type`, `created_at`,
                      `updated_at`)
-VALUES (1, 'Sample Subject', 'This is a sample content.', 'Sample summary', 0, 'RELAY_BOARD',
+VALUES (1, 'Sample Subject', 'This is a sample content.', 'Sample summary', 0, 'VOTE_BOARD',
         CURRENT_TIMESTAMP, NULL);
 
 -- vote_content 삽입

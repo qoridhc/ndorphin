@@ -12,5 +12,6 @@ import lombok.ToString;
 public class VoteCount {
 
     private final Long voteContentId;
+    private final String voteContent;
     private final Long voteCount;
 }

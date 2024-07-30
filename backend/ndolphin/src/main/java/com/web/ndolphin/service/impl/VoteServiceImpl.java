@@ -101,4 +101,11 @@ public class VoteServiceImpl implements VoteService {
             return ResponseDto.databaseError(e.getMessage());
         }
     }
+
+    public List<VoteCount> getVoteContents(Long boardId) {
+
+        List<VoteCount> voteCounts = voteRepository.countVotesByBoardId(boardId);
+
+        return voteCounts;
+    }
 }

@@ -28,9 +28,10 @@ public class FileInfoServiceImpl implements FileInfoService {
     private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
-    public List<FileInfoResponseDto> getFileInfos(Long entityId) {
+    public List<FileInfoResponseDto> getFileInfos(Long entityId, EntityType entityType) {
 
-        List<FileInfo> fileInfos = fileInfoRepository.findByEntityId(entityId);
+        List<FileInfo> fileInfos = fileInfoRepository.findByEntityIdAndEntityType(entityId,
+            entityType);
         List<FileInfoResponseDto> fileInfoResponseDtos = new ArrayList<>();
         for (FileInfo fileInfo : fileInfos) {
             fileInfoResponseDtos.add(FileInfoMapper.toDto(fileInfo));
