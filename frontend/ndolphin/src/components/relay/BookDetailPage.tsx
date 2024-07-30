@@ -1,5 +1,6 @@
 import React, { useRef, useState, useCallback, ForwardedRef } from "react";
 import UserInfo from "./UserInfo";
+import RelayBookPageUpdate from "./BookPageCRUD/RelayBookPageUpdate";
 
 interface BookDetailPageProps {
   number?: number;
@@ -14,14 +15,17 @@ interface BookDetailPageProps {
   totalPage: number;
 }
 
-const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>((props, ref: ForwardedRef<HTMLDivElement>) => {
+const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ number, children, page, totalPage }, ref: ForwardedRef<HTMLDivElement>) => {
+  const [pageUpdate, setPageUpdate] = useState(false);
+
   return (
     <div className="page" ref={ref}>
-      {props.number == props.totalPage + 1 ? <></> : <UserInfo user={props.page.user} userId={props.page.userId} />}
-      <div className="h-full">{props.children}</div>
-      {props.number == props.totalPage + 1 ? <></> : <div className="page-footer">{props.number}</div>}
+      {pageUpdate ? <RelayBookPageUpdate setPageUpdate={setPageUpdate} /> : <>{number === totalPage + 1 ? null : <UserInfo user={page.user} userId={page.userId} setPageUpdate={setPageUpdate} />}</>}
+      {!pageUpdate && <div className="h-full">{children}</div>}
+      {pageUpdate || number === totalPage + 1 ? null : <div className="page-footer">{number}</div>}
     </div>
   );
 });
+
 
 export default BookDetailPage;

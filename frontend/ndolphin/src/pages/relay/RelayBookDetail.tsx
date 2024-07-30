@@ -5,18 +5,19 @@ import { useParams } from "react-router";
 import AddPage from "../../components/relay/AddPage";
 import BookDetailPage from "../../components/relay/BookDetailPage";
 import BookPageCover from "../../components/relay/BookPageCover";
-
+import BookDetailDone from "../../components/relay/BookDetailDone";
 
 // 마지막 페이지 이후 나오는 책 커버
 const PageEndCover = React.forwardRef<HTMLDivElement>((props, ref: ForwardedRef<HTMLDivElement>) => {
   return <div className="cover" ref={ref} data-density="hard"></div>;
 });
 
-
 const RelayBookDetail: React.FC = () => {
+  const { bookId } = useParams();
   const [page, setPage] = useState<number>(1);
   const [totalPage, setTotalPage] = useState<number>(6);
   const bookRef = useRef<typeof HTMLFlipBook>();
+  const [isFinished, setIsFinished] = useState(true);
 
   // 페이지 넘어갈 시 page를 현재 페이지 쪽수로 업데이트
   const onFlip = useCallback((e: { data: number }) => {
@@ -130,7 +131,7 @@ const RelayBookDetail: React.FC = () => {
           className="album-web"
           onFlip={onFlip}
           useMouseEvents={false}>
-          <BookPageCover></BookPageCover>
+          <BookPageCover bookId={bookId}></BookPageCover>
 
           {/* 페이지 매핑 */}
           {PageList.map((page) => (
@@ -145,11 +146,18 @@ const RelayBookDetail: React.FC = () => {
           ))}
 
           {/* 페이지 추가 페이지 */}
-          <BookDetailPage number={PageList.length + 1} page={PageList[0]} totalPage={PageList.length}>
-            <hr></hr>
-            <AddPage />
-          </BookDetailPage>
-
+          {isFinished ? (
+            // 완료된 이야기일 경우 이모티콘 반응
+            <BookDetailPage number={PageList.length + 1} page={PageList[0]} totalPage={PageList.length}>
+              <BookDetailDone />
+            </BookDetailPage>
+          ) : (
+            // 진행 중인 이야기일 경우 페이지 추가
+            <BookDetailPage number={PageList.length + 1} page={PageList[0]} totalPage={PageList.length}>
+              <hr></hr>
+              <AddPage PageList={PageList} />
+            </BookDetailPage>
+          )}
           {/* 페이지가 짝수일 경우 마지막 커버 표시 */}
           {totalPage % 2 == 0 ? <PageEndCover></PageEndCover> : <></>}
         </HTMLFlipBook>
