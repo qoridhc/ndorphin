@@ -9,7 +9,7 @@ function Filter() {
       <div className="w-56 flex justify-between">
         <div>
           <input type="checkbox" id="my" className="mr-2"></input>
-          <label htmlFor="my">내 글 보기</label>
+          <label className="hover:cursor-pointer" htmlFor="my">내 글 보기</label>
         </div>
         <p className="">|</p>
         <div>
