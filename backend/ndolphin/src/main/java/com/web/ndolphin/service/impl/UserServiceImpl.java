@@ -3,7 +3,6 @@ package com.web.ndolphin.service.impl;
 import com.web.ndolphin.common.ResponseCode;
 import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.domain.Board;
-import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.Favorite;
 import com.web.ndolphin.domain.NPoint;
 import com.web.ndolphin.domain.PointRule;
@@ -14,7 +13,6 @@ import com.web.ndolphin.dto.auth.response.OAuth2ResponseDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.favorite.FavoriteResponseDto;
-import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.dto.npoint.request.NPointDeleteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
 import com.web.ndolphin.dto.npoint.resopnse.NPointResponseDto;
@@ -280,16 +278,5 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage());
         }
-    }
-
-    public String getAvatarUrl(Long userId) {
-        List<FileInfoResponseDto> avatar = fileInfoService.getFileInfos(userId, EntityType.USER);
-
-        String avatarUrl = null;
-        if (!avatar.isEmpty()) {
-            avatar.get(0).getFileUrl();
-        }
-
-        return avatarUrl;
     }
 }

@@ -26,4 +26,6 @@ public interface FileInfoService {
         throws IOException;
 
     List<String> parseDeleteFilesJson(String deleteFilesJson);
+
+    String getFileUrl(Long Id, EntityType entityType);
 }

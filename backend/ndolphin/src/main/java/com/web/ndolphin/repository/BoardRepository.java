@@ -19,5 +19,4 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
         "WHERE b.boardType = :boardType " +
         "GROUP BY b, vc.content")
     List<Object[]> findBoardsWithVoteContentSummaries(@Param("boardType") String boardType);
-
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -16,4 +17,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     @Query("SELECT f FROM Favorite f JOIN FETCH f.board WHERE f.user.userId = :userId")
     List<Favorite> findByUserId(Long userId);
 
+    @Query("SELECT COUNT(c) > 0 FROM Comment c WHERE c.board.id = :boardId AND c.user.userId = :userId")
+    boolean existsByBoardIdAndUserId(@Param("boardId") Long boardId,
+        @Param("userId") Long userId);
 }

@@ -12,6 +12,7 @@ import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
 import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
+import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.dto.reaction.response.ReactionResponseDto;
@@ -19,11 +20,11 @@ import com.web.ndolphin.dto.vote.VoteCount;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.CommentRepository;
+import com.web.ndolphin.repository.FavoriteRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.BoardService;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.ReactionService;
-import com.web.ndolphin.service.interfaces.UserService;
 import com.web.ndolphin.service.interfaces.VoteService;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -48,9 +49,9 @@ public class BoardServiceImpl implements BoardService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final FavoriteRepository favoriteRepository;
     private final FileInfoService fileInfoService;
     private final ReactionService reactionService;
-    private final UserService userService;
     private final VoteService voteService;
 
     @Override
@@ -89,7 +90,8 @@ public class BoardServiceImpl implements BoardService {
                     .map(board -> {
                         Long boardId = board.getId();
 
-                        String avatarUrl = userService.getAvatarUrl(board.getUser().getUserId());
+                        String avatarUrl = fileInfoService.getFileUrl(board.getUser().getUserId(),
+                            EntityType.USER);
 
                         List<VoteCount> voteCounts = voteService.getVoteContents(boardId);
 
@@ -117,7 +119,8 @@ public class BoardServiceImpl implements BoardService {
                     .map(board -> {
                         Long boardId = board.getId();
 
-                        String avatarUrl = userService.getAvatarUrl(board.getUser().getUserId());
+                        String avatarUrl = fileInfoService.getFileUrl(board.getUser().getUserId(),
+                            EntityType.USER);
 
                         Pageable pageable = PageRequest.of(0, 1);
                         List<String> bestComments = commentRepository.findTopCommentContentByLikes(
@@ -137,6 +140,28 @@ public class BoardServiceImpl implements BoardService {
                 break;
             case RELAY_BOARD:
                 // 요약, 사진, 참여 여부, 관심 여부
+                List<RelayBoardResponseDto> relayBoardResponseDto = boards.stream()
+                    .map(board -> {
+                        Long boardId = board.getId();
+
+                        String thumbNailUrl = fileInfoService.getFileUrl(
+                            board.getUser().getUserId(),
+                            EntityType.POST);
+
+                        boolean hasParticipated = commentRepository.existsByBoardIdAndUserId(
+                            boardId, board.getUser().getUserId());
+
+                        boolean isFavorite = favoriteRepository.existsByBoardIdAndUserId(
+                            boardId, board.getUser().getUserId());
+
+                        return BoardMapper.toRelayBoardResponseDto(board, hasParticipated,
+                            isFavorite, thumbNailUrl);
+                    })
+                    .collect(Collectors.toList());
+
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
+                    relayBoardResponseDto);
+
                 break;
             case OK_BOARD:
                 // 댓글 수, 사진

@@ -26,6 +26,4 @@ public interface UserService {
     ResponseEntity<ResponseDto> addNPoint(Long userId, NPointRequestDto dto);
 
     ResponseEntity<ResponseDto> deleteNPoint(Long userId, NPointDeleteRequestDto dto);
-
-    public String getAvatarUrl(Long userId);
 }

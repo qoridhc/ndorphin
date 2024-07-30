@@ -133,4 +133,15 @@ public class FileInfoServiceImpl implements FileInfoService {
             throw new IllegalArgumentException("Invalid JSON format for deleteFiles", e);
         }
     }
+
+    public String getFileUrl(Long Id, EntityType entityType) {
+        List<FileInfoResponseDto> file = getFileInfos(Id, entityType);
+
+        String url = null;
+        if (!file.isEmpty()) {
+            url = file.get(0).getFileUrl();
+        }
+
+        return url;
+    }
 }

@@ -7,6 +7,7 @@ import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
 import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
+import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import java.util.List;
 
@@ -80,6 +81,19 @@ public class BoardMapper {
         opinionBoardResponseDto.setAvatarUrl(avatarUrl);
 
         return opinionBoardResponseDto;
+    }
+
+    public static RelayBoardResponseDto toRelayBoardResponseDto(Board board,
+        boolean hasParticipated, boolean isFavorite, String thumbNailUrl) {
+
+        RelayBoardResponseDto relayBoardResponseDto = new RelayBoardResponseDto();
+
+        mapCommonFields(board, relayBoardResponseDto);
+        relayBoardResponseDto.setHasParticipated(hasParticipated);
+        relayBoardResponseDto.setFavorite(isFavorite);
+        relayBoardResponseDto.setThumbNailUrl(thumbNailUrl);
+
+        return relayBoardResponseDto;
     }
 
     // DTO -> Entity 변환

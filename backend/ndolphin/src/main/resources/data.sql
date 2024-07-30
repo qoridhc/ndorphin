@@ -61,3 +61,9 @@ INSERT IGNORE INTO Likes (comment_id, created_at, user_id)
 VALUES
     (1, '2024-07-30 10:00:00', 1),
     (1, '2024-07-30 10:05:00', 2);
+
+-- RELAY_BOARD 삽입
+INSERT IGNORE INTO `board` (`user_id`, `subject`, `content`, `summary`, `hit`, `board_type`, `created_at`,
+                     `updated_at`)
+VALUES (1, 'Sample Subject', 'This is a sample RELAY_BOARD.', 'Sample summary', 0, 'RELAY_BOARD',
+        CURRENT_TIMESTAMP, NULL);
