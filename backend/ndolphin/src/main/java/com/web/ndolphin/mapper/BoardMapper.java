@@ -2,7 +2,7 @@ package com.web.ndolphin.mapper;
 
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.User;
-import com.web.ndolphin.dto.board.BoardDto;
+import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
 import java.util.List;
@@ -37,7 +37,8 @@ public class BoardMapper {
     }
 
     // Entity -> OkBoardDto 변환
-    public static OkBoardDto toOkBoardDto(Board board, List<String> fileNames, List<String> fileUrls) {
+    public static OkBoardDto toOkBoardDto(Board board, List<String> fileNames,
+        List<String> fileUrls) {
 
         OkBoardDto dto = new OkBoardDto();
         mapCommonFields(board, dto);

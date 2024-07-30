@@ -1,6 +1,5 @@
 package com.web.ndolphin.dto.board.response;
 
-import com.web.ndolphin.dto.board.BoardDto;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;

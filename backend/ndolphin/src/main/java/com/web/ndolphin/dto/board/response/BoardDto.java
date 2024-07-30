@@ -1,4 +1,4 @@
-package com.web.ndolphin.dto.board;
+package com.web.ndolphin.dto.board.response;
 
 import com.web.ndolphin.domain.BoardType;
 import java.time.LocalDateTime;

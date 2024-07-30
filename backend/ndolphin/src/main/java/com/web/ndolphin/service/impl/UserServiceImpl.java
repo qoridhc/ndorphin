@@ -10,7 +10,7 @@ import com.web.ndolphin.domain.Token;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.auth.response.OAuth2ResponseDto;
-import com.web.ndolphin.dto.board.BoardDto;
+import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.favorite.FavoriteResponseDto;
 import com.web.ndolphin.dto.npoint.request.NPointDeleteRequestDto;
@@ -18,7 +18,6 @@ import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
 import com.web.ndolphin.dto.npoint.resopnse.NPointResponseDto;
 import com.web.ndolphin.dto.user.UserDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
-import com.web.ndolphin.mapper.BoardConverter;
 import com.web.ndolphin.mapper.FavoriteMapper;
 import com.web.ndolphin.mapper.NPointMapper;
 import com.web.ndolphin.mapper.UserMapper;
@@ -216,11 +215,13 @@ public class UserServiceImpl implements UserService {
 
         try {
             User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+                .orElseThrow(
+                    () -> new IllegalArgumentException("The userId does not exist: " + userId));
 
             PointRule pointRule = pointRuleRepository.findById(dto.getPointRuleId())
                 .orElseThrow(
-                    () -> new IllegalArgumentException("The nPointRuleId does not exist: " + dto.getPointRuleId()));
+                    () -> new IllegalArgumentException(
+                        "The nPointRuleId does not exist: " + dto.getPointRuleId()));
 
             NPoint nPoint = NPointMapper.toEntity(user, pointRule);
 
@@ -230,7 +231,8 @@ public class UserServiceImpl implements UserService {
             nPointRepository.save(nPoint);
             userRepository.save(user);
 
-            NPointResponseDto nPointResponseDto = NPointMapper.toNPointResponseDto(user.getUserId(), user.getNPoint());
+            NPointResponseDto nPointResponseDto = NPointMapper.toNPointResponseDto(user.getUserId(),
+                user.getNPoint());
 
             ResponseDto<NPointResponseDto> responseBody = new ResponseDto<>(
                 ResponseCode.SUCCESS,
@@ -250,10 +252,12 @@ public class UserServiceImpl implements UserService {
         try {
 
             User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+                .orElseThrow(
+                    () -> new IllegalArgumentException("The userId does not exist: " + userId));
 
             NPoint nPoint = nPointRepository.findById(dto.getPointId())
-                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+                .orElseThrow(
+                    () -> new IllegalArgumentException("The userId does not exist: " + userId));
 
             user.setNPoint(user.getNPoint() - nPoint.getPointRule().getPoint());
 
@@ -261,7 +265,8 @@ public class UserServiceImpl implements UserService {
 
             nPointRepository.deleteById(dto.getPointId());
 
-            NPointResponseDto nPointResponseDto = NPointMapper.toNPointResponseDto(user.getUserId(), user.getNPoint());
+            NPointResponseDto nPointResponseDto = NPointMapper.toNPointResponseDto(user.getUserId(),
+                user.getNPoint());
 
             ResponseDto<NPointResponseDto> responseBody = new ResponseDto<>(
                 ResponseCode.SUCCESS,

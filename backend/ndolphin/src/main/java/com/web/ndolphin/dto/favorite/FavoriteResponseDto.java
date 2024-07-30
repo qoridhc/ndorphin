@@ -1,6 +1,6 @@
 package com.web.ndolphin.dto.favorite;
 
-import com.web.ndolphin.dto.board.BoardDto;
+import com.web.ndolphin.dto.board.response.BoardDto;
 import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

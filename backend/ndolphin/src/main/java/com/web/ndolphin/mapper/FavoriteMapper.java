@@ -3,7 +3,7 @@ package com.web.ndolphin.mapper;
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.Favorite;
 import com.web.ndolphin.domain.User;
-import com.web.ndolphin.dto.board.BoardDto;
+import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.favorite.FavoriteResponseDto;
 import java.util.List;
 
