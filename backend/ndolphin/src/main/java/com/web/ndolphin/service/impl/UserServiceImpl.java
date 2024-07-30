@@ -18,6 +18,7 @@ import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
 import com.web.ndolphin.dto.npoint.resopnse.NPointResponseDto;
 import com.web.ndolphin.dto.user.UserDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
+import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.mapper.FavoriteMapper;
 import com.web.ndolphin.mapper.NPointMapper;
 import com.web.ndolphin.mapper.UserMapper;
@@ -160,7 +161,7 @@ public class UserServiceImpl implements UserService {
 
         List<Favorite> favorites = favoriteRepository.findByUserId(userId);
         List<BoardDto> boardDtos = favorites.stream()
-            .map(favorite -> BoardConverter.convertToDto(favorite.getBoard()))
+            .map(favorite -> BoardMapper.toBoardDto(favorite.getBoard()))
             .toList();
 
         FavoriteResponseDto favoriteResponseDto = FavoriteMapper.toDto(boardDtos);
