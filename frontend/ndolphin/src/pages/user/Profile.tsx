@@ -3,19 +3,26 @@ import React, { useState } from "react";
 const Profile = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<string>("만약에");
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const buttonClass = (tabName: string) => `relative px-4 py-2 ${selectedTab === tabName ? "text-black underline underline-offset-8 decoration-[#FFDE2F] decoration-4 duration-300" : "text-gray-400"}`;
+
+  const handleClick = () => {
+    setIsFollowing(!isFollowing);
+  };
 
   return (
     <div className="container mx-auto px-4">
       <div className="mt-8 gap-10 flex justify-center items-center">
         <img className="w-36 h-36 mr-6 bg-gray-200 rounded-full" src={profileImage || "assets/user/profile.png"} alt="Profile" />
         <div>
-          <h2 className="text-xl font-bold gap-2 flex items-center">
+          <h2 className="text-xl font-bold flex items-center">
             행복한 구름
-            <img className="ml-2 px-1 w-9 h-8" src="assets/user/nbadge.png" alt="nbadge" />
+            <img className="ml-2 w-9 h-8" src="assets/user/nbadge.png" alt="nbadge" />
             {/* 팔로우 버튼 예시, 본인 일 땐 표시 안 함 */}
-            <button className="ms-4 text-xs w-auto h-auto p-2 bg-blue-500 text-white rounded-lg border-none shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-200 ease-in-out">팔로우</button>
+            <button className={`ms-10 text-xs w-auto h-auto p-2 rounded-lg border-none shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 ${isFollowing ? "bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-300" : "bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-300"}`} onClick={handleClick}>
+              {isFollowing ? "팔로잉" : "팔로우"}
+            </button>
           </h2>
           <div className="flex mt-2 items-center space-x-10">
             <div className="flex flex-col items-center">
