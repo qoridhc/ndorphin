@@ -110,7 +110,7 @@ const OkList = () => {
             <button
               className="w-full my-3 px-7 py-2 shadow-md rounded-2xl font-bold bg-amber-300 text-black"
               onClick={() => {
-                navigate("/ifstart");
+                navigate("/okstart");
               }}>
               고민 작성하기
             </button>

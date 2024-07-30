@@ -11,6 +11,7 @@ import IfStart from "./pages/if/IfStart";
 import IfDetail from "./pages/if/IfDetail";
 import Profile from "./pages/user/Profile";
 import OkList from "./pages/ok/OkList";
+import OkStart from "./pages/ok/OkStart";
 
 function App() {
   return (
@@ -26,7 +27,8 @@ function App() {
           <Route path="/ifstart" element={<IfStart />}></Route>
           <Route path="/ifdetail/:id" element={<IfDetail />}></Route>
           <Route path="/profile" element={<Profile />}></Route>
-          <Route path="/ok" element={<OkList />}></Route>
+          <Route path="/oklist" element={<OkList />}></Route>
+          <Route path="/okstart" element={<OkStart />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
