@@ -21,7 +21,7 @@ const Profile = () => {
 
   return (
     <div className="container mx-auto px-4">
-      <div className="mt-8 gap-10 flex justify-center items-center">
+      <div className="mt-12 gap-10 flex justify-center items-center">
         <img className="w-36 h-36 mr-6 bg-gray-200 rounded-full" src={profileImage || "assets/user/profile.png"} alt="Profile" />
         <div>
           <h2 className="text-xl font-bold flex items-center">

@@ -12,6 +12,7 @@ import IfStart from "./pages/if/IfStart";
 import IfDetail from "./pages/if/IfDetail";
 import Profile from "./pages/user/Profile";
 import OkList from "./pages/ok/OkList";
+import WishList from "./pages/user/WishList";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/ifdetail/:id" element={<IfDetail />}></Route>
           <Route path="/profile" element={<Profile />}></Route>
           <Route path="/ok" element={<OkList />}></Route>
+          <Route path="/wishlist" element={<WishList />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
