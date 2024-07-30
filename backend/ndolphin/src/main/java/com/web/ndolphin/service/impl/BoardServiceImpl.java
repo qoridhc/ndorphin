@@ -12,11 +12,13 @@ import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
+import com.web.ndolphin.dto.reaction.response.ReactionResponseDto;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.UserRepository;
-import com.web.ndolphin.service.FileInfoService;
+import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.BoardService;
+import com.web.ndolphin.service.interfaces.ReactionService;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ public class BoardServiceImpl implements BoardService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final FileInfoService fileInfoService;
+    private final ReactionService reactionService;
 
     @Override
     public ResponseEntity<ResponseDto> createBoard(Long userId, BoardRequestDto boardRequestDto,
@@ -187,6 +190,14 @@ public class BoardServiceImpl implements BoardService {
 
                 // Board와 파일 정보를 사용하여 OkBoardDto 생성
                 OkBoardDto okBoardDto = BoardMapper.toOkBoardDto(board, fileNames, fileUrls);
+
+                // 반응 정보 조회
+                ResponseEntity<ResponseDto> reactionResponse = reactionService.getReactionsByBoardId(boardId);
+                if (reactionResponse.getBody().getCode() == ResponseCode.SUCCESS) {
+                    List<ReactionResponseDto> reactions = (List<ReactionResponseDto>) reactionResponse.getBody().getData();
+                    okBoardDto.setReactionResponseDtos(reactions);
+                }
+
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, okBoardDto);
                 break;
             case BYE_BOARD:
