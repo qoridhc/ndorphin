@@ -5,6 +5,7 @@ import Header from "./components/home/Header";
 import Home from "./pages/Home";
 import RelayBookList from "./pages/relay/RelayBookList";
 import RelayBookStart from "./pages/relay/RelayBookStart";
+import RelayBookUpdate from "./pages/relay/RelayBookUpdate";
 import RelayBookDetail from "./pages/relay/RelayBookDetail";
 import IfList from "./pages/if/IfList";
 import IfStart from "./pages/if/IfStart";
@@ -21,6 +22,7 @@ function App() {
           <Route path="/" element={<Home />}></Route>
           <Route path="/relaybooklist" element={<RelayBookList />}></Route>
           <Route path="/relaybookstart" element={<RelayBookStart />}></Route>
+          <Route path="/relaybookupdate/:id" element={<RelayBookUpdate />}></Route>
           <Route path="/relaybookdetail/:id" element={<RelayBookDetail />}></Route>
           <Route path="/iflist" element={<IfList />}></Route>
           <Route path="/ifstart" element={<IfStart />}></Route>

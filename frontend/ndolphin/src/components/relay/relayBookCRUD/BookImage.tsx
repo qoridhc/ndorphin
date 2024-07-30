@@ -22,7 +22,7 @@ function BookImage() {
         <hr className="mx-3 my-2 border-zinc-900" />
         <div className="grid grid-rows-[60%_40%]">
           <div className="flex justify-center items-center">
-            <img src={image || "/assets/relayStartSample.png"} alt="#" className="w-[22rem] h-64 border rounded-md" />
+            <img src={image || "/assets/relay/bookCoverDefault.png"} alt="#" className="w-[22rem] h-64 border rounded-md" />
           </div>
 
           {/* 이미지 첨부 버튼 */}

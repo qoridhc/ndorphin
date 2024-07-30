@@ -2,7 +2,7 @@ import HTMLFlipBook from "react-pageflip";
 import React, { ForwardedRef } from "react";
 import "../../css/RelayBook.css";
 import "../../css/Notes.css";
-import BookImage from "./BookImage";
+import BookImage from "./relayBookCRUD/BookImage";
 import EndPage from "./EndPage";
 
 interface PageProps {
@@ -72,4 +72,3 @@ const MyAlbum: React.FC = () => {
 };
 
 export default MyAlbum;
-
