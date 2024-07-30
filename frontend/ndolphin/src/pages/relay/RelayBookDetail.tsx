@@ -135,10 +135,9 @@ const RelayBookDetail: React.FC = () => {
           {/* 페이지 매핑 */}
           {PageList.map((page) => (
             <BookDetailPage number={page.id} page={page} totalPage={PageList.length}>
-              <div>
-                <hr></hr>
+              <div className="h-[80%] flex flex-col justify-around">
                 <div className="w-full flex justify-center">
-                  <img className="w-4/5" src="/assets/relayStartSample.png" alt="" />
+                  <img className="w-2/3" src="/assets/relayStartSample.png" alt="" />
                 </div>
                 <p>{page.content}</p>
               </div>
