@@ -90,7 +90,7 @@ const OkContent = ({ content }: Props) => {
         </div>
       </div>
 
-      {selectedImageList && <OkDetailModal selectedImageList={selectedImageList} selectedImageListIndex={selectedImageListIndex} setSelectedImageList={setSelectedImageList} />}
+      {selectedImageList && <OkDetailModal content={content} selectedImageList={selectedImageList} selectedImageListIndex={selectedImageListIndex} setSelectedImageList={setSelectedImageList} />}
     </div>
   );
 };
