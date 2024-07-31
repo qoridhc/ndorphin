@@ -29,7 +29,7 @@ function App() {
           <Route path="/ifstart" element={<IfStart />}></Route>
           <Route path="/ifdetail/:id" element={<IfDetail />}></Route>
           <Route path="/profile" element={<Profile />}></Route>
-          <Route path="/ok" element={<OkList />}></Route>
+          <Route path="/oklist" element={<OkList />}></Route>
           <Route path="/wishlist" element={<WishList />}></Route>
         </Routes>
       </BrowserRouter>
