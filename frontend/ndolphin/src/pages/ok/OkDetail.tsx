@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import OkDetailModal from "../../components/ok/OkDetailModal";
-import { FaRegComment } from "react-icons/fa6";
+import { FaArrowLeftLong, FaRegComment } from "react-icons/fa6";
 import SettingsMenu from "../../components/common/SettingMenu";
+import { useNavigate } from "react-router";
 
 const OkDetail = () => {
+  const navigate = useNavigate();
+  const [selectedImageList, setSelectedImageList] = useState<{ id: number; imgUrl: string }[] | null>(null);
+  const [selectedImageListIndex, setSelectedImageListIndex] = useState(0);
+  const [rowCount, setRowCount] = useState(0);
+
   const okContentList = [
     {
       id: 1,
@@ -183,13 +189,24 @@ const OkDetail = () => {
     profileImgUrl: "/assets/profile/profile4.png",
   };
 
-  const [selectedImageList, setSelectedImageList] = useState<{ id: number; imgUrl: string }[] | null>(null);
-  const [selectedImageListIndex, setSelectedImageListIndex] = useState(0);
-
   const handleselectedImageList = (currentIndex: number) => {
     setSelectedImageList(okContentList[0].imgList);
     setSelectedImageListIndex(currentIndex);
   };
+
+  const handleTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    // const text = event.target.value.length;
+    // setTextCount(text);
+    const rows = event.target.value.split(/\r\n|\r|\n/).length;
+    setRowCount(rows);
+  };
+
+  useEffect(() => {
+    const targetTextarea = document.querySelector(`#target`) as HTMLTextAreaElement | null;
+    if (targetTextarea) {
+      targetTextarea.style.height = rowCount * 28 + "px";
+    }
+  }, [rowCount]);
 
   const renderImages = () => {
     switch (okContentList[0].imgList.length) {
@@ -232,9 +249,13 @@ const OkDetail = () => {
   };
 
   return (
-    <div className="px-44">
-      <div className="py-5 grid grid-cols-[1fr_2fr_1fr] gap-5">
-        <div className="border-t border-x col-start-2">
+    <div className="px-44 py-5 grid grid-cols-[1fr_2fr_1fr] gap-5">
+      <div className="col-start-2">
+        <button className="py-4 flex" onClick={() => navigate("/oklist")}>
+          <FaArrowLeftLong className="text-3xl" />
+          <p className="px-3 text-xl font-bold">만약에 게시판</p>
+        </button>
+        <div className="border-t border-x">
           <div className="p-5 border-b flex">
             <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${okContentList[0].profileImgUrl}`} alt="" />
 
@@ -254,15 +275,17 @@ const OkDetail = () => {
               </div>
             </div>
           </div>
+
           <div className="p-5 border-b">
             <div className="flex">
               <img className="w-11 h-11 mr-3 rounded-[50%]" src={`${userData.profileImgUrl}`} alt="" />
-              <textarea className="w-full p-1 text-lg text-left outline-none resize-none" placeholder="댓글을 작성해 주세요" />
+              <textarea className="w-full min-h-10 text-xl outline-none resize-none" placeholder="댓글을 작성해 주세요" id="target" onChange={(e) => handleTextareaChange(e)} />
             </div>
             <div className="flex justify-end">
               <button className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">등록</button>
             </div>
           </div>
+
           {okContentList[0].commentData.map((comment) => (
             <div className="p-5 border-b flex" key={comment.id}>
               <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${comment.profileImgUrl}`} alt="" />
@@ -281,7 +304,7 @@ const OkDetail = () => {
                 <p className="text-sm text-[#565656] text-right">{comment.date}</p>
               </div>
             </div>
-          ))}{" "}
+          ))}
         </div>
       </div>
 
