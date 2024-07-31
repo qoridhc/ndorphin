@@ -190,7 +190,7 @@ const OkDetail = () => {
   };
 
   const handleselectedImageList = (currentIndex: number) => {
-    setSelectedImageList(okContentList[0].imgList);
+    setSelectedImageList(okContentList[1].imgList);
     setSelectedImageListIndex(currentIndex);
   };
 
@@ -209,14 +209,14 @@ const OkDetail = () => {
   }, [rowCount]);
 
   const renderImages = () => {
-    switch (okContentList[0].imgList.length) {
+    switch (okContentList[1].imgList.length) {
       case 1:
-        return <img className="w-full rounded-md object-cover cursor-pointer" src={`${okContentList[0].imgList[0].imgUrl}`} alt="" onClick={() => handleselectedImageList(0)} />;
+        return <img className="w-full rounded-md object-cover cursor-pointer" src={`${okContentList[1].imgList[1].imgUrl}`} alt="" onClick={() => handleselectedImageList(0)} />;
 
       case 2:
         return (
           <div className="grid grid-cols-2 gap-1">
-            {okContentList[0].imgList.map((img, idx) => (
+            {okContentList[1].imgList.map((img, idx) => (
               <img className={`w-full h-72 object-cover ${idx === 0 ? "rounded-tl-md rounded-bl-md" : "rounded-tr-md rounded-br-md"} cursor-pointer`} src={`${img.imgUrl}`} alt="" key={img.id} onClick={() => handleselectedImageList(idx)} />
             ))}
           </div>
@@ -225,16 +225,16 @@ const OkDetail = () => {
       case 3:
         return (
           <div className="grid grid-rows-2 grid-cols-2 gap-1">
-            <img className="w-full h-full object-cover row-span-2 rounded-tl-md rounded-bl-md cursor-pointer" src={`${okContentList[0].imgList[0].imgUrl}`} alt="" onClick={() => handleselectedImageList(0)} />
-            <img className="w-full h-36 object-cover rounded-tr-md cursor-pointer" src={`${okContentList[0].imgList[1].imgUrl}`} alt="" onClick={() => handleselectedImageList(1)} />
-            <img className="w-full h-36 object-cover rounded-br-md cursor-pointer" src={`${okContentList[0].imgList[2].imgUrl}`} alt="" onClick={() => handleselectedImageList(2)} />
+            <img className="w-full h-full object-cover row-span-2 rounded-tl-md rounded-bl-md cursor-pointer" src={`${okContentList[1].imgList[1].imgUrl}`} alt="" onClick={() => handleselectedImageList(0)} />
+            <img className="w-full h-36 object-cover rounded-tr-md cursor-pointer" src={`${okContentList[1].imgList[1].imgUrl}`} alt="" onClick={() => handleselectedImageList(1)} />
+            <img className="w-full h-36 object-cover rounded-br-md cursor-pointer" src={`${okContentList[1].imgList[2].imgUrl}`} alt="" onClick={() => handleselectedImageList(2)} />
           </div>
         );
 
       case 4:
         return (
           <div className="grid grid-cols-2 gap-1">
-            {okContentList[0].imgList.map((img, idx) => (
+            {okContentList[1].imgList.map((img, idx) => (
               <img
                 className={`w-full h-36 object-cover ${idx === 0 ? "rounded-tl-md" : idx === 1 ? "rounded-tr-md" : idx === 2 ? "rounded-bl-md" : "rounded-br-md"} cursor-pointer`}
                 src={`${img.imgUrl}`}
@@ -253,25 +253,25 @@ const OkDetail = () => {
       <div className="col-start-2">
         <button className="py-4 flex" onClick={() => navigate("/oklist")}>
           <FaArrowLeftLong className="text-3xl" />
-          <p className="px-3 text-xl font-bold">만약에 게시판</p>
+          <p className="px-3 text-xl font-bold">괜찮아 게시판</p>
         </button>
         <div className="border-t border-x">
           <div className="p-5 border-b flex">
-            <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${okContentList[0].profileImgUrl}`} alt="" />
+            <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${okContentList[1].profileImgUrl}`} alt="" />
 
             <div className="grid gap-3">
               <div>
-                <p className="font-bold">{okContentList[0].user}</p>
-                <p className="text-sm font-semibold text-[#565656]">{okContentList[0].date}</p>
+                <p className="font-bold">{okContentList[1].user}</p>
+                <p className="text-sm font-semibold text-[#565656]">{okContentList[1].date}</p>
               </div>
 
-              <p className="font-medium text-justify leading-snug">{okContentList[0].content}</p>
+              <p className="font-medium text-justify leading-snug">{okContentList[1].content}</p>
 
               {renderImages()}
 
               <div className="flex items-center">
                 <FaRegComment />
-                {okContentList[0].joinCount === 0 ? <></> : <p className="px-1 text-[#565656] font-semibold">{okContentList[0].joinCount}</p>}
+                {okContentList[1].joinCount === 0 ? <></> : <p className="px-1 text-[#565656] font-semibold">{okContentList[1].joinCount}</p>}
               </div>
             </div>
           </div>
@@ -286,7 +286,7 @@ const OkDetail = () => {
             </div>
           </div>
 
-          {okContentList[0].commentData.map((comment) => (
+          {okContentList[1].commentData.map((comment) => (
             <div className="p-5 border-b flex" key={comment.id}>
               <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${comment.profileImgUrl}`} alt="" />
 
@@ -308,7 +308,7 @@ const OkDetail = () => {
         </div>
       </div>
 
-      {selectedImageList && <OkDetailModal content={okContentList[0]} selectedImageList={selectedImageList} selectedImageListIndex={selectedImageListIndex} setSelectedImageList={setSelectedImageList} />}
+      {selectedImageList && <OkDetailModal content={okContentList[1]} selectedImageList={selectedImageList} selectedImageListIndex={selectedImageListIndex} setSelectedImageList={setSelectedImageList} />}
     </div>
   );
 };
