@@ -6,7 +6,7 @@ import com.web.ndolphin.domain.User;
 import com.web.ndolphin.domain.Vote;
 import com.web.ndolphin.domain.VoteContent;
 import com.web.ndolphin.dto.ResponseDto;
-import com.web.ndolphin.dto.vote.VoteCount;
+import com.web.ndolphin.dto.vote.VoteInfo;
 import com.web.ndolphin.dto.vote.request.VoteRequestDto;
 import com.web.ndolphin.dto.vote.response.VoteResponseDto;
 import com.web.ndolphin.mapper.VoteMapper;
@@ -44,8 +44,8 @@ public class VoteServiceImpl implements VoteService {
             voteRepository.save(vote);
 
             Long boardId = voteContent.getBoard().getId();
-            List<VoteCount> voteCounts = voteRepository.countVotesByBoardId(boardId);
-            VoteResponseDto voteResponseDto = VoteMapper.toDto(vote, voteCounts);
+            List<VoteInfo> voteInfos = voteRepository.countVotesByBoardId(boardId);
+            VoteResponseDto voteResponseDto = VoteMapper.toDto(vote, voteInfos);
 
             ResponseDto<VoteResponseDto> responseBody = new ResponseDto<>(
                 ResponseCode.SUCCESS,
@@ -75,8 +75,8 @@ public class VoteServiceImpl implements VoteService {
             voteRepository.save(vote);
 
             Long boardId = newVoteContent.getBoard().getId();
-            List<VoteCount> voteCounts = voteRepository.countVotesByBoardId(boardId);
-            VoteResponseDto voteResponseDto = VoteMapper.toDto(vote, voteCounts);
+            List<VoteInfo> voteInfos = voteRepository.countVotesByBoardId(boardId);
+            VoteResponseDto voteResponseDto = VoteMapper.toDto(vote, voteInfos);
 
             ResponseDto<VoteResponseDto> responseBody = new ResponseDto<>(
                 ResponseCode.SUCCESS,
@@ -102,10 +102,10 @@ public class VoteServiceImpl implements VoteService {
         }
     }
 
-    public List<VoteCount> getVoteContents(Long boardId) {
+    public List<VoteInfo> getVoteContents(Long boardId) {
 
-        List<VoteCount> voteCounts = voteRepository.countVotesByBoardId(boardId);
+        List<VoteInfo> voteInfos = voteRepository.countVotesByBoardId(boardId);
 
-        return voteCounts;
+        return voteInfos;
     }
 }

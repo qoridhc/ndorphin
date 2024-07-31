@@ -11,6 +11,7 @@ import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.Reaction;
 import com.web.ndolphin.domain.ReactionType;
 import com.web.ndolphin.domain.User;
+import com.web.ndolphin.domain.Vote;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
@@ -22,7 +23,7 @@ import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import com.web.ndolphin.dto.comment.CommentResponseDto;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
-import com.web.ndolphin.dto.vote.VoteCount;
+import com.web.ndolphin.dto.vote.VoteInfo;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.mapper.CommentMapper;
 import com.web.ndolphin.repository.BoardRepository;
@@ -30,10 +31,12 @@ import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.FavoriteRepository;
 import com.web.ndolphin.repository.ReactionRepository;
 import com.web.ndolphin.repository.UserRepository;
+import com.web.ndolphin.repository.VoteRepository;
 import com.web.ndolphin.service.interfaces.BoardService;
 import com.web.ndolphin.service.interfaces.CommentService;
 import com.web.ndolphin.service.interfaces.FileInfoService;
-import com.web.ndolphin.service.interfaces.ReactionService;
+import com.web.ndolphin.service.interfaces.TokenService;
+import com.web.ndolphin.service.interfaces.UserService;
 import com.web.ndolphin.service.interfaces.VoteService;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -61,10 +64,12 @@ public class BoardServiceImpl implements BoardService {
     private final CommentRepository commentRepository;
     private final FavoriteRepository favoriteRepository;
     private final FileInfoService fileInfoService;
-    private final ReactionService reactionService;
+    private final UserService userService;
+    private final TokenService tokenService;
     private final VoteService voteService;
     private final CommentService commentService;
     private final ReactionRepository reactionRepository;
+    private final VoteRepository voteRepository;
 
     @Override
     public ResponseEntity<ResponseDto> createBoard(Long userId, BoardRequestDto boardRequestDto,
@@ -92,6 +97,7 @@ public class BoardServiceImpl implements BoardService {
     public ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType) {
 
         ResponseDto<?> responseBody = null;
+        Map<ReactionType, Long> reactionTypeCounts = null;
 
         List<Board> boards = boardRepository.findByBoardType(boardType);
 
@@ -105,16 +111,16 @@ public class BoardServiceImpl implements BoardService {
                         String avatarUrl = fileInfoService.getFileUrl(board.getUser().getUserId(),
                             EntityType.USER);
 
-                        List<VoteCount> voteCounts = voteService.getVoteContents(boardId);
+                        List<VoteInfo> voteInfos = voteService.getVoteContents(boardId);
 
                         // 모든 투표의 합 계산
-                        long totalVotes = voteCounts.stream()
-                            .mapToLong(VoteCount::getVoteCount)
+                        long totalVotes = voteInfos.stream()
+                            .mapToLong(VoteInfo::getVoteCount)
                             .sum();
 
                         // VoteContent의 content만 모음
-                        List<String> voteContents = voteCounts.stream()
-                            .map(VoteCount::getVoteContent)
+                        List<String> voteContents = voteInfos.stream()
+                            .map(VoteInfo::getVoteContent)
                             .collect(toList());
 
                         return BoardMapper.toVoteBoardResponseDto(board, voteContents, totalVotes,
@@ -205,8 +211,7 @@ public class BoardServiceImpl implements BoardService {
                 for (Board board : boards) {
 
                     // 각 게시글의 반응 수를 조회
-                    Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(
-                        board.getId());
+                    reactionTypeCounts = getReactionTypeCounts(board.getId());
 
                     // 사용자의 반응 조회
                     Reaction userReaction = reactionRepository.findByBoardIdAndUserId(board.getId(),
@@ -226,20 +231,6 @@ public class BoardServiceImpl implements BoardService {
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    private Map<ReactionType, Long> getReactionTypeCounts(Long boardId) {
-
-        List<Object[]> results = reactionRepository.countByBoardIdGroupByReactionType(boardId);
-
-        Map<ReactionType, Long> reactionTypeCounts = results.stream()
-            .filter(result -> result[0] != null)
-            .collect(Collectors.toMap(
-                result -> (ReactionType) result[0],
-                result -> (Long) result[1]
-            ));
-
-        return reactionTypeCounts;
-    }
-
     @Override
     public ResponseEntity<ResponseDto> getBoardById(Long boardId) {
 
@@ -251,17 +242,27 @@ public class BoardServiceImpl implements BoardService {
         board.setHit(board.getHit() + 1);
         boardRepository.save(board);
 
+        Long userId = tokenService.getUserIdFromToken();
+
         switch (board.getBoardType()) {
             case VOTE_BOARD:
                 // 투표 게시판 - 이미지 첨부 가능
+                String avatarUrl = fileInfoService.getFileUrl(board.getUser().getUserId(),
+                    EntityType.USER);
+
+                List<VoteInfo> voteInfos = voteService.getVoteContents(boardId);
+
+                Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(boardId);
+
+                Vote vote = voteRepository.findVoteByBoardIdAndUserId(board.getId(), userId)
+                    .orElse(null);
+
                 break;
             case OPINION_BOARD:
                 // 의견 게시판 - 댓글 가능
                 break;
             case RELAY_BOARD:
                 // 릴레이 게시판 - 댓글 및 이미지 첨부 가능
-                Long userId = board.getUser().getUserId();
-
                 String thumbNailUrl = fileInfoService.getFileUrl(
                     board.getUser().getUserId(),
                     EntityType.POST);
@@ -283,7 +284,7 @@ public class BoardServiceImpl implements BoardService {
                         return commentResponseDto;
                     }).collect(toList());
 
-                Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(boardId);
+                reactionTypeCounts = getReactionTypeCounts(boardId);
 
                 Reaction reaction = reactionRepository.findByBoardIdAndUserId(boardId, userId);
 
@@ -409,5 +410,19 @@ public class BoardServiceImpl implements BoardService {
         } catch (Exception e) {
             return ResponseDto.databaseError(); // 기타 예외 발생 시 데이터베이스 에러 응답
         }
+    }
+
+    private Map<ReactionType, Long> getReactionTypeCounts(Long boardId) {
+
+        List<Object[]> results = reactionRepository.countByBoardIdGroupByReactionType(boardId);
+
+        Map<ReactionType, Long> reactionTypeCounts = results.stream()
+            .filter(result -> result[0] != null)
+            .collect(Collectors.toMap(
+                result -> (ReactionType) result[0],
+                result -> (Long) result[1]
+            ));
+
+        return reactionTypeCounts;
     }
 }
