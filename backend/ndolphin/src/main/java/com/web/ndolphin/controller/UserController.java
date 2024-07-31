@@ -24,6 +24,12 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping("/jenkins-test")
+    public ResponseEntity<ResponseDto> test() {
+
+        return ResponseDto.success();
+    }
+
     // ====== User CRUD ======
     @GetMapping("/{userId}")
     public ResponseEntity<ResponseDto> getUser(@PathVariable("userId") Long userId) {
