@@ -1,5 +1,6 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
+import { RiDeleteBinLine } from "react-icons/ri";
 
 const OkStartModal = () => {
   const [imageList, setImageList] = useState<string[]>([]);
@@ -19,7 +20,13 @@ const OkStartModal = () => {
           if (newImageList.length === files.length) {
             setImageList((prev) => {
               const updatedList = [...prev, ...newImageList].slice(0, 4);
-              setCurrentSlideList(updatedList.slice(0, 2));
+              if (updatedList.length > 2) {
+                setSlideState(1);
+                setCurrentSlideList(updatedList.slice(2, 4));
+              } else {
+                setSlideState(0);
+                setCurrentSlideList(updatedList.slice(0, 2));
+              }
               return updatedList;
             });
           }
@@ -44,6 +51,20 @@ const OkStartModal = () => {
     setCurrentSlideList(imageList.slice(2, 4));
   };
 
+  const deleteImage = (currentIndex: number) => {
+    const actualIndex = slideState === 0 ? currentIndex : currentIndex + 2;
+    setImageList((prev) => {
+      const newImageList = prev.filter((_, i) => i !== actualIndex);
+      if (newImageList.length > 2) {
+        setCurrentSlideList(newImageList.slice(slideState === 0 ? 0 : 2, slideState === 0 ? 2 : 4));
+      } else {
+        setSlideState(0);
+        setCurrentSlideList(newImageList);
+      }
+      return newImageList;
+    });
+  };
+
   useEffect(() => {
     const targetTextarea = document.querySelector(`#target`) as HTMLTextAreaElement | null;
     if (targetTextarea) {
@@ -63,18 +84,23 @@ const OkStartModal = () => {
               {imageList.length <= 2 || slideState === 0 ? (
                 <></>
               ) : (
-                <button className="absolute top-1/2 left-2 translate-y-[-50%] z-50" onClick={handlePrev}>
-                  <SlArrowLeft className="text-4xl p-2 bg-white rounded-[50%] opacity-85" />
+                <button className="absolute top-1/2 left-1 translate-y-[-50%] z-50" onClick={handlePrev}>
+                  <SlArrowLeft className="text-4xl p-2 text-white bg-black rounded-[50%] opacity-85" />
                 </button>
               )}
               {currentSlideList.map((image, index) => (
-                <img key={index} className="w-full h-72 rounded-md object-cover" src={image} alt="" />
+                <div className="relative">
+                  <img key={index} className="w-full h-72 rounded-md object-cover" src={image} alt="" />
+                  <button className="absolute top-1 right-1 z-50" onClick={() => deleteImage(index)}>
+                    <RiDeleteBinLine className="p-1 text-3xl bg-white rounded-[50%] opacity-85" />
+                  </button>
+                </div>
               ))}
               {imageList.length <= 2 || slideState === 1 ? (
                 <></>
               ) : (
-                <button className="absolute top-1/2 right-2 translate-y-[-50%] z-50" onClick={handleNext}>
-                  <SlArrowRight className="text-4xl p-2 bg-white rounded-[50%] opacity-85" />
+                <button className="absolute top-1/2 right-1 translate-y-[-50%] z-50" onClick={handleNext}>
+                  <SlArrowRight className="p-2 text-4xl text-white bg-black rounded-[50%] opacity-70" />
                 </button>
               )}
             </div>
@@ -83,7 +109,7 @@ const OkStartModal = () => {
 
         <hr />
 
-        <div className="flex justify-between">
+        <div className="px-3 flex justify-between">
           <div className="flex flex-col items-center justify-center">
             <label htmlFor="image-input">
               <div className="w-32 px-5 py-1 flex justify-around items-center cursor-pointer rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
