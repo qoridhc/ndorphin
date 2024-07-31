@@ -12,7 +12,7 @@ public class FileInfoMapper {
 
         FileInfoResponseDto dto = new FileInfoResponseDto();
 
-//        dto.setId(fileInfo.getId());
+        dto.setId(fileInfo.getId());
         dto.setFileName(fileInfo.getFileName());
         dto.setFileUrl(fileInfo.getFileUrl());
         dto.setFileSize(fileInfo.getFileSize());
@@ -25,22 +25,23 @@ public class FileInfoMapper {
         return dto;
     }
 
-//    public static FileInfo toEntity(FileInfoRequestDto dto) {
-//        if (dto == null) {
-//            return null;
-//        }
-//
-//        FileInfo fileInfo = new FileInfo();
-//        // Here you need to handle the multipartFiles appropriately
-//        // Assuming you have methods to get these details from the MultipartFile
-//        // fileInfo.setFileName(dto.getMultipartFiles().get(0).getOriginalFilename());
-//        // fileInfo.setFilePath("some/default/path");
-//        // fileInfo.setFileSize(dto.getMultipartFiles().get(0).getSize());
-//        // fileInfo.setFileType(dto.getMultipartFiles().get(0).getContentType());
-//
-//        fileInfo.setEntityType(dto.getEntityType());
-//        fileInfo.setEntityId(dto.getEntityId());
-//
-//        return fileInfo;
-//    }
+    public static FileInfo toEntity(FileInfoResponseDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        FileInfo fileInfo = new FileInfo();
+
+        fileInfo.setId(dto.getId());
+        fileInfo.setFileName(dto.getFileName());
+        fileInfo.setFileUrl(dto.getFileUrl());
+        fileInfo.setFileSize(dto.getFileSize());
+        fileInfo.setFileType(dto.getFileType());
+        fileInfo.setEntityType(dto.getEntityType());
+        fileInfo.setEntityId(dto.getEntityId());
+        fileInfo.setCreatedAt(dto.getCreatedAt());
+        fileInfo.setUpdateAt(dto.getUpdateAt());
+
+        return fileInfo;
+    }
 }

@@ -34,8 +34,7 @@ public class ReactionSerivceImpl implements ReactionService {
 
     @Override
     @Transactional
-    public ResponseEntity<ResponseDto> addReaction(HttpServletRequest request, Long boardId,
-        ReactionRequestDto reactionRequestDto) {
+    public ResponseEntity<ResponseDto> addReaction(HttpServletRequest request, Long boardId, ReactionRequestDto reactionRequestDto) {
 
         try {
             Long userId = tokenService.getUserIdFromToken(request);

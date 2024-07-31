@@ -61,8 +61,7 @@ public class BoardMapper {
     }
 
     // Entity -> OkBoardDto 변환
-    public static OkBoardDto toOkBoardDto(Board board, List<String> fileNames,
-        List<String> fileUrls) {
+    public static OkBoardDto toOkBoardDto(Board board, List<String> fileNames, List<String> fileUrls) {
 
         OkBoardDto dto = new OkBoardDto();
         mapCommonFields(board, dto);
