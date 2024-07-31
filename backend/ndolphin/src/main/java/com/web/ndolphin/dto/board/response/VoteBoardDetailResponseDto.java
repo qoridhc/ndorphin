@@ -1,6 +1,9 @@
 package com.web.ndolphin.dto.board.response;
 
+import com.web.ndolphin.domain.ReactionType;
+import com.web.ndolphin.dto.vote.VoteInfo;
 import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +11,11 @@ import lombok.Setter;
 @Setter
 public class VoteBoardDetailResponseDto extends BoardDto {
 
-    private long totalVoteCnt;
-    private List<String> voteContents;
+    private String contentFileUrl;
+    private Map<ReactionType, Long> reactionTypeCounts;
+    private List<VoteInfo> voteInfos;
+    private Long userVoteId;
+    private Long userVoteContentId;
+    private Long userReactionId;
+    private ReactionType userReactionType;
 }

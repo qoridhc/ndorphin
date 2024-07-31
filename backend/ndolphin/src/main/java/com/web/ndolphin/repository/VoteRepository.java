@@ -18,10 +18,10 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
         "GROUP BY vc.id, vc.content")
     List<VoteInfo> countVotesByBoardId(@Param("boardId") Long boardId);
 
-    @Query("SELECT v FROM Vote v " +
+    @Query("SELECT v.id, vc.id FROM Vote v " +
         "JOIN v.voteContent vc " +
         "JOIN vc.board b " +
         "WHERE b.id = :boardId AND v.user.userId = :userId")
-    Optional<Vote> findVoteByBoardIdAndUserId(@Param("boardId") Long boardId,
+    Optional<Object[]> findVoteByBoardIdAndUserId(@Param("boardId") Long boardId,
         @Param("userId") Long userId);
 }
