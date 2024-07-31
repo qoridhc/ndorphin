@@ -52,6 +52,8 @@ public class User {
 
     private LocalDateTime nickNameUpdatedAt;
 
+    private boolean mbtiChanged;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Board> boards = new ArrayList<>();
 

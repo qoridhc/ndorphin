@@ -32,7 +32,6 @@ public class BoardController {
 
     private final BoardService boardService;
     private final ReactionService reactionService;
-
     @PostMapping("/{userId}")
     public ResponseEntity<ResponseDto> createBoard(
         @PathVariable("userId") Long userId,
@@ -91,6 +90,24 @@ public class BoardController {
         ) {
 
         ResponseEntity<ResponseDto> response = reactionService.addReaction(request, boardId, reactionRequestDto);
+        return response;
+    }
+
+    @PutMapping("/{reactionId}/reactions")
+    public ResponseEntity<ResponseDto> updateReaction(
+        HttpServletRequest request,
+        @PathVariable Long reactionId,
+        @RequestBody ReactionRequestDto reactionRequestDto) {
+
+        ResponseEntity<ResponseDto> response = reactionService.updateReaction(request, reactionId, reactionRequestDto);
+        return response;
+    }
+
+    @DeleteMapping("/{reactionId}/reactions")
+    public ResponseEntity<ResponseDto> deleteReaction(HttpServletRequest request, @PathVariable Long reactionId
+        ) {
+
+        ResponseEntity<ResponseDto> response = reactionService.deleteReaction(request, reactionId);
         return response;
     }
 }

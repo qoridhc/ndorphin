@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class ReactionResponseDto {
 
+    private Long reactionId;
     private Long userId;
     private Long boardId;
     private ReactionType reactionType;
