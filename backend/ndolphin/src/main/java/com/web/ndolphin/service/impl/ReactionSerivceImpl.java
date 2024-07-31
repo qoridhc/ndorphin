@@ -17,9 +17,6 @@ import com.web.ndolphin.service.interfaces.ReactionService;
 import com.web.ndolphin.service.interfaces.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -113,19 +110,5 @@ public class ReactionSerivceImpl implements ReactionService {
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage());
         }
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Map<ReactionType, Long> getReactionsByBoardId(Long boardId) {
-
-        List<Reaction> reactions = reactionRepository.findByBoardId(boardId);
-
-        // 각 ReactionType별 개수 취합
-        Map<ReactionType, Long> reactionTypeCounts = reactions.stream()
-            .filter(reaction -> reaction.getReactionType() != null)
-            .collect(Collectors.groupingBy(Reaction::getReactionType, Collectors.counting()));
-
-        return reactionTypeCounts;
     }
 }

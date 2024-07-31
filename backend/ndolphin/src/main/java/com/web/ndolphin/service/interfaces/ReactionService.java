@@ -1,10 +1,8 @@
 package com.web.ndolphin.service.interfaces;
 
-import com.web.ndolphin.domain.ReactionType;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.reaction.request.ReactionRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Map;
 import org.springframework.http.ResponseEntity;
 
 public interface ReactionService {
@@ -16,6 +14,4 @@ public interface ReactionService {
 
     ResponseEntity<ResponseDto> updateReaction(HttpServletRequest request, Long reactionId,
         ReactionRequestDto reactionRequestDto);
-
-    Map<ReactionType, Long> getReactionsByBoardId(Long boardId);
 }

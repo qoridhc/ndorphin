@@ -283,8 +283,7 @@ public class BoardServiceImpl implements BoardService {
                         return commentResponseDto;
                     }).collect(toList());
 
-                Map<ReactionType, Long> reactionTypeCounts = reactionService.getReactionsByBoardId(
-                    boardId);
+                Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(boardId);
 
                 Reaction reaction = reactionRepository.findByBoardIdAndUserId(boardId, userId);
 
