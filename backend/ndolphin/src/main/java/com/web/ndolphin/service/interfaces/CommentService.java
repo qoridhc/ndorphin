@@ -2,6 +2,7 @@ package com.web.ndolphin.service.interfaces;
 
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.comment.CommentRequestDto;
+import com.web.ndolphin.dto.comment.CommentResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -20,4 +21,6 @@ public interface CommentService {
     ResponseEntity<ResponseDto> likeComment(HttpServletRequest request, Long commentId);
 
     ResponseEntity<ResponseDto> unlikeComment(HttpServletRequest request, Long commentId);
+
+    List<CommentResponseDto> getBoardDetail(Long boardId);
 }

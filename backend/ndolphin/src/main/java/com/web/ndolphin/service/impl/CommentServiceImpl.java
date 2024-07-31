@@ -1,12 +1,17 @@
 package com.web.ndolphin.service.impl;
 
+import com.web.ndolphin.common.ResponseCode;
+import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.Comment;
 import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.Likes;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
+import com.web.ndolphin.dto.board.response.OkBoardDto;
 import com.web.ndolphin.dto.comment.CommentRequestDto;
+import com.web.ndolphin.dto.comment.CommentResponseDto;
+import com.web.ndolphin.dto.npoint.resopnse.NPointResponseDto;
 import com.web.ndolphin.mapper.CommentMapper;
 import com.web.ndolphin.mapper.LikeMapper;
 import com.web.ndolphin.repository.BoardRepository;
@@ -19,7 +24,9 @@ import com.web.ndolphin.service.interfaces.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -136,5 +143,20 @@ public class CommentServiceImpl implements CommentService {
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage());
         }
+    }
+
+    @Override
+    @Transactional
+    public List<CommentResponseDto> getBoardDetail(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
+
+        List<Comment> comments = commentRepository.findByBoardId(boardId);
+        return comments.stream().map(comment -> {
+            Long commentId = comment.getId();
+            long likeCount = likesRepository.countByCommentId(commentId);
+            boolean isLikedByUser = likesRepository.existsByUserIdAndCommentId(board.getUser().getUserId(), commentId);
+            return new CommentResponseDto(commentId, comment.getContent(), likeCount, isLikedByUser);
+        }).collect(Collectors.toList());
     }
 }

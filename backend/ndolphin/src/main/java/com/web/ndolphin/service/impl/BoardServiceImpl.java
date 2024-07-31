@@ -15,7 +15,7 @@ import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
-import com.web.ndolphin.dto.reaction.response.ReactionResponseDto;
+import com.web.ndolphin.dto.reaction.response.ReactionSummaryDto;
 import com.web.ndolphin.dto.vote.VoteCount;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.repository.BoardRepository;
@@ -23,6 +23,7 @@ import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.FavoriteRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.BoardService;
+import com.web.ndolphin.service.interfaces.CommentService;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.ReactionService;
 import com.web.ndolphin.service.interfaces.VoteService;
@@ -53,6 +54,7 @@ public class BoardServiceImpl implements BoardService {
     private final FileInfoService fileInfoService;
     private final ReactionService reactionService;
     private final VoteService voteService;
+    private final CommentService commentService;
 
     @Override
     public ResponseEntity<ResponseDto> createBoard(Long userId, BoardRequestDto boardRequestDto,
@@ -250,10 +252,13 @@ public class BoardServiceImpl implements BoardService {
                 ResponseEntity<ResponseDto> reactionResponse = reactionService.getReactionsByBoardId(
                     boardId);
                 if (reactionResponse.getBody().getCode() == ResponseCode.SUCCESS) {
-                    List<ReactionResponseDto> reactions = (List<ReactionResponseDto>) reactionResponse.getBody()
+                    ReactionSummaryDto reactionSummary = (ReactionSummaryDto) reactionResponse.getBody()
                         .getData();
-                    okBoardDto.setReactionResponseDtos(reactions);
+                    okBoardDto.setReactionTypeCounts(
+                        reactionSummary.getReactionTypeCounts()); // 추가된 부분
                 }
+
+                okBoardDto.setCommentResponseDtos(commentService.getBoardDetail(boardId));
 
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     okBoardDto);

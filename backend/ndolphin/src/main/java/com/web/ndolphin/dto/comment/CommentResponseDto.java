@@ -10,11 +10,23 @@ import lombok.ToString;
 @ToString
 public class CommentResponseDto {
 
-    private String commentId;
+    private Long commentId;
     private String nickName;
     private String content;
-    private Long loveCnt = 0L;
+    private Long likeCnt = 0L;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String fileUrl;
+    private boolean isLikedByUser;
+
+    public CommentResponseDto(){
+
+    }
+
+    public CommentResponseDto(Long commentId, String content, Long likeCnt, boolean isLikedByUser) {
+        this.commentId = commentId;
+        this.content = content;
+        this.likeCnt = likeCnt;
+        this.isLikedByUser = isLikedByUser;
+    }
 }
