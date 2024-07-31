@@ -19,7 +19,7 @@ const BookPageCover = React.forwardRef<HTMLDivElement, BookPageCoverProps>(({ bo
             <DropDown bookId={bookId} handleDelete={handleDelete} />
           </div>
           <div className="flex justify-center">
-            <img src="/assets/relayStartSample.png" width="300px" alt="#"></img>
+            <img src="/assets/relay/relayStartSample1.png" width="300px" alt="#"></img>
           </div>
           <p className="text-xl font-bold">책 제목</p>
           <div className="w-full flex justify-end"></div>
