@@ -22,13 +22,13 @@ import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.mapper.FavoriteMapper;
 import com.web.ndolphin.mapper.NPointMapper;
 import com.web.ndolphin.mapper.UserMapper;
-import com.web.ndolphin.provider.JwtProvider;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.FavoriteRepository;
 import com.web.ndolphin.repository.NPointRepository;
 import com.web.ndolphin.repository.PointRuleRepository;
 import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
+import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.UserService;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -49,8 +49,7 @@ public class UserServiceImpl implements UserService {
     private final TokenRepository tokenRepository;
     private final NPointRepository nPointRepository;
     private final PointRuleRepository pointRuleRepository;
-
-    private final JwtProvider jwtProvider;
+    private final FileInfoService fileInfoService;
 
     @Override
     public ResponseEntity<ResponseDto> signIn(Long userId) {
@@ -280,5 +279,4 @@ public class UserServiceImpl implements UserService {
             return ResponseDto.databaseError(e.getMessage());
         }
     }
-
 }

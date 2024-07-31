@@ -11,23 +11,32 @@ import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
+import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
+import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
+import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
-import com.web.ndolphin.dto.reaction.response.ReactionResponseDto;
 import com.web.ndolphin.dto.reaction.response.ReactionSummaryDto;
+import com.web.ndolphin.dto.vote.VoteCount;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.repository.BoardRepository;
+import com.web.ndolphin.repository.CommentRepository;
+import com.web.ndolphin.repository.FavoriteRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.BoardService;
 import com.web.ndolphin.service.interfaces.CommentService;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.ReactionService;
+import com.web.ndolphin.service.interfaces.VoteService;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -40,8 +49,11 @@ public class BoardServiceImpl implements BoardService {
 
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
+    private final FavoriteRepository favoriteRepository;
     private final FileInfoService fileInfoService;
     private final ReactionService reactionService;
+    private final VoteService voteService;
     private final CommentService commentService;
 
     @Override
@@ -76,12 +88,82 @@ public class BoardServiceImpl implements BoardService {
         switch (boardType) {
             case VOTE_BOARD:
                 // 총 투표 수(투표 항목들의 투표 합), 투표 목록
+                List<VoteBoardResponseDto> voteBoardResponseDtos = boards.stream()
+                    .map(board -> {
+                        Long boardId = board.getId();
+
+                        String avatarUrl = fileInfoService.getFileUrl(board.getUser().getUserId(),
+                            EntityType.USER);
+
+                        List<VoteCount> voteCounts = voteService.getVoteContents(boardId);
+
+                        // 모든 투표의 합 계산
+                        long totalVotes = voteCounts.stream()
+                            .mapToLong(VoteCount::getVoteCount)
+                            .sum();
+
+                        // VoteContent의 content만 모음
+                        List<String> voteContents = voteCounts.stream()
+                            .map(VoteCount::getVoteContent)
+                            .collect(Collectors.toList());
+
+                        return BoardMapper.toVoteBoardResponseDto(board, voteContents, totalVotes,
+                            avatarUrl);
+                    })
+                    .collect(Collectors.toList());
+
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
+                    voteBoardResponseDtos);
                 break;
             case OPINION_BOARD:
                 // 총 댓글 수, 가장 좋아요를 많이 받은 댓글(좋아요 개수가 같으면 최신순)
+                List<OpinionBoardResponseDto> opinionBoardResponseDtos = boards.stream()
+                    .map(board -> {
+                        Long boardId = board.getId();
+
+                        String avatarUrl = fileInfoService.getFileUrl(board.getUser().getUserId(),
+                            EntityType.USER);
+
+                        Pageable pageable = PageRequest.of(0, 1);
+                        List<String> bestComments = commentRepository.findTopCommentContentByLikes(
+                            boardId, pageable);
+
+                        String bestComment = bestComments.isEmpty() ? null : bestComments.get(0);
+
+                        Long commentCount = commentRepository.countCommentsByBoardId(boardId);
+
+                        return BoardMapper.toOpinionBoardResponseDto(board, bestComment,
+                            commentCount, avatarUrl);
+                    })
+                    .collect(Collectors.toList());
+
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
+                    opinionBoardResponseDtos);
                 break;
             case RELAY_BOARD:
                 // 요약, 사진, 참여 여부, 관심 여부
+                List<RelayBoardResponseDto> relayBoardResponseDto = boards.stream()
+                    .map(board -> {
+                        Long boardId = board.getId();
+
+                        String thumbNailUrl = fileInfoService.getFileUrl(
+                            board.getUser().getUserId(),
+                            EntityType.POST);
+
+                        boolean hasParticipated = commentRepository.existsByBoardIdAndUserId(
+                            boardId, board.getUser().getUserId());
+
+                        boolean isFavorite = favoriteRepository.existsByBoardIdAndUserId(
+                            boardId, board.getUser().getUserId());
+
+                        return BoardMapper.toRelayBoardResponseDto(board, hasParticipated,
+                            isFavorite, thumbNailUrl);
+                    })
+                    .collect(Collectors.toList());
+
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
+                    relayBoardResponseDto);
+
                 break;
             case OK_BOARD:
                 // 댓글 수, 사진
@@ -89,7 +171,7 @@ public class BoardServiceImpl implements BoardService {
                 for (Board board : boards) {
                     // 파일 정보를 가져오기
                     List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(
-                        board.getId());
+                        board.getId(), EntityType.POST);
 
                     // 파일명과 파일 URL 리스트 생성
                     List<String> fileNames = new ArrayList<>();
@@ -150,7 +232,7 @@ public class BoardServiceImpl implements BoardService {
             case OK_BOARD:
                 // 괜찮아 게시판 - 댓글 가능
                 List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(
-                    boardId);
+                    boardId, EntityType.POST);
 
                 // 파일명과 파일 URL 리스트 생성
                 List<String> fileNames = new ArrayList<>();
@@ -167,10 +249,13 @@ public class BoardServiceImpl implements BoardService {
                     okBoardDto);
 
                 // 반응 정보 조회
-                ResponseEntity<ResponseDto> reactionResponse = reactionService.getReactionsByBoardId(boardId);
+                ResponseEntity<ResponseDto> reactionResponse = reactionService.getReactionsByBoardId(
+                    boardId);
                 if (reactionResponse.getBody().getCode() == ResponseCode.SUCCESS) {
-                    ReactionSummaryDto reactionSummary = (ReactionSummaryDto) reactionResponse.getBody().getData();
-                    okBoardDto.setReactionTypeCounts(reactionSummary.getReactionTypeCounts()); // 추가된 부분
+                    ReactionSummaryDto reactionSummary = (ReactionSummaryDto) reactionResponse.getBody()
+                        .getData();
+                    okBoardDto.setReactionTypeCounts(
+                        reactionSummary.getReactionTypeCounts()); // 추가된 부분
                 }
 
                 okBoardDto.setCommentResponseDtos(commentService.getBoardDetail(boardId));
@@ -189,7 +274,6 @@ public class BoardServiceImpl implements BoardService {
         }
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
-
 
     @Override
     public ResponseEntity<ResponseDto> updateBoard(Long boardId, BoardRequestDto boardRequestDto,

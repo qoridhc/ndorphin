@@ -6,6 +6,9 @@ import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
+import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
+import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
+import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import java.util.List;
 
 public class BoardMapper {
@@ -15,9 +18,9 @@ public class BoardMapper {
 
         dto.setId(board.getId());
         dto.setUserId(board.getUser().getUserId());
+        dto.setNickName(board.getUser().getNickName());
         dto.setSubject(board.getSubject());
         dto.setContent(board.getContent());
-        dto.setSummary(board.getSummary());
         dto.setHit(board.getHit());
         dto.setBoardType(board.getBoardType());
         dto.setCreatedAt(board.getCreatedAt());
@@ -52,6 +55,45 @@ public class BoardMapper {
         dto.setFileUrls(fileUrls);
 
         return dto;
+    }
+
+    public static VoteBoardResponseDto toVoteBoardResponseDto(Board board,
+        List<String> voteContents, long totalVoteCnt, String avatarUrl) {
+
+        VoteBoardResponseDto voteBoardResponseDto = new VoteBoardResponseDto();
+
+        mapCommonFields(board, voteBoardResponseDto);
+        voteBoardResponseDto.setVoteContents(voteContents);
+        voteBoardResponseDto.setTotalVoteCnt(totalVoteCnt);
+        voteBoardResponseDto.setAvatarUrl(avatarUrl);
+
+        return voteBoardResponseDto;
+    }
+
+    public static OpinionBoardResponseDto toOpinionBoardResponseDto(Board board,
+        String bestComment, long commentCount, String avatarUrl) {
+
+        OpinionBoardResponseDto opinionBoardResponseDto = new OpinionBoardResponseDto();
+
+        mapCommonFields(board, opinionBoardResponseDto);
+        opinionBoardResponseDto.setBestComment(bestComment);
+        opinionBoardResponseDto.setCommentCount(commentCount);
+        opinionBoardResponseDto.setAvatarUrl(avatarUrl);
+
+        return opinionBoardResponseDto;
+    }
+
+    public static RelayBoardResponseDto toRelayBoardResponseDto(Board board,
+        boolean hasParticipated, boolean isFavorite, String thumbNailUrl) {
+
+        RelayBoardResponseDto relayBoardResponseDto = new RelayBoardResponseDto();
+
+        mapCommonFields(board, relayBoardResponseDto);
+        relayBoardResponseDto.setHasParticipated(hasParticipated);
+        relayBoardResponseDto.setFavorite(isFavorite);
+        relayBoardResponseDto.setThumbNailUrl(thumbNailUrl);
+
+        return relayBoardResponseDto;
     }
 
     // DTO -> Entity 변환
