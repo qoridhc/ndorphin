@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaRegComment } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
+import SettingsMenu from "../common/SettingMenu";
 
 interface Props {
   content: {
@@ -121,9 +122,12 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
                   <img className="w-9 h-9 rounded-[50%]" src={`${comment.profileImgUrl}`} alt="" />
 
                   <div className="w-full grid gap-2">
-                    <div className="flex flex-col justify-around">
-                      <p className="text-sm font-semibold">{comment.user}</p>
-                      <p className="text-xs text-[#565656]">3일 전</p>
+                    <div className="grid grid-cols-[6fr_1fr]">
+                      <div className="flex flex-col justify-around">
+                        <p className="text-sm font-semibold">{comment.user}</p>
+                        <p className="text-xs text-[#565656]">3일 전</p>
+                      </div>
+                      <SettingsMenu />
                     </div>
 
                     <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
