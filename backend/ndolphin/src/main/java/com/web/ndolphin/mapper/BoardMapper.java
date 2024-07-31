@@ -1,6 +1,8 @@
 package com.web.ndolphin.mapper;
 
 import com.web.ndolphin.domain.Board;
+import com.web.ndolphin.domain.Reaction;
+import com.web.ndolphin.domain.ReactionType;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
@@ -9,7 +11,11 @@ import com.web.ndolphin.dto.board.response.OkBoardDto;
 import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class BoardMapper {
 
@@ -37,13 +43,23 @@ public class BoardMapper {
     }
 
     // Entity -> ByeBoardDto 변환
-    public static ByeBoardDto toByeBoardDto(Board board) {
+    public static ByeBoardDto toByeBoardDto(Board board, Map<ReactionType, Long> reactionTypeCounts, Reaction userReaction) {
 
         ByeBoardDto dto = new ByeBoardDto();
+
         mapCommonFields(board, dto);
+
+        dto.setReactionTypeCounts(reactionTypeCounts);
+        if (userReaction != null) {
+            dto.setUserReactionId(userReaction.getId());
+            dto.setUserReactionType(userReaction.getReactionType());
+        } else {
+            dto.setUserReactionType(ReactionType.NONE);
+        }
 
         return dto;
     }
+
 
     // Entity -> OkBoardDto 변환
     public static OkBoardDto toOkBoardDto(Board board, List<String> fileNames,
