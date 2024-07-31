@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import SearchBar from "../../components/relay/SearchBar";
 import MiniSearchBar from "../../components/ok/MiniSearchBar";
 import OkContent from "../../components/ok/OkContent";
-import { useNavigate } from "react-router";
+import OkStartModal from "./OkStartModal";
 
 const OkList = () => {
-  const navigate = useNavigate();
+  const [isCreateModal, setIsCreateModal] = useState(false);
   const okContentList = [
     {
       id: 1,
@@ -60,7 +60,7 @@ const OkList = () => {
         },
         {
           id: 2,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUzn7lDyMA6kHGqAVj_Gd3p59vnhMwuvXb-g&s",
+          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGa_e2SL0_u_Hb_SKanee1SDVSpUog7rdQMg&s",
         },
       ],
       joinCount: 5,
@@ -110,13 +110,15 @@ const OkList = () => {
             <button
               className="w-full my-3 px-7 py-2 shadow-md rounded-2xl font-bold bg-amber-300 text-black"
               onClick={() => {
-                navigate("/ifstart");
+                setIsCreateModal(true);
               }}>
               고민 작성하기
             </button>
           </div>
         </div>
       </div>
+
+      {isCreateModal && <OkStartModal />}
     </div>
   );
 };
