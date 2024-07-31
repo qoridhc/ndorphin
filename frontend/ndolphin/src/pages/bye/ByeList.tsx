@@ -1,118 +1,88 @@
 import React, { useState } from "react";
 import MiniSearchBar from "../../components/ok/MiniSearchBar";
-import OkContent from "../../components/ok/OkContent";
+import ByeContent from "./ByeContent";
 import OkStartModal from "../ok/OkStartModal";
 
-const OkList = () => {
+const ByeList = () => {
   const [isCreateModal, setIsCreateModal] = useState(false);
-  const okContentList = [
+
+  // switch가 0일 경우 N->S, 1일 경우 S->N
+  const byeContentList = [
     {
       id: 1,
+      switch: 0,
       profileImgUrl: "/assets/profile/profile3.png",
-      user: "상상의 나무꾼",
+      user: "근데 말약에",
       date: "2024-07-30 01:22",
-      content: "5일 전에 사랑니 뺐는데 왜 안아프죠..? 만약에 갑자기 내일 죽을정도로 아프진 않겠죠?? 드라이소켓이라는 병도 있던데 ㅜㅜ 아직 아프진 않는데.. 하도 안아파서 만약에 아프면 엄청 아플거 같은데..",
-      imgList: [
-        {
-          id: 1,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3AwHJ2UrkzSv6PqPhCBZGRR8RrpQNCuDAxg&s",
-        },
-      ],
-      joinCount: 12,
+      content: "매일 5번 만약에 외치던 N입니다 요즘 만약에가 줄어서 검사해보니 아니나다를까 S 나왔네요 N으로 다시 돌아오는 날에는 기념으로 동화책 하나 쓰겠습니다 남은 N들아! 만약에 화이팅 ㅎㅎ (이젠 만약에 재미없..ㅓ)",
+      greetingCount: 10,
+      goodByeCount: 12,
     },
     {
       id: 2,
+      switch: 1,
       profileImgUrl: "/assets/profile/profile2.png",
-      user: "삶은계란",
+      user: "만약핑인데",
       date: "2024-07-29 01:22",
-      content: "어제 계란을 삶았는데 냉장고에 안넣었거든요 오늘 먹어도 되나요?? 만약에 배탈나면 어떡해요 ㅠ 요즘 날 더워서 조심해야되는데 만약에 배탈나서 맹장터지고!!",
-      imgList: [
-        {
-          id: 1,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1DZxbcaol1q-N-iA_jJkk95PssTlYXMobyA&s",
-        },
-        {
-          id: 2,
-          imgUrl: "https://img.freepik.com/premium-photo/burnt-hard-boiled-eggs-pot-eggs-burned-by-boiling-until-water-dries_45264-78.jpg",
-        },
-        {
-          id: 3,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQXLssi3iB0pd0cNqThGw-X1bg8WMPOaKCaQ&s",
-        },
-        {
-          id: 4,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYCPaPeFrnWYu9EYHBBDKcdOORiGhvosNZBg&s",
-        },
-      ],
-      joinCount: 0,
+      content: "동화책이 재밌어서 읽으러 종종왔는데 만약에 보다보니 N으로 바꼈나봐요 ㅋㅋㅋㅋ 어제도 만약에로 토론하다 왔는데 이제 여기서 다 풀고 가겠습니다 선배님들, 만약에 많이 올려주세요 기대할게요",
+      greetingCount: 8,
+      goodByeCount: 2,
     },
     {
       id: 3,
+      switch: 1,
       profileImgUrl: "/assets/profile/profile5.png",
-      user: "근데 말약에",
+      user: "코에촉촉",
       date: "2024-06-29 01:22",
-      content: "오늘 일어났는데 다래끼 났어요 다래끼 너무 커지면 어떻게 돼요 ㅠㅠㅠ 수술해요?? 만약에 다래끼 안빠지면 어떡하지 ㅠ 저 내일 초등학교 졸업사진 찍어요",
-      imgList: [
-        {
-          id: 1,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUzn7lDyMA6kHGqAVj_Gd3p59vnhMwuvXb-g&s",
-        },
-        {
-          id: 2,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGa_e2SL0_u_Hb_SKanee1SDVSpUog7rdQMg&s",
-        },
-      ],
-      joinCount: 5,
+      content: "옆에서 매일 만약에 만약에 하면서 저를 괴롭히던 친구가 있는데 저도 모르게 스며들었나봐요.... 제가 만약에를 하게 되는 날이 오다니 믿을 수가 없네요.. 저 사실 걔 좋아하는 걸까요? 요즘들어 혼란스러워요 아무튼 재밌게 즐겨볼게요",
+      greetingCount: 2,
+      goodByeCount: 1,
     },
     {
       id: 4,
-      profileImgUrl: "/assets/profile/profile2.png",
-      user: "만약핑인데",
+      switch: 0,
+      profileImgUrl: "/assets/profile/profile3.png",
+      user: "별이 빛나는 밤",
       date: "2024-07-30 14:00",
-      content: "제가 어제 청소를 한다고 냉동실 문을 열었는데 오늘 출근할 때 냉동실 문을 닫았는지 기억이 안나요2박동안 집에 안들어 갈 예정인데 냉동실 문 열려있으면 어떡하죠 안에 있는 거 다 녹고 전기세도 만만치 않죠 ..o..",
-      imgList: [
-        {
-          id: 1,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRH6Fk1AXjnDQT9WZgqO_VPigAdxSQst7qvQ&s",
-        },
-        {
-          id: 2,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAxWBeSt1k9cOrUcNEvuOaBD2RMiLtmRX98g&s",
-        },
-        {
-          id: 3,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRH6Fk1AXjnDQT9WZgqO_VPigAdxSQst7qvQ&s",
-        },
-      ],
-      joinCount: 3,
+      content: "취업하고나서 바쁜 회사 일에 신경쓰다보니 만약에 못한 지도 오래 됐네요. 학생 때는 만약에 참 많이도 했었는데, 역시 현실이라는 건 어쩔 수 없나봅니다. 그동안 즐거웠어요. 오랜만에 보니 추억이네요.",
+      greetingCount: 15,
+      goodByeCount: 19,
+    },
+    {
+      id: 5,
+      switch: 1,
+      profileImgUrl: "/assets/profile/profile1.png",
+      user: "제로만먹음",
+      date: "2024-07-30 14:00",
+      content: "요즘 인터넷 너무 많이 해서 그런가 갑자기 상상력 늘어남;; ㅋㅋㅋ 친구들은 귀찮다고 안 받아줘서 걍 여기서 놀아야겠음",
+      greetingCount: 6,
+      goodByeCount: 3,
     },
   ];
 
   return (
     <div>
       <div className="w-full py-10 bg-yellow-100 flex flex-col justify-around items-center">
-        <p className="py-2 text-center text-3xl font-bold">괜찮아 게시판</p>
-        <p className="py-2 text-center">만약의 걱정으로 고생하는 사람들이 위로 받는 공간</p>
+        <p className="py-2 text-center text-3xl font-bold">작별인사 게시판</p>
+        <p className="py-2 text-center">N ↔ S가 바뀐 사람들이 인사하는 곳</p>
       </div>
 
       <div className="px-44">
         <div className="py-5 grid grid-cols-[1fr_2fr_1fr] gap-5">
           <div className="col-start-2">
-            {okContentList.map((content, index) => (
-              <OkContent content={content} key={index} />
+            {byeContentList.map((content, index) => (
+              <ByeContent content={content} key={index} />
             ))}
           </div>
 
           <div className="">
-            <MiniSearchBar />
-
             <button
               className="w-full my-3 px-7 py-2 shadow-md rounded-2xl font-bold bg-amber-300 text-black"
               onClick={() => {
                 setIsCreateModal(true);
               }}
             >
-              고민 작성하기
+              작성하기
             </button>
           </div>
         </div>
@@ -123,4 +93,4 @@ const OkList = () => {
   );
 };
 
-export default OkList;
+export default ByeList;
