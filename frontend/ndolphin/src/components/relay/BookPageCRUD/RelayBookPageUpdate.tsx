@@ -73,7 +73,7 @@ const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ page, setPage
           <hr className="mx-3 my-1 border-zinc-900" />
           <div className="mt-2">
             <div className="flex justify-center items-center">
-              <img src={image || page.pageImage} alt="#" className="w-80 h-56 border rounded-md" />
+              <img src={image || page.pageImage} alt="#" className="w-64 h-56 border rounded-md" />
             </div>
 
             {/* 이미지 첨부 버튼 */}
