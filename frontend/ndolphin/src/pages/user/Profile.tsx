@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import FollowList from "../../components/user/FollowList";
 import RelayBookList from "../../components/user/RelayBookList";
+import TopButton from "../../components/common/TopButton";
+import OkList from "../../components/user/OkList";
+import IfCardList from "../../components/user/IfCardList";
 
 const Profile = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -25,9 +28,9 @@ const Profile = () => {
       case "릴레이북":
         return <RelayBookList />;
       case "만약에":
-        return "추가"
+        return <IfCardList />
       case "괜찮아":
-        return "추가"
+        return <OkList />
       case "작별인사":
         return "추후 추가"
     }
@@ -65,7 +68,7 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className="mt-8 border-b space-x-4 flex justify-center sticky top-0">
+      <div className="mt-8 bg-white border-b space-x-4 flex justify-center sticky top-0">
         <button className={buttonClass("릴레이북")} onClick={() => setSelectedTab("릴레이북")}>
           릴레이북
         </button>
@@ -85,6 +88,7 @@ const Profile = () => {
         {renderContent()}
       </div>
 
+      <TopButton />
       <FollowList isOpen={isFollowModalOpen} onClose={() => setIsFollowModalOpen(false)} activeTab={activeFollowTab} setActiveTab={setActiveFollowTab} />
     </div>
   );
