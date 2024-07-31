@@ -145,7 +145,7 @@ const RelayBookDetail: React.FC = () => {
             </BookDetailPage>
           ))}
 
-          {/* 페이지 추가 페이지 */}
+          {/* 마지막 페이지 */}
           {isFinished ? (
             // 완료된 이야기일 경우 이모티콘 반응
             <BookDetailPage number={PageList.length + 1} page={PageList[0]} totalPage={PageList.length}>
