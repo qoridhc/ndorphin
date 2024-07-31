@@ -9,7 +9,8 @@ interface Props {
 
 const OkStartModal = ({ setIsCreateModal }: Props) => {
   const [imageList, setImageList] = useState<string[]>([]);
-  const [rowCount, setRowCount] = useState(1);
+  const [rowCount, setRowCount] = useState(0);
+  const [textCount, setTextCount] = useState(0);
   const [slideState, setSlideState] = useState(0); // 0 : 앞, 1 : 뒤
   const [currentSlideList, setCurrentSlideList] = useState<string[]>([]);
 
@@ -46,6 +47,8 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
   };
 
   const handleTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    const text = event.target.value.length;
+    setTextCount(text);
     const rows = event.target.value.split(/\r\n|\r|\n/).length;
     setRowCount(rows);
   };
@@ -87,7 +90,7 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
         <button onClick={handleClose}>
           <IoMdClose className="text-2xl" />
         </button>
-        
+
         <div className="grid grid-cols-[1fr_8fr]">
           <img className="w-11 h-11 rounded-[50%]" src="/assets/profile/profile3.png" alt="" />
           <div className="max-h-[450px] grid gap-3 overflow-y-auto">
@@ -125,15 +128,15 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
         <div className="px-3 flex justify-between">
           <div className="flex flex-col items-center justify-center">
             <label htmlFor="image-input">
-              <div className="w-32 px-5 py-1 flex justify-around items-center cursor-pointer rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
+              <div className={`w-32 px-5 py-1 flex justify-around items-center cursor-pointer rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800 ${imageList.length === 4 ? "opacity-50 cursor-default" : ""}`}>
                 <img src="/assets/addImageIcon.png" className="w-5" alt="#"></img>
                 <p className="text-xs">사진 첨부</p>
               </div>
             </label>
-            <input className="hidden" id="image-input" type="file" accept="image/*" onChange={(e) => handleImageChange(e)} multiple />
+            <input className="hidden" id="image-input" type="file" accept="image/*" onChange={(e) => handleImageChange(e)} disabled={imageList.length === 4} multiple />
           </div>
 
-          <button className="px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white">완료</button>
+          <button className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${rowCount === 0 ? "opacity-50 cursor-default" : ""}`}>완료</button>
         </div>
       </div>
     </div>
