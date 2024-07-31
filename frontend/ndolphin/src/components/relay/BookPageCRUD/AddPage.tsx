@@ -1,7 +1,7 @@
-import "../../css/Text.css";
+import "../../../css/Text.css"
 import { useState } from "react";
 import AddPageForm from "./AddPageForm";
-import AlreadyWrittenPage from "./relayBookCRUD/AlreadyWrittenPage";
+import AlreadyWrittenPage from "../relayBookCRUD/AlreadyWrittenPage";
 
 interface Page {
   id: number;
@@ -15,7 +15,7 @@ interface AddPageProps {
   PageList: Page[];
 }
 
-const AddPage = ({PageList}: AddPageProps) => {
+const AddPage = ({ PageList }: AddPageProps) => {
   const [pageAdd, setPageAdd] = useState(false);
   const userName = "코에촉촉";
   const userHasWritten = PageList.some((page) => page.user === userName);

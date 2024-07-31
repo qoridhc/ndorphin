@@ -1,4 +1,4 @@
-import "../../css/InputPlaceHolder.css";
+import "../../../css/InputPlaceHolder.css";
 import React, { useState, ChangeEvent } from "react";
 
 function AddPageForm() {
