@@ -1,12 +1,21 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import { RiDeleteBinLine } from "react-icons/ri";
+import { IoMdClose } from "react-icons/io";
 
-const OkStartModal = () => {
+interface Props {
+  setIsCreateModal: (state: boolean) => void;
+}
+
+const OkStartModal = ({ setIsCreateModal }: Props) => {
   const [imageList, setImageList] = useState<string[]>([]);
   const [rowCount, setRowCount] = useState(1);
   const [slideState, setSlideState] = useState(0); // 0 : 앞, 1 : 뒤
   const [currentSlideList, setCurrentSlideList] = useState<string[]>([]);
+
+  const handleClose = () => {
+    setIsCreateModal(false);
+  };
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -75,6 +84,10 @@ const OkStartModal = () => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="w-[40%] max-h-[90%] p-5 bg-white rounded-2xl grid gap-3">
+        <button onClick={handleClose}>
+          <IoMdClose className="text-2xl" />
+        </button>
+        
         <div className="grid grid-cols-[1fr_8fr]">
           <img className="w-11 h-11 rounded-[50%]" src="/assets/profile/profile3.png" alt="" />
           <div className="max-h-[450px] grid gap-3 overflow-y-auto">

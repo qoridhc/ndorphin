@@ -118,7 +118,7 @@ const OkList = () => {
         </div>
       </div>
 
-      {isCreateModal && <OkStartModal />}
+      {isCreateModal && <OkStartModal setIsCreateModal={setIsCreateModal} />}
     </div>
   );
 };
