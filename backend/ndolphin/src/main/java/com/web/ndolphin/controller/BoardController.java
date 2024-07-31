@@ -8,7 +8,6 @@ import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.reaction.request.ReactionRequestDto;
 import com.web.ndolphin.service.interfaces.BoardService;
 import com.web.ndolphin.service.interfaces.ReactionService;
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +31,16 @@ public class BoardController {
 
     private final BoardService boardService;
     private final ReactionService reactionService;
+
     @PostMapping("/{userId}")
     public ResponseEntity<ResponseDto> createBoard(
         @PathVariable("userId") Long userId,
         @RequestPart(name = "request") BoardRequestDto boardRequestDto,
-        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles) throws IOException {
+        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles)
+        throws IOException {
 
-        ResponseEntity<ResponseDto> response = boardService.createBoard(userId, boardRequestDto, multipartFiles);
+        ResponseEntity<ResponseDto> response = boardService.createBoard(userId, boardRequestDto,
+            multipartFiles);
         return response;
     }
 
@@ -50,7 +52,8 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
-    public ResponseEntity<ResponseDto> getBoardById(@PathVariable Long boardId) {
+    public ResponseEntity<ResponseDto> getBoardById(
+        @PathVariable Long boardId) {
 
         ResponseEntity<ResponseDto> response = boardService.getBoardById(boardId);
         return response;
@@ -61,16 +64,19 @@ public class BoardController {
         @PathVariable("boardId") Long boardId,
         @RequestPart(name = "request") BoardRequestDto boardRequestDto,
         @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
-        @RequestParam(name = "deleteFiles", required = false) String deleteFilesJson) throws IOException {
+        @RequestParam(name = "deleteFiles", required = false) String deleteFilesJson)
+        throws IOException {
 
         List<String> fileNamesToDelete = null;
         if (deleteFilesJson != null) {
             ObjectMapper objectMapper = new ObjectMapper();
-            fileNamesToDelete = objectMapper.readValue(deleteFilesJson, new TypeReference<List<String>>() {
-            });
+            fileNamesToDelete = objectMapper.readValue(deleteFilesJson,
+                new TypeReference<List<String>>() {
+                });
         }
 
-        ResponseEntity<ResponseDto> response = boardService.updateBoard(boardId, boardRequestDto, multipartFiles,
+        ResponseEntity<ResponseDto> response = boardService.updateBoard(boardId, boardRequestDto,
+            multipartFiles,
             fileNamesToDelete);
         return response;
     }
@@ -84,30 +90,29 @@ public class BoardController {
 
     @PostMapping("/{boardId}/reactions")
     public ResponseEntity<ResponseDto> addReaction(
-        HttpServletRequest request,
         @PathVariable("boardId") Long boardId,
         @RequestBody ReactionRequestDto reactionRequestDto
-        ) {
+    ) {
 
-        ResponseEntity<ResponseDto> response = reactionService.addReaction(request, boardId, reactionRequestDto);
+        ResponseEntity<ResponseDto> response = reactionService.addReaction(boardId,
+            reactionRequestDto);
         return response;
     }
 
     @PutMapping("/{reactionId}/reactions")
     public ResponseEntity<ResponseDto> updateReaction(
-        HttpServletRequest request,
         @PathVariable Long reactionId,
         @RequestBody ReactionRequestDto reactionRequestDto) {
 
-        ResponseEntity<ResponseDto> response = reactionService.updateReaction(request, reactionId, reactionRequestDto);
+        ResponseEntity<ResponseDto> response = reactionService.updateReaction(reactionId,
+            reactionRequestDto);
         return response;
     }
 
     @DeleteMapping("/{reactionId}/reactions")
-    public ResponseEntity<ResponseDto> deleteReaction(HttpServletRequest request, @PathVariable Long reactionId
-        ) {
+    public ResponseEntity<ResponseDto> deleteReaction(@PathVariable Long reactionId) {
 
-        ResponseEntity<ResponseDto> response = reactionService.deleteReaction(request, reactionId);
+        ResponseEntity<ResponseDto> response = reactionService.deleteReaction(reactionId);
         return response;
     }
 }

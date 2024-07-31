@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class VoteCount {
+public class VoteInfo {
 
     private final Long voteContentId;
     private final String voteContent;
