@@ -1,10 +1,15 @@
 package com.web.ndolphin.service.impl;
 
+import static java.util.stream.Collectors.toList;
+
 import com.web.ndolphin.common.ResponseCode;
 import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.BoardType;
+import com.web.ndolphin.domain.Comment;
 import com.web.ndolphin.domain.EntityType;
+import com.web.ndolphin.domain.Reaction;
+import com.web.ndolphin.domain.ReactionType;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.board.request.BoardRequestDto;
@@ -12,15 +17,20 @@ import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
 import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
+import com.web.ndolphin.dto.board.response.RelayBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
+import com.web.ndolphin.dto.comment.CommentResponseDto;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
-import com.web.ndolphin.dto.reaction.response.ReactionSummaryDto;
+import com.web.ndolphin.dto.reaction.response.ReactionResponseDto;
 import com.web.ndolphin.dto.vote.VoteCount;
 import com.web.ndolphin.mapper.BoardMapper;
+import com.web.ndolphin.mapper.CommentMapper;
+import com.web.ndolphin.mapper.ReactionMapper;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.FavoriteRepository;
+import com.web.ndolphin.repository.ReactionRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.BoardService;
 import com.web.ndolphin.service.interfaces.CommentService;
@@ -31,8 +41,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -55,6 +65,7 @@ public class BoardServiceImpl implements BoardService {
     private final ReactionService reactionService;
     private final VoteService voteService;
     private final CommentService commentService;
+    private final ReactionRepository reactionRepository;
 
     @Override
     public ResponseEntity<ResponseDto> createBoard(Long userId, BoardRequestDto boardRequestDto,
@@ -105,12 +116,12 @@ public class BoardServiceImpl implements BoardService {
                         // VoteContent의 content만 모음
                         List<String> voteContents = voteCounts.stream()
                             .map(VoteCount::getVoteContent)
-                            .collect(Collectors.toList());
+                            .collect(toList());
 
                         return BoardMapper.toVoteBoardResponseDto(board, voteContents, totalVotes,
                             avatarUrl);
                     })
-                    .collect(Collectors.toList());
+                    .collect(toList());
 
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     voteBoardResponseDtos);
@@ -135,7 +146,7 @@ public class BoardServiceImpl implements BoardService {
                         return BoardMapper.toOpinionBoardResponseDto(board, bestComment,
                             commentCount, avatarUrl);
                     })
-                    .collect(Collectors.toList());
+                    .collect(toList());
 
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     opinionBoardResponseDtos);
@@ -159,11 +170,10 @@ public class BoardServiceImpl implements BoardService {
                         return BoardMapper.toRelayBoardResponseDto(board, hasParticipated,
                             isFavorite, thumbNailUrl);
                     })
-                    .collect(Collectors.toList());
+                    .collect(toList());
 
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     relayBoardResponseDto);
-
                 break;
             case OK_BOARD:
                 // 댓글 수, 사진
@@ -210,24 +220,59 @@ public class BoardServiceImpl implements BoardService {
 
         ResponseDto<BoardDto> responseBody = null;
 
-        Optional<Board> optionalBoard = boardRepository.findById(boardId);
-        if (optionalBoard.isEmpty()) {
-            return ResponseDto.databaseError();
-        }
-        Board board = optionalBoard.get();
+        Board board = boardRepository.findById(boardId)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid Board ID"));
 
         board.setHit(board.getHit() + 1);
         boardRepository.save(board);
 
         switch (board.getBoardType()) {
             case VOTE_BOARD:
-                // 투표 게시판 - 이미지 첨부 가능
+
                 break;
             case OPINION_BOARD:
                 // 의견 게시판 - 댓글 가능
                 break;
             case RELAY_BOARD:
                 // 릴레이 게시판 - 댓글 및 이미지 첨부 가능
+                Long userId = board.getUser().getUserId();
+
+                String thumbNailUrl = fileInfoService.getFileUrl(
+                    board.getUser().getUserId(),
+                    EntityType.POST);
+
+                boolean hasParticipated = commentRepository.existsByBoardIdAndUserId(
+                    boardId, userId);
+
+                List<Comment> comments = commentRepository.findByBoardId(boardId);
+
+                List<CommentResponseDto> commentResponseDtos = comments
+                    .stream()
+                    .map(comment -> {
+                        String fileUrl = fileInfoService.getFileUrl(comment.getId(),
+                            EntityType.COMMENT);
+
+                        CommentResponseDto commentResponseDto = CommentMapper.toDto(comment, 0L,
+                            fileUrl);
+
+                        return commentResponseDto;
+                    }).collect(toList());
+
+                Map<ReactionType, Long> reactionTypeCounts = reactionService.getReactionsByBoardId(
+                    boardId);
+
+                Optional<Reaction> reaction = reactionRepository.findByBoardIdAndUserId(
+                    boardId, userId);
+                ReactionResponseDto userReaction = reaction
+                    .map(ReactionMapper::toDto)
+                    .orElse(null);
+
+                RelayBoardDetailResponseDto relayBoardDetailResponseDto = BoardMapper.toRelayBoardDetailResponseDto(
+                    board, hasParticipated, thumbNailUrl, commentResponseDtos, reactionTypeCounts,
+                    userReaction);
+
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
+                    relayBoardDetailResponseDto);
                 break;
             case OK_BOARD:
                 // 괜찮아 게시판 - 댓글 가능
@@ -249,14 +294,14 @@ public class BoardServiceImpl implements BoardService {
                     okBoardDto);
 
                 // 반응 정보 조회
-                ResponseEntity<ResponseDto> reactionResponse = reactionService.getReactionsByBoardId(
-                    boardId);
-                if (reactionResponse.getBody().getCode() == ResponseCode.SUCCESS) {
-                    ReactionSummaryDto reactionSummary = (ReactionSummaryDto) reactionResponse.getBody()
-                        .getData();
-                    okBoardDto.setReactionTypeCounts(
-                        reactionSummary.getReactionTypeCounts()); // 추가된 부분
-                }
+//                ResponseEntity<ResponseDto> reactionResponse = reactionService.getReactionsByBoardId(
+//                    boardId);
+//                if (reactionResponse.getBody().getCode() == ResponseCode.SUCCESS) {
+//                    ReactionSummaryDto reactionSummary = (ReactionSummaryDto) reactionResponse.getBody()
+//                        .getData();
+//                    okBoardDto.setReactionTypeCounts(
+//                        reactionSummary.getReactionTypeCounts()); // 추가된 부분
+//                }
 
                 okBoardDto.setCommentResponseDtos(commentService.getBoardDetail(boardId));
 

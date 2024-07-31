@@ -16,10 +16,11 @@ public class CommentResponseDto {
     private Long likeCnt = 0L;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String avatarUrl;
     private String fileUrl;
     private boolean isLikedByUser;
 
-    public CommentResponseDto(){
+    public CommentResponseDto() {
 
     }
 

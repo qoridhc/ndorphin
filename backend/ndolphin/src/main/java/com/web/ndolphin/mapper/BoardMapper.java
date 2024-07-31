@@ -1,15 +1,20 @@
 package com.web.ndolphin.mapper;
 
 import com.web.ndolphin.domain.Board;
+import com.web.ndolphin.domain.ReactionType;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
 import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
+import com.web.ndolphin.dto.board.response.RelayBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
+import com.web.ndolphin.dto.comment.CommentResponseDto;
+import com.web.ndolphin.dto.reaction.response.ReactionResponseDto;
 import java.util.List;
+import java.util.Map;
 
 public class BoardMapper {
 
@@ -94,6 +99,23 @@ public class BoardMapper {
         relayBoardResponseDto.setThumbNailUrl(thumbNailUrl);
 
         return relayBoardResponseDto;
+    }
+
+    public static RelayBoardDetailResponseDto toRelayBoardDetailResponseDto(Board board,
+        boolean hasParticipated, String thumbNailUrl,
+        List<CommentResponseDto> commentResponseDtos, Map<ReactionType, Long> reactionTypeCounts,
+        ReactionResponseDto userReaction) {
+
+        RelayBoardDetailResponseDto relayBoardDetailResponseDto = new RelayBoardDetailResponseDto();
+
+        mapCommonFields(board, relayBoardDetailResponseDto);
+        relayBoardDetailResponseDto.setHasParticipated(hasParticipated);
+        relayBoardDetailResponseDto.setThumbNailUrl(thumbNailUrl);
+        relayBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
+        relayBoardDetailResponseDto.setReactionTypeCounts(reactionTypeCounts);
+        relayBoardDetailResponseDto.setUserReaction(userReaction);
+
+        return relayBoardDetailResponseDto;
     }
 
     // DTO -> Entity 변환
