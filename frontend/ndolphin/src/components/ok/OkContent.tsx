@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaRegComment } from "react-icons/fa";
 import OkDetailModal from "./OkDetailModal";
+import { useNavigate } from "react-router";
 
 interface Props {
   content: {
@@ -18,12 +19,17 @@ interface Props {
 }
 
 const OkContent = ({ content }: Props) => {
+  const navigate = useNavigate();
   const [selectedImageList, setSelectedImageList] = useState<{ id: number; imgUrl: string }[] | null>(null);
   const [selectedImageListIndex, setSelectedImageListIndex] = useState(0);
 
   const handleselectedImageList = (currentIndex: number) => {
     setSelectedImageList(content.imgList);
     setSelectedImageListIndex(currentIndex);
+  };
+
+  const goToDetail = (id: number) => {
+    navigate(`/okdetail/${id}`);
   };
 
   const renderImages = () => {
@@ -67,7 +73,7 @@ const OkContent = ({ content }: Props) => {
   };
 
   return (
-    <div>
+    <div onClick={() => goToDetail(content.id)}>
       <div className="p-5 border-t border-x grid grid-cols-[1fr_9fr]">
         <div className="">
           <img className="w-9 h-9 rounded-[50%]" src={`${content.profileImgUrl}`} alt="" />
