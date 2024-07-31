@@ -9,13 +9,12 @@ import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
 import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
+import com.web.ndolphin.dto.board.response.RelayBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import com.web.ndolphin.dto.comment.CommentResponseDto;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public class BoardMapper {
 
@@ -43,7 +42,8 @@ public class BoardMapper {
     }
 
     // Entity -> ByeBoardDto 변환
-    public static ByeBoardDto toByeBoardDto(Board board, Map<ReactionType, Long> reactionTypeCounts, Reaction userReaction) {
+    public static ByeBoardDto toByeBoardDto(Board board, Map<ReactionType, Long> reactionTypeCounts,
+        Reaction userReaction) {
 
         ByeBoardDto dto = new ByeBoardDto();
 
@@ -59,7 +59,6 @@ public class BoardMapper {
 
         return dto;
     }
-
 
     // Entity -> OkBoardDto 변환
     public static OkBoardDto toOkBoardDto(Board board, List<String> fileNames,
@@ -110,6 +109,24 @@ public class BoardMapper {
         relayBoardResponseDto.setThumbNailUrl(thumbNailUrl);
 
         return relayBoardResponseDto;
+    }
+
+    public static RelayBoardDetailResponseDto toRelayBoardDetailResponseDto(Board board,
+        boolean hasParticipated, String thumbNailUrl,
+        List<CommentResponseDto> commentResponseDtos, Map<ReactionType, Long> reactionTypeCounts,
+        Reaction reaction) {
+
+        RelayBoardDetailResponseDto relayBoardDetailResponseDto = new RelayBoardDetailResponseDto();
+
+        mapCommonFields(board, relayBoardDetailResponseDto);
+        relayBoardDetailResponseDto.setHasParticipated(hasParticipated);
+        relayBoardDetailResponseDto.setThumbNailUrl(thumbNailUrl);
+        relayBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
+        relayBoardDetailResponseDto.setReactionTypeCounts(reactionTypeCounts);
+        relayBoardDetailResponseDto.setUserReactionId(reaction.getId());
+        relayBoardDetailResponseDto.setUserReactionType(reaction.getReactionType());
+
+        return relayBoardDetailResponseDto;
     }
 
     // DTO -> Entity 변환
