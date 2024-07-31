@@ -10,6 +10,7 @@ import java.util.Map;
 @Getter
 @Setter
 public class ReactionSummaryDto {
+
     private List<ReactionResponseDto> reactions;
     private Map<ReactionType, Long> reactionTypeCounts;
 }

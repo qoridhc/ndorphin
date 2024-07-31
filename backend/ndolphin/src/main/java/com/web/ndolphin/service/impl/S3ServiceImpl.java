@@ -29,10 +29,7 @@ public class S3ServiceImpl implements S3Service {
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucket;
-
     private final AmazonS3 amazonS3;
-
-    // amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
 
     public FileInfoResponseDto uploadSingleFile(Long entityId, EntityType entityType,
         MultipartFile multipartFile)
@@ -89,9 +86,7 @@ public class S3ServiceImpl implements S3Service {
             e.printStackTrace();
         }
 
-        String fileUrl = amazonS3.getUrl(bucket, fullFileName).toString(); // 폴더 경로가 포함된 파일 URL 반환
-
-        System.out.println("fileUrl = " + fileUrl);
+        String fileUrl = amazonS3.getUrl(bucket, fullFileName).toString();
 
         FileInfoResponseDto fileInfoResponseDto = new FileInfoResponseDto();
         fileInfoResponseDto.setFileName(fileName);
@@ -102,8 +97,6 @@ public class S3ServiceImpl implements S3Service {
         fileInfoResponseDto.setEntityId(entityId);
         fileInfoResponseDto.setCreatedAt(LocalDateTime.now());
         fileInfoResponseDto.setUpdateAt(LocalDateTime.now());
-
-        System.out.println("fileInfoResponseDto = " + fileInfoResponseDto);
 
         return fileInfoResponseDto;
     }
@@ -117,8 +110,6 @@ public class S3ServiceImpl implements S3Service {
         for (MultipartFile multipartFile : multipartFiles) {
             FileInfoResponseDto fileInfoResponseDto = uploadSingleFile(entityId, entityType, multipartFile);
             fileInfoResponseDtos.add(fileInfoResponseDto);
-            System.out.println("// 파일 업로드 및 DTO 생성");
-            System.out.println("fileInfoResponseDto = " + fileInfoResponseDto);
         }
 
         // S3에서 객체 요약 정보 가져오기
@@ -130,7 +121,6 @@ public class S3ServiceImpl implements S3Service {
             for (FileInfoResponseDto fileInfoResponseDto : fileInfoResponseDtos) {
                 if (fileInfoResponseDto.getFileUrl().contains(objectSummary.getKey())) {
                     fileInfoResponseDto.setFileSize((int) objectSummary.getSize());
-//                    fileInfoResponseDto.setUpdateAt(LocalDateTime.now());
                 }
             }
         }

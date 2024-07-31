@@ -1,7 +1,9 @@
 package com.web.ndolphin.repository;
 
 import com.web.ndolphin.domain.Reaction;
+import com.web.ndolphin.domain.ReactionType;
 import java.util.List;
+import java.util.Map;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +18,10 @@ public interface ReactionRepository extends JpaRepository<Reaction, Long> {
     // Fetch Join을 사용한 메서드
     @Query("SELECT r FROM Reaction r JOIN FETCH r.board WHERE r.board.id = :boardId")
     List<Reaction> findByBoardId(@Param("boardId") Long boardId);
+
+    @Query("SELECT r FROM Reaction r WHERE r.board.id = :boardId AND r.user.userId = :userId")
+    Reaction findByBoardIdAndUserId(@Param("boardId") Long boardId, @Param("userId") Long userId);
+
+    @Query("SELECT r.reactionType, COUNT(r) FROM Reaction r WHERE r.board.id = :boardId GROUP BY r.reactionType")
+    List<Object[]> countByBoardIdGroupByReactionType(@Param("boardId") Long boardId);
 }
