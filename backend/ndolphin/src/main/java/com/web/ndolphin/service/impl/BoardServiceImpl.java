@@ -13,10 +13,12 @@ import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.dto.reaction.response.ReactionResponseDto;
+import com.web.ndolphin.dto.reaction.response.ReactionSummaryDto;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.BoardService;
+import com.web.ndolphin.service.interfaces.CommentService;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.ReactionService;
 import java.io.IOException;
@@ -40,6 +42,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final FileInfoService fileInfoService;
     private final ReactionService reactionService;
+    private final CommentService commentService;
 
     @Override
     public ResponseEntity<ResponseDto> createBoard(Long userId, BoardRequestDto boardRequestDto,
@@ -164,13 +167,13 @@ public class BoardServiceImpl implements BoardService {
                     okBoardDto);
 
                 // 반응 정보 조회
-                ResponseEntity<ResponseDto> reactionResponse = reactionService.getReactionsByBoardId(
-                    boardId);
+                ResponseEntity<ResponseDto> reactionResponse = reactionService.getReactionsByBoardId(boardId);
                 if (reactionResponse.getBody().getCode() == ResponseCode.SUCCESS) {
-                    List<ReactionResponseDto> reactions = (List<ReactionResponseDto>) reactionResponse.getBody()
-                        .getData();
-                    okBoardDto.setReactionResponseDtos(reactions);
+                    ReactionSummaryDto reactionSummary = (ReactionSummaryDto) reactionResponse.getBody().getData();
+                    okBoardDto.setReactionTypeCounts(reactionSummary.getReactionTypeCounts()); // 추가된 부분
                 }
+
+                okBoardDto.setCommentResponseDtos(commentService.getBoardDetail(boardId));
 
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     okBoardDto);
@@ -186,6 +189,7 @@ public class BoardServiceImpl implements BoardService {
         }
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
+
 
     @Override
     public ResponseEntity<ResponseDto> updateBoard(Long boardId, BoardRequestDto boardRequestDto,

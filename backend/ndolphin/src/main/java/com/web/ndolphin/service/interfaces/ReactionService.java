@@ -9,4 +9,6 @@ public interface ReactionService {
 
     ResponseEntity<ResponseDto> addReaction(HttpServletRequest request, Long boardId, ReactionRequestDto reactionRequestDto);
     ResponseEntity<ResponseDto> getReactionsByBoardId(Long boardId);
+    ResponseEntity<ResponseDto> deleteReaction(HttpServletRequest request, Long reactionId);
+    ResponseEntity<ResponseDto> updateReaction(HttpServletRequest request, Long reactionId, ReactionRequestDto reactionRequestDto);
 }

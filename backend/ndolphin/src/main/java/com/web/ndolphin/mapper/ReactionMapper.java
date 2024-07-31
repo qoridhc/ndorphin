@@ -20,6 +20,7 @@ public class ReactionMapper {
     public static ReactionResponseDto toDto(Reaction reaction){
 
         ReactionResponseDto dto = new ReactionResponseDto();
+        dto.setReactionId(reaction.getId());
         dto.setUserId(reaction.getUser().getUserId());
         dto.setBoardId(reaction.getBoard().getId());
         dto.setReactionType(reaction.getReactionType());

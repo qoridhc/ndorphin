@@ -15,7 +15,7 @@ public class CommentMapper {
 
         commentResponseDto.setNickName(nickName);
         commentResponseDto.setContent(comment.getContent());
-        commentResponseDto.setLoveCnt(loveCnt);
+        commentResponseDto.setLikeCnt(loveCnt);
         commentResponseDto.setFileUrl(url);
         commentResponseDto.setCreatedAt(comment.getCreatedAt());
         commentResponseDto.setUpdatedAt(comment.getUpdatedAt());
