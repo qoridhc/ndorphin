@@ -2,6 +2,7 @@ import HTMLFlipBook from "react-pageflip";
 import React, { useRef, useState, useCallback, ForwardedRef } from "react";
 import { Navigate, useNavigate } from "react-router";
 import "../../css/RelayBook.css";
+import "../../css/Notes.css"
 import { useParams } from "react-router";
 import AddPage from "../../components/relay/BookPageCRUD/AddPage";
 import BookDetailPage from "../../components/relay/BookDetailPage";
@@ -15,16 +16,19 @@ const PageEndCover = React.forwardRef<HTMLDivElement>((props, ref: ForwardedRef<
 });
 
 const RelayBookDetail: React.FC = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { bookId } = useParams();
   const [page, setPage] = useState<number>(1);
   const [totalPage, setTotalPage] = useState<number>(6);
   const bookRef = useRef<typeof HTMLFlipBook>();
   const [isFinished, setIsFinished] = useState(true);
+  const [inputPage, setInputPage] = useState<number | string>(page);
+  const [isHoverd, setIsHoverd] = useState(false);
 
   // 페이지 넘어갈 시 page를 현재 페이지 쪽수로 업데이트
   const onFlip = useCallback((e: { data: number }) => {
     setPage(e.data);
+    setInputPage(e.data);
   }, []);
 
   // 이전 버튼
@@ -64,7 +68,7 @@ const RelayBookDetail: React.FC = () => {
 
   const confirmDelete = () => {
     setIsModalOpen(false);
-    navigate("/relaybooklist")
+    navigate("/relaybooklist");
   };
 
   const cancelDelete = () => {
@@ -76,45 +80,63 @@ const RelayBookDetail: React.FC = () => {
       id: 1,
       userId: 1,
       user: "삶은계란",
-      content: "내용입니다1",
-      pageImage: "/assets/relayStartSample.png",
+      content:
+        "내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다",
+      pageImage: "/assets/relay/relayStartSample1.png",
     },
     {
       id: 2,
       userId: 2,
       user: "만약핑인데",
       content: "내용입니다2",
-      pageImage: "/assets/relayStartSample.png",
+      pageImage: "/assets/relay/relayStartSample2.png",
     },
     {
       id: 3,
       userId: 3,
       user: "별이 빛나는 밤",
       content: "내용입니다3",
-      pageImage: "/assets/relayStartSample.png",
+      pageImage: "/assets/relay/relayStartSample3.png",
     },
     {
       id: 4,
       userId: 4,
       user: "코에촉촉",
       content: "내용입니다4",
-      pageImage: "/assets/relayStartSample.png",
+      pageImage: "/assets/relay/relayStartSample4.png",
     },
     {
       id: 5,
       userId: 5,
       user: "상상의 나무꾼",
       content: "내용입니다5",
-      pageImage: "/assets/relayStartSample.png",
+      pageImage: "/assets/relay/relayStartSample5.png",
     },
     {
       id: 6,
       userId: 6,
       user: "상상의 나무꾼",
       content: "내용입니다5",
-      pageImage: "/assets/relayStartSample.png",
+      pageImage: "/assets/relay/relayStartSample6.png",
     },
   ];
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (!isNaN(Number(value)) && Number(value) >= 1 && Number(value) <= totalPage) {
+      setInputPage(Number(value));
+    } else {
+      setInputPage(value);
+    }
+  };
+
+  const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && typeof inputPage === "number") {
+      // @ts-ignore
+      bookRef.current.pageFlip().turnToPage(inputPage);
+      setPage(inputPage);
+    }
+  };
 
   return (
     <>
@@ -158,18 +180,18 @@ const RelayBookDetail: React.FC = () => {
                 <div className="h-[80%] flex flex-col justify-around">
                   {page.id % 2 == 1 ? (
                     <>
-                    {/* 홀수쪽일 경우 그림, 글 순서 */}
+                      {/* 홀수쪽일 경우 그림, 글 순서 */}
                       <div className="w-full flex justify-center">
-                        <img className="w-2/3" src="/assets/relayStartSample.png" alt="" />
+                        <img className="w-3/5" src={page.pageImage} alt="" />
                       </div>
-                      <p>{page.content}</p>
+                      <p className="mx-10 relaybookpagenotes text-sm">{page.content}</p>
                     </>
                   ) : (
-                      <>
-                        {/* 짝수쪽일 경우 글, 그림 순서 */}
-                      <p>{page.content}</p>
+                    <>
+                      {/* 짝수쪽일 경우 글, 그림 순서 */}
+                      <p className="mx-10 relaybookpagenotes text-sm">{page.content}</p>
                       <div className="w-full flex justify-center">
-                        <img className="w-2/3" src="/assets/relayStartSample.png" alt="" />
+                        <img className="w-3/5" src={page.pageImage} alt="" />
                       </div>
                     </>
                   )}
@@ -196,9 +218,32 @@ const RelayBookDetail: React.FC = () => {
         </div>
 
         {/* 페이지 하단바 */}
-        <div className="py-6 flex justify-center items-center bg-zinc-200">
-          [<span>{page}</span> of
-          <span> {totalPage}</span>]
+        <div className="py-[1.36rem] flex justify-center items-center bg-zinc-200">
+          {isHoverd ? (
+            <div
+              onMouseEnter={() => {
+                setIsHoverd(true);
+              }}
+              onMouseLeave={() => {
+                setIsHoverd(false);
+              }}
+              className="border-2 border-blue-500 rounded-sm ">
+              <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
+            </div>
+          ) : (
+            <div
+              onMouseEnter={() => {
+                setIsHoverd(true);
+              }}
+              onMouseLeave={() => {
+                setIsHoverd(false);
+              }}
+              className="border-2 border-stone-500 rounded-sm ">
+              <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
+            </div>
+          )}
+          <span className="pl-4 font-bold">/</span>
+          <span className="pl-4 font-bold">{totalPage + 1}</span>
         </div>
       </div>
 

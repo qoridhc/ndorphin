@@ -6,7 +6,7 @@ import BookPageDeleteModal from "../relay/BookPageCRUD/BookPageDeleteModal";
 
 interface BookDetailPageProps {
   bookId: any;
-  number?: any
+  number?: any;
   children?: React.ReactNode;
   page: {
     id: number;
@@ -19,7 +19,7 @@ interface BookDetailPageProps {
 }
 
 const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ number, children, page, totalPage, bookId }, ref: ForwardedRef<HTMLDivElement>) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [pageUpdate, setPageUpdate] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,7 +30,7 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ 
 
   const confirmDelete = () => {
     setIsModalOpen(false);
-    navigate(`/relaybookdetail/${bookId}`)
+    navigate(`/relaybookdetail/${bookId}`);
   };
 
   const cancelDelete = () => {
@@ -41,7 +41,7 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ 
     <div className="page" ref={ref}>
       {pageUpdate ? <RelayBookPageUpdate setPageUpdate={setPageUpdate} /> : <>{number === totalPage + 1 ? null : <UserInfo user={page.user} userId={page.userId} setPageUpdate={setPageUpdate} handleDelete={handleDelete} />}</>}
       {!pageUpdate && <div className="h-full">{children}</div>}
-      {(pageUpdate || number === totalPage + 1) ? null : (number % 2 == 1 ? (<div className="absolute bottom-0 m-5">{number}</div>):(<div className="absolute bottom-0 right-0 m-5">{number}</div>))}
+      {pageUpdate || number === totalPage + 1 ? null : number % 2 == 1 ? <div className="absolute bottom-0 m-5">{number}</div> : <div className="absolute bottom-0 right-0 m-5">{number}</div>}
       <BookPageDeleteModal isOpen={isModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />
     </div>
   );
