@@ -2,7 +2,7 @@ import HTMLFlipBook from "react-pageflip";
 import React, { useRef, useState, useCallback, ForwardedRef } from "react";
 import { Navigate, useNavigate } from "react-router";
 import "../../css/RelayBook.css";
-import "../../css/Notes.css"
+import "../../css/Notes.css";
 import { useParams } from "react-router";
 import AddPage from "../../components/relay/BookPageCRUD/AddPage";
 import BookDetailPage from "../../components/relay/BookDetailPage";
@@ -21,7 +21,7 @@ const RelayBookDetail: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [totalPage, setTotalPage] = useState<number>(6);
   const bookRef = useRef<typeof HTMLFlipBook>();
-  const [isFinished, setIsFinished] = useState(true);
+  const [isFinished, setIsFinished] = useState(false);
   const [inputPage, setInputPage] = useState<number | string>(page);
   const [isHoverd, setIsHoverd] = useState(false);
 
@@ -80,8 +80,7 @@ const RelayBookDetail: React.FC = () => {
       id: 1,
       userId: 1,
       user: "삶은계란",
-      content:
-        "내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다1내용입니다",
+      content: "내용입니다안녕하세요 제가 이예림입니다 하하하 입니다1안녕 ? 공부 많이 했어? 오늘 밥 뭐먹지 다1내용입니다진짜 내일은 통신하자 알겠지? 내용입니다1내용입니다1내용입니다1내용입니다",
       pageImage: "/assets/relay/relayStartSample1.png",
     },
     {
@@ -118,6 +117,14 @@ const RelayBookDetail: React.FC = () => {
       user: "상상의 나무꾼",
       content: "내용입니다5",
       pageImage: "/assets/relay/relayStartSample6.png",
+    },
+  ];
+
+  const BookStart = [
+    {
+      coverImage: "/assets/relay/relayStartSample1.png",
+      title: "책 제목1",
+      content: PageList[0].content,
     },
   ];
 
@@ -172,7 +179,7 @@ const RelayBookDetail: React.FC = () => {
             className="album-web"
             onFlip={onFlip}
             useMouseEvents={false}>
-            <BookPageCover bookId={bookId} isOpen={isModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
+            <BookPageCover BookStart={BookStart} bookId={bookId} isOpen={isModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
 
             {/* 페이지 매핑 */}
             {PageList.map((page) => (
@@ -184,12 +191,12 @@ const RelayBookDetail: React.FC = () => {
                       <div className="w-full flex justify-center">
                         <img className="w-3/5" src={page.pageImage} alt="" />
                       </div>
-                      <p className="mx-10 relaybookpagenotes text-sm">{page.content}</p>
+                      <p className="mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
                     </>
                   ) : (
                     <>
                       {/* 짝수쪽일 경우 글, 그림 순서 */}
-                      <p className="mx-10 relaybookpagenotes text-sm">{page.content}</p>
+                      <p className="mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
                       <div className="w-full flex justify-center">
                         <img className="w-3/5" src={page.pageImage} alt="" />
                       </div>
