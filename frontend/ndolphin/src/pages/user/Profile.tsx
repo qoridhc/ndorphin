@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import FollowList from "../../components/user/FollowList";
+import RelayBookList from "../../components/user/RelayBookList";
 
 const Profile = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [selectedTab, setSelectedTab] = useState<string>("만약에");
+  const [selectedTab, setSelectedTab] = useState<string>("릴레이북");
   const [isFollowing, setIsFollowing] = useState(false);
   const [isFollowModalOpen, setIsFollowModalOpen] = useState(false);
   const [activeFollowTab, setActiveFollowTab] = useState<string>("팔로워");
@@ -18,6 +19,19 @@ const Profile = () => {
     setActiveFollowTab(tab);
     setIsFollowModalOpen(true);
   };
+
+  const renderContent = () => {
+    switch (selectedTab) {
+      case "릴레이북":
+        return <RelayBookList />;
+      case "만약에":
+        return "추가"
+      case "괜찮아":
+        return "추가"
+      case "작별인사":
+        return "추후 추가"
+    }
+  }
 
   return (
     <div className="container mx-auto px-4">
@@ -51,9 +65,9 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className="mt-8 border-b space-x-4 flex justify-center">
-        <button className={buttonClass("릴레이")} onClick={() => setSelectedTab("릴레이")}>
-          릴레이
+      <div className="mt-8 border-b space-x-4 flex justify-center sticky top-0">
+        <button className={buttonClass("릴레이북")} onClick={() => setSelectedTab("릴레이북")}>
+          릴레이북
         </button>
         <button className={buttonClass("만약에")} onClick={() => setSelectedTab("만약에")}>
           만약에
@@ -61,13 +75,15 @@ const Profile = () => {
         <button className={buttonClass("괜찮아")} onClick={() => setSelectedTab("괜찮아")}>
           괜찮아
         </button>
-        <button className={buttonClass("작별")} onClick={() => setSelectedTab("작별")}>
-          작&nbsp;&nbsp;&nbsp;별
+        <button className={buttonClass("작별인사")} onClick={() => setSelectedTab("작별인사")}>
+          작별인사
         </button>
       </div>
 
-      {/* 릴레이, 만약에, 괜찮아, 작별 콘텐츠 공간 */}
-      <div></div>
+      {/* 콘텐츠 공간 */}
+      <div>
+        {renderContent()}
+      </div>
 
       <FollowList isOpen={isFollowModalOpen} onClose={() => setIsFollowModalOpen(false)} activeTab={activeFollowTab} setActiveTab={setActiveFollowTab} />
     </div>
