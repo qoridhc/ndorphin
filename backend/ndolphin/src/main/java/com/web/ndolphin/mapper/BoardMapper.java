@@ -1,6 +1,7 @@
 package com.web.ndolphin.mapper;
 
 import com.web.ndolphin.domain.Board;
+import com.web.ndolphin.domain.Reaction;
 import com.web.ndolphin.domain.ReactionType;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.board.request.BoardRequestDto;
@@ -12,7 +13,6 @@ import com.web.ndolphin.dto.board.response.RelayBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import com.web.ndolphin.dto.comment.CommentResponseDto;
-import com.web.ndolphin.dto.reaction.response.ReactionResponseDto;
 import java.util.List;
 import java.util.Map;
 
@@ -42,10 +42,20 @@ public class BoardMapper {
     }
 
     // Entity -> ByeBoardDto 변환
-    public static ByeBoardDto toByeBoardDto(Board board) {
+    public static ByeBoardDto toByeBoardDto(Board board, Map<ReactionType, Long> reactionTypeCounts,
+        Reaction userReaction) {
 
         ByeBoardDto dto = new ByeBoardDto();
+
         mapCommonFields(board, dto);
+
+        dto.setReactionTypeCounts(reactionTypeCounts);
+        if (userReaction != null) {
+            dto.setUserReactionId(userReaction.getId());
+            dto.setUserReactionType(userReaction.getReactionType());
+        } else {
+            dto.setUserReactionType(ReactionType.NONE);
+        }
 
         return dto;
     }
@@ -104,7 +114,7 @@ public class BoardMapper {
     public static RelayBoardDetailResponseDto toRelayBoardDetailResponseDto(Board board,
         boolean hasParticipated, String thumbNailUrl,
         List<CommentResponseDto> commentResponseDtos, Map<ReactionType, Long> reactionTypeCounts,
-        ReactionResponseDto userReaction) {
+        Reaction reaction) {
 
         RelayBoardDetailResponseDto relayBoardDetailResponseDto = new RelayBoardDetailResponseDto();
 
@@ -113,7 +123,8 @@ public class BoardMapper {
         relayBoardDetailResponseDto.setThumbNailUrl(thumbNailUrl);
         relayBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
         relayBoardDetailResponseDto.setReactionTypeCounts(reactionTypeCounts);
-        relayBoardDetailResponseDto.setUserReaction(userReaction);
+        relayBoardDetailResponseDto.setUserReactionId(reaction.getId());
+        relayBoardDetailResponseDto.setUserReactionType(reaction.getReactionType());
 
         return relayBoardDetailResponseDto;
     }

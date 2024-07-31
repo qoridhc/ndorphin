@@ -22,11 +22,9 @@ import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import com.web.ndolphin.dto.comment.CommentResponseDto;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
-import com.web.ndolphin.dto.reaction.response.ReactionResponseDto;
 import com.web.ndolphin.dto.vote.VoteCount;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.mapper.CommentMapper;
-import com.web.ndolphin.mapper.ReactionMapper;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.FavoriteRepository;
@@ -43,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -85,7 +84,7 @@ public class BoardServiceImpl implements BoardService {
 
             return ResponseDto.success();
         } catch (Exception e) {
-            return ResponseDto.databaseError(e.getMessage()); // 예외 발생 시 데이터베이스 에러 응답
+            return ResponseDto.databaseError(e.getMessage());
         }
     }
 
@@ -174,6 +173,7 @@ public class BoardServiceImpl implements BoardService {
 
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     relayBoardResponseDto);
+
                 break;
             case OK_BOARD:
                 // 댓글 수, 사진
@@ -203,7 +203,18 @@ public class BoardServiceImpl implements BoardService {
                 // (welcome, bye)각각의 반응 수, 반응 했는지, 어디에서 어디로 바뀌었는지
                 List<ByeBoardDto> byeBoardDtos = new ArrayList<>();
                 for (Board board : boards) {
-                    ByeBoardDto byeBoardDto = BoardMapper.toByeBoardDto(board);
+
+                    // 각 게시글의 반응 수를 조회
+                    Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(
+                        board.getId());
+
+                    // 사용자의 반응 조회
+                    Reaction userReaction = reactionRepository.findByBoardIdAndUserId(board.getId(),
+                        board.getUser().getUserId());
+
+                    ByeBoardDto byeBoardDto = BoardMapper.toByeBoardDto(board, reactionTypeCounts,
+                        userReaction);
+
                     byeBoardDtos.add(byeBoardDto);
                 }
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
@@ -213,6 +224,20 @@ public class BoardServiceImpl implements BoardService {
                 return ResponseDto.validationFail();
         }
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    }
+
+    private Map<ReactionType, Long> getReactionTypeCounts(Long boardId) {
+
+        List<Object[]> results = reactionRepository.countByBoardIdGroupByReactionType(boardId);
+
+        Map<ReactionType, Long> reactionTypeCounts = results.stream()
+            .filter(result -> result[0] != null)
+            .collect(Collectors.toMap(
+                result -> (ReactionType) result[0],
+                result -> (Long) result[1]
+            ));
+
+        return reactionTypeCounts;
     }
 
     @Override
@@ -228,7 +253,7 @@ public class BoardServiceImpl implements BoardService {
 
         switch (board.getBoardType()) {
             case VOTE_BOARD:
-
+                // 투표 게시판 - 이미지 첨부 가능
                 break;
             case OPINION_BOARD:
                 // 의견 게시판 - 댓글 가능
@@ -261,15 +286,11 @@ public class BoardServiceImpl implements BoardService {
                 Map<ReactionType, Long> reactionTypeCounts = reactionService.getReactionsByBoardId(
                     boardId);
 
-                Optional<Reaction> reaction = reactionRepository.findByBoardIdAndUserId(
-                    boardId, userId);
-                ReactionResponseDto userReaction = reaction
-                    .map(ReactionMapper::toDto)
-                    .orElse(null);
+                Reaction reaction = reactionRepository.findByBoardIdAndUserId(boardId, userId);
 
                 RelayBoardDetailResponseDto relayBoardDetailResponseDto = BoardMapper.toRelayBoardDetailResponseDto(
                     board, hasParticipated, thumbNailUrl, commentResponseDtos, reactionTypeCounts,
-                    userReaction);
+                    reaction);
 
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     relayBoardDetailResponseDto);
@@ -310,9 +331,20 @@ public class BoardServiceImpl implements BoardService {
                 break;
             case BYE_BOARD:
                 // 작별 게시판
-                ByeBoardDto byeBoardDto = BoardMapper.toByeBoardDto(board);
-                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
-                    byeBoardDto);
+//                ByeBoardDto byeBoardDto = BoardMapper.toByeBoardDto(board);
+//                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
+//                    byeBoardDto);
+
+                // 반응 정보 조회
+//                ResponseEntity<ResponseDto> reactionResponse2 = reactionService.getReactionsByBoardId(
+//                    boardId);
+//                if (reactionResponse2.getBody().getCode() == ResponseCode.SUCCESS) {
+//                    ReactionSummaryDto reactionSummary = (ReactionSummaryDto) reactionResponse2.getBody()
+//                        .getData();
+
+//                    byeBoardDto.setReactionTypeCounts(
+//                        reactionSummary.getReactionTypeCounts()); // 추가된 부분
+//                }
                 break;
             default:
                 return ResponseDto.validationFail();
