@@ -2,11 +2,19 @@ import "../../../css/InputPlaceHolder.css";
 import React, { useState, ChangeEvent } from "react";
 
 interface RelayBookPageUpdateProps {
+  page: {
+    id: number;
+    userId: number;
+    user: string;
+    content: string;
+    pageImage: string;
+  };
   setPageUpdate: (type: boolean) => void;
 }
 
-const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ setPageUpdate }) => {
+const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ page, setPageUpdate }) => {
   const [image, setImage] = useState<string | null>(null);
+  const [contentUpdate, setContentUpdate] = useState(page.content);
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -18,6 +26,11 @@ const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ setPageUpdate
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    setContentUpdate(value);
   };
 
   return (
@@ -49,7 +62,7 @@ const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ setPageUpdate
         <div className="w-[90%] border border-zinc-950">
           <p className="mx-2 my-1 font-bold flex">본문</p>
           <hr className="mx-3 my-1 border-zinc-900" />
-          <textarea className="notes w-full h-[100px] resize-none focus:outline-none placeholder:text-zinc-400" placeholder="'만약에~' 내용을 입력해 이야기를 이어주세요"></textarea>
+          <textarea onChange={handleContentChange} className="notes w-full h-[100px] resize-none focus:outline-none placeholder:text-zinc-400" placeholder="'만약에~' 내용을 입력해 이야기를 이어주세요" aria-label={contentUpdate} value={contentUpdate}></textarea>
         </div>
       </div>
 
@@ -60,7 +73,7 @@ const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ setPageUpdate
           <hr className="mx-3 my-1 border-zinc-900" />
           <div className="mt-2">
             <div className="flex justify-center items-center">
-              <img src={image || "/assets/relayStartSample.png"} alt="#" className="w-80 h-56 border rounded-md" />
+              <img src={image || page.pageImage} alt="#" className="w-80 h-56 border rounded-md" />
             </div>
 
             {/* 이미지 첨부 버튼 */}

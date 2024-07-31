@@ -17,7 +17,7 @@ interface AddPageProps {
 
 const AddPage = ({ PageList }: AddPageProps) => {
   const [pageAdd, setPageAdd] = useState(false);
-  const userName = "코에촉촉";
+  const userName = "코에촉";
   const userHasWritten = PageList.some((page) => page.user === userName);
 
   return (

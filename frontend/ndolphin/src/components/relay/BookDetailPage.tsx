@@ -39,7 +39,7 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ 
 
   return (
     <div className="page" ref={ref}>
-      {pageUpdate ? <RelayBookPageUpdate setPageUpdate={setPageUpdate} /> : <>{number === totalPage + 1 ? null : <UserInfo user={page.user} userId={page.userId} setPageUpdate={setPageUpdate} handleDelete={handleDelete} />}</>}
+      {pageUpdate ? <RelayBookPageUpdate page={page} setPageUpdate={setPageUpdate} /> : <>{number === totalPage + 1 ? null : <UserInfo user={page.user} userId={page.userId} setPageUpdate={setPageUpdate} handleDelete={handleDelete} />}</>}
       {!pageUpdate && <div className="h-full">{children}</div>}
       {pageUpdate || number === totalPage + 1 ? null : number % 2 == 1 ? <div className="absolute bottom-0 m-5">{number}</div> : <div className="absolute bottom-0 right-0 m-5">{number}</div>}
       <BookPageDeleteModal isOpen={isModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />
