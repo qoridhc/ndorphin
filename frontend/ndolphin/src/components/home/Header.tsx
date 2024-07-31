@@ -16,15 +16,15 @@ const Header = () => {
   const [isNew, setIsNew] = useState(true);
   const [showAlarmDropdown, setShowAlarmDropdown] = useState(false);
   const [notifications, setNotifications] = useState([
-    { id: 1, profileImage: "/assets/profile/profile1.png", text: "근데 말야에 님이 새로운 게시물을 등록했습니다", timestamp: new Date() },
-    { id: 2, profileImage: "/assets/profile/profile2.png", text: "꿈꾸는 여행자 님이 참여한 릴레이 북이 완성되었습니다.", timestamp: new Date(Date.now() - 5 * 60 * 1000) },
-    { id: 3, profileImage: "/assets/profile/profile3.png", text: "꿈꾸는 여행자 님이 참여한 릴레이 북이 완성되었습니다.", timestamp: new Date(Date.now() - 20 * 60 * 1000) },
-    { id: 4, profileImage: "/assets/profile/profile4.png", text: "꿈꾸는 여행자 님이 참여한 릴레이 북이 완성되었습니다.", timestamp: new Date(Date.now() - 60 * 60 * 1000) },
-    { id: 5, profileImage: "/assets/profile/profile5.png", text: "꿈꾸는 여행자 님이 참여한 릴레이 북이 완성되었습니다.", timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000) },
-    { id: 6, profileImage: "/assets/profile/profile1.png", text: "꿈꾸는 여행자 님이 참여한 릴레이 북이 완성되었습니다.", timestamp: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
-    { id: 7, profileImage: "/assets/profile/profile2.png", text: "꿈꾸는 여행자 님이 참여한 릴레이 북이 완성되었습니다.", timestamp: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000) },
-    { id: 8, profileImage: "/assets/profile/profile3.png", text: "꿈꾸는 여행자 님이 참여한 릴레이 북이 완성되었습니다.", timestamp: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) },
-    { id: 9, profileImage: "/assets/profile/profile4.png", text: "내가 시작한 릴레이 북이 베스트에 선정되었습니다", timestamp: new Date(Date.now() - 600000000000) },
+    { id: 1, profileImage: "/assets/profile/profile1.png", userName: "근데 말야에", text: " 님이 새로운 게시물을 등록했습니다", timestamp: new Date() },
+    { id: 2, profileImage: "/assets/profile/profile2.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 5 * 60 * 1000) },
+    { id: 3, profileImage: "/assets/profile/profile3.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 20 * 60 * 1000) },
+    { id: 4, profileImage: "/assets/profile/profile4.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 60 * 60 * 1000) },
+    { id: 5, profileImage: "/assets/profile/profile5.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+    { id: 6, profileImage: "/assets/profile/profile1.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+    { id: 7, profileImage: "/assets/profile/profile2.png", userName: "삶은 계란", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000) },
+    { id: 8, profileImage: "/assets/profile/profile3.png", userName: "근데 말야에", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) },
+    { id: 9, profileImage: "/assets/profile/profile4.png", userName: "", text: "내가 시작한 릴레이북이 베스트에 선정되었습니다", timestamp: new Date(Date.now() - 600000000000) },
   ]);
 
   const openLoginModal = () => setIsLoginModalOpen(true);
@@ -173,6 +173,7 @@ const Header = () => {
                       <div className="mt-2 flex items-center">
                         <img className="w-10 h-10 mr-3 rounded-full" src={notification.profileImage} alt="프로필" />
                         <p className="text-sm">
+                          <span className="font-bold">{notification.userName}</span>
                           {notification.text}
                           <span className="ms-4 text-gray-400">
                             <TimeDifference timestamp={notification.timestamp} />
