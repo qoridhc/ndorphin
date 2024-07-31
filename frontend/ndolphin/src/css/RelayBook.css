@@ -8,13 +8,6 @@
   box-shadow: 0 1.5em 3em -1em rgb(70, 69, 69);
 }
 
-.page-footer {
-  /* height: 100%; */
-  position: absolute;
-  bottom: 0px;
-  margin: 20px;
-}
-
 .cover-align {
   height: 100%;
   display: flex;

@@ -24,12 +24,12 @@ function App() {
           <Route path="/relaybooklist" element={<RelayBookList />}></Route>
           <Route path="/relaybookstart" element={<RelayBookStart />}></Route>
           <Route path="/relaybookupdate/:id" element={<RelayBookUpdate />}></Route>
-          <Route path="/relaybookdetail/:id" element={<RelayBookDetail />}></Route>
+          <Route path="/relaybookdetail/:bookId" element={<RelayBookDetail />}></Route>
           <Route path="/iflist" element={<IfList />}></Route>
           <Route path="/ifstart" element={<IfStart />}></Route>
           <Route path="/ifdetail/:id" element={<IfDetail />}></Route>
           <Route path="/profile" element={<Profile />}></Route>
-          <Route path="/ok" element={<OkList />}></Route>
+          <Route path="/oklist" element={<OkList />}></Route>
           <Route path="/wishlist" element={<WishList />}></Route>
         </Routes>
       </BrowserRouter>
