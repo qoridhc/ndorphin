@@ -64,7 +64,6 @@ public class BoardServiceImpl implements BoardService {
     private final CommentRepository commentRepository;
     private final FavoriteRepository favoriteRepository;
     private final FileInfoService fileInfoService;
-    private final UserService userService;
     private final TokenService tokenService;
     private final VoteService voteService;
     private final CommentService commentService;
@@ -94,12 +93,12 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType) {
+    public ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType, String filter1, String filter2, String search) {
 
         ResponseDto<?> responseBody = null;
         Map<ReactionType, Long> reactionTypeCounts = null;
 
-        List<Board> boards = boardRepository.findByBoardType(boardType);
+        List<Board> boards = boardRepository.findByTypeAndFilters(boardType, filter1, filter2, search);
 
         switch (boardType) {
             case VOTE_BOARD:
