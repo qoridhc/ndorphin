@@ -15,6 +15,6 @@ public class OkBoardDto extends BoardDto {
 
     private List<String> fileNames = new ArrayList<>();
     private List<String> fileUrls = new ArrayList<>();
-    private Map<ReactionType, Long> reactionTypeCounts;
+    private Long commentCnt = 0L;
     private List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
 }

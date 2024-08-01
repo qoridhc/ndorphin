@@ -12,7 +12,7 @@ public interface BoardService {
     ResponseEntity<ResponseDto> createBoard(Long userId, BoardRequestDto boardRequestDto,
         List<MultipartFile> multipartFiles);
 
-    ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType);
+    ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType, String filter1, String filter2, String search);
 
     ResponseEntity<ResponseDto> getBoardById(Long boardId);
 

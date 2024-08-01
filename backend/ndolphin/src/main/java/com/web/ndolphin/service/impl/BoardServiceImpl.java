@@ -105,12 +105,12 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType) {
+    public ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType, String filter1, String filter2, String search) {
 
         ResponseDto<?> responseBody = null;
         Map<ReactionType, Long> reactionTypeCounts = null;
 
-        List<Board> boards = boardRepository.findByBoardType(boardType);
+        List<Board> boards = boardRepository.findByTypeAndFilters(boardType, filter1, filter2, search);
 
         switch (boardType) {
             case VOTE_BOARD:
@@ -197,13 +197,11 @@ public class BoardServiceImpl implements BoardService {
                 List<OkBoardDto> okBoardDtos = new ArrayList<>();
                 for (Board board : boards) {
                     // 파일 정보를 가져오기
-                    List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(
-                        board.getId(), EntityType.POST);
-
+                    List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(board.getId(),
+                        EntityType.POST);
                     // 파일명과 파일 URL 리스트 생성
                     List<String> fileNames = new ArrayList<>();
                     List<String> fileUrls = new ArrayList<>();
-
                     for (FileInfoResponseDto fileInfoResponseDto : fileInfoResponseDtos) {
                         fileNames.add(fileInfoResponseDto.getFileName());
                         fileUrls.add(fileInfoResponseDto.getFileUrl());
@@ -211,8 +209,11 @@ public class BoardServiceImpl implements BoardService {
 
                     // Board와 파일 정보를 사용하여 OkBoardDto 생성
                     OkBoardDto okBoardDto = BoardMapper.toOkBoardDto(board, fileNames, fileUrls);
+                    okBoardDto.setCommentResponseDtos(commentService.getBoardDetail(board.getId()));
+                    okBoardDto.setCommentCnt((long) commentService.getBoardDetail(board.getId()).size());
                     okBoardDtos.add(okBoardDto);
                 }
+
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     okBoardDtos);
                 break;
@@ -345,13 +346,13 @@ public class BoardServiceImpl implements BoardService {
                 break;
             case OK_BOARD:
                 // 괜찮아 게시판 - 댓글 가능
-                List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(
-                    boardId, EntityType.POST);
 
+                // 파일 정보를 가져오기
+                List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(board.getId(),
+                    EntityType.POST);
                 // 파일명과 파일 URL 리스트 생성
                 List<String> fileNames = new ArrayList<>();
                 List<String> fileUrls = new ArrayList<>();
-
                 for (FileInfoResponseDto fileInfoResponseDto : fileInfoResponseDtos) {
                     fileNames.add(fileInfoResponseDto.getFileName());
                     fileUrls.add(fileInfoResponseDto.getFileUrl());
@@ -359,40 +360,12 @@ public class BoardServiceImpl implements BoardService {
 
                 // Board와 파일 정보를 사용하여 OkBoardDto 생성
                 OkBoardDto okBoardDto = BoardMapper.toOkBoardDto(board, fileNames, fileUrls);
-                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
-                    okBoardDto);
+                okBoardDto.setCommentResponseDtos(commentService.getBoardDetail(board.getId()));
+                okBoardDto.setCommentCnt((long) commentService.getBoardDetail(board.getId()).size());
 
-                // 반응 정보 조회
-//                ResponseEntity<ResponseDto> reactionResponse = reactionService.getReactionsByBoardId(
-//                    boardId);
-//                if (reactionResponse.getBody().getCode() == ResponseCode.SUCCESS) {
-//                    ReactionSummaryDto reactionSummary = (ReactionSummaryDto) reactionResponse.getBody()
-//                        .getData();
-//                    okBoardDto.setReactionTypeCounts(
-//                        reactionSummary.getReactionTypeCounts()); // 추가된 부분
-//                }
-
-                okBoardDto.setCommentResponseDtos(commentService.getBoardDetail(boardId));
-
-                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
-                    okBoardDto);
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, okBoardDto);
                 break;
             case BYE_BOARD:
-                // 작별 게시판
-//                ByeBoardDto byeBoardDto = BoardMapper.toByeBoardDto(board);
-//                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
-//                    byeBoardDto);
-
-                // 반응 정보 조회
-//                ResponseEntity<ResponseDto> reactionResponse2 = reactionService.getReactionsByBoardId(
-//                    boardId);
-//                if (reactionResponse2.getBody().getCode() == ResponseCode.SUCCESS) {
-//                    ReactionSummaryDto reactionSummary = (ReactionSummaryDto) reactionResponse2.getBody()
-//                        .getData();
-
-//                    byeBoardDto.setReactionTypeCounts(
-//                        reactionSummary.getReactionTypeCounts()); // 추가된 부분
-//                }
                 break;
             default:
                 return ResponseDto.validationFail();
