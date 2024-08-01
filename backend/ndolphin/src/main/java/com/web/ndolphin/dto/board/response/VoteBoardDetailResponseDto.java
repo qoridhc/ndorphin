@@ -12,6 +12,7 @@ import lombok.Setter;
 public class VoteBoardDetailResponseDto extends BoardDto {
 
     private String contentFileUrl;
+    private String avatarUrl;
     private Map<ReactionType, Long> reactionTypeCounts;
     private List<VoteInfo> voteInfos;
     private Long userVoteId;

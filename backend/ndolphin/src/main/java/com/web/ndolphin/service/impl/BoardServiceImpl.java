@@ -247,7 +247,9 @@ public class BoardServiceImpl implements BoardService {
         switch (board.getBoardType()) {
             case VOTE_BOARD:
                 // 투표 게시판 - 이미지 첨부 가능
-                String contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.USER);
+                String contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
+
+                String avatarUrl = fileInfoService.getFileUrl(userId, EntityType.USER);
 
                 List<VoteInfo> voteInfos = voteService.getVoteContents(boardId);
 
@@ -259,7 +261,8 @@ public class BoardServiceImpl implements BoardService {
                 Reaction userReaction = reactionRepository.findByBoardIdAndUserId(boardId, userId);
 
                 VoteBoardDetailResponseDto voteBoardDetailResponseDto = BoardMapper.toVoteBoardDetailResponseDto(
-                    board, contentFileUrl, voteInfos, reactionTypeCounts, userVote, userReaction);
+                    board, avatarUrl, contentFileUrl, voteInfos, reactionTypeCounts, userVote,
+                    userReaction);
 
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     voteBoardDetailResponseDto);

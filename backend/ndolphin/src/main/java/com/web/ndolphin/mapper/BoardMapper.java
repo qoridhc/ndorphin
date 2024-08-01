@@ -88,14 +88,15 @@ public class BoardMapper {
     }
 
     public static VoteBoardDetailResponseDto toVoteBoardDetailResponseDto(Board board,
-        String contentFileUrl, List<VoteInfo> voteInfos, Map<ReactionType, Long> reactionTypeCounts,
-        Object[] userVote, Reaction userReaction) {
+        String avatarUrl, String contentFileUrl, List<VoteInfo> voteInfos,
+        Map<ReactionType, Long> reactionTypeCounts, Object[] userVote, Reaction userReaction) {
 
         VoteBoardDetailResponseDto voteBoardDetailResponseDto = new VoteBoardDetailResponseDto();
 
         mapCommonFields(board, voteBoardDetailResponseDto);
         voteBoardDetailResponseDto.setVoteInfos(voteInfos);
         voteBoardDetailResponseDto.setReactionTypeCounts(reactionTypeCounts);
+        voteBoardDetailResponseDto.setAvatarUrl(avatarUrl);
         voteBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
 
         if (userVote.length != 0) {
