@@ -11,7 +11,6 @@ import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.Reaction;
 import com.web.ndolphin.domain.ReactionType;
 import com.web.ndolphin.domain.User;
-import com.web.ndolphin.domain.Vote;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
@@ -20,6 +19,7 @@ import com.web.ndolphin.dto.board.response.OkBoardDto;
 import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
+import com.web.ndolphin.dto.board.response.VoteBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import com.web.ndolphin.dto.comment.CommentResponseDto;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
@@ -248,25 +248,29 @@ public class BoardServiceImpl implements BoardService {
         switch (board.getBoardType()) {
             case VOTE_BOARD:
                 // 투표 게시판 - 이미지 첨부 가능
-                String avatarUrl = fileInfoService.getFileUrl(board.getUser().getUserId(),
-                    EntityType.USER);
+                String contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.USER);
 
                 List<VoteInfo> voteInfos = voteService.getVoteContents(boardId);
 
                 Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(boardId);
 
-                Vote vote = voteRepository.findVoteByBoardIdAndUserId(board.getId(), userId)
+                Object[] userVote = voteRepository.findVoteByBoardIdAndUserId(board.getId(), userId)
                     .orElse(null);
 
+                Reaction userReaction = reactionRepository.findByBoardIdAndUserId(boardId, userId);
+
+                VoteBoardDetailResponseDto voteBoardDetailResponseDto = BoardMapper.toVoteBoardDetailResponseDto(
+                    board, contentFileUrl, voteInfos, reactionTypeCounts, userVote, userReaction);
+
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
+                    voteBoardDetailResponseDto);
                 break;
             case OPINION_BOARD:
                 // 의견 게시판 - 댓글 가능
                 break;
             case RELAY_BOARD:
                 // 릴레이 게시판 - 댓글 및 이미지 첨부 가능
-                String thumbNailUrl = fileInfoService.getFileUrl(
-                    board.getUser().getUserId(),
-                    EntityType.POST);
+                String thumbNailUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
 
                 boolean hasParticipated = commentRepository.existsByBoardIdAndUserId(
                     boardId, userId);

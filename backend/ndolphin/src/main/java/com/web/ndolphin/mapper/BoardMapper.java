@@ -11,8 +11,10 @@ import com.web.ndolphin.dto.board.response.OkBoardDto;
 import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
+import com.web.ndolphin.dto.board.response.VoteBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import com.web.ndolphin.dto.comment.CommentResponseDto;
+import com.web.ndolphin.dto.vote.VoteInfo;
 import java.util.List;
 import java.util.Map;
 
@@ -84,8 +86,32 @@ public class BoardMapper {
         return voteBoardResponseDto;
     }
 
+    public static VoteBoardDetailResponseDto toVoteBoardDetailResponseDto(Board board,
+        String contentFileUrl, List<VoteInfo> voteInfos, Map<ReactionType, Long> reactionTypeCounts,
+        Object[] userVote, Reaction userReaction) {
+
+        VoteBoardDetailResponseDto voteBoardDetailResponseDto = new VoteBoardDetailResponseDto();
+
+        mapCommonFields(board, voteBoardDetailResponseDto);
+        voteBoardDetailResponseDto.setVoteInfos(voteInfos);
+        voteBoardDetailResponseDto.setReactionTypeCounts(reactionTypeCounts);
+        voteBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
+
+        if (userVote.length != 0) {
+            voteBoardDetailResponseDto.setUserVoteId((Long) userVote[0]);
+            voteBoardDetailResponseDto.setUserVoteContentId((Long) userVote[1]);
+        }
+
+        if (userReaction != null) {
+            voteBoardDetailResponseDto.setUserReactionId(userReaction.getId());
+            voteBoardDetailResponseDto.setUserReactionType(userReaction.getReactionType());
+        }
+
+        return voteBoardDetailResponseDto;
+    }
+
     public static OpinionBoardResponseDto toOpinionBoardResponseDto(Board board,
-        String bestComment, long commentCount, String avatarUrl) {
+        String bestComment, Long commentCount, String avatarUrl) {
 
         OpinionBoardResponseDto opinionBoardResponseDto = new OpinionBoardResponseDto();
 
