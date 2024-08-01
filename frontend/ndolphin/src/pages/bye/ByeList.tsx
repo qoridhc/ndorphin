@@ -26,7 +26,7 @@ const ByeList = () => {
       date: "2024-07-29 01:22",
       content: "동화책이 재밌어서 읽으러 종종왔는데 만약에 보다보니 N으로 바꼈나봐요 ㅋㅋㅋㅋ 어제도 만약에로 토론하다 왔는데 이제 여기서 다 풀고 가겠습니다 선배님들, 만약에 많이 올려주세요 기대할게요",
       greetingCount: 8,
-      goodByeCount: 2,
+      goodByeCount: 9,
     },
     {
       id: 3,
