@@ -17,7 +17,7 @@ public class CommentResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String avatarUrl;
-    private String fileUrl;
+    private String contentFileUrl;
     private boolean isLikedByUser;
 
     public CommentResponseDto() {

@@ -1,20 +1,17 @@
 package com.web.ndolphin.dto.board.response;
 
-import com.web.ndolphin.domain.ReactionType;
 import com.web.ndolphin.dto.comment.CommentResponseDto;
 import java.util.List;
-import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class RelayBoardDetailResponseDto extends BoardDto {
+public class OpinionBoardDetailResponseDto extends BoardDto {
 
+    private String avatarUrl;
     private String contentFileUrl;
+    private int commentCount;
     private boolean hasParticipated;
     private List<CommentResponseDto> commentResponseDtos;
-    private Map<ReactionType, Long> reactionTypeCounts;
-    private Long userReactionId;
-    private ReactionType userReactionType;
 }

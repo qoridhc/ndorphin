@@ -8,11 +8,15 @@ import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
+import com.web.ndolphin.dto.board.response.OpinionBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
+import com.web.ndolphin.dto.board.response.VoteBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import com.web.ndolphin.dto.comment.CommentResponseDto;
+import com.web.ndolphin.dto.vote.VoteInfo;
+import com.web.ndolphin.dto.voteContent.UserVoteContent;
 import java.util.List;
 import java.util.Map;
 
@@ -85,8 +89,27 @@ public class BoardMapper {
         return voteBoardResponseDto;
     }
 
+    public static VoteBoardDetailResponseDto toVoteBoardDetailResponseDto(Board board,
+        String avatarUrl, String contentFileUrl, List<VoteInfo> voteInfos,
+        UserVoteContent userVoteContent) {
+
+        VoteBoardDetailResponseDto voteBoardDetailResponseDto = new VoteBoardDetailResponseDto();
+
+        mapCommonFields(board, voteBoardDetailResponseDto);
+        voteBoardDetailResponseDto.setVoteInfos(voteInfos);
+        voteBoardDetailResponseDto.setAvatarUrl(avatarUrl);
+        voteBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
+
+        if (userVoteContent != null) {
+            voteBoardDetailResponseDto.setUserVoteId(userVoteContent.getVoteId());
+            voteBoardDetailResponseDto.setUserVoteContentId(userVoteContent.getVoteContentId());
+        }
+
+        return voteBoardDetailResponseDto;
+    }
+
     public static OpinionBoardResponseDto toOpinionBoardResponseDto(Board board,
-        String bestComment, long commentCount, String avatarUrl) {
+        String bestComment, Long commentCount, String avatarUrl) {
 
         OpinionBoardResponseDto opinionBoardResponseDto = new OpinionBoardResponseDto();
 
@@ -96,6 +119,22 @@ public class BoardMapper {
         opinionBoardResponseDto.setAvatarUrl(avatarUrl);
 
         return opinionBoardResponseDto;
+    }
+
+    public static OpinionBoardDetailResponseDto toOpinionBoardDetailResponseDto(Board board,
+        String avatarUrl, String contentFileUrl, boolean hasParticipated, int commentCount,
+        List<CommentResponseDto> commentResponseDtos) {
+
+        OpinionBoardDetailResponseDto opinionBoardDetailResponseDto = new OpinionBoardDetailResponseDto();
+
+        mapCommonFields(board, opinionBoardDetailResponseDto);
+        opinionBoardDetailResponseDto.setAvatarUrl(avatarUrl);
+        opinionBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
+        opinionBoardDetailResponseDto.setHasParticipated(hasParticipated);
+        opinionBoardDetailResponseDto.setCommentCount(commentCount);
+        opinionBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
+
+        return opinionBoardDetailResponseDto;
     }
 
     public static RelayBoardResponseDto toRelayBoardResponseDto(Board board,
@@ -112,15 +151,15 @@ public class BoardMapper {
     }
 
     public static RelayBoardDetailResponseDto toRelayBoardDetailResponseDto(Board board,
-        boolean hasParticipated, String thumbNailUrl,
-        List<CommentResponseDto> commentResponseDtos, Map<ReactionType, Long> reactionTypeCounts,
-        Reaction reaction) {
+        boolean hasParticipated, String contentFileUrl,
+        List<CommentResponseDto> commentResponseDtos,
+        Map<ReactionType, Long> reactionTypeCounts, Reaction reaction) {
 
         RelayBoardDetailResponseDto relayBoardDetailResponseDto = new RelayBoardDetailResponseDto();
 
         mapCommonFields(board, relayBoardDetailResponseDto);
         relayBoardDetailResponseDto.setHasParticipated(hasParticipated);
-        relayBoardDetailResponseDto.setThumbNailUrl(thumbNailUrl);
+        relayBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
         relayBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
         relayBoardDetailResponseDto.setReactionTypeCounts(reactionTypeCounts);
         relayBoardDetailResponseDto.setUserReactionId(reaction.getId());

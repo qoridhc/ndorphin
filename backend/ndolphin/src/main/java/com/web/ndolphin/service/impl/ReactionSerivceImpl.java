@@ -15,7 +15,6 @@ import com.web.ndolphin.repository.ReactionRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.ReactionService;
 import com.web.ndolphin.service.interfaces.TokenService;
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,11 +33,11 @@ public class ReactionSerivceImpl implements ReactionService {
 
     @Override
     @Transactional
-    public ResponseEntity<ResponseDto> addReaction(HttpServletRequest request, Long boardId,
+    public ResponseEntity<ResponseDto> addReaction(Long boardId,
         ReactionRequestDto reactionRequestDto) {
 
         try {
-            Long userId = tokenService.getUserIdFromToken(request);
+            Long userId = tokenService.getUserIdFromToken();
 
             User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
@@ -65,10 +64,10 @@ public class ReactionSerivceImpl implements ReactionService {
 
     @Override
     @Transactional
-    public ResponseEntity<ResponseDto> deleteReaction(HttpServletRequest request, Long reactionId) {
+    public ResponseEntity<ResponseDto> deleteReaction(Long reactionId) {
 
         try {
-            Long userId = tokenService.getUserIdFromToken(request);
+            Long userId = tokenService.getUserIdFromToken();
 
             Reaction existingReaction = reactionRepository.findById(reactionId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid reaction ID"));
@@ -83,10 +82,10 @@ public class ReactionSerivceImpl implements ReactionService {
 
     @Override
     @Transactional
-    public ResponseEntity<ResponseDto> updateReaction(HttpServletRequest request, Long reactionId,
+    public ResponseEntity<ResponseDto> updateReaction(Long reactionId,
         ReactionRequestDto reactionRequestDto) {
         try {
-            Long userId = tokenService.getUserIdFromToken(request);
+            Long userId = tokenService.getUserIdFromToken();
 
             User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
