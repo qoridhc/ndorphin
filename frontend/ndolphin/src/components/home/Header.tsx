@@ -29,10 +29,9 @@ const Header = () => {
 
   // 로컬스토리지를 이용하여 로그인 정보 저장 및 유지, 추후 변경 필요
   useEffect(() => {
-    const loggedInStatus = localStorage.getItem("isLoggedIn") === 'true';
+    const accessToken = localStorage.getItem("accessToken");
     const storedProfileImage = localStorage.getItem("profileImage");
 
-    setIsLoggedIn(loggedInStatus);
     setProfileImage(storedProfileImage);
   }, []);
 
