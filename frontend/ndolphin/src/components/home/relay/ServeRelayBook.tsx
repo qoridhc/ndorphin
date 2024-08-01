@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useRef, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
 
-interface Props {
-  currentIndex: number;
-}
+import "swiper/css";
+import "swiper/css/navigation";
 
-const ServeRelayBook = (props: Props) => {
+import "../../../css/styles.css";
+
+const ServeRelayBook = () => {
   const bookList = [
     {
       id: 1,
@@ -58,20 +61,20 @@ const ServeRelayBook = (props: Props) => {
     },
   ];
 
-  const visibleBooks = bookList.concat(bookList).slice(props.currentIndex, props.currentIndex + 3);
-
   return (
-    <div className="grid grid-cols-3 gap-x-2 ">
-      {visibleBooks.map((book) => (
-        <div key={book.id}>
-          <img className="rounded-xl" src={book.imgUrl} alt="" />
-          <div className="pt-1 flex font-semibold">
-            <p className="pr-1">{book.id}</p>
-            <p>{book.title}</p>
+    <Swiper slidesPerView={3} spaceBetween={10} loop={true} navigation={true} modules={[Navigation]} className="mySwiper">
+      {bookList.map((book) => (
+        <SwiperSlide key={book.id}>
+          <div>
+            <img className="rounded-xl" src={book.imgUrl} alt="" />
+            <div className="pt-1 flex font-semibold">
+              <p className="pr-1">{book.id}</p>
+              <p className="text-sm">{book.title}</p>
+            </div>
           </div>
-        </div>
+        </SwiperSlide>
       ))}
-    </div>
+    </Swiper>
   );
 };
 
