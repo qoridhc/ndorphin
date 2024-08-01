@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import MiniSearchBar from "../../components/ok/MiniSearchBar";
 import ByeContent from "./ByeContent";
-import OkStartModal from "../ok/OkStartModal";
+import ByeStartModal from "./ByeStartModal";
 
 const ByeList = () => {
   const [isCreateModal, setIsCreateModal] = useState(false);
@@ -88,7 +88,7 @@ const ByeList = () => {
         </div>
       </div>
 
-      {isCreateModal && <OkStartModal setIsCreateModal={setIsCreateModal} />}
+      {isCreateModal && <ByeStartModal setIsCreateModal={setIsCreateModal} />}
     </div>
   );
 };
