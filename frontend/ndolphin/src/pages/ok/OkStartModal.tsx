@@ -128,10 +128,10 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
         <div className="px-3 flex justify-between">
           <div className="flex flex-col items-center justify-center">
             <label htmlFor="image-input">
-              <button className={`w-32 px-5 py-1 flex justify-around items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800 ${imageList.length === 4 ? "opacity-50" : ""}`} disabled={imageList.length === 4}>
+              <div className={`w-32 px-5 py-1 flex justify-around items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800 cursor-pointer ${imageList.length === 4 ? "opacity-50 cursor-default" : ""}`}>
                 <img src="/assets/addImageIcon.png" className="w-5" alt="#"></img>
                 <p className="text-xs">사진 첨부</p>
-              </button>
+              </div>
             </label>
             <input className="hidden" id="image-input" type="file" accept="image/*" onChange={(e) => handleImageChange(e)} disabled={imageList.length === 4} multiple />
           </div>

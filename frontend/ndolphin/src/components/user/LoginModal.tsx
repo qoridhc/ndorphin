@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import userApi from "../../api/userApi";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -9,34 +10,39 @@ interface LoginModalProps {
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const handleExternalLogin = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const provider = event.currentTarget.getAttribute('data-provider');
-    if (provider) {
-      // 여기에 외부 로그인 로직을 구현
-      console.log(`${provider} 로그인 시도`);
-      
-      // 로그인 성공을 시뮬레이션
-      setTimeout(() => {
-        onLoginSuccess();
-      }, 100);
-    }
+  // const handleExternalLogin = (event: React.MouseEvent<HTMLButtonElement>) => {
+  //   const provider = event.currentTarget.getAttribute('data-provider');
+  //   if (provider) {
+  //     // 여기에 외부 로그인 로직을 구현
+  //     console.log(`${provider} 로그인 시도`);
+
+  //     // 로그인 성공을 시뮬레이션
+  //     setTimeout(() => {
+  //       onLoginSuccess();
+  //     }, 100);
+  //   }
+  // };
+
+  const handleExternalLogin = async (loginType: string) => {
+    userApi.login(loginType);
+    // window.location.href = "http://localhost:3000";
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={onClose}>
-      <div className="w-96 bg-white rounded-lg shadow-lg" onClick={e => e.stopPropagation()}>
+      <div className="w-96 bg-white rounded-lg shadow-lg" onClick={(e) => e.stopPropagation()}>
         <div className="p-4 border-b shadow-lg flex justify-between items-center">
           <div className="w-8"></div>
           <h2 className="text-lg font-semibold flex-grow text-center">로그인</h2>
@@ -55,17 +61,17 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
           </p>
           <div className="space-y-4">
             <p>
-              <button onClick={handleExternalLogin} data-provider="google">
+              <button onClick={() => handleExternalLogin("google")} data-provider="google">
                 <img src="../../../assets/user/googleloginbtn.png" alt="구글로 로그인" />
               </button>
             </p>
             <p>
-              <button>
+              <button onClick={() => handleExternalLogin("naver")}>
                 <img src="../../../assets/user/naverloginbtn.png" alt="네이버로 로그인" />
               </button>
             </p>
             <p>
-              <button>
+              <button onClick={() => handleExternalLogin("kakao")}>
                 <img src="../../../assets/user/kakaologinbtn.png" alt="카카오로 로그인" />
               </button>
             </p>

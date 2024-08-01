@@ -3,7 +3,7 @@ import React, { useEffect, useState, ChangeEvent, FocusEvent } from "react";
 interface UserInfoEditModalProps {
   isOpen: boolean;
   onNext: () => void;
-  setProfileImage: (image: string) => void;
+  setProfileImage: (image: string | null) => void;
 }
 
 const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, setProfileImage }) => {
@@ -13,7 +13,14 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
 
   useEffect(() => {
     if (isOpen) {
+      // 모달이 열린 상태에서 스크롤바 숨김
       document.body.style.overflow = 'hidden';
+
+      // localStorage에서 프로필 이미지 가져오기
+      const storedProfileImage = localStorage.getItem("profileImage");
+      if (storedProfileImage) {
+        localSetProfileImage(storedProfileImage);
+      }
     } else {
       document.body.style.overflow = 'unset';
     }
@@ -31,6 +38,8 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
         const result = reader.result as string;
         localSetProfileImage(result);
         setProfileImage(result);
+
+        localStorage.setItem("profileImage", result);
       };
       reader.readAsDataURL(file);
     }

@@ -7,3 +7,13 @@
   line-height: 31px;
   padding: 2px 12px;
 }
+
+.relaybookpagenotes {
+  background-attachment: local;
+  background-image:
+    linear-gradient(to right, #f8f8f8 10px, transparent 10px),
+    linear-gradient(to left, #f8f8f8 10px, transparent 10px),
+    repeating-linear-gradient(#f8f8f8, #f8f8f8 30px, #ccc 30px, #ccc 31px, #f8f8f8 31px);
+  line-height: 31px;
+  padding: 2px 12px;
+}
