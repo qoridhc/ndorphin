@@ -13,6 +13,7 @@ import IfDetail from "./pages/if/IfDetail";
 import Profile from "./pages/user/Profile";
 import OkList from "./pages/ok/OkList";
 import WishList from "./pages/user/WishList";
+import DalleTest from "./pages/DalleTest"
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/profile" element={<Profile />}></Route>
           <Route path="/oklist" element={<OkList />}></Route>
           <Route path="/wishlist" element={<WishList />}></Route>
+          <Route path="/dalle" element={<DalleTest />}></Route>
         </Routes>
       </BrowserRouter>
     </div>

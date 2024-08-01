@@ -7,6 +7,7 @@ import "../../css/Notes.css";
 import "../../css/InputPlaceHolder.css";
 import BookImage from "../../components/relay/relayBookCRUD/BookImage";
 import EndPage from "../../components/relay/EndPage";
+import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
 
 interface PageProps {
   number?: string;
@@ -27,8 +28,8 @@ const RelayBookUpdate: React.FC = () => {
   const title = state.BookStart[0].title;
   const content = state.BookStart[0].content;
   const [image, setImage] = useState<string | null>(null);
-  const [titleUpdate, setTitleUpdate] = useState(title)
-  const [contentUpdate, setContentUpdate] = useState(content)
+  const [titleUpdate, setTitleUpdate] = useState(title);
+  const [contentUpdate, setContentUpdate] = useState(content);
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -50,6 +51,22 @@ const RelayBookUpdate: React.FC = () => {
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setContentUpdate(value);
+  };
+
+  // AI 이미지 모달 관련
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleAiImage = () => {
+    setIsModalOpen(true);
+  };
+
+  const confirmAiImage = (image: string) => {
+    setIsModalOpen(false);
+    setImage(image);
+  };
+
+  const cancelAiImage = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -116,7 +133,7 @@ const RelayBookUpdate: React.FC = () => {
                   <div className="pt-4 pb-6 h-full grid grid-cols-[49%_2%_49%]">
                     {/* AI 이미지 첨부 버튼 */}
                     <div className="flex flex-col items-center justify-center">
-                      <button className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
+                      <button onClick={handleAiImage} className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
                         <img src="/assets/aiImageIcon.png" className="w-5" alt="#"></img>
                         <p className="text-xs">AI 이미지 생성</p>
                       </button>
@@ -155,6 +172,7 @@ const RelayBookUpdate: React.FC = () => {
           </Page>
         </HTMLFlipBook>
       </div>
+      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={coverImage} setImage={setImage} />
     </div>
   );
 };
