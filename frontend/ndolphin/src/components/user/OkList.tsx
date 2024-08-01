@@ -92,6 +92,6 @@ const OkList = () => {
       ))}
     </div>
   );
-}
+};
 
 export default OkList;

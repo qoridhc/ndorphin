@@ -5,6 +5,7 @@ import RelayBookList from "../../components/user/RelayBookList";
 import TopButton from "../../components/common/TopButton";
 import OkList from "../../components/user/OkList";
 import IfCardList from "../../components/user/IfCardList";
+import ByeList from "../../components/user/ByeList";
 
 const Profile = () => {
   const location = useLocation();
@@ -43,7 +44,7 @@ const Profile = () => {
       case "괜찮아":
         return <OkList />;
       case "작별인사":
-        return "추후 추가";
+        return <ByeList />;
       default:
         return null;
     }
