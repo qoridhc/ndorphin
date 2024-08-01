@@ -88,25 +88,18 @@ public class BoardMapper {
     }
 
     public static VoteBoardDetailResponseDto toVoteBoardDetailResponseDto(Board board,
-        String avatarUrl, String contentFileUrl, List<VoteInfo> voteInfos,
-        Map<ReactionType, Long> reactionTypeCounts, Object[] userVote, Reaction userReaction) {
+        String avatarUrl, String contentFileUrl, List<VoteInfo> voteInfos, Object[] userVote) {
 
         VoteBoardDetailResponseDto voteBoardDetailResponseDto = new VoteBoardDetailResponseDto();
 
         mapCommonFields(board, voteBoardDetailResponseDto);
         voteBoardDetailResponseDto.setVoteInfos(voteInfos);
-        voteBoardDetailResponseDto.setReactionTypeCounts(reactionTypeCounts);
         voteBoardDetailResponseDto.setAvatarUrl(avatarUrl);
         voteBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
 
         if (userVote.length != 0) {
             voteBoardDetailResponseDto.setUserVoteId((Long) userVote[0]);
             voteBoardDetailResponseDto.setUserVoteContentId((Long) userVote[1]);
-        }
-
-        if (userReaction != null) {
-            voteBoardDetailResponseDto.setUserReactionId(userReaction.getId());
-            voteBoardDetailResponseDto.setUserReactionType(userReaction.getReactionType());
         }
 
         return voteBoardDetailResponseDto;
@@ -139,9 +132,8 @@ public class BoardMapper {
     }
 
     public static RelayBoardDetailResponseDto toRelayBoardDetailResponseDto(Board board,
-        boolean hasParticipated, String thumbNailUrl,
-        List<CommentResponseDto> commentResponseDtos, Map<ReactionType, Long> reactionTypeCounts,
-        Reaction reaction) {
+        boolean hasParticipated, String thumbNailUrl, List<CommentResponseDto> commentResponseDtos,
+        Map<ReactionType, Long> reactionTypeCounts, Reaction reaction) {
 
         RelayBoardDetailResponseDto relayBoardDetailResponseDto = new RelayBoardDetailResponseDto();
 

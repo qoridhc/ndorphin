@@ -253,22 +253,18 @@ public class BoardServiceImpl implements BoardService {
 
                 List<VoteInfo> voteInfos = voteService.getVoteContents(boardId);
 
-                Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(boardId);
-
                 Object[] userVote = voteRepository.findVoteByBoardIdAndUserId(board.getId(), userId)
                     .orElse(null);
 
-                Reaction userReaction = reactionRepository.findByBoardIdAndUserId(boardId, userId);
-
                 VoteBoardDetailResponseDto voteBoardDetailResponseDto = BoardMapper.toVoteBoardDetailResponseDto(
-                    board, avatarUrl, contentFileUrl, voteInfos, reactionTypeCounts, userVote,
-                    userReaction);
+                    board, avatarUrl, contentFileUrl, voteInfos, userVote);
 
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     voteBoardDetailResponseDto);
                 break;
             case OPINION_BOARD:
                 // 의견 게시판 - 댓글 가능
+
                 break;
             case RELAY_BOARD:
                 // 릴레이 게시판 - 댓글 및 이미지 첨부 가능
@@ -291,7 +287,7 @@ public class BoardServiceImpl implements BoardService {
                         return commentResponseDto;
                     }).collect(toList());
 
-                reactionTypeCounts = getReactionTypeCounts(boardId);
+                Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(boardId);
 
                 Reaction reaction = reactionRepository.findByBoardIdAndUserId(boardId, userId);
 
