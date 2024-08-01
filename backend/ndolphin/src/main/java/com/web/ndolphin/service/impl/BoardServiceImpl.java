@@ -16,6 +16,7 @@ import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
+import com.web.ndolphin.dto.board.response.OpinionBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
@@ -24,19 +25,21 @@ import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import com.web.ndolphin.dto.comment.CommentResponseDto;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.dto.vote.VoteInfo;
+import com.web.ndolphin.dto.voteContent.UserVoteContent;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.mapper.CommentMapper;
+import com.web.ndolphin.mapper.VoteContentMapper;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.FavoriteRepository;
 import com.web.ndolphin.repository.ReactionRepository;
 import com.web.ndolphin.repository.UserRepository;
+import com.web.ndolphin.repository.VoteContentRepository;
 import com.web.ndolphin.repository.VoteRepository;
 import com.web.ndolphin.service.interfaces.BoardService;
 import com.web.ndolphin.service.interfaces.CommentService;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.TokenService;
-import com.web.ndolphin.service.interfaces.UserService;
 import com.web.ndolphin.service.interfaces.VoteService;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -63,13 +66,14 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
     private final FavoriteRepository favoriteRepository;
+    private final ReactionRepository reactionRepository;
+    private final VoteRepository voteRepository;
+    private final VoteContentRepository voteContentRepository;
+
     private final FileInfoService fileInfoService;
-    private final UserService userService;
     private final TokenService tokenService;
     private final VoteService voteService;
     private final CommentService commentService;
-    private final ReactionRepository reactionRepository;
-    private final VoteRepository voteRepository;
 
     @Override
     public ResponseEntity<ResponseDto> createBoard(Long userId, BoardRequestDto boardRequestDto,
@@ -86,6 +90,13 @@ public class BoardServiceImpl implements BoardService {
 
             // 파일 업로드 처리
             fileInfoService.uploadFiles(board.getId(), EntityType.POST, multipartFiles);
+
+            // 투표 처리
+            if (boardRequestDto.getBoardType() == BoardType.VOTE_BOARD) {
+                boardRequestDto.getVoteContents().stream()
+                    .map(content -> VoteContentMapper.toEntity(board, content))
+                    .forEach(voteContentRepository::save);
+            }
 
             return ResponseDto.success();
         } catch (Exception e) {
@@ -240,6 +251,8 @@ public class BoardServiceImpl implements BoardService {
         List<CommentResponseDto> commentResponseDtos;
         Long userId = tokenService.getUserIdFromToken();
         ResponseDto<BoardDto> responseBody = null;
+        boolean hasParticipated;
+        int commentCount;
 
         Board board = boardRepository.findById(boardId)
             .orElseThrow(() -> new IllegalArgumentException("Invalid Board ID"));
@@ -256,11 +269,12 @@ public class BoardServiceImpl implements BoardService {
 
                 List<VoteInfo> voteInfos = voteService.getVoteContents(boardId);
 
-                Object[] userVote = voteRepository.findVoteByBoardIdAndUserId(board.getId(), userId)
+                UserVoteContent userVoteContent = voteRepository.findVoteByBoardIdAndUserId(
+                        board.getId(), userId)
                     .orElse(null);
 
                 VoteBoardDetailResponseDto voteBoardDetailResponseDto = BoardMapper.toVoteBoardDetailResponseDto(
-                    board, avatarUrl, contentFileUrl, voteInfos, userVote);
+                    board, avatarUrl, contentFileUrl, voteInfos, userVoteContent);
 
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     voteBoardDetailResponseDto);
@@ -271,24 +285,49 @@ public class BoardServiceImpl implements BoardService {
 
                 avatarUrl = fileInfoService.getFileUrl(userId, EntityType.USER);
 
-                break;
-            case RELAY_BOARD:
-                // 릴레이 게시판 - 댓글 및 이미지 첨부 가능
-                contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
-
-                boolean hasParticipated = commentRepository.existsByBoardIdAndUserId(
-                    boardId, userId);
+                hasParticipated = commentRepository.existsByBoardIdAndUserId(boardId, userId);
 
                 comments = commentRepository.findByBoardId(boardId);
 
                 commentResponseDtos = comments
                     .stream()
                     .map(comment -> {
-                        String fileUrl = fileInfoService.getFileUrl(comment.getId(),
+                        Long likeCnt = commentRepository.countLovesByCommentId(comment.getId());
+
+                        boolean isLiked = commentRepository.existsByBoardIdAndUserId(boardId,
+                            userId);
+
+                        CommentResponseDto commentResponseDto = CommentMapper.toDto(comment,
+                            likeCnt, isLiked, null);
+
+                        return commentResponseDto;
+                    }).collect(toList());
+
+                commentCount = commentResponseDtos.size();
+
+                OpinionBoardDetailResponseDto opinionBoardDetailResponseDto = BoardMapper.toOpinionBoardDetailResponseDto(
+                    board, avatarUrl, contentFileUrl, hasParticipated, commentCount,
+                    commentResponseDtos);
+
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
+                    opinionBoardDetailResponseDto);
+                break;
+            case RELAY_BOARD:
+                // 릴레이 게시판 - 댓글 및 이미지 첨부 가능
+                contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
+
+                hasParticipated = commentRepository.existsByBoardIdAndUserId(boardId, userId);
+
+                comments = commentRepository.findByBoardId(boardId);
+
+                commentResponseDtos = comments
+                    .stream()
+                    .map(comment -> {
+                        String commentContentFileUrl = fileInfoService.getFileUrl(comment.getId(),
                             EntityType.COMMENT);
 
                         CommentResponseDto commentResponseDto = CommentMapper.toDto(comment, 0L,
-                            fileUrl);
+                            false, commentContentFileUrl);
 
                         return commentResponseDto;
                     }).collect(toList());

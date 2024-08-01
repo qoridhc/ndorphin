@@ -13,6 +13,7 @@ import com.web.ndolphin.mapper.VoteMapper;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.repository.VoteContentRepository;
 import com.web.ndolphin.repository.VoteRepository;
+import com.web.ndolphin.service.interfaces.TokenService;
 import com.web.ndolphin.service.interfaces.VoteService;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -29,13 +30,18 @@ public class VoteServiceImpl implements VoteService {
     private final VoteContentRepository voteContentRepository;
     private final UserRepository userRepository;
 
+    private final TokenService tokenService;
+
     @Override
     @Transactional
     public ResponseEntity<ResponseDto> addVote(VoteRequestDto voteRequestDto) {
 
         try {
-            User user = userRepository.findById(voteRequestDto.getUserId())
+            Long userId = tokenService.getUserIdFromToken();
+
+            User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+
             VoteContent voteContent = voteContentRepository.findById(
                     voteRequestDto.getVoteContentId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid voteContent ID"));
@@ -43,17 +49,18 @@ public class VoteServiceImpl implements VoteService {
             Vote vote = VoteMapper.toEntity(voteRequestDto, user, voteContent);
             voteRepository.save(vote);
 
-            Long boardId = voteContent.getBoard().getId();
-            List<VoteInfo> voteInfos = voteRepository.countVotesByBoardId(boardId);
-            VoteResponseDto voteResponseDto = VoteMapper.toDto(vote, voteInfos);
-
-            ResponseDto<VoteResponseDto> responseBody = new ResponseDto<>(
-                ResponseCode.SUCCESS,
-                ResponseMessage.SUCCESS,
-                voteResponseDto
-            );
-
-            return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+//            Long boardId = voteContent.getBoard().getId();
+//            List<VoteInfo> voteInfos = voteRepository.countVotesByBoardId(boardId);
+//            VoteResponseDto voteResponseDto = VoteMapper.toDto(vote, voteInfos);
+//
+//            ResponseDto<VoteResponseDto> responseBody = new ResponseDto<>(
+//                ResponseCode.SUCCESS,
+//                ResponseMessage.SUCCESS,
+//                voteResponseDto
+//            );
+//
+//            return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+            return ResponseDto.success();
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage()); // 예외 발생 시 데이터베이스 에러 응답
         }

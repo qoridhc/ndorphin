@@ -2,6 +2,7 @@ package com.web.ndolphin.repository;
 
 import com.web.ndolphin.domain.Vote;
 import com.web.ndolphin.dto.vote.VoteInfo;
+import com.web.ndolphin.dto.voteContent.UserVoteContent;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,10 +19,11 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
         "GROUP BY vc.id, vc.content")
     List<VoteInfo> countVotesByBoardId(@Param("boardId") Long boardId);
 
-    @Query("SELECT v.id, vc.id FROM Vote v " +
-        "JOIN v.voteContent vc " +
-        "JOIN vc.board b " +
-        "WHERE b.id = :boardId AND v.user.userId = :userId")
-    Optional<Object[]> findVoteByBoardIdAndUserId(@Param("boardId") Long boardId,
+    @Query(
+        "SELECT new com.web.ndolphin.dto.voteContent.UserVoteContent(v.id, vc.id)  FROM Vote v " +
+            "JOIN v.voteContent vc " +
+            "JOIN vc.board b " +
+            "WHERE b.id = :boardId AND v.user.userId = :userId")
+    Optional<UserVoteContent> findVoteByBoardIdAndUserId(@Param("boardId") Long boardId,
         @Param("userId") Long userId);
 }

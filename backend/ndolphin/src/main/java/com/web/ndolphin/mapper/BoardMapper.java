@@ -8,6 +8,7 @@ import com.web.ndolphin.dto.board.request.BoardRequestDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.board.response.ByeBoardDto;
 import com.web.ndolphin.dto.board.response.OkBoardDto;
+import com.web.ndolphin.dto.board.response.OpinionBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.OpinionBoardResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
@@ -15,6 +16,7 @@ import com.web.ndolphin.dto.board.response.VoteBoardDetailResponseDto;
 import com.web.ndolphin.dto.board.response.VoteBoardResponseDto;
 import com.web.ndolphin.dto.comment.CommentResponseDto;
 import com.web.ndolphin.dto.vote.VoteInfo;
+import com.web.ndolphin.dto.voteContent.UserVoteContent;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +90,8 @@ public class BoardMapper {
     }
 
     public static VoteBoardDetailResponseDto toVoteBoardDetailResponseDto(Board board,
-        String avatarUrl, String contentFileUrl, List<VoteInfo> voteInfos, Object[] userVote) {
+        String avatarUrl, String contentFileUrl, List<VoteInfo> voteInfos,
+        UserVoteContent userVoteContent) {
 
         VoteBoardDetailResponseDto voteBoardDetailResponseDto = new VoteBoardDetailResponseDto();
 
@@ -97,9 +100,9 @@ public class BoardMapper {
         voteBoardDetailResponseDto.setAvatarUrl(avatarUrl);
         voteBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
 
-        if (userVote.length != 0) {
-            voteBoardDetailResponseDto.setUserVoteId((Long) userVote[0]);
-            voteBoardDetailResponseDto.setUserVoteContentId((Long) userVote[1]);
+        if (userVoteContent != null) {
+            voteBoardDetailResponseDto.setUserVoteId(userVoteContent.getVoteId());
+            voteBoardDetailResponseDto.setUserVoteContentId(userVoteContent.getVoteContentId());
         }
 
         return voteBoardDetailResponseDto;
@@ -116,6 +119,22 @@ public class BoardMapper {
         opinionBoardResponseDto.setAvatarUrl(avatarUrl);
 
         return opinionBoardResponseDto;
+    }
+
+    public static OpinionBoardDetailResponseDto toOpinionBoardDetailResponseDto(Board board,
+        String avatarUrl, String contentFileUrl, boolean hasParticipated, int commentCount,
+        List<CommentResponseDto> commentResponseDtos) {
+
+        OpinionBoardDetailResponseDto opinionBoardDetailResponseDto = new OpinionBoardDetailResponseDto();
+
+        mapCommonFields(board, opinionBoardDetailResponseDto);
+        opinionBoardDetailResponseDto.setAvatarUrl(avatarUrl);
+        opinionBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
+        opinionBoardDetailResponseDto.setHasParticipated(hasParticipated);
+        opinionBoardDetailResponseDto.setCommentCount(commentCount);
+        opinionBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
+
+        return opinionBoardDetailResponseDto;
     }
 
     public static RelayBoardResponseDto toRelayBoardResponseDto(Board board,
