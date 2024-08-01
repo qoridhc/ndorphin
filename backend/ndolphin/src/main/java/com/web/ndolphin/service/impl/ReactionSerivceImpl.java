@@ -33,6 +33,7 @@ public class ReactionSerivceImpl implements ReactionService {
 
     @Override
     @Transactional
+
     public ResponseEntity<ResponseDto> addReaction(Long boardId,
         ReactionRequestDto reactionRequestDto) {
 

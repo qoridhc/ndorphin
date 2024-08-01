@@ -45,9 +45,13 @@ public class BoardController {
     }
 
     @GetMapping()
-    public ResponseEntity<ResponseDto> getBoardsByType(@RequestParam("type") BoardType boardType) {
+    public ResponseEntity<ResponseDto> getBoardsByType(
+        @RequestParam("type") BoardType boardType,
+        @RequestParam(value = "filter1", required = false) String filter1,
+        @RequestParam(value = "filter2", required = false, defaultValue = "recent") String filter2,
+        @RequestParam(value = "search", required = false) String search) {
 
-        ResponseEntity<ResponseDto> response = boardService.getBoardsByType(boardType);
+        ResponseEntity<ResponseDto> response = boardService.getBoardsByType(boardType, filter1, filter2, search);
         return response;
     }
 
@@ -91,8 +95,9 @@ public class BoardController {
     @PostMapping("/{boardId}/reactions")
     public ResponseEntity<ResponseDto> addReaction(
         @PathVariable("boardId") Long boardId,
-        @RequestBody ReactionRequestDto reactionRequestDto
-    ) {
+        @RequestBody ReactionRequestDto reactionRequestDto) {
+
+        System.out.println("HERE " + reactionRequestDto.getReactionType());
 
         ResponseEntity<ResponseDto> response = reactionService.addReaction(boardId,
             reactionRequestDto);
