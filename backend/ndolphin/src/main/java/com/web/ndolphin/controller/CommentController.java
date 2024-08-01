@@ -27,7 +27,7 @@ public class CommentController {
     @PostMapping
     public ResponseEntity<ResponseDto> addComment(
         @PathVariable Long boardId,
-        @RequestBody CommentRequestDto commentRequestDto,
+        @RequestPart(name = "request") CommentRequestDto commentRequestDto,
         @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles) {
 
         ResponseEntity<ResponseDto> response = commentService.addComment(boardId, commentRequestDto,
