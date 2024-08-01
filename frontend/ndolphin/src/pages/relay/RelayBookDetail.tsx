@@ -61,19 +61,20 @@ const RelayBookDetail: React.FC = () => {
     }
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteAIModalOpen] = useState(false);
 
   const handleDelete = () => {
-    setIsModalOpen(true);
+    setDeleteAIModalOpen(true);
   };
 
   const confirmDelete = () => {
-    setIsModalOpen(false);
+    setDeleteAIModalOpen(false);
     navigate("/relaybooklist");
   };
 
   const cancelDelete = () => {
-    setIsModalOpen(false);
+    setDeleteAIModalOpen(false);
   };
 
   const PageList = [
@@ -150,16 +151,16 @@ const RelayBookDetail: React.FC = () => {
   const [image, setImage] = useState<string | null>(null);
 
   const handleAiImage = () => {
-    setIsModalOpen(true);
+    setIsAiModalOpen(true);
   };
 
   const confirmAiImage = (image: string) => {
-    setIsModalOpen(false);
+    setIsAiModalOpen(false);
     setImage(image);
   };
 
   const cancelAiImage = () => {
-    setIsModalOpen(false);
+    setIsAiModalOpen(false);
   };
 
   return (
@@ -195,8 +196,9 @@ const RelayBookDetail: React.FC = () => {
             maxShadowOpacity={0.5}
             className="album-web"
             onFlip={onFlip}
-            useMouseEvents={false}>
-            <BookPageCover BookStart={BookStart} bookId={bookId} isOpen={isModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
+            useMouseEvents={false}
+          >
+            <BookPageCover BookStart={BookStart} bookId={bookId} isDeleteOpen={isDeleteModalOpen} isAiOpen={isAiModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
 
             {/* 페이지 매핑 */}
             {PageList.map((page) => (
@@ -251,7 +253,8 @@ const RelayBookDetail: React.FC = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-blue-500 rounded-sm ">
+              className="border-2 border-blue-500 rounded-sm "
+            >
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           ) : (
@@ -262,7 +265,8 @@ const RelayBookDetail: React.FC = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-stone-500 rounded-sm ">
+              className="border-2 border-stone-500 rounded-sm "
+            >
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           )}
@@ -272,10 +276,10 @@ const RelayBookDetail: React.FC = () => {
       </div>
 
       {/* 릴레이북 삭제 모달 */}
-      <DeleteModal isOpen={isModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />
+      <DeleteModal isOpen={isDeleteModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />
 
       {/* AI 이미지 생성 모달 */}
-      <AiImagePromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} />
+      <AiImagePromptModal isOpen={isAiModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} />
     </>
   );
 };
