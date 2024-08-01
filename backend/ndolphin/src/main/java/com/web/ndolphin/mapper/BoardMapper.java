@@ -132,14 +132,15 @@ public class BoardMapper {
     }
 
     public static RelayBoardDetailResponseDto toRelayBoardDetailResponseDto(Board board,
-        boolean hasParticipated, String thumbNailUrl, List<CommentResponseDto> commentResponseDtos,
+        boolean hasParticipated, String contentFileUrl,
+        List<CommentResponseDto> commentResponseDtos,
         Map<ReactionType, Long> reactionTypeCounts, Reaction reaction) {
 
         RelayBoardDetailResponseDto relayBoardDetailResponseDto = new RelayBoardDetailResponseDto();
 
         mapCommonFields(board, relayBoardDetailResponseDto);
         relayBoardDetailResponseDto.setHasParticipated(hasParticipated);
-        relayBoardDetailResponseDto.setThumbNailUrl(thumbNailUrl);
+        relayBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
         relayBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
         relayBoardDetailResponseDto.setReactionTypeCounts(reactionTypeCounts);
         relayBoardDetailResponseDto.setUserReactionId(reaction.getId());

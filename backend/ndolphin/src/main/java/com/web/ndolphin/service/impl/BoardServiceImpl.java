@@ -234,6 +234,11 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public ResponseEntity<ResponseDto> getBoardById(Long boardId) {
 
+        String contentFileUrl;
+        String avatarUrl;
+        List<Comment> comments;
+        List<CommentResponseDto> commentResponseDtos;
+        Long userId = tokenService.getUserIdFromToken();
         ResponseDto<BoardDto> responseBody = null;
 
         Board board = boardRepository.findById(boardId)
@@ -242,14 +247,12 @@ public class BoardServiceImpl implements BoardService {
         board.setHit(board.getHit() + 1);
         boardRepository.save(board);
 
-        Long userId = tokenService.getUserIdFromToken();
-
         switch (board.getBoardType()) {
             case VOTE_BOARD:
                 // 투표 게시판 - 이미지 첨부 가능
-                String contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
+                contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
 
-                String avatarUrl = fileInfoService.getFileUrl(userId, EntityType.USER);
+                avatarUrl = fileInfoService.getFileUrl(userId, EntityType.USER);
 
                 List<VoteInfo> voteInfos = voteService.getVoteContents(boardId);
 
@@ -264,18 +267,21 @@ public class BoardServiceImpl implements BoardService {
                 break;
             case OPINION_BOARD:
                 // 의견 게시판 - 댓글 가능
+                contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
+
+                avatarUrl = fileInfoService.getFileUrl(userId, EntityType.USER);
 
                 break;
             case RELAY_BOARD:
                 // 릴레이 게시판 - 댓글 및 이미지 첨부 가능
-                String thumbNailUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
+                contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
 
                 boolean hasParticipated = commentRepository.existsByBoardIdAndUserId(
                     boardId, userId);
 
-                List<Comment> comments = commentRepository.findByBoardId(boardId);
+                comments = commentRepository.findByBoardId(boardId);
 
-                List<CommentResponseDto> commentResponseDtos = comments
+                commentResponseDtos = comments
                     .stream()
                     .map(comment -> {
                         String fileUrl = fileInfoService.getFileUrl(comment.getId(),
@@ -292,7 +298,7 @@ public class BoardServiceImpl implements BoardService {
                 Reaction reaction = reactionRepository.findByBoardIdAndUserId(boardId, userId);
 
                 RelayBoardDetailResponseDto relayBoardDetailResponseDto = BoardMapper.toRelayBoardDetailResponseDto(
-                    board, hasParticipated, thumbNailUrl, commentResponseDtos, reactionTypeCounts,
+                    board, hasParticipated, contentFileUrl, commentResponseDtos, reactionTypeCounts,
                     reaction);
 
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
