@@ -1,17 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import TopButton from "../common/TopButton";
 
 interface BookList {
   id: number;
   bookImgUrl: string;
   title: string;
-  isLike: boolean;
 }
 
 const RelayBookList = () => {
   const navigate = useNavigate();
-  const [isLike, setIsLike] = useState(true);
+  const observer = useRef<IntersectionObserver | null>(null);
 
   const initialBooks: BookList[] = [];
   for (let i = 0; i < 20; i++) {
@@ -19,7 +17,6 @@ const RelayBookList = () => {
       id: i,
       bookImgUrl: "assets/cover.jpg",
       title: "제목",
-      isLike: isLike,
     });
   }
 
@@ -40,7 +37,6 @@ const RelayBookList = () => {
           </div>
         ))}
       </div>
-      <TopButton />
     </div>
   );
 }

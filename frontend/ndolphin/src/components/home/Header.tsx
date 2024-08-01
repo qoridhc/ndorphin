@@ -27,6 +27,15 @@ const Header = () => {
     { id: 9, profileImage: "/assets/profile/profile4.png", userName: "", text: "내가 시작한 릴레이북이 베스트에 선정되었습니다", timestamp: new Date(Date.now() - 600000000000) },
   ]);
 
+  // 로컬스토리지를 이용하여 로그인 정보 저장 및 유지, 추후 변경 필요
+  useEffect(() => {
+    const loggedInStatus = localStorage.getItem("isLoggedIn") === 'true';
+    const storedProfileImage = localStorage.getItem("profileImage");
+
+    setIsLoggedIn(loggedInStatus);
+    setProfileImage(storedProfileImage);
+  }, []);
+
   const openLoginModal = () => setIsLoginModalOpen(true);
   const closeLoginModal = () => setIsLoginModalOpen(false);
   const openUserInfoEditModalOpen = () => setIsUserInfoEditModalOpen(true);
@@ -46,10 +55,14 @@ const Header = () => {
   const handleFinish = () => {
     closeNSModal();
     setIsLoggedIn(true);
+    localStorage.setItem("isLoggedIn", "true");
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
+    setProfileImage(null);
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("profileImage");
     setShowProfileDropdown(false);
     navigate("/");
   };
@@ -98,6 +111,11 @@ const Header = () => {
       document.removeEventListener("click", handleOutsideClick);
     };
   }, [showProfileDropdown, showAlarmDropdown]);
+
+  const updateProfileImage = (newProfileImage: string | null) => {
+    setProfileImage(newProfileImage);
+    localStorage.setItem("profileImage", newProfileImage || "");
+  };
 
   return (
     <>
@@ -231,7 +249,7 @@ const Header = () => {
       </div>
 
       <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} onLoginSuccess={handleLoginSuccess} />
-      <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onNext={handleNext} setProfileImage={setProfileImage} />
+      <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onNext={handleNext} setProfileImage={updateProfileImage} />
       <NSModal isOpen={isNSModalOpen} onClose={handleFinish} />
     </>
   );

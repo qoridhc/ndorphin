@@ -1,10 +1,7 @@
-import React, { useState } from "react";
-import MiniSearchBar from "../../components/ok/MiniSearchBar";
-import OkContent from "../../components/ok/OkContent";
-import OkStartModal from "./OkStartModal";
+import React from "react";
+import OkContent from "../ok/OkContent";
 
 const OkList = () => {
-  const [isCreateModal, setIsCreateModal] = useState(false);
   const okContentList = [
     {
       id: 1,
@@ -89,35 +86,10 @@ const OkList = () => {
   ];
 
   return (
-    <div>
-      <div className="w-full py-10 bg-yellow-100 flex flex-col justify-around items-center">
-        <p className="py-2 text-center text-3xl font-bold">괜찮아 게시판</p>
-        <p className="py-2 text-center">만약의 걱정으로 고생하는 사람들이 위로 받는 공간</p>
-      </div>
-
-      <div className="px-44">
-        <div className="py-5 grid grid-cols-[1fr_2fr_1fr] gap-5">
-          <div className="col-start-2">
-            {okContentList.map((content, index) => (
-              <OkContent content={content} key={index} />
-            ))}
-          </div>
-
-          <div className="">
-            <MiniSearchBar />
-
-            <button
-              className="w-full my-3 px-7 py-2 shadow-md rounded-2xl font-bold bg-amber-300 text-black"
-              onClick={() => {
-                setIsCreateModal(true);
-              }}>
-              고민 작성하기
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {isCreateModal && <OkStartModal setIsCreateModal={setIsCreateModal} />}
+    <div className="px-96">
+      {okContentList.map((content, index) => (
+        <OkContent content={content} key={index} />
+      ))}
     </div>
   );
 };

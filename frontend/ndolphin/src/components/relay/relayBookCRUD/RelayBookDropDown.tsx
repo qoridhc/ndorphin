@@ -2,12 +2,13 @@ import { Navigate, useNavigate } from "react-router";
 import { useState } from "react";
 
 interface RelayBookDropDownProps {
+  BookStart: any;
   bookId: any;
   handleDelete: () => void;
 }
 
 
-const RelayBookDropDown: React.FC<RelayBookDropDownProps> = ({ bookId, handleDelete }) => {
+const RelayBookDropDown: React.FC<RelayBookDropDownProps> = ({ BookStart, bookId, handleDelete }) => {
   const navigate = useNavigate();
 
   return (
@@ -19,7 +20,7 @@ const RelayBookDropDown: React.FC<RelayBookDropDownProps> = ({ bookId, handleDel
         <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 m-3 shadow">
           <li
             onClick={() => {
-              navigate("/relaybookupdate/1");
+              navigate("/relaybookupdate/1", { state: {BookStart} });
             }}>
             <a className="px-2 py-1">
               <img className="ml-2" src="/assets/updateIcon.png" alt="" />
