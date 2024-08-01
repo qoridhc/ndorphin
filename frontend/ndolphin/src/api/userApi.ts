@@ -1,8 +1,15 @@
 import { instance } from "./axiosConfig";
 
 const userApi = {
+  // 로그인 요청 시 서버의 OAuth URL로 리디렉션
   login: (loginType: string) => {
-    return instance.post(`/api/v1/auth/oauth2/${loginType}`);
+    // window.location.href = `http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com:8080/api/v1/auth/oauth2/${loginType}`;
+    const oauthUrl = `http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com:8080/api/v1/auth/oauth2/${loginType}`;
+    window.open(
+      oauthUrl, 
+      'googleLogin', 
+      'width=500,height=600'
+    );
   },
 }
 
