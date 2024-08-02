@@ -33,6 +33,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // OAuth2 로그인 성공하면 컨트롤러로 redirect
         String redirectUrl =
             "http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com:8080/api/v1/auth/oauth-response/" + userId;
+
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 }

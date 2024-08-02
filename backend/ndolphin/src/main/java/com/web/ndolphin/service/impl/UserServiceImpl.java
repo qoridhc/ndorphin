@@ -9,7 +9,6 @@ import com.web.ndolphin.domain.PointRule;
 import com.web.ndolphin.domain.Token;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
-import com.web.ndolphin.dto.auth.response.OAuth2ResponseDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.favorite.FavoriteResponseDto;
@@ -30,6 +29,9 @@ import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,19 +54,33 @@ public class UserServiceImpl implements UserService {
     private final FileInfoService fileInfoService;
 
     @Override
-    public ResponseEntity<ResponseDto> signIn(Long userId) {
+    public ResponseEntity<ResponseDto> signIn(HttpServletRequest request, HttpServletResponse response, Long userId) {
 
         User user = null;
 
         try {
             user = userRepository.findByUserId(userId);
+
+            Token token = tokenRepository.findByUserId(userId);
+
+            // JWT를 쿠키에 저장
+            Cookie jwtCookie = new Cookie("accessToken", token.getAccessToken());
+            jwtCookie.setHttpOnly(true); // JavaScript에서 접근할 수 없도록 설정
+            jwtCookie.setSecure(true); // HTTPS에서만 전송 (프로덕션 환경에서 사용)
+            jwtCookie.setPath("/"); // 쿠키의 경로 설정
+            jwtCookie.setMaxAge(3600); // 쿠키 유효기간 설정 (초)
+
+            // 쿠키를 응답에 추가
+            response.addCookie(jwtCookie);
+
+            response.sendRedirect("http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com:8080");
+
+
         } catch (Exception e) {
             return ResponseDto.databaseError();
         }
 
-        Token token = tokenRepository.findByUserId(userId);
-
-        return OAuth2ResponseDto.success(token);
+        return ResponseDto.success();
     }
 
     public ResponseEntity<ResponseDto> getUser(Long userId) {

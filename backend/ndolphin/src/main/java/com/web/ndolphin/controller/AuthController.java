@@ -4,6 +4,8 @@ import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.auth.request.TokenRequestDto;
 import com.web.ndolphin.service.impl.TokenServiceImpl;
 import com.web.ndolphin.service.impl.UserServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,11 +24,12 @@ public class AuthController {
     private final TokenServiceImpl tokenService;
 
     @GetMapping("/oauth-response/{userId}")
-    public ResponseEntity<ResponseDto> oauthResponse(@PathVariable("userId") Long userId) {
+    public ResponseEntity<ResponseDto> oauthResponse(HttpServletRequest request, HttpServletResponse response,
+        @PathVariable("userId") Long userId) {
 
-        ResponseEntity<ResponseDto> response = userService.signIn(userId);
+        userService.signIn(request, response, userId);
 
-        return response;
+        return null;
     }
 
     @PostMapping("/token/reissue")
