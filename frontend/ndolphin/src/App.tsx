@@ -15,6 +15,7 @@ import OkList from "./pages/ok/OkList";
 import OkDetail from "./pages/ok/OkDetail";
 import ByeList from "./pages/bye/ByeList"
 import WishList from "./pages/user/WishList";
+import DalleTest from "./pages/DalleTest"
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/okdetail/:id" element={<OkDetail />}></Route>
           <Route path="/bye" element={<ByeList />}></Route>
           <Route path="/wishlist" element={<WishList />}></Route>
+          <Route path="/dalle" element={<DalleTest />}></Route>
         </Routes>
       </BrowserRouter>
     </div>

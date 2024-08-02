@@ -1,7 +1,12 @@
 import React, { useState, ChangeEvent } from "react";
 
-function BookImage() {
-  const [image, setImage] = useState<string | null>(null);
+interface BookImageProps {
+  handleAiImage: () => void;
+  image: string | null;
+  setImage: any;
+}
+
+const BookImage: React.FC<BookImageProps> = ({handleAiImage, image, setImage}) => {
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -29,7 +34,7 @@ function BookImage() {
           <div className="pt-4 pb-6 h-full grid grid-cols-[49%_2%_49%]">
             {/* AI 이미지 첨부 버튼 */}
             <div className="flex flex-col items-center justify-center">
-              <button className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
+              <button onClick={handleAiImage} className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
                 <img src="/assets/aiImageIcon.png" className="w-5" alt="#"></img>
                 <p className="text-xs">AI 이미지 생성</p>
               </button>
