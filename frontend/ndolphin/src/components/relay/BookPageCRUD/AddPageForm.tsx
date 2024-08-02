@@ -1,9 +1,13 @@
-import "../../css/InputPlaceHolder.css";
+import "../../../css/InputPlaceHolder.css";
 import React, { useState, ChangeEvent } from "react";
 
-function AddPageForm() {
-  const [image, setImage] = useState<string | null>(null);
+interface AddPageFormProps {
+  handleAiImage: any;
+  image: string | null;
+  setImage: any;
+}
 
+const AddPageForm:React.FC<AddPageFormProps> = ({handleAiImage, image, setImage}) => {
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -47,14 +51,14 @@ function AddPageForm() {
           <hr className="mx-3 my-1 border-zinc-900" />
           <div className="mt-2">
             <div className="flex justify-center items-center">
-              <img src={image || "/assets/relayStartSample.png"} alt="#" className="w-80 h-56 border rounded-md" />
+              <img src={image || "/assets/relay/defaultImage.png"} alt="#" className="w-64 h-56 border rounded-md" />
             </div>
 
             {/* 이미지 첨부 버튼 */}
             <div className="py-3 h-full grid grid-cols-[49%_2%_49%]">
               {/* AI 이미지 첨부 버튼 */}
               <div className="flex flex-col items-center justify-center">
-                <button className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
+                <button onClick={() => {handleAiImage()}} className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
                   <img src="/assets/aiImageIcon.png" className="w-5" alt="#"></img>
                   <p className="text-xs">AI 이미지 생성</p>
                 </button>

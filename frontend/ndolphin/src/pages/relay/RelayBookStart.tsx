@@ -1,10 +1,12 @@
 import HTMLFlipBook from "react-pageflip";
 import React, { ForwardedRef } from "react";
+import { useState } from "react";
 import "../../css/RelayBook.css";
 import "../../css/Notes.css";
 import "../../css/InputPlaceHolder.css";
 import BookImage from "../../components/relay/relayBookCRUD/BookImage";
 import EndPage from "../../components/relay/EndPage";
+import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
 
 interface PageProps {
   number?: string;
@@ -20,6 +22,23 @@ const Page = React.forwardRef<HTMLDivElement, PageProps>((props, ref: ForwardedR
 });
 
 const MyAlbum: React.FC = () => {
+  // AI 이미지 모달 관련
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [image, setImage] = useState<string | null>(null);
+
+  const handleAiImage = () => {
+    setIsModalOpen(true);
+  };
+
+  const confirmAiImage = (image: string) => {
+    setIsModalOpen(false);
+    setImage(image);
+  };
+
+  const cancelAiImage = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="mt-[1%] grid h-full" style={{ backgroundColor: "white" }}>
       <br></br>
@@ -66,11 +85,12 @@ const MyAlbum: React.FC = () => {
                   <hr className="flex justify-center w-[88%] border-zinc-950" />
                 </div>
               </div>
-              <BookImage />
+              <BookImage handleAiImage={handleAiImage} image={image} setImage={setImage} />
             </div>
           </Page>
         </HTMLFlipBook>
       </div>
+      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} setImage={setImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
     </div>
   );
 };

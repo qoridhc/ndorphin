@@ -12,7 +12,10 @@ import IfStart from "./pages/if/IfStart";
 import IfDetail from "./pages/if/IfDetail";
 import Profile from "./pages/user/Profile";
 import OkList from "./pages/ok/OkList";
+import OkDetail from "./pages/ok/OkDetail";
+import ByeList from "./pages/bye/ByeList"
 import WishList from "./pages/user/WishList";
+import DalleTest from "./pages/DalleTest"
 
 function App() {
   return (
@@ -24,23 +27,20 @@ function App() {
           <Route path="/relaybooklist" element={<RelayBookList />}></Route>
           <Route path="/relaybookstart" element={<RelayBookStart />}></Route>
           <Route path="/relaybookupdate/:id" element={<RelayBookUpdate />}></Route>
-          <Route path="/relaybookdetail/:id" element={<RelayBookDetail />}></Route>
+          <Route path="/relaybookdetail/:bookId" element={<RelayBookDetail />}></Route>
           <Route path="/iflist" element={<IfList />}></Route>
           <Route path="/ifstart" element={<IfStart />}></Route>
           <Route path="/ifdetail/:id" element={<IfDetail />}></Route>
           <Route path="/profile" element={<Profile />}></Route>
-          <Route path="/ok" element={<OkList />}></Route>
+          <Route path="/oklist" element={<OkList />}></Route>
+          <Route path="/okdetail/:id" element={<OkDetail />}></Route>
+          <Route path="/bye" element={<ByeList />}></Route>
           <Route path="/wishlist" element={<WishList />}></Route>
+          <Route path="/dalle" element={<DalleTest />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
   );
 }
-
-// const RelayBookDetailWrapper: React.FC = () => {
-//   const { id } = useParams<{ id: string }>();
-//   const book = {};
-//   return <RelayBookDetail book={book} />
-// }
 
 export default App;

@@ -3,9 +3,10 @@ import { useState } from "react";
 
 interface BookPageDropDownProps {
   setPageUpdate: (type: boolean) => void;
+  handleDelete: () => void;
 }
 
-const BookPageDropDown: React.FC<BookPageDropDownProps> = ({ setPageUpdate }) => {
+const BookPageDropDown: React.FC<BookPageDropDownProps> = ({ setPageUpdate, handleDelete }) => {
   const navigate = useNavigate();
 
   return (
@@ -23,7 +24,10 @@ const BookPageDropDown: React.FC<BookPageDropDownProps> = ({ setPageUpdate }) =>
             <span className="text-center text-md">수정</span>
           </a>
         </li>
-        <li>
+        <li
+          onClick={() => {
+            handleDelete()
+        }}>
           <a className="px-2 py-1">
             <img className="ml-2" src="/assets/deleteIcon.png" alt="" />
             <span className="text-center text-md">삭제</span>

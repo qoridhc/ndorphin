@@ -16,4 +16,10 @@ public interface ReactionRepository extends JpaRepository<Reaction, Long> {
     // Fetch Join을 사용한 메서드
     @Query("SELECT r FROM Reaction r JOIN FETCH r.board WHERE r.board.id = :boardId")
     List<Reaction> findByBoardId(@Param("boardId") Long boardId);
+
+    @Query("SELECT r FROM Reaction r WHERE r.board.id = :boardId AND r.user.userId = :userId")
+    Reaction findByBoardIdAndUserId(@Param("boardId") Long boardId, @Param("userId") Long userId);
+
+    @Query("SELECT r.reactionType, COUNT(r) FROM Reaction r WHERE r.board.id = :boardId GROUP BY r.reactionType")
+    List<Object[]> countByBoardIdGroupByReactionType(@Param("boardId") Long boardId);
 }

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import SearchBar from "../../components/relay/SearchBar";
 import MiniSearchBar from "../../components/ok/MiniSearchBar";
 import OkContent from "../../components/ok/OkContent";
 import OkStartModal from "./OkStartModal";
@@ -118,7 +117,7 @@ const OkList = () => {
         </div>
       </div>
 
-      {isCreateModal && <OkStartModal />}
+      {isCreateModal && <OkStartModal setIsCreateModal={setIsCreateModal} />}
     </div>
   );
 };

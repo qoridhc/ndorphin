@@ -1,7 +1,7 @@
 import React from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router";
-import UserDocSettings from "../../components/common/SettingsMenu";
+import SettingMenu from "../../components/common/SettingMenu";
 
 const IfDetail = () => {
   const navigate = useNavigate();
@@ -143,9 +143,11 @@ const IfDetail = () => {
                 <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${comment.profileImgUrl}`} alt="" />
 
                 <div className="w-full grid gap-2">
-                  <div className="flex justify-between items-center ">
-                    <p className="font-bold">{comment.user}</p>
-                    <UserDocSettings />
+                  <div className="grid grid-cols-[6fr_1fr]">
+                    <div className="flex items-center">
+                      <p className="font-bold">{comment.user}</p>
+                    </div>
+                    <SettingMenu />
                   </div>
                   <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
                   <div className="flex justify-between items-center">

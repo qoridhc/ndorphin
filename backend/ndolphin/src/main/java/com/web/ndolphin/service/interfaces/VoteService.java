@@ -1,7 +1,7 @@
 package com.web.ndolphin.service.interfaces;
 
 import com.web.ndolphin.dto.ResponseDto;
-import com.web.ndolphin.dto.vote.VoteCount;
+import com.web.ndolphin.dto.vote.VoteInfo;
 import com.web.ndolphin.dto.vote.request.VoteRequestDto;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -14,5 +14,5 @@ public interface VoteService {
 
     ResponseEntity<ResponseDto> deleteVote(Long voteId);
 
-    List<VoteCount> getVoteContents(Long boardId);
+    List<VoteInfo> getVoteContents(Long boardId);
 }
