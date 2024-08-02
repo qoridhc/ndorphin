@@ -7,6 +7,7 @@ interface Props {
     id: number;
     profileImgUrl: string;
     user: string;
+    date: string;
     title: string;
     joinCount: number;
     comment: null | string;
@@ -23,11 +24,16 @@ const OpinionCard = ({ opinion }: Props) => {
     <div className="h-80 p-5 border-solid border-[#565656] border-[1px] rounded-lg grid grid-rows-[15%_25%_60%] cursor-pointer" onClick={() => goToDetail(opinion.id, "opinion")}>
       <div className="w-full flex items-center">
         <img className="w-9 h-9 mr-3 rounded-[50%]" src={`/assets/profile/${opinion.profileImgUrl}.png`} alt="" />
-        <div className="w-full flex justify-between">
-          <p className="font-bold">{opinion.user}</p>
-          <button>
-            <IoIosArrowForward className="text-2xl" />
-          </button>
+        <div>
+          <div className="w-full flex justify-between">
+            <p className="font-bold">{opinion.user}</p>
+            <button>
+              <IoIosArrowForward className="text-2xl" />
+            </button>
+          </div>
+          <div>
+            <p className="text-xs text-center">{opinion.date}</p>
+          </div>
         </div>
       </div>
 
