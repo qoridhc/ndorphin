@@ -118,7 +118,7 @@ const Header = () => {
 
   return (
     <>
-      <div className="h-20 px-44 relative z-50 shadow-[0_2px_5px_0_rgba(0,0,0,0.2)] flex justify-between items-center">
+      <div className="w-full h-20 px-44 relative z-50 shadow-[0_2px_5px_0_rgba(0,0,0,0.2)] flex justify-between items-center">
         <div className="flex items-center">
           <img
             className="w-48 h-12 cursor-pointer"
@@ -128,7 +128,8 @@ const Header = () => {
               navigate("/");
             }}
           />
-          <div className="px-5 text-[#6C6C6C] font-semibold">
+
+          <div className="px-2 flex items-center text-[#6C6C6C] font-semibold">
             <button
               className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
               onClick={() => {
