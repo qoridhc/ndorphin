@@ -1,6 +1,7 @@
-import { instance } from "./axiosConfig";
+import { request } from "./axiosConfig";
 
-const baseURL = 'http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com:8080'
+const baseURL = process.env.REACT_APP_API_BASE_URL;
+const token = process.env.REACT_APP_API_TOKEN;
 
 const userApi = {
   login: (loginType: string) => {
@@ -14,6 +15,13 @@ const userApi = {
 
     return newWindow;
   },
+
+  update: (userId: string, newNickName: string) =>
+    request.put(`${baseURL}/api/v1/users/${userId}`, { nickName: newNickName }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }),
 }
 
 export default userApi;

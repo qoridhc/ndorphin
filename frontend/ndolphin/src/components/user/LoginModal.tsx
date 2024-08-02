@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import userApi from "../../api/userApi";
-import axios from "axios";
-import { instance } from "../../api/axiosConfig";
-import { redirect } from "react-router";
 
 interface LoginModalProps {
   isOpen: boolean;
