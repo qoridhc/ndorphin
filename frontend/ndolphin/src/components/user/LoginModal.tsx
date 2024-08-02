@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
 import userApi from "../../api/userApi";
-import axios from "axios";
-import { instance } from "../../api/axiosConfig";
 
 interface LoginModalProps {
   isOpen: boolean;
