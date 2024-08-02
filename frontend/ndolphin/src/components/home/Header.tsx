@@ -84,7 +84,7 @@ const Header = () => {
               onClick={() => {
                 navigate("/relaybooklist");
               }}>
-              릴레이북 test
+              릴레이북
             </button>
             <button
               className="hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
