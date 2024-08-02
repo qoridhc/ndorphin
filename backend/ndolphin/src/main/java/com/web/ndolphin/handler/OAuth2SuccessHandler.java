@@ -31,7 +31,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String userId = oAuth2User.getName();
 
-        LogUtil.info("onAuthenticationSuccess");
+        LogUtil.info("onAuthenticationSuccess", userId);
 
         User user = null;
 
@@ -59,6 +59,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
             Cookie isNewUserCookie = new Cookie("isNewUser", isNewUser);
 
+            LogUtil.info("isNewUserCookie", isNewUserCookie);
+
             isNewUserCookie.setMaxAge(3600);
             isNewUserCookie.setPath("/");
 
@@ -67,8 +69,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             response.addCookie(jwtCookie);
             response.addCookie(refreshTokenCookie);
 
+            // 인증 성공 후 리디렉션할 URL
+            String targetUrl = "http://localhost:3000";
+            setDefaultTargetUrl(targetUrl); // defaultTargetUrl 설정
+
             // 리다이렉트
-            response.sendRedirect("http://localhost:3000");
+            response.sendRedirect(targetUrl);
 //            response.sendRedirect("http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com:80
 
         } catch (Exception e) {

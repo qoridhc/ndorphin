@@ -58,7 +58,8 @@ public class WebSecurityConfig {
                 .authorizationEndpoint(endPoint -> endPoint.baseUri("/api/v1/auth/oauth2"))
                 .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
                 .userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService))
-                .successHandler(oAuth2SuccessHandler))
+                .successHandler(oAuth2SuccessHandler)
+            )
             .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(
                 new FailedAuthenticatoinEntryPoint()) // 인증 실패 시 처리할 엔트리 포인트 설정
             ).addFilterBefore(jwtAutheticationFilter,
