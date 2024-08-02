@@ -5,7 +5,8 @@ import DeleteModal from "./relayBookCRUD/BookDeleteModal";
 interface BookPageCoverProps {
   BookStart: any;
   bookId: any;
-  isOpen: boolean;
+  isDeleteOpen: boolean;
+  isAiOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   handleDelete: () => void;
