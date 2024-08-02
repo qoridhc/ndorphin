@@ -16,9 +16,12 @@ interface BookDetailPageProps {
     pageImage: string;
   };
   totalPage: number;
+  handleAiImage: any;
+  image: string | null;
+  setImage: any;
 }
 
-const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ number, children, page, totalPage, bookId }, ref: ForwardedRef<HTMLDivElement>) => {
+const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ number, children, page, totalPage, bookId, handleAiImage, image, setImage }, ref: ForwardedRef<HTMLDivElement>) => {
   const navigate = useNavigate();
   const [pageUpdate, setPageUpdate] = useState(false);
 
@@ -39,7 +42,11 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ 
 
   return (
     <div className="page" ref={ref}>
-      {pageUpdate ? <RelayBookPageUpdate page={page} setPageUpdate={setPageUpdate} /> : <>{number === totalPage + 1 ? null : <UserInfo user={page.user} userId={page.userId} setPageUpdate={setPageUpdate} handleDelete={handleDelete} />}</>}
+      {pageUpdate ? (
+        <RelayBookPageUpdate page={page} setPageUpdate={setPageUpdate} handleAiImage={handleAiImage} image={image} setImage={setImage} />
+      ) : (
+        <>{number === totalPage + 1 ? null : <UserInfo user={page.user} userId={page.userId} setPageUpdate={setPageUpdate} handleDelete={handleDelete} />}</>
+      )}
       {!pageUpdate && <div className="h-full">{children}</div>}
       {pageUpdate || number === totalPage + 1 ? null : number % 2 == 1 ? <div className="absolute bottom-0 m-5">{number}</div> : <div className="absolute bottom-0 right-0 m-5">{number}</div>}
       <BookPageDeleteModal isOpen={isModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />

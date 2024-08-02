@@ -30,8 +30,7 @@ public class FileInfoServiceImpl implements FileInfoService {
     @Transactional(readOnly = true)
     public List<FileInfoResponseDto> getFileInfos(Long entityId, EntityType entityType) {
 
-        List<FileInfo> fileInfos = fileInfoRepository.findByEntityIdAndEntityType(entityId,
-            entityType);
+        List<FileInfo> fileInfos = fileInfoRepository.findByEntityIdAndEntityType(entityId, entityType);
         List<FileInfoResponseDto> fileInfoResponseDtos = new ArrayList<>();
         for (FileInfo fileInfo : fileInfos) {
             fileInfoResponseDtos.add(FileInfoMapper.toDto(fileInfo));
@@ -46,9 +45,7 @@ public class FileInfoServiceImpl implements FileInfoService {
         throws IOException {
 
         // upload to AWS S3
-        List<FileInfoResponseDto> fileInfoResponseDtos = s3Service.uploadMultipleFiles(entityId,
-            entityType,
-            multipartFiles);
+        List<FileInfoResponseDto> fileInfoResponseDtos = s3Service.uploadMultipleFiles(entityId, entityType, multipartFiles);
 
         // save to MySQL
         for (int i = 0; i < fileInfoResponseDtos.size(); i++) {
@@ -56,16 +53,18 @@ public class FileInfoServiceImpl implements FileInfoService {
 
             FileInfo fileInfo = new FileInfo();
 
-            fileInfo.setFileName(fileInfoResponseDtos.get(i).getFileName());
-            fileInfo.setFileUrl(fileInfoResponseDtos.get(i).getFileUrl());
-            fileInfo.setFileSize(fileInfoResponseDtos.get(i).getFileSize());
-            fileInfo.setFileType(fileInfoResponseDtos.get(i).getFileType());
+//            fileInfo.setFileName(fileInfoResponseDtos.get(i).getFileName());
+//            fileInfo.setFileUrl(fileInfoResponseDtos.get(i).getFileUrl());
+//            fileInfo.setFileSize(fileInfoResponseDtos.get(i).getFileSize());
+//            fileInfo.setFileType(fileInfoResponseDtos.get(i).getFileType());
+//
+//            fileInfo.setEntityType(fileInfoResponseDtos.get(i).getEntityType());
+//
+//            fileInfo.setEntityId(fileInfoResponseDtos.get(i).getEntityId());
+//            fileInfo.setCreatedAt(fileInfoResponseDtos.get(i).getCreatedAt());
+//            fileInfo.setUpdateAt(fileInfoResponseDtos.get(i).getUpdateAt());
 
-            fileInfo.setEntityType(fileInfoResponseDtos.get(i).getEntityType());
-
-            fileInfo.setEntityId(fileInfoResponseDtos.get(i).getEntityId());
-            fileInfo.setCreatedAt(fileInfoResponseDtos.get(i).getCreatedAt());
-            fileInfo.setUpdateAt(fileInfoResponseDtos.get(i).getUpdateAt());
+            fileInfo = FileInfoMapper.toEntity(fileInfoResponseDtos.get(i));
 
             fileInfoRepository.save(fileInfo);
         }

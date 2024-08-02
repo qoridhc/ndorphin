@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class RelayBoardDetailResponseDto extends BoardDto {
 
-    private String thumbNailUrl;
+    private String contentFileUrl;
     private boolean hasParticipated;
     private List<CommentResponseDto> commentResponseDtos;
     private Map<ReactionType, Long> reactionTypeCounts;

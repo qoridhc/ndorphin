@@ -12,8 +12,10 @@ import IfStart from "./pages/if/IfStart";
 import IfDetail from "./pages/if/IfDetail";
 import Profile from "./pages/user/Profile";
 import OkList from "./pages/ok/OkList";
-import WishList from "./pages/user/WishList";
 import OkDetail from "./pages/ok/OkDetail";
+import ByeList from "./pages/bye/ByeList"
+import WishList from "./pages/user/WishList";
+import DalleTest from "./pages/DalleTest"
 
 function App() {
   return (
@@ -32,17 +34,13 @@ function App() {
           <Route path="/profile" element={<Profile />}></Route>
           <Route path="/oklist" element={<OkList />}></Route>
           <Route path="/okdetail/:id" element={<OkDetail />}></Route>
+          <Route path="/bye" element={<ByeList />}></Route>
           <Route path="/wishlist" element={<WishList />}></Route>
+          <Route path="/dalle" element={<DalleTest />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
   );
 }
-
-// const RelayBookDetailWrapper: React.FC = () => {
-//   const { id } = useParams<{ id: string }>();
-//   const book = {};
-//   return <RelayBookDetail book={book} />
-// }
 
 export default App;

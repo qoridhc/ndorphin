@@ -9,7 +9,6 @@ import com.web.ndolphin.provider.JwtProvider;
 import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.TokenService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +72,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public Long getUserIdFromToken(HttpServletRequest request) {
+    public Long getUserIdFromToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             return Long.valueOf((String) authentication.getPrincipal());

@@ -1,7 +1,8 @@
-import "../../../css/Text.css"
+import "../../../css/Text.css";
 import { useState } from "react";
 import AddPageForm from "./AddPageForm";
 import AlreadyWrittenPage from "../relayBookCRUD/AlreadyWrittenPage";
+import AiImagePromptModal from "../AiImagePromptModal";
 
 interface Page {
   id: number;
@@ -13,9 +14,12 @@ interface Page {
 
 interface AddPageProps {
   PageList: Page[];
+  handleAiImage: any;
+  image: string | null;
+  setImage: any;
 }
 
-const AddPage = ({ PageList }: AddPageProps) => {
+const AddPage = ({ PageList, handleAiImage, image, setImage }: AddPageProps) => {
   const [pageAdd, setPageAdd] = useState(false);
   const userName = "코에촉";
   const userHasWritten = PageList.some((page) => page.user === userName);
@@ -42,7 +46,7 @@ const AddPage = ({ PageList }: AddPageProps) => {
       ) : (
         // 페이지 추가 버튼 클릭 후 form으로 전환
         <div>
-          <AddPageForm />
+          <AddPageForm handleAiImage={handleAiImage} image={image} setImage={setImage} />
         </div>
       )}
     </>

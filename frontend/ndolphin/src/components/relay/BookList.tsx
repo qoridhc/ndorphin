@@ -82,7 +82,7 @@ function BookList() {
   return (
     <div>
       <Filter />
-      <div className="px-44 py-10 grid grid-cols-4 gap-x-14 gap-y-20">
+      <div className="px-44 py-10 grid grid-cols-2 lg:grid-cols-4 gap-x-14 gap-y-20">
         {
           bookList.map((book) => (
             <Book key={book.id} book={book} />
