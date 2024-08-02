@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
-    ResponseEntity<ResponseDto> signIn(HttpServletRequest request, HttpServletResponse response, Long userId);
+    void signIn(HttpServletRequest request, HttpServletResponse response, Long userId);
 
     ResponseEntity<ResponseDto> getFavorites(Long userId);
 

@@ -24,12 +24,12 @@ public class AuthController {
     private final TokenServiceImpl tokenService;
 
     @GetMapping("/oauth-response/{userId}")
-    public ResponseEntity<ResponseDto> oauthResponse(HttpServletRequest request, HttpServletResponse response,
+    public void oauthResponse(
+        HttpServletRequest request, HttpServletResponse response,
         @PathVariable("userId") Long userId) {
 
         userService.signIn(request, response, userId);
 
-        return null;
     }
 
     @PostMapping("/token/reissue")

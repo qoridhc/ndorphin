@@ -29,6 +29,7 @@ import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.UserService;
+import com.web.ndolphin.util.LogUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -54,7 +55,9 @@ public class UserServiceImpl implements UserService {
     private final FileInfoService fileInfoService;
 
     @Override
-    public ResponseEntity<ResponseDto> signIn(HttpServletRequest request, HttpServletResponse response, Long userId) {
+    public void signIn(HttpServletRequest request, HttpServletResponse response, Long userId) {
+
+        LogUtil.info("signIn 실행");
 
         User user = null;
 
@@ -63,24 +66,33 @@ public class UserServiceImpl implements UserService {
 
             Token token = tokenRepository.findByUserId(userId);
 
-            // JWT를 쿠키에 저장
+            // userId 쿠키 설정
+            Cookie userIdCookie = new Cookie("userId", String.valueOf(userId));
+            userIdCookie.setMaxAge(3600); // 1시간 유효
+            userIdCookie.setPath("/"); // 모든 경로에서 접근 가능
+
+            // accessToken 쿠키 설정
             Cookie jwtCookie = new Cookie("accessToken", token.getAccessToken());
-            jwtCookie.setHttpOnly(true); // JavaScript에서 접근할 수 없도록 설정
-            jwtCookie.setSecure(true); // HTTPS에서만 전송 (프로덕션 환경에서 사용)
-            jwtCookie.setPath("/"); // 쿠키의 경로 설정
-            jwtCookie.setMaxAge(3600); // 쿠키 유효기간 설정 (초)
+            jwtCookie.setMaxAge(3600); // 1시간 유효
+            jwtCookie.setPath("/"); // 모든 경로에서 접근 가능
+
+            // refreshToken 쿠키 설정
+            Cookie refreshTokenCookie = new Cookie("refreshToken", token.getRefreshToken());
+            refreshTokenCookie.setMaxAge(3600); // 1시간 유효
+            refreshTokenCookie.setPath("/"); // 모든 경로에서 접근 가능
 
             // 쿠키를 응답에 추가
+            response.addCookie(userIdCookie);
             response.addCookie(jwtCookie);
+            response.addCookie(refreshTokenCookie);
 
-            response.sendRedirect("http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com:8080");
-
+            // 리다이렉트
+            response.sendRedirect("http://localhost:3000");
+//            response.sendRedirect("http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com:80");
 
         } catch (Exception e) {
-            return ResponseDto.databaseError();
+            e.printStackTrace();
         }
-
-        return ResponseDto.success();
     }
 
     public ResponseEntity<ResponseDto> getUser(Long userId) {
