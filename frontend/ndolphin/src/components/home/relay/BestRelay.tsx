@@ -4,7 +4,6 @@ import RankingFilter from "../RankingFilter";
 import RankingDate from "../RankingDate";
 import MainRelayBook from "./MainRelayBook";
 import ServeRelayBook from "./ServeRelayBook";
-import BestRelay2 from "./BestRelay2";
 
 const BestRelay = () => {
   const [rankingType, setRankingType] = useState("일간");
@@ -33,10 +32,21 @@ const BestRelay = () => {
         <RankingDate type={rankingType} />
       </div>
 
-      <div className="grid grid-cols-2">
-        {/* <BestRelay2 /> */}
-        <MainRelayBook />
-        <ServeRelayBook />
+      <div className="grid grid-cols-[100px_auto_100px]">
+        <button className="flex items-center" onClick={handlePrevClick}>
+          <IoIosArrowDropleft className="text-5xl text-[#565656]" />
+        </button>
+
+        <div className="relative grid grid-cols-[50%_5%_45%]">
+          <MainRelayBook mainIndex={mainIndex} />
+          <div className="col-start-3">
+            <ServeRelayBook currentIndex={currentIndex} />
+          </div>
+        </div>
+
+        <button className="flex justify-end items-center" onClick={handleNextClick}>
+          <IoIosArrowDropright className="text-5xl text-[#565656]" />
+        </button>
       </div>
     </div>
   );
