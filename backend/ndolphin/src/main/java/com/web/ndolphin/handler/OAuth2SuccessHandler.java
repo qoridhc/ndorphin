@@ -7,10 +7,10 @@ import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.util.LogUtil;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -39,38 +39,50 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             user = userRepository.findByUserId(Long.valueOf(userId));
 
             Token token = tokenRepository.findByUserId(Long.valueOf(userId));
+//
+//            // userId 쿠키 설정
+//            Cookie userIdCookie = new Cookie("userId", userId);
+//            userIdCookie.setMaxAge(3600); // 1시간 유효
+//            userIdCookie.setPath("/"); // 모든 경로에서 접근 가능
+//
+//            // accessToken 쿠키 설정
+//            Cookie jwtCookie = new Cookie("accessToken", token.getAccessToken());
+//            jwtCookie.setMaxAge(3600); // 1시간 유효
+//            jwtCookie.setPath("/"); // 모든 경로에서 접근 가능
+//
+//            // refreshToken 쿠키 설정
+//            Cookie refreshTokenCookie = new Cookie("refreshToken", token.getRefreshToken());
+//            refreshTokenCookie.setMaxAge(3600); // 1시간 유효
+//            refreshTokenCookie.setPath("/"); // 모든 경로에서 접근 가능
+//
+//            String isNewUser = user.getNickName() == null ? "true" : "false";
+//
+//            Cookie isNewUserCookie = new Cookie("isNewUser", isNewUser);
+//
+//            LogUtil.info("isNewUserCookie", isNewUserCookie);
+//
+//            isNewUserCookie.setMaxAge(3600);
+//            isNewUserCookie.setPath("/");
+//
+//            // 쿠키를 응답에 추가
+//            response.addCookie(userIdCookie);
+//            response.addCookie(jwtCookie);
+//            response.addCookie(refreshTokenCookie);
 
-            // userId 쿠키 설정
-            Cookie userIdCookie = new Cookie("userId", userId);
-            userIdCookie.setMaxAge(3600); // 1시간 유효
-            userIdCookie.setPath("/"); // 모든 경로에서 접근 가능
-
-            // accessToken 쿠키 설정
-            Cookie jwtCookie = new Cookie("accessToken", token.getAccessToken());
-            jwtCookie.setMaxAge(3600); // 1시간 유효
-            jwtCookie.setPath("/"); // 모든 경로에서 접근 가능
-
-            // refreshToken 쿠키 설정
-            Cookie refreshTokenCookie = new Cookie("refreshToken", token.getRefreshToken());
-            refreshTokenCookie.setMaxAge(3600); // 1시간 유효
-            refreshTokenCookie.setPath("/"); // 모든 경로에서 접근 가능
-
+            String accessToken = token.getAccessToken();
+            String refreshToken = token.getRefreshToken();
             String isNewUser = user.getNickName() == null ? "true" : "false";
 
-            Cookie isNewUserCookie = new Cookie("isNewUser", isNewUser);
+            // 인증 성공 후 리디렉션할 URL 생성
+            String targetUrl = "http://localhost:3000"; // 여기서 '/'를 추가할 필요 없음
+            targetUrl += "?userId=" + URLEncoder.encode(userId, "UTF-8");
+            targetUrl += "&accessToken=" + URLEncoder.encode(accessToken, "UTF-8");
+            targetUrl += "&refreshToken=" + URLEncoder.encode(refreshToken, "UTF-8");
+            targetUrl += "&isNewUser=" + URLEncoder.encode(isNewUser, "UTF-8");
 
-            LogUtil.info("isNewUserCookie", isNewUserCookie);
+            // URL 출력 (디버깅용)
+            System.out.println("Redirecting to: " + targetUrl);
 
-            isNewUserCookie.setMaxAge(3600);
-            isNewUserCookie.setPath("/");
-
-            // 쿠키를 응답에 추가
-            response.addCookie(userIdCookie);
-            response.addCookie(jwtCookie);
-            response.addCookie(refreshTokenCookie);
-
-            // 인증 성공 후 리디렉션할 URL
-            String targetUrl = "http://localhost:3000";
             setDefaultTargetUrl(targetUrl); // defaultTargetUrl 설정
 
             // 리다이렉트
