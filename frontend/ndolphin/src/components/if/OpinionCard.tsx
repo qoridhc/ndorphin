@@ -7,6 +7,7 @@ interface Props {
     id: number;
     profileImgUrl: string;
     user: string;
+    badget: string;
     date: string;
     title: string;
     joinCount: number;
@@ -25,14 +26,17 @@ const OpinionCard = ({ opinion }: Props) => {
       <div className="w-full flex items-center">
         <img className="w-9 h-9 mr-3 rounded-[50%]" src={`/assets/profile/${opinion.profileImgUrl}.png`} alt="" />
         <div>
-          <div className="w-full flex justify-between">
-            <p className="font-bold">{opinion.user}</p>
+          <div className="w-40 flex justify-between items-center">
+            <div className="flex items-center">
+              <p className="font-bold">{opinion.user}</p>
+              {<img className="w-5 h-5 ml-1" src={`/assets/${opinion.badget === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+            </div>
             <button>
               <IoIosArrowForward className="text-2xl" />
             </button>
           </div>
           <div>
-            <p className="text-xs text-center">{opinion.date}</p>
+            <p className="text-xs text-left">{opinion.date}</p>
           </div>
         </div>
       </div>
