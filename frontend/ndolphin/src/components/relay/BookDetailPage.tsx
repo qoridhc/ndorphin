@@ -12,6 +12,8 @@ interface BookDetailPageProps {
     id: number;
     userId: number;
     user: string;
+    badget: string;
+    date: string;
     content: string;
     pageImage: string;
   };
@@ -45,10 +47,20 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ 
       {pageUpdate ? (
         <RelayBookPageUpdate page={page} setPageUpdate={setPageUpdate} handleAiImage={handleAiImage} image={image} setImage={setImage} />
       ) : (
-        <>{number === totalPage + 1 ? null : <UserInfo user={page.user} userId={page.userId} setPageUpdate={setPageUpdate} handleDelete={handleDelete} />}</>
+        <>{number === totalPage + 1 ? null : <UserInfo user={page.user} userId={page.userId} badget={page.badget} setPageUpdate={setPageUpdate} handleDelete={handleDelete} />}</>
       )}
       {!pageUpdate && <div className="h-full">{children}</div>}
-      {pageUpdate || number === totalPage + 1 ? null : number % 2 == 1 ? <div className="absolute bottom-0 m-5">{number}</div> : <div className="absolute bottom-0 right-0 m-5">{number}</div>}
+      {pageUpdate || number === totalPage + 1 ? null : number % 2 == 1 ? (
+        <div>
+          <div className="absolute bottom-5 mx-5">{number}</div>
+          <p className="text-zinc-500 text-xs absolute bottom-6 left-12">{page.date}</p>
+        </div>
+      ) : (
+        <div>
+          <div className="absolute bottom-5 right-0 mx-5">{number}</div>
+          <p className="text-zinc-500 text-xs absolute bottom-6 right-12">{page.date}</p>
+        </div>
+      )}
       <BookPageDeleteModal isOpen={isModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />
     </div>
   );

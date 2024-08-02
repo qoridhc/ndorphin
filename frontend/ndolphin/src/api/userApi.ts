@@ -6,11 +6,14 @@ const token = process.env.REACT_APP_API_TOKEN;
 const userApi = {
   login: (loginType: string) => {
     const oauthUrl = `${baseURL}/api/v1/auth/oauth2/${loginType}`;
-    window.open(
+    const newWindow = window.open(
       oauthUrl, 
       'googleLogin', 
       'width=500,height=600'
     );
+    console.log('새창 열림')
+
+    return newWindow;
   },
 
   update: (userId: string, newNickName: string) =>
