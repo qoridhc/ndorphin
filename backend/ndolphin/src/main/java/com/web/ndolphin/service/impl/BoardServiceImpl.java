@@ -370,6 +370,7 @@ public class BoardServiceImpl implements BoardService {
             default:
                 return ResponseDto.validationFail();
         }
+
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
@@ -445,5 +446,129 @@ public class BoardServiceImpl implements BoardService {
             ));
 
         return reactionTypeCounts;
+    }
+
+    @Override
+    public List<RelayBoardDetailResponseDto> getRelayBoards(String period){
+
+        List<RelayBoardDetailResponseDto> relayBoardDetailResponseDtos = new ArrayList<>();
+        List<Board> boards = boardRepository.findRelayBoardsByPeriod(period);
+
+        String contentFileUrl;
+        List<Comment> comments;
+        List<CommentResponseDto> commentResponseDtos;
+        Long userId = tokenService.getUserIdFromToken();
+        boolean hasParticipated;
+
+        for(Board board: boards){
+            contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
+
+            hasParticipated = commentRepository.existsByBoardIdAndUserId(board.getId(), userId);
+
+            comments = commentRepository.findByBoardId(board.getId());
+
+            commentResponseDtos = comments
+                .stream()
+                .map(comment -> {
+                    String commentContentFileUrl = fileInfoService.getFileUrl(comment.getId(),
+                        EntityType.COMMENT);
+
+                    CommentResponseDto commentResponseDto = CommentMapper.toDto(comment, 0L,
+                        false, commentContentFileUrl);
+
+                    return commentResponseDto;
+                }).collect(toList());
+
+            Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(board.getId());
+
+            Reaction reaction = reactionRepository.findByBoardIdAndUserId(board.getId(), userId);
+
+            RelayBoardDetailResponseDto relayBoardDetailResponseDto = BoardMapper.toRelayBoardDetailResponseDto(
+                board, hasParticipated, contentFileUrl, commentResponseDtos, reactionTypeCounts,
+                reaction);
+
+            relayBoardDetailResponseDtos.add(relayBoardDetailResponseDto);
+        }
+
+        return relayBoardDetailResponseDtos;
+    }
+
+    @Override
+    public List<VoteBoardDetailResponseDto> getVoteBoards(String period) {
+
+        List<VoteBoardDetailResponseDto> voteBoardDetailResponseDtos = new ArrayList<>();
+        List<Board> boards = boardRepository.findVoteBoardsByPeriod(period);
+
+        String contentFileUrl;
+        String avatarUrl;
+        Long userId = tokenService.getUserIdFromToken();
+
+        for(Board board: boards){
+            contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
+
+            avatarUrl = fileInfoService.getFileUrl(userId, EntityType.USER);
+
+            List<VoteInfo> voteInfos = voteService.getVoteContents(board.getId());
+
+            UserVoteContent userVoteContent = voteRepository.findVoteByBoardIdAndUserId(
+                    board.getId(), userId)
+                .orElse(null);
+
+            VoteBoardDetailResponseDto voteBoardDetailResponseDto = BoardMapper.toVoteBoardDetailResponseDto(
+                board, avatarUrl, contentFileUrl, voteInfos, userVoteContent);
+
+            voteBoardDetailResponseDtos.add(voteBoardDetailResponseDto);
+        }
+
+        return voteBoardDetailResponseDtos;
+    }
+
+    @Override
+    public List<OpinionBoardDetailResponseDto> getOpinionBoards(String period) {
+
+        List<OpinionBoardDetailResponseDto> OpinionBoardDetailResponseDtos = new ArrayList<>();
+        List<Board> boards = boardRepository.findOpinionBoardsByPeriod(period);
+
+        String contentFileUrl;
+        String avatarUrl;
+        List<Comment> comments;
+        List<CommentResponseDto> commentResponseDtos;
+        Long userId = tokenService.getUserIdFromToken();
+        boolean hasParticipated;
+        int commentCount;
+
+        for(Board board: boards){
+            contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
+
+            avatarUrl = fileInfoService.getFileUrl(userId, EntityType.USER);
+
+            hasParticipated = commentRepository.existsByBoardIdAndUserId(board.getId(), userId);
+
+            comments = commentRepository.findByBoardId(board.getId());
+
+            commentResponseDtos = comments
+                .stream()
+                .map(comment -> {
+                    Long likeCnt = commentRepository.countLovesByCommentId(comment.getId());
+
+                    boolean isLiked = commentRepository.existsByBoardIdAndUserId(board.getId(),
+                        userId);
+
+                    CommentResponseDto commentResponseDto = CommentMapper.toDto(comment,
+                        likeCnt, isLiked, null);
+
+                    return commentResponseDto;
+                }).collect(toList());
+
+            commentCount = commentResponseDtos.size();
+
+            OpinionBoardDetailResponseDto opinionBoardDetailResponseDto = BoardMapper.toOpinionBoardDetailResponseDto(
+                board, avatarUrl, contentFileUrl, hasParticipated, commentCount,
+                commentResponseDtos);
+
+            OpinionBoardDetailResponseDtos.add(opinionBoardDetailResponseDto);
+        }
+
+        return OpinionBoardDetailResponseDtos;
     }
 }

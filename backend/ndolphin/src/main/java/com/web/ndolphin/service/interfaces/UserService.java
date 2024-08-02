@@ -5,6 +5,8 @@ import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointDeleteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
+import com.web.ndolphin.dto.user.response.BestNResponseDto;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 
 public interface UserService {
@@ -26,4 +28,6 @@ public interface UserService {
     ResponseEntity<ResponseDto> addNPoint(Long userId, NPointRequestDto dto);
 
     ResponseEntity<ResponseDto> deleteNPoint(Long userId, NPointDeleteRequestDto dto);
+
+    List<BestNResponseDto> getSortedUsersByNPoint(boolean flag);
 }
