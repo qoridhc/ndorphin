@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import userApi from "../../api/userApi";
+import axios from "axios";
+import { instance } from "../../api/axiosConfig";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -22,22 +24,44 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
 
   if (!isOpen) return null;
 
-  // const handleExternalLogin = (event: React.MouseEvent<HTMLButtonElement>) => {
-  //   const provider = event.currentTarget.getAttribute('data-provider');
-  //   if (provider) {
-  //     // 여기에 외부 로그인 로직을 구현
-  //     console.log(`${provider} 로그인 시도`);
-
-  //     // 로그인 성공을 시뮬레이션
-  //     setTimeout(() => {
-  //       onLoginSuccess();
-  //     }, 100);
-  //   }
-  // };
-
   const handleExternalLogin = async (loginType: string) => {
     userApi.login(loginType);
-    // window.location.href = "http://localhost:3000";
+
+    const receiveMessage = (event: MessageEvent) => {
+      console.log('이벤트 수신', event)
+      // if (event.origin !== baseURL) return;
+
+      const { data } = event;
+      console.log('데이터?',data)
+      if (data && data.code === 'SU') {
+
+        localStorage.setItem('accessToken', data.data.accessToken);
+        localStorage.setItem('refreshToken', data.data.refreshToken);
+
+        if (window.opener) {
+//           <!DOCTYPE html>
+// <html>
+// <head>
+//     <title>로그인 성공</title>
+// </head>
+// <body>
+//     <script>
+//         window.opener.postMessage({ code: "LOGIN_SUCCESS", message: "카카오 로그인 성공" }, "http://your-frontend-domain");
+//         window.close();
+//     </script>
+// </body>
+// </html>
+          window.close();
+        }
+        onLoginSuccess();
+      }
+    };
+
+    window.addEventListener('message', receiveMessage);
+
+    return () => {
+      window.removeEventListener('message', receiveMessage);
+    };
   };
 
   return (
