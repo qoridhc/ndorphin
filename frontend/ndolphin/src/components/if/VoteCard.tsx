@@ -7,8 +7,10 @@ interface Props {
     id: number;
     profileImgUrl: string;
     user: string;
+    badget: string;
     title: string;
     joinCount: number;
+    date: string;
     category: {
       id: number;
       content: string;
@@ -28,9 +30,17 @@ const VoteCard = ({ vote }: Props) => {
     <div className="h-80 p-5 border-solid border-[#565656] border-[1px] rounded-lg grid grid-rows-[15%_25%_10%_50%] cursor-pointer" onClick={() => goToDetail(vote.id, "vote")}>
       <div className="w-full flex items-center">
         <img className="w-9 h-9 mr-3 rounded-[50%]" src={`/assets/profile/${vote.profileImgUrl}.png`} alt="" />
-        <div className="w-full flex justify-between">
-          <p className="font-bold">{vote.user}</p>
-          <IoIosArrowForward className="text-2xl" />
+        <div>
+          <div className="w-40 flex justify-between items-center">
+            <div className="flex items-center">
+              <p className="font-bold">{vote.user}</p>
+              {<img className="w-5 h-5 ml-1" src={`/assets/${vote.badget === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+            </div>
+            <IoIosArrowForward className="text-2xl" />
+          </div>
+          <div className="">
+            <p className="text-xs text-left">{vote.date}</p>
+          </div>
         </div>
       </div>
       <p className="my-[10px] text-justify line-clamp-2 hover:underline hover:underline-offset-2">{vote.title}</p>

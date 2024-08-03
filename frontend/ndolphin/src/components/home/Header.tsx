@@ -118,7 +118,7 @@ const Header = () => {
 
   return (
     <>
-      <div className="w-full h-20 px-44 relative shadow-[0_2px_5px_0_rgba(0,0,0,0.2)] flex justify-between items-center">
+      <div className="w-full h-20 px-44 relative z-50 shadow-[0_2px_5px_0_rgba(0,0,0,0.2)] flex justify-between items-center">
         <div className="w-1/2 flex justify-between items-center">
           <img
             className="w-48 h-12 cursor-pointer"

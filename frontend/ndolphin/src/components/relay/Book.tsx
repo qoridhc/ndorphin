@@ -35,7 +35,7 @@ function Book({ book }: BookProps) {
               setIsLike(false);
             }}
             src="/assets/relay/fullheart.png"
-            className="w-9 absolute top-4 right-3 z-10 hover:cursor-pointer"
+            className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer"
             alt="#"
           />
         ) : (
@@ -50,7 +50,7 @@ function Book({ book }: BookProps) {
               setIsHovered(false);
             }}
             src={isHovered ? fullHeart : emptyHeart}
-            className="w-9 absolute top-4 right-3 z-10 hover:cursor-pointer"
+            className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer"
             alt="#"
           />
         )}{" "}

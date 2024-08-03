@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import userApi from "../../api/userApi";
-import axios from "axios";
-import { instance } from "../../api/axiosConfig";
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLoginSuccess: () => void;
+  onLoginSuccess: (userId: string, accessToken: string, refreshToken: string, isNewUser: boolean) => void;
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
+  const [loginWindow, setLoginWindow] = useState<Window | null>(null);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -22,47 +22,47 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (loginWindow) {
+      const checkRedirect = setInterval(() => {
+        try {
+          const redirectedUrl = loginWindow.location.href;
+          if (redirectedUrl.includes('localhost:3000')) {
+            clearInterval(checkRedirect);
+            const urlParams = new URLSearchParams(redirectedUrl.split('?')[1]);
+            const userId = urlParams.get('userId');
+            const accessToken = urlParams.get('accessToken');
+            const refreshToken = urlParams.get('refreshToken');
+            const isNewUser = urlParams.get('isNewUser') === 'true';
+
+            console.log('로그인 성공 쿼리 파라미터!!!', {
+              userId,
+              accessToken,
+              refreshToken,
+              isNewUser
+            });
+
+            if (userId && accessToken && refreshToken) {
+              onLoginSuccess(userId, accessToken, refreshToken, isNewUser);
+              loginWindow.close();
+              setLoginWindow(null);
+            }
+          }
+        } catch (error) {
+          console.log('에러???', error);
+        }
+      }, 500);
+
+      return () => clearInterval(checkRedirect);
+    }
+  }, [loginWindow, onLoginSuccess]);
+
   if (!isOpen) return null;
 
-  const handleExternalLogin = async (loginType: string) => {
-    userApi.login(loginType);
-
-    const receiveMessage = (event: MessageEvent) => {
-      console.log('이벤트 수신', event)
-      // if (event.origin !== baseURL) return;
-
-      const { data } = event;
-      console.log('데이터?',data)
-      if (data && data.code === 'SU') {
-
-        localStorage.setItem('accessToken', data.data.accessToken);
-        localStorage.setItem('refreshToken', data.data.refreshToken);
-
-        if (window.opener) {
-//           <!DOCTYPE html>
-// <html>
-// <head>
-//     <title>로그인 성공</title>
-// </head>
-// <body>
-//     <script>
-//         window.opener.postMessage({ code: "LOGIN_SUCCESS", message: "카카오 로그인 성공" }, "http://your-frontend-domain");
-//         window.close();
-//     </script>
-// </body>
-// </html>
-          window.close();
-        }
-        onLoginSuccess();
-      }
-    };
-
-    window.addEventListener('message', receiveMessage);
-
-    return () => {
-      window.removeEventListener('message', receiveMessage);
-    };
-  };
+  const handleExternalLogin = (loginType: string) => {
+    const newWindow = userApi.login(loginType);
+    setLoginWindow(newWindow);
+    }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={onClose}>

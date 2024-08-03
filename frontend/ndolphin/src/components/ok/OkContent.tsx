@@ -8,6 +8,7 @@ interface Props {
     id: number;
     profileImgUrl: string;
     user: string;
+    badget: string;
     date: string;
     content: string;
     imgList: {
@@ -90,7 +91,10 @@ const OkContent = ({ content }: Props) => {
 
         <div className="grid gap-3">
           <div>
-            <p className="font-bold">{content.user}</p>
+            <div className="flex items-center">
+              <p className="font-bold">{content.user}</p>
+              {<img className="w-5 h-5 ml-1" src={`/assets/${content.badget === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+            </div>
             <p className="text-sm font-semibold text-[#565656]">{content.date}</p>
           </div>
 

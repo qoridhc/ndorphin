@@ -1,4 +1,5 @@
 import React, { useEffect, useState, ChangeEvent, FocusEvent } from "react";
+import userApi from "../../api/userApi";
 
 interface UserInfoEditModalProps {
   isOpen: boolean;
@@ -14,7 +15,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
   useEffect(() => {
     if (isOpen) {
       // 모달이 열린 상태에서 스크롤바 숨김
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
 
       // localStorage에서 프로필 이미지 가져오기
       const storedProfileImage = localStorage.getItem("profileImage");
@@ -22,11 +23,11 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
         localSetProfileImage(storedProfileImage);
       }
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
-    
+
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
@@ -52,6 +53,15 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
   const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
     if (event.target.value === "") {
       setNicknamePlaceholder("닉네임을 입력해 주세요(2~10글자)");
+    }
+  };
+
+  const handleUserUpdate = async (userId: string, newNickName: string) => {
+    try {
+      const response = await userApi.update(userId, newNickName);
+      console.log(response.data);
+    } catch (error) {
+      console.error("회원정보 수정 오류 :", error);
     }
   };
 
@@ -85,7 +95,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
             <span className="bg-gray-400 w-2 h-2 rounded-full"></span>
             <span className="bg-gray-300 w-2 h-2 rounded-full"></span>
           </div>
-          <button className="mt-6 bg-yellow-300 text-white rounded-lg px-4 py-2" onClick={onNext}>
+          <button className="mt-6 bg-yellow-300 text-white rounded-lg px-4 py-2" onClick={() => handleUserUpdate("2", "예림인데요")}>
             다음
           </button>
         </div>
