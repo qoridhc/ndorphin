@@ -28,7 +28,7 @@ const BalanceCard = ({ balance }: Props) => {
   };
 
   return (
-    <div className="h-64 p-5 border-solid border-[#565656] border-[1px] rounded-lg grid grid-rows-[15%_30%_15%_40%] cursor-pointer" onClick={() => goToDetail(balance.id)}>
+    <div className="h-72 p-5 border-solid border-[#565656] border-[1px] rounded-lg grid grid-rows-[1fr_3fr_1fr_5fr] gap-3 cursor-pointer duration-300 ease-out hover:-translate-y-3 hover:shadow-lg" onClick={() => goToDetail(balance.id)}>
       <div className="flex justify-between">
         <div className="flex items-center">
           <img className="w-9 h-9 mr-3 rounded-[50%]" src={`/assets/profile/${balance.profileImgUrl}.png`} alt="" />
@@ -47,7 +47,7 @@ const BalanceCard = ({ balance }: Props) => {
 
         <IoIosArrowForward className="text-2xl" />
       </div>
-      <p className="my-2 text-justify line-clamp-2 hover:underline hover:underline-offset-2">{balance.title}</p>
+      <p className="py-2 text-justify line-clamp-2 hover:underline hover:underline-offset-2">{balance.title}</p>
       <p className="text-sm font-semibold text-[#565656] text-right">투표수 {balance.joinCount}회</p>
 
       <div className={`grid ${voteGrids[balance.category.length - 2]} gap-1`}>
