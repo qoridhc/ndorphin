@@ -1,13 +1,13 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import SettingMenu from "../../components/common/SettingMenu";
 import OpinionCard from "../../components/if/OpinionCard";
 
 const IfDetail = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [rowCount, setRowCount] = useState(0);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [textCount, setTextCount] = useState(0);
 
   const ifOpinionData = {
     date: "2023-10-30 09:22",
@@ -97,18 +97,14 @@ const IfDetail = () => {
   };
 
   const handleTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    // const text = event.target.value.length;
-    // setTextCount(text);
-    const rows = event.target.value.split(/\r\n|\r|\n/).length;
-    setRowCount(rows);
-  };
+    const text = event.target.value.length;
+    setTextCount(text);
 
-  useEffect(() => {
-    const targetTextarea = document.querySelector(`#target`) as HTMLTextAreaElement | null;
-    if (targetTextarea) {
-      targetTextarea.style.height = rowCount * 28 + "px";
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
     }
-  }, [rowCount]);
+  };
 
   return (
     <div className="px-44 py-5">
@@ -150,14 +146,16 @@ const IfDetail = () => {
               <p className="text-sm text-[#4B91F9] font-semibold text-right">의견 {ifOpinionData.joinCount}개</p>
             </div>
 
-            <div className="">
+            <div>
               <div className="p-5 border-y">
                 <div className="flex">
                   <img className="w-11 h-11 mr-3 rounded-[50%]" src={`${userData.profileImgUrl}`} alt="" />
-                  <textarea className="w-full min-h-10 text-xl outline-none resize-none" placeholder="댓글을 작성해 주세요" id="target" onChange={(e) => handleTextareaChange(e)} />
+                  <textarea className="w-full min-h-10 text-xl outline-none resize-none" placeholder="댓글을 작성해 주세요" id="target" ref={textareaRef} onChange={(e) => handleTextareaChange(e)} />
                 </div>
                 <div className="flex justify-end">
-                  <button className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">등록</button>
+                  <button className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0}>
+                    등록
+                  </button>
                 </div>
               </div>
 
