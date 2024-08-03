@@ -5,13 +5,13 @@ const token = process.env.REACT_APP_API_TOKEN;
 
 const userApi = {
   login: (loginType: string) => {
+    console.log('새창')
     const oauthUrl = `${baseURL}/api/v1/auth/oauth2/${loginType}`;
     const newWindow = window.open(
       oauthUrl, 
       'googleLogin', 
       'width=500,height=600'
     );
-    console.log('새창 열림')
 
     return newWindow;
   },
@@ -22,6 +22,16 @@ const userApi = {
         Authorization: `Bearer ${token}`,
       }
     }),
+  
+  // logout: () => request.post(
+  //   `${baseURL}/api/v1/auth/logout`,
+  //   {},
+  //   {
+  //     headers: {
+  //       Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+  //     }
+  //   },
+  // ),
 }
 
 export default userApi;

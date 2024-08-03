@@ -35,13 +35,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
             const refreshToken = urlParams.get('refreshToken');
             const isNewUser = urlParams.get('isNewUser') === 'true';
 
-            console.log('로그인 성공 쿼리 파라미터!!!', {
-              userId,
-              accessToken,
-              refreshToken,
-              isNewUser
-            });
-
             if (userId && accessToken && refreshToken) {
               onLoginSuccess(userId, accessToken, refreshToken, isNewUser);
               loginWindow.close();

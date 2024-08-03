@@ -4,6 +4,7 @@ import LoginModal from "../user/LoginModal";
 import UserInfoEditModal from "../user/UserInfoEditModal";
 import NSModal from "../user/NSModal";
 import TimeDifference from "../common/TimeDifference";
+import userApi from "../../api/userApi";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -30,8 +31,10 @@ const Header = () => {
   // 로컬스토리지를 이용하여 로그인 정보 저장 및 유지, 추후 변경 필요
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      setIsLoggedIn(true);
+    }
     const storedProfileImage = localStorage.getItem("profileImage");
-
     setProfileImage(storedProfileImage);
   }, []);
 
@@ -41,9 +44,16 @@ const Header = () => {
   const closeUserInfoEditModal = () => setIsUserInfoEditModalOpen(false);
   const closeNSModal = () => setIsNSModalOpen(false);
 
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = (userId: string, accessToken: string, refreshToken: string, isNewUser: boolean) => {
+    localStorage.setItem("userId", userId);
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    setIsLoggedIn(true);
     closeLoginModal();
-    setIsUserInfoEditModalOpen(true);
+
+    // if (isNewUser) {
+    //   setIsUserInfoEditModalOpen(true);
+    // }
   };
 
   const handleNext = () => {
@@ -58,12 +68,13 @@ const Header = () => {
   };
 
   const handleLogout = () => {
+    localStorage.clear()
+
     setIsLoggedIn(false);
     setProfileImage(null);
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("profileImage");
     setShowProfileDropdown(false);
     navigate("/");
+
   };
 
   const handleProfileDropdownClick = (event: React.MouseEvent) => {
