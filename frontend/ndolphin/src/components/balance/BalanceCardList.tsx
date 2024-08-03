@@ -16,7 +16,7 @@ const BalanceCardList = () => {
       category: [
         {
           id: 1,
-          content: "Enter, 무게 1kg에 매일이 뷔폐 + 휴가비",
+          content: "Enter, 무게 1kg에 매일이 뷔폐 + 휴가비 Enter, 무게 1kg에 매일이 뷔폐 + 휴가비",
         },
         {
           id: 2,
@@ -43,11 +43,11 @@ const BalanceCardList = () => {
       category: [
         {
           id: 1,
-          content: "Enter, 무게 1kg",
+          content: "Enter, 무게 1kg Enter, 무게 1kg Enter, 무게 1kg Enter, 무게 1kg Enter, 무게 1kg Enter, 무게 1kg",
         },
         {
           id: 2,
-          content: "Spacebar, 주 3일",
+          content: "Spacebar, 주 3일 Enter, 무게 1kg Enter, 무게 1kg",
         },
       ],
     },
@@ -83,21 +83,21 @@ const BalanceCardList = () => {
       profileImgUrl: "profile1",
       user: "코에촉촉",
       badget: "S",
-      title: "눈 앞에 공룡이 나타났는데 도망은 못가고 잡아먹지도 않는다 숨을 것이냐 싸울 것이냐? 어떻게 할 것이냐",
+      title: "눈 앞에 공룡이 나타났는데 도망은 못가고 눈 앞에 공룡이 나타났는데 도망은 눈 앞에 공룡이 나타났는데 도망은 잡아먹지도 않는다 숨을 것이냐 싸울 것이냐? 어떻게 할 것이냐",
       joinCount: 12,
       date: "2024-07-18 13:22",
       category: [
         {
           id: 1,
-          content: "Enter, 무게 1kg",
+          content: "Enter, 무게 1kg Enter, 무게 1kg Enter, 무게 1kg",
         },
         {
           id: 2,
-          content: "Spacebar, 주 3일",
+          content: "Spacebar, 주 3일 Spacebar, 주 3일 Spacebar, 주 3일 Spacebar, 주 3일",
         },
         {
           id: 3,
-          content: "enter, 연봉 1억",
+          content: "enter, 연봉 1억 enter, 연봉 1억 enter, 연봉 1억",
         },
       ],
     },
@@ -251,55 +251,13 @@ const BalanceCardList = () => {
         },
       ],
     },
-    {
-      id: 11,
-      profileImgUrl: "profile1",
-      user: "코에촉촉",
-      badget: "N",
-      title: "키보드 밑에서 자판이 눌릴 때마다 앉았다 일어났다 일해야한다면?",
-      joinCount: 12,
-      date: "2024-07-30 01:22",
-      category: [
-        {
-          id: 1,
-          content: "Enter, 무게 1kg",
-        },
-        {
-          id: 2,
-          content: "Spacebar, 주 3일",
-        },
-      ],
-    },
-    {
-      id: 12,
-      profileImgUrl: "profile1",
-      user: "코에촉촉",
-      badget: "S",
-      title: "키보드 밑에서 자판이 눌릴 때마다 앉았다 일어났다 일해야한다면?",
-      joinCount: 12,
-      date: "2024-07-30 01:22",
-      category: [
-        {
-          id: 1,
-          content: "Enter, 무게 1kg",
-        },
-        {
-          id: 2,
-          content: "Spacebar, 주 3일",
-        },
-        {
-          id: 3,
-          content: "enter, 연봉 1억",
-        },
-      ],
-    },
   ];
 
   return (
     <div>
       <Filter />
 
-      <div className="px-44 py-10 grid grid-cols-4 gap-5">
+      <div className="px-44 py-10 grid grid-cols-2 gap-5">
         {balanceList.map((balance) => (
           <BalanceCard key={balance.id} balance={balance} />
         ))}
