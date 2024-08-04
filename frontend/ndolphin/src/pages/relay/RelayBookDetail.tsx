@@ -176,8 +176,8 @@ const RelayBookDetail: React.FC = () => {
   };
 
   return (
-    <>
-      <div className="relative grid grid-rows-[93%_7%] overflow-hidden" style={{ backgroundColor: "white" }}>
+    <div className="overflow-hidden">
+      <div className="relative grid grid-rows-[93%_7%]" style={{ backgroundColor: "white" }}>
         {/* 좌우 이동 버튼 */}
         <div className="h-full w-1/6 absolute top-0 hover:cursor-pointer hover:bg-zinc-300 hover:opacity-40" onClick={(e) => onPrev("Y")}>
           <button className="mt-[18rem] absolute left-5 ">
@@ -208,7 +208,8 @@ const RelayBookDetail: React.FC = () => {
             maxShadowOpacity={0.5}
             className="album-web"
             onFlip={onFlip}
-            useMouseEvents={false}>
+            useMouseEvents={false}
+          >
             <BookPageCover BookStart={BookStart} bookId={bookId} isDeleteOpen={isDeleteModalOpen} isAiOpen={isAiModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
 
             {/* 페이지 매핑 */}
@@ -250,7 +251,7 @@ const RelayBookDetail: React.FC = () => {
               </BookDetailPage>
             )}
             {/* 페이지가 짝수일 경우 마지막 커버 표시 */}
-            {totalPage % 2 == 0 ? <PageEndCover></PageEndCover> : <></>}
+            {totalPage % 2 === 0 ? <PageEndCover></PageEndCover> : <></>}
           </HTMLFlipBook>
         </div>
 
@@ -264,7 +265,8 @@ const RelayBookDetail: React.FC = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-blue-500 rounded-sm ">
+              className="border-2 border-blue-500 rounded-sm "
+            >
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           ) : (
@@ -275,7 +277,8 @@ const RelayBookDetail: React.FC = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-stone-500 rounded-sm ">
+              className="border-2 border-stone-500 rounded-sm "
+            >
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           )}
@@ -289,7 +292,7 @@ const RelayBookDetail: React.FC = () => {
 
       {/* AI 이미지 생성 모달 */}
       <AiImagePromptModal isOpen={isAiModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} />
-    </>
+    </div>
   );
 };
 
