@@ -6,6 +6,7 @@ import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.domain.QBoard;
 import com.web.ndolphin.service.interfaces.TokenService;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -87,5 +88,53 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         return queryFactory.selectFrom(board)
             .where(builder)
             .fetch();
+    }
+
+    @Override
+    public List<Board> findRelayBoardsByPeriod(String period) {
+        LocalDateTime startDate = calculateStartDate(period);
+        QBoard board = QBoard.board;
+
+        return queryFactory.selectFrom(board)
+            .where(board.boardType.eq(BoardType.RELAY_BOARD)
+                .and(board.createdAt.after(startDate)))
+            .orderBy(board.reactions.size().desc()) // 반응 수 기준 정렬
+            .fetch();
+    }
+
+    @Override
+    public List<Board> findVoteBoardsByPeriod(String period) {
+        LocalDateTime startDate = calculateStartDate(period);
+        QBoard board = QBoard.board;
+
+        return queryFactory.selectFrom(board)
+            .where(board.boardType.eq(BoardType.VOTE_BOARD)
+                .and(board.createdAt.after(startDate)))
+            .orderBy(board.voteContents.size().desc()) // 투표 수 기준 정렬
+            .fetch();
+    }
+
+    @Override
+    public List<Board> findOpinionBoardsByPeriod(String period) {
+        LocalDateTime startDate = calculateStartDate(period);
+        QBoard board = QBoard.board;
+
+        return queryFactory.selectFrom(board)
+            .where(board.boardType.eq(BoardType.OPINION_BOARD)
+                .and(board.createdAt.after(startDate)))
+            .orderBy(board.comments.size().desc()) // 댓글 수 기준 정렬
+            .fetch();
+    }
+
+    private LocalDateTime calculateStartDate(String period) {
+        switch (period.toLowerCase()) {
+            case "weekly":
+                return LocalDateTime.now().minusWeeks(1);
+            case "monthly":
+                return LocalDateTime.now().minusMonths(1);
+            case "daily":
+            default:
+                return LocalDateTime.now().minusDays(1);
+        }
     }
 }

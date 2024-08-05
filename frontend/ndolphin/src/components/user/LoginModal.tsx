@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import userApi from "../../api/userApi";
-import axios from "axios";
-import { instance } from "../../api/axiosConfig";
-import { redirect } from "react-router";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -37,13 +34,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
             const accessToken = urlParams.get('accessToken');
             const refreshToken = urlParams.get('refreshToken');
             const isNewUser = urlParams.get('isNewUser') === 'true';
-
-            console.log('로그인 성공 쿼리 파라미터!!!', {
-              userId,
-              accessToken,
-              refreshToken,
-              isNewUser
-            });
 
             if (userId && accessToken && refreshToken) {
               onLoginSuccess(userId, accessToken, refreshToken, isNewUser);
@@ -89,17 +79,17 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
           <div className="space-y-4">
             <p>
               <button onClick={() => handleExternalLogin("google")} data-provider="google">
-                <img src="../../../assets/user/googleloginbtn.png" alt="구글로 로그인" />
+                <img src="/assets/user/googleloginbtn.png" alt="구글로 로그인" />
               </button>
             </p>
             <p>
               <button onClick={() => handleExternalLogin("naver")}>
-                <img src="../../../assets/user/naverloginbtn.png" alt="네이버로 로그인" />
+                <img src="/assets/user/naverloginbtn.png" alt="네이버로 로그인" />
               </button>
             </p>
             <p>
               <button onClick={() => handleExternalLogin("kakao")}>
-                <img src="../../../assets/user/kakaologinbtn.png" alt="카카오로 로그인" />
+                <img src="/assets/user/kakaologinbtn.png" alt="카카오로 로그인" />
               </button>
             </p>
           </div>

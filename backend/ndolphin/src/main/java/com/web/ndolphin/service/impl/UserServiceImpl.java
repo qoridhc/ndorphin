@@ -17,6 +17,7 @@ import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
 import com.web.ndolphin.dto.npoint.resopnse.NPointResponseDto;
 import com.web.ndolphin.dto.user.UserDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
+import com.web.ndolphin.dto.user.response.BestNResponseDto;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.mapper.FavoriteMapper;
 import com.web.ndolphin.mapper.NPointMapper;
@@ -36,6 +37,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -306,5 +309,17 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage());
         }
+    }
+
+    @Override
+    public List<BestNResponseDto> getSortedUsersByNPoint(boolean flag) {
+
+        List<User> users = flag
+            ? userRepository.findAllUsersSortedByNPoint()
+            : userRepository.findTopUsersByNPoint(1);
+
+        return IntStream.range(0, users.size())
+            .mapToObj(i -> new BestNResponseDto((long) (i + 1), users.get(i).getNickName(), users.get(i).getNPoint()))
+            .collect(Collectors.toList());
     }
 }
