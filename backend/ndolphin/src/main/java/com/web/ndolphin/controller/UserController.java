@@ -4,6 +4,7 @@ import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointDeleteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
+import com.web.ndolphin.dto.user.request.CheckNickNameRequestDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
 import com.web.ndolphin.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +16,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "사용자 컨트롤러", description = "사용자 API입니다.")
 @RestController
@@ -87,6 +95,14 @@ public class UserController {
         @Parameter(description = "수정할 사용자 정보", required = true) @RequestBody UserUpdateRequestDto updateDto) {
 
         ResponseEntity<ResponseDto> response = userService.updateUser(userId, updateDto);
+
+        return response;
+    }
+
+    @GetMapping("/nickname-check")
+    public ResponseEntity<ResponseDto> checkNickName(@RequestBody CheckNickNameRequestDto dto) {
+
+        ResponseEntity<ResponseDto> response = userService.checkNickName(dto.getNickName());
 
         return response;
     }

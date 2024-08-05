@@ -152,11 +152,6 @@ public class UserServiceImpl implements UserService {
             }
 
             if (dto.getNickName() != null) {
-
-                if (dto.getNickName().equals(existingUser.getNickName())) {
-                    throw new IllegalArgumentException("Duplicate NickName userNickName : " + dto.getNickName());
-                }
-
                 existingUser.setNickName(dto.getNickName());
                 existingUser.setNickNameUpdatedAt(LocalDateTime.now());
             }
@@ -210,6 +205,22 @@ public class UserServiceImpl implements UserService {
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
+    @Override
+    public ResponseEntity<ResponseDto> checkNickName(String nickName) {
+
+        boolean isDuplicateNickName = userRepository.existsByNickName(nickName);
+
+        if (nickName == null) {
+            return ResponseDto.databaseError("Empty NickName");
+        }
+
+        if (isDuplicateNickName) {
+            return ResponseDto.databaseError("Duplicate NickName : " + nickName);
+        }
+
+        return ResponseDto.success();
     }
 
     @Override
