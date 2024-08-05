@@ -78,18 +78,18 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
               에서 여러분의 만약에를 공유해 주세요!
             </span>
           </p>
-          <div className="space-y-4">
-            <button className="w-72 px-4 py-2 ms-5 bg-white border border-gray-300 rounded-md flex items-center hover:bg-gray-200" onClick={() => handleExternalLogin("google")}>
+          <div className="space-y-1">
+            <button className="w-72 px-4 py-1 ms-5 bg-white border border-gray-300 rounded-md flex items-center hover:bg-gray-200" onClick={() => handleExternalLogin("google")}>
               <img className="w-8 h-8" src="/assets/user/googleLoginButton.png" alt="구글로 로그인" />
-              <span className="flex-grow text-center text-sm">구글 계정으로 로그인</span>
+              <span className="flex-grow text-center text-sm font-semibold">구글 계정으로 로그인</span>
             </button>
-            <button className="w-72 px-4 py-2 ms-5 bg-white border border-[#03C75A] rounded-md flex items-center hover:bg-[#03C75A] hover:text-white" onClick={() => handleExternalLogin("naver")}>
+            <button className="w-72 px-4 py-1 ms-5 bg-[#03C75A] border border-[#03C75A] rounded-md flex items-center text-white" onClick={() => handleExternalLogin("naver")}>
               <img className="w-8 h-8" src="/assets/user/naverLoginButton.png" alt="네이버로 로그인" />
-              <span className="flex-grow text-center text-sm">네이버로 로그인</span>
+              <span className="flex-grow text-center text-sm font-semibold">네이버로 로그인</span>
             </button>
-            <button className="w-72 px-4 py-2 ms-5 bg-white border border-[#FEE500] rounded-md flex items-center hover:bg-[#FEE500] hover:text-white" onClick={() => handleExternalLogin("kakao")}>
-              <img className="w-8 h-8" src="/assets/user/kakaoLoginButton.png" alt="카카오로 로그인" />
-              <span className="flex-grow text-center text-sm">카카오 로그인</span>
+            <button className="w-72 ps-5 px-4 py-2 ms-5 bg-[#FFEB00] border border-[#FFEB00] rounded-md flex items-center" onClick={() => handleExternalLogin("kakao")}>
+              <img className="w-6 h-6" src="/assets/user/kakaoLoginButton.png" alt="카카오로 로그인" />
+              <span className="flex-grow text-center text-sm font-semibold">카카오 로그인</span>
             </button>
           </div>
         </div>
