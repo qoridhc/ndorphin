@@ -16,7 +16,7 @@ const PageEndCover = React.forwardRef<HTMLDivElement>((props, ref: ForwardedRef<
   return <div className="cover" ref={ref} data-density="hard"></div>;
 });
 
-const RelayBookDetail: React.FC = () => {
+const RelayBookDetail = () => {
   const navigate = useNavigate();
   const { bookId } = useParams();
   const [page, setPage] = useState<number>(1);
