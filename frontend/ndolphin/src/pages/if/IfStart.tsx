@@ -5,6 +5,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import InsertionImage from "../../components/common/InsertionImage";
 import { useNavigate } from "react-router";
 import ifApi from "../../api/ifApi";
+import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
 
 const IfStart = () => {
   const navigate = useNavigate();
@@ -12,11 +13,26 @@ const IfStart = () => {
   const [content, setContent] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const boxClass = "h-full mb-3 border border-[#9E9E9E]";
   const boxContentClass = "p-5";
   const inputClass = "w-full p-1 text-left border border-[#9E9E9E] rounded-sm outline-none";
   const titleClass = "text-lg font-bold";
   const hrClass = "h-[1px] mt-1 mb-4 bg-[#9E9E9E]";
+
+  const handleAiImage = () => {
+    setIsModalOpen(true);
+  };
+
+  const confirmAiImage = (image: string) => {
+    setIsModalOpen(false);
+    setImage(image);
+  };
+
+  const cancelAiImage = () => {
+    setIsModalOpen(false);
+  };
 
   const handleCreate = async () => {
     const formData = new FormData();
@@ -37,6 +53,24 @@ const IfStart = () => {
 
     if (file) {
       formData.append("files", file);
+    }
+
+    if (image) {
+      const httpURL = image.replace(/^https:\/\//, "http://");
+      console.log("!! : ", httpURL);
+
+      try {
+        const response = await fetch(httpURL);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.blob();
+        const filename = httpURL.split("/").pop() || "image.png";
+        formData.append("files", new File([data], filename));
+      } catch (error) {
+        console.error("이미지 파일 변환 오류: ", error);
+        return;
+      }
     }
 
     try {
@@ -79,7 +113,7 @@ const IfStart = () => {
           ) : (
             <></>
           )}
-          <InsertionImage setImage={setImage} setFile={setFile} />
+          <InsertionImage handleAiImage={handleAiImage} setImage={setImage} setFile={setFile} />
         </div>
       </div>
 
@@ -88,6 +122,8 @@ const IfStart = () => {
           등록
         </button>
       </div>
+
+      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} setImage={setImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
     </div>
   );
 };
