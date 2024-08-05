@@ -100,10 +100,17 @@ public class UserController {
     }
 
     @GetMapping("/nickname-check")
-    public ResponseEntity<ResponseDto> checkNickName(@RequestBody CheckNickNameRequestDto dto) {
+    @Operation(summary = "닉네임 중복 확인",
+        description = "닉네임의 중복 여부를 확인합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "사용 가능한 닉네임"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    public ResponseEntity<ResponseDto> checkNickName(
+        @Parameter(description = "닉네임 중복 체크 DTO", required = true)
+        @RequestBody CheckNickNameRequestDto dto) {
 
         ResponseEntity<ResponseDto> response = userService.checkNickName(dto.getNickName());
-
         return response;
     }
 
