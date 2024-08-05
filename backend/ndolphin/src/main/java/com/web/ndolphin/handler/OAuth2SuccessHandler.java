@@ -45,7 +45,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             String isNewUser = user.getNickName() == null ? "true" : "false";
 
             // 인증 성공 후 리디렉션할 URL 생성
-            String targetUrl = "http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com:8080"; // 여기서 '/'를 추가할 필요 없음
+            String targetUrl = "http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com"; // 여기서 '/'를 추가할 필요 없음
             targetUrl += "?userId=" + URLEncoder.encode(userId, "UTF-8");
             targetUrl += "&accessToken=" + URLEncoder.encode(accessToken, "UTF-8");
             targetUrl += "&refreshToken=" + URLEncoder.encode(refreshToken, "UTF-8");
