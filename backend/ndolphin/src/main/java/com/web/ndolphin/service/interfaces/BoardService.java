@@ -12,10 +12,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface BoardService {
 
-    ResponseEntity<ResponseDto> createBoard(Long userId, BoardRequestDto boardRequestDto,
+    ResponseEntity<ResponseDto> createBoard(BoardRequestDto boardRequestDto,
         List<MultipartFile> multipartFiles);
 
-    ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType, String filter1, String filter2, String search);
+    ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType, String filter1, String filter2,
+        String search);
 
     ResponseEntity<ResponseDto> getBoardById(Long boardId);
 
@@ -25,6 +26,8 @@ public interface BoardService {
     ResponseEntity<ResponseDto> deleteBoard(Long boardId);
 
     List<RelayBoardDetailResponseDto> getRelayBoards(String period);
+
     List<VoteBoardDetailResponseDto> getVoteBoards(String period);
+
     List<OpinionBoardDetailResponseDto> getOpinionBoards(String period);
 }

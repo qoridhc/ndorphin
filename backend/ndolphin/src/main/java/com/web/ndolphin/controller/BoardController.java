@@ -34,14 +34,13 @@ public class BoardController {
     private final BoardService boardService;
     private final ReactionService reactionService;
 
-    @PostMapping("/{userId}")
+    @PostMapping()
     public ResponseEntity<ResponseDto> createBoard(
-        @PathVariable("userId") Long userId,
         @RequestPart(name = "request") BoardRequestDto boardRequestDto,
         @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles)
         throws IOException {
 
-        ResponseEntity<ResponseDto> response = boardService.createBoard(userId, boardRequestDto,
+        ResponseEntity<ResponseDto> response = boardService.createBoard(boardRequestDto,
             multipartFiles);
         return response;
     }
@@ -53,7 +52,8 @@ public class BoardController {
         @RequestParam(value = "filter2", required = false, defaultValue = "recent") String filter2,
         @RequestParam(value = "search", required = false) String search) {
 
-        ResponseEntity<ResponseDto> response = boardService.getBoardsByType(boardType, filter1, filter2, search);
+        ResponseEntity<ResponseDto> response = boardService.getBoardsByType(boardType, filter1,
+            filter2, search);
         return response;
     }
 
