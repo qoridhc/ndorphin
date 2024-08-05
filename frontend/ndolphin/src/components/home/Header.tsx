@@ -190,7 +190,7 @@ const Header = () => {
           {/* 알림 기능 */}
           <div className="relative">
             <div className="w-8 h-8 cursor-pointer" onClick={handleAlarmDropdown}>
-              <img className="w-full h-full" src="assets/user/alarm.png" alt="알람" />
+              <img className="w-full h-full" src="/assets/user/alarm.png" alt="알람" />
               {isNew && <span className="w-2 h-2 absolute top-0 right-0 bg-red-500 rounded-full"></span>}
             </div>
             {showAlarmDropdown && (
@@ -235,7 +235,7 @@ const Header = () => {
               {showProfileDropdown && (
                 <div className="absolute right-0 mt-2 w-72 py-1 bg-white rounded-lg shadow-lg z-50" onClick={(e) => e.stopPropagation()}>
                   <div className="p-4 flex items-center">
-                    <img className="w-15 h-15 rounded-full" src={profileImage || "assets/user/profile.png"} alt="Profile" />
+                    <img className="w-15 h-15 rounded-full" src={profileImage || "/assets/user/profile.png"} alt="Profile" />
                     <div className="ml-3">
                       <div className="font-semibold">닉네임</div>
                       <div className="text-sm text-gray-500">test@test.com</div>
