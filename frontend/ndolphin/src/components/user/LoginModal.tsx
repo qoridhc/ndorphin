@@ -27,13 +27,20 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
       const checkRedirect = setInterval(() => {
         try {
           const redirectedUrl = loginWindow.location.href;
-          if (redirectedUrl.includes('localhost:3000')) {
+          console.log('주소ㄴ롸널', redirectedUrl)
+          const urlParams = new URLSearchParams(redirectedUrl.split("?")[1]);
+          console.log(urlParams);
+          if (redirectedUrl.includes("amazonaws.com")) {
+            console.log('찾음')
             clearInterval(checkRedirect);
-            const urlParams = new URLSearchParams(redirectedUrl.split('?')[1]);
-            const userId = urlParams.get('userId');
-            const accessToken = urlParams.get('accessToken');
-            const refreshToken = urlParams.get('refreshToken');
-            const isNewUser = urlParams.get('isNewUser') === 'true';
+            const urlParams = new URLSearchParams(redirectedUrl.split("?")[1]);
+            const userId = urlParams.get("userId");
+            const accessToken = urlParams.get("accessToken");
+            const refreshToken = urlParams.get("refreshToken");
+            const isNewUser = urlParams.get("isNewUser") === "true";
+            console.log(urlParams);
+            console.log(userId);
+            console.log(accessToken);
 
             if (userId && accessToken && refreshToken) {
               onLoginSuccess(userId, accessToken, refreshToken, isNewUser);
@@ -44,7 +51,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
         } catch (error) {
           console.log('에러???', error);
         }
-      }, 500);
+      }, 50);
 
       return () => clearInterval(checkRedirect);
     }
