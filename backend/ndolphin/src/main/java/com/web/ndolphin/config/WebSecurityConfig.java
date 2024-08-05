@@ -43,6 +43,7 @@ public class WebSecurityConfig {
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(
                 SessionCreationPolicy.STATELESS)) // 세션 관리 정책을 무상태로 설정
             .authorizeHttpRequests(
+
                 request -> request.requestMatchers("/api/v1/auth/**", "/oauth2/**", "/swagger-ui/**",
                         "/error", "index.html", "/api/upload", "api/list", "/v3/api-docs/**").permitAll() // 인증 없이 접근 허용
 
@@ -58,7 +59,8 @@ public class WebSecurityConfig {
                 .authorizationEndpoint(endPoint -> endPoint.baseUri("/api/v1/auth/oauth2"))
                 .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
                 .userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService))
-                .successHandler(oAuth2SuccessHandler))
+                .successHandler(oAuth2SuccessHandler)
+            )
             .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(
                 new FailedAuthenticatoinEntryPoint()) // 인증 실패 시 처리할 엔트리 포인트 설정
             ).addFilterBefore(jwtAutheticationFilter,
