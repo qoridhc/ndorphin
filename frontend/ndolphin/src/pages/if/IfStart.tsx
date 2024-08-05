@@ -4,9 +4,14 @@ import { FaPlus } from "react-icons/fa6";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import InsertionImage from "../../components/common/InsertionImage";
 import { useNavigate } from "react-router";
+import ifApi from "../../api/ifApi";
 
 const IfStart = () => {
   const navigate = useNavigate();
+  const [subject, setSubject] = useState("");
+  const [content, setContent] = useState("");
+  const [image, setImage] = useState<string | null>(null);
+  const [files, setFiles] = useState<File[] | null>();
   const [inputType, setInputType] = useState("투표");
   const [voteCategoryList, setVoteCategoryList] = useState([
     { id: 1, text: "" },
@@ -33,7 +38,35 @@ const IfStart = () => {
     let tempList = voteCategoryList.map((category) => (category.id === id ? { ...category, text: newText } : category));
     setVoteCategoryList(tempList);
   };
-  console.log(voteCategoryList);
+
+  const handleCreate = async () => {
+    const formData = new FormData();
+
+    formData.append(
+      "request",
+      new Blob(
+        [
+          JSON.stringify({
+            subject: subject,
+            content: content,
+            boardType: "OPINION_BOARD",
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
+
+    if (files) {
+      formData.append("files", files[0]);
+    }
+
+    try {
+      ifApi.create(formData);
+      console.log("만약에 작성 성공!");
+    } catch (error) {
+      console.error("만약에 작성 오류 :", error);
+    }
+  };
 
   return (
     <div className="px-[30%] py-5">
@@ -46,13 +79,13 @@ const IfStart = () => {
         <div className={`${boxContentClass}`}>
           <p className={`${titleClass}`}>제목</p>
           <hr className={`${hrClass}`} />
-          <input className={`${inputClass}`} type="text " />
+          <input className={`${inputClass}`} type="text" onChange={(e) => setSubject(e.target.value)} />
         </div>
 
         <div className={`${boxContentClass}`}>
           <p className={`${titleClass}`}>만약에</p>
           <hr className={`${hrClass}`} />
-          <textarea className={`h-40 ${inputClass}`} />
+          <textarea className={`h-40 ${inputClass}`} onChange={(e) => setContent(e.target.value)} />
         </div>
       </div>
 
@@ -60,7 +93,8 @@ const IfStart = () => {
         <div className={`${boxContentClass}`}>
           <p className={`${titleClass}`}>이미지</p>
           <hr className={`${hrClass}`} />
-          <InsertionImage />
+          <div className="py-3 flex justify-center">{image ? <img className="max-w-full object-cover" src={image} alt="" /> : <></>}</div>
+          <InsertionImage setImage={setImage} setFiles={setFiles} />
         </div>
       </div>
 
@@ -116,7 +150,9 @@ const IfStart = () => {
       </div>
 
       <div className="flex justify-end">
-        <button className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">등록</button>
+        <button className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200" onClick={() => handleCreate()}>
+          등록
+        </button>
       </div>
     </div>
   );

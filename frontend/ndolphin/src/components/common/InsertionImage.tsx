@@ -1,11 +1,15 @@
 import React, { useState, ChangeEvent } from "react";
 
-const InsertionImage = () => {
-  const [image, setImage] = useState<string | null>(null);
+interface Props {
+  setImage: (image: string) => void;
+  setFiles: (file: File[]) => void;
+}
 
+const InsertionImage = ({ setImage, setFiles }: Props) => {
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setFiles([file]);
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
