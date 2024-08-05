@@ -49,17 +49,6 @@ public class VoteServiceImpl implements VoteService {
             Vote vote = VoteMapper.toEntity(voteRequestDto, user, voteContent);
             voteRepository.save(vote);
 
-//            Long boardId = voteContent.getBoard().getId();
-//            List<VoteInfo> voteInfos = voteRepository.countVotesByBoardId(boardId);
-//            VoteResponseDto voteResponseDto = VoteMapper.toDto(vote, voteInfos);
-//
-//            ResponseDto<VoteResponseDto> responseBody = new ResponseDto<>(
-//                ResponseCode.SUCCESS,
-//                ResponseMessage.SUCCESS,
-//                voteResponseDto
-//            );
-//
-//            return ResponseEntity.status(HttpStatus.OK).body(responseBody);
             return ResponseDto.success();
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage()); // 예외 발생 시 데이터베이스 에러 응답
