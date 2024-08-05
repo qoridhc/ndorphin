@@ -27,6 +27,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
       const checkRedirect = setInterval(() => {
         try {
           const redirectedUrl = loginWindow.location.href;
+          console.log('주소ㄴ롸널', redirectedUrl)
           if (redirectedUrl.includes('localhost:3000')) {
             clearInterval(checkRedirect);
             const urlParams = new URLSearchParams(redirectedUrl.split('?')[1]);
@@ -44,7 +45,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
         } catch (error) {
           console.log('에러???', error);
         }
-      }, 500);
+      }, 50);
 
       return () => clearInterval(checkRedirect);
     }
