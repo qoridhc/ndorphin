@@ -4,6 +4,7 @@ import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointDeleteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
+import com.web.ndolphin.dto.user.request.CheckNickNameRequestDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
 import com.web.ndolphin.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +16,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "사용자 컨트롤러", description = "사용자 API입니다.")
 @RestController
@@ -88,6 +96,21 @@ public class UserController {
 
         ResponseEntity<ResponseDto> response = userService.updateUser(userId, updateDto);
 
+        return response;
+    }
+
+    @GetMapping("/nickname-check")
+    @Operation(summary = "닉네임 중복 확인",
+        description = "닉네임의 중복 여부를 확인합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "사용 가능한 닉네임"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    public ResponseEntity<ResponseDto> checkNickName(
+        @Parameter(description = "닉네임 중복 체크 DTO", required = true)
+        @RequestBody CheckNickNameRequestDto dto) {
+
+        ResponseEntity<ResponseDto> response = userService.checkNickName(dto.getNickName());
         return response;
     }
 

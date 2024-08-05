@@ -17,6 +17,8 @@ public interface UserService {
 
     ResponseEntity<ResponseDto> getFavorites(Long userId);
 
+    ResponseEntity<ResponseDto> checkNickName(String nickName);
+
     ResponseEntity<ResponseDto> addFavorite(FavoriteRequestDto favoriteRequestDto);
 
     ResponseEntity<ResponseDto> removeFavorite(Long userId, Long boardId);
