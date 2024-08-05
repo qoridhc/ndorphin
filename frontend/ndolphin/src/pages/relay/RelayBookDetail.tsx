@@ -25,6 +25,8 @@ const RelayBookDetail = () => {
   const [isFinished, setIsFinished] = useState(false);
   const [inputPage, setInputPage] = useState<number | string>(page);
   const [isHoverd, setIsHoverd] = useState(false);
+  const [image, setImage] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
 
   // 페이지 넘어갈 시 page를 현재 페이지 쪽수로 업데이트
   const onFlip = useCallback((e: { data: number }) => {
@@ -160,15 +162,26 @@ const RelayBookDetail = () => {
   };
 
   // AI 이미지 모달 관련
-  const [image, setImage] = useState<string | null>(null);
 
   const handleAiImage = () => {
     setIsAiModalOpen(true);
   };
 
-  const confirmAiImage = (image: string) => {
+  const confirmAiImage = async (image: string) => {
     setIsAiModalOpen(false);
     setImage(image);
+
+    try {
+      const response = await fetch(image);
+      const data = await response.blob();
+      const ext = image.split(".").pop() || "";
+      const filename = image.split("/").pop() || "";
+      const metadata = { type: `image/${ext}` };
+      const file = new File([data], filename, metadata);
+      setFile(file);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   const cancelAiImage = () => {
@@ -208,8 +221,7 @@ const RelayBookDetail = () => {
             maxShadowOpacity={0.5}
             className="album-web"
             onFlip={onFlip}
-            useMouseEvents={false}
-          >
+            useMouseEvents={false}>
             <BookPageCover BookStart={BookStart} bookId={bookId} isDeleteOpen={isDeleteModalOpen} isAiOpen={isAiModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
 
             {/* 페이지 매핑 */}
@@ -265,8 +277,7 @@ const RelayBookDetail = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-blue-500 rounded-sm "
-            >
+              className="border-2 border-blue-500 rounded-sm ">
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           ) : (
@@ -277,8 +288,7 @@ const RelayBookDetail = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-stone-500 rounded-sm "
-            >
+              className="border-2 border-stone-500 rounded-sm ">
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           )}
@@ -291,7 +301,7 @@ const RelayBookDetail = () => {
       <DeleteModal isOpen={isDeleteModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />
 
       {/* AI 이미지 생성 모달 */}
-      <AiImagePromptModal isOpen={isAiModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} />
+      <AiImagePromptModal isOpen={isAiModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} setFile={setFile}/>
     </div>
   );
 };

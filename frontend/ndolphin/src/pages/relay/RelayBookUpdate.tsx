@@ -28,6 +28,7 @@ const RelayBookUpdate: React.FC = () => {
   const title = state.BookStart[0].title;
   const content = state.BookStart[0].content;
   const [image, setImage] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null)
   const [titleUpdate, setTitleUpdate] = useState(title);
   const [contentUpdate, setContentUpdate] = useState(content);
 
@@ -60,11 +61,22 @@ const RelayBookUpdate: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const confirmAiImage = (image: string) => {
+  const confirmAiImage = async (image: string) => {
     setIsModalOpen(false);
     setImage(image);
-  };
 
+    try {
+      const response = await fetch(image);
+      const data = await response.blob();
+      const ext = image.split(".").pop() || "";
+      const filename = image.split("/").pop() || "";
+      const metadata = { type: `image/${ext}` };
+      const file = new File([data], filename, metadata);
+      setFile(file);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   const cancelAiImage = () => {
     setIsModalOpen(false);
   };
@@ -172,7 +184,7 @@ const RelayBookUpdate: React.FC = () => {
           </Page>
         </HTMLFlipBook>
       </div>
-      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={coverImage} setImage={setImage} />
+      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={coverImage} setImage={setImage} setFile={setFile}/>
     </div>
   );
 };

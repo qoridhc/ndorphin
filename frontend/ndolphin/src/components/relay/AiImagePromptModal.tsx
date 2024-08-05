@@ -6,15 +6,16 @@ interface BookCoverAiPromptModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (image: string) => void;
+  setFile: (file: File) => void;
   setImage: any;
   image: any;
   coverImage: any;
 }
 
-const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ isOpen, onClose, onConfirm, setImage, image, coverImage }) => {
+const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ isOpen, onClose, onConfirm, setImage, setFile, image, coverImage }) => {
   const API_KEY = process.env.REACT_APP_OPEN_AI_APIKEY;
   const [imageUrl, setImageUrl] = useState("");
-  const [inputPrompt, setInputPrompt] = useState("")
+  const [inputPrompt, setInputPrompt] = useState("");
 
   const generateImage = () => {
     axios
@@ -36,7 +37,6 @@ const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ isOpen,
       )
       .then((res: any) => {
         const imageUrl = res.data.data[0].url;
-        console.log(imageUrl);
         setImageUrl(imageUrl);
       })
       .catch((err: any) => {
