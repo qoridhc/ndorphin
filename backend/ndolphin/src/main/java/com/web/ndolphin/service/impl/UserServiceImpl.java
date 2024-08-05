@@ -152,6 +152,11 @@ public class UserServiceImpl implements UserService {
             }
 
             if (dto.getNickName() != null) {
+
+                if (dto.getNickName().equals(existingUser.getNickName())) {
+                    throw new IllegalArgumentException("Duplicate NickName userNickName : " + dto.getNickName());
+                }
+
                 existingUser.setNickName(dto.getNickName());
                 existingUser.setNickNameUpdatedAt(LocalDateTime.now());
             }
@@ -181,6 +186,8 @@ public class UserServiceImpl implements UserService {
             );
 
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+        } catch (IllegalArgumentException e) {
+            return ResponseDto.databaseError(e.getMessage());
         } catch (Exception e) {
             return ResponseDto.databaseError();
         }

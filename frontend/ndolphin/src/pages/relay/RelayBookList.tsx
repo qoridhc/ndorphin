@@ -11,7 +11,7 @@ function Relaybooklist() {
   return (
     <div>
       <div className="relative flex flex-col justify-center">
-        <div className="w-full px-44 flex-col items-center">
+        <div className="w-full px-44 py-6 flex-col items-center">
           <div className="py-5 flex items-end">
             <p className="text-xl font-bold">릴레이북</p>
             <p className="pl-3 text-xs">‘만약에~’를 이어 하나의 이야기를 완성시키는 릴레이북 게시판</p>

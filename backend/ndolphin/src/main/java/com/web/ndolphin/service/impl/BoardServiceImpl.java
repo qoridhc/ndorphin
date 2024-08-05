@@ -76,10 +76,12 @@ public class BoardServiceImpl implements BoardService {
     private final CommentService commentService;
 
     @Override
-    public ResponseEntity<ResponseDto> createBoard(Long userId, BoardRequestDto boardRequestDto,
+    public ResponseEntity<ResponseDto> createBoard(BoardRequestDto boardRequestDto,
         List<MultipartFile> multipartFiles) {
 
         try {
+            Long userId = tokenService.getUserIdFromToken();
+
             User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
@@ -105,12 +107,14 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType, String filter1, String filter2, String search) {
+    public ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType, String filter1,
+        String filter2, String search) {
 
         ResponseDto<?> responseBody = null;
         Map<ReactionType, Long> reactionTypeCounts = null;
 
-        List<Board> boards = boardRepository.findByTypeAndFilters(boardType, filter1, filter2, search);
+        List<Board> boards = boardRepository.findByTypeAndFilters(boardType, filter1, filter2,
+            search);
 
         switch (boardType) {
             case VOTE_BOARD:
@@ -197,7 +201,8 @@ public class BoardServiceImpl implements BoardService {
                 List<OkBoardDto> okBoardDtos = new ArrayList<>();
                 for (Board board : boards) {
                     // 파일 정보를 가져오기
-                    List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(board.getId(),
+                    List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(
+                        board.getId(),
                         EntityType.POST);
                     // 파일명과 파일 URL 리스트 생성
                     List<String> fileNames = new ArrayList<>();
@@ -210,7 +215,8 @@ public class BoardServiceImpl implements BoardService {
                     // Board와 파일 정보를 사용하여 OkBoardDto 생성
                     OkBoardDto okBoardDto = BoardMapper.toOkBoardDto(board, fileNames, fileUrls);
                     okBoardDto.setCommentResponseDtos(commentService.getBoardDetail(board.getId()));
-                    okBoardDto.setCommentCnt((long) commentService.getBoardDetail(board.getId()).size());
+                    okBoardDto.setCommentCnt(
+                        (long) commentService.getBoardDetail(board.getId()).size());
                     okBoardDtos.add(okBoardDto);
                 }
 
@@ -348,7 +354,8 @@ public class BoardServiceImpl implements BoardService {
                 // 괜찮아 게시판 - 댓글 가능
 
                 // 파일 정보를 가져오기
-                List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(board.getId(),
+                List<FileInfoResponseDto> fileInfoResponseDtos = fileInfoService.getFileInfos(
+                    board.getId(),
                     EntityType.POST);
                 // 파일명과 파일 URL 리스트 생성
                 List<String> fileNames = new ArrayList<>();
@@ -361,9 +368,11 @@ public class BoardServiceImpl implements BoardService {
                 // Board와 파일 정보를 사용하여 OkBoardDto 생성
                 OkBoardDto okBoardDto = BoardMapper.toOkBoardDto(board, fileNames, fileUrls);
                 okBoardDto.setCommentResponseDtos(commentService.getBoardDetail(board.getId()));
-                okBoardDto.setCommentCnt((long) commentService.getBoardDetail(board.getId()).size());
+                okBoardDto.setCommentCnt(
+                    (long) commentService.getBoardDetail(board.getId()).size());
 
-                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, okBoardDto);
+                responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
+                    okBoardDto);
                 break;
             case BYE_BOARD:
                 break;
@@ -449,7 +458,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<RelayBoardDetailResponseDto> getRelayBoards(String period){
+    public List<RelayBoardDetailResponseDto> getRelayBoards(String period) {
 
         List<RelayBoardDetailResponseDto> relayBoardDetailResponseDtos = new ArrayList<>();
         List<Board> boards = boardRepository.findRelayBoardsByPeriod(period);
@@ -460,7 +469,7 @@ public class BoardServiceImpl implements BoardService {
         Long userId = tokenService.getUserIdFromToken();
         boolean hasParticipated;
 
-        for(Board board: boards){
+        for (Board board : boards) {
             contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
 
             hasParticipated = commentRepository.existsByBoardIdAndUserId(board.getId(), userId);
@@ -503,7 +512,7 @@ public class BoardServiceImpl implements BoardService {
         String avatarUrl;
         Long userId = tokenService.getUserIdFromToken();
 
-        for(Board board: boards){
+        for (Board board : boards) {
             contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
 
             avatarUrl = fileInfoService.getFileUrl(userId, EntityType.USER);
@@ -537,7 +546,7 @@ public class BoardServiceImpl implements BoardService {
         boolean hasParticipated;
         int commentCount;
 
-        for(Board board: boards){
+        for (Board board : boards) {
             contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
 
             avatarUrl = fileInfoService.getFileUrl(userId, EntityType.USER);
