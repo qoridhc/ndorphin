@@ -180,7 +180,7 @@ const Header = () => {
               onClick={() => {
                 navigate("/notice");
               }}>
-              공지사항1212
+              공지사항
             </button>
           </div>
         </div>
