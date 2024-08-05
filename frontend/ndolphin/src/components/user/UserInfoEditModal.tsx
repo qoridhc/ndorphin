@@ -60,14 +60,6 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
     }
   };
 
-  // const handleUserUpdate = async (userId: string, newNickName: string) => {
-  //   try {
-  //     const response = await userApi.update(userId, newNickName);
-  //   } catch (error) {
-  //     console.error("회원정보 수정 오류 :", error);
-  //   }
-  // };
-
   const handleNicknameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setNickname(event.target.value);
     setIsNicknameValid(null);

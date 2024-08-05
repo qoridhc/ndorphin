@@ -1,6 +1,6 @@
 import { request } from "./axiosConfig";
 
-const baseURL = process.env.REACT_APP_API_BASE_URL;
+const baseURL = 'http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com:8080';
 
 interface NicknameCheckResponse {
   isDuplicate: boolean;
