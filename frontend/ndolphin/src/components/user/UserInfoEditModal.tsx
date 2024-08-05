@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent, FocusEvent } from "react";
+import React, { useEffect, useState, ChangeEvent, FocusEvent, KeyboardEvent } from "react";
 import userApi from "../../api/userApi";
 
 interface UserInfoEditModalProps {
@@ -11,6 +11,10 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
   const [profileImage, localSetProfileImage] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [nicknamePlaceholder, setNicknamePlaceholder] = useState<string>("닉네임을 입력해 주세요(2~10글자)");
+  const [nickname, setNickname] = useState<string>("");
+  const [isNicknameValid, setIsNicknameValid] = useState<boolean | null>(null);
+  const [nicknameMessage, setNicknameMessage] = useState<string>("");
+  const [isNicknameChecked, setIsNicknameChecked] = useState<boolean>(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -56,14 +60,78 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
     }
   };
 
-  const handleUserUpdate = async (userId: string, newNickName: string) => {
+  // const handleUserUpdate = async (userId: string, newNickName: string) => {
+  //   try {
+  //     const response = await userApi.update(userId, newNickName);
+  //   } catch (error) {
+  //     console.error("회원정보 수정 오류 :", error);
+  //   }
+  // };
+
+  const handleNicknameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setNickname(event.target.value);
+    setIsNicknameValid(null);
+    setNicknameMessage("");
+    setIsNicknameChecked(false);
+  };
+
+  const checkNinameDuplicate = async () => {
+    const trimNickname = nickname.trim();
+    if (trimNickname.length < 2 || trimNickname.length > 10) {
+      setIsNicknameValid(false);
+      setNicknameMessage("닉네임은 2~10글자여야 합니다");
+      setIsNicknameChecked(false);
+      return;
+    }
+
     try {
-      const response = await userApi.update(userId, newNickName);
-      console.log(response.data);
+      const response = await userApi.checkNickname(trimNickname);
+      const isValid = !response.data.isDuplicate;
+      setIsNicknameValid(isValid);
+      setNicknameMessage(isValid ? "사용 가능한 닉네임입니다" : "이미 사용 중인 닉네임입니다");
+      setIsNicknameChecked(true);
     } catch (error) {
-      console.error("회원정보 수정 오류 :", error);
+      console.error("닉네임 중복 확인 오류: ", error);
+      setIsNicknameValid(false);
+      setNicknameMessage("중복 확인 중 오류가 발생했습니다");
+      setIsNicknameChecked(false);
     }
   };
+
+  const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      checkNinameDuplicate();
+    }
+  }
+
+  const handleUserUpdate = async () => {
+    if (!isNicknameValid || !isNicknameChecked) {
+      alert("닉네임을 다시 확인해 주세요")
+      return;
+    }
+
+    try {
+      const userId = localStorage.getItem("userId");
+      if (!userId) throw new Error("User ID not found");
+
+      const formData = new FormData();
+      formData.append("nickname", nickname.trim());
+      if (profileImage) {
+        const imageBlob = await fetch(profileImage).then(res => res.blob());
+        formData.append("ProfileImage", imageBlob, "profile.jpg");
+      }
+
+      await userApi.update(userId, formData);
+      setProfileImage(profileImage);
+      onNext();
+    } catch (error) {
+      console.log("회원정보 수정 오류: ", error);
+      alert("회원정보 수정 중 오류가 발생했습니다.")
+    }
+  };
+
+  const isNextButtonEnabled = isNicknameValid && isNicknameChecked;
 
   if (!isOpen) return null;
 
@@ -88,14 +156,19 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
               </label>
               <input className="hidden" id="profile-image-input" type="file" accept="image/*" onChange={handleImageChange} />
             </div>
-            <input className="w-72 border-b rounded-lg text-center text-sm focus:outline-none" type="text" placeholder={nicknamePlaceholder} onFocus={handleFocus} onBlur={handleBlur} />
-            <button className="border rounded-lg px-3 py-1 text-xs">중복확인</button>
+            <input className="w-72 border-b rounded-lg text-center text-sm focus:outline-none" type="text" placeholder={nicknamePlaceholder} value={nickname} onChange={handleNicknameChange} onFocus={handleFocus} onBlur={handleBlur} onKeyPress={handleKeyPress} />
+            <div className="flex items-center">
+              {isNicknameValid !== null && (
+                <span className={`ml-2 text-xs ${isNicknameValid ? 'text-green-500' : 'text-red-500'}`}>{nicknameMessage}</span>
+              )}
+              <button className="border rounded-lg px-3 py-1 text-xs" onClick={checkNinameDuplicate}>중복확인</button>
+            </div>
           </div>
           <div className="mt-4 flex justify-center space-x-2">
             <span className="bg-gray-400 w-2 h-2 rounded-full"></span>
             <span className="bg-gray-300 w-2 h-2 rounded-full"></span>
           </div>
-          <button className="mt-6 bg-yellow-300 text-white rounded-lg px-4 py-2" onClick={() => handleUserUpdate("2", "예림인데요")}>
+          <button className={`mt-6 rounded-lg px-4 py-2 ${isNextButtonEnabled ? "bg-yellow-300 text-white cursor-pointer" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`} onClick={handleUserUpdate} disabled={!isNextButtonEnabled}>
             다음
           </button>
         </div>

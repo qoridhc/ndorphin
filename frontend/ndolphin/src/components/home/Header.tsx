@@ -28,7 +28,6 @@ const Header = () => {
     { id: 9, profileImage: "/assets/profile/profile4.png", userName: "", text: "내가 시작한 릴레이북이 베스트에 선정되었습니다", timestamp: new Date(Date.now() - 600000000000) },
   ]);
 
-  // 로컬스토리지를 이용하여 로그인 정보 저장 및 유지, 추후 변경 필요
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
@@ -51,9 +50,9 @@ const Header = () => {
     setIsLoggedIn(true);
     closeLoginModal();
 
-    // if (isNewUser) {
-    //   setIsUserInfoEditModalOpen(true);
-    // }
+    if (isNewUser) {
+      setIsUserInfoEditModalOpen(true);
+    }
   };
 
   const handleNext = () => {
