@@ -9,7 +9,7 @@ const userApi = {
     const oauthUrl = `${baseURL}/api/v1/auth/oauth2/${loginType}`;
     const newWindow = window.open(
       oauthUrl, 
-      'googleLogin', 
+      'Login', 
       'width=500,height=600'
     );
 
@@ -17,21 +17,7 @@ const userApi = {
   },
 
   update: (userId: string, newNickName: string) =>
-    request.put(`${baseURL}/api/v1/users/${userId}`, { nickName: newNickName }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    }),
-  
-  // logout: () => request.post(
-  //   `${baseURL}/api/v1/auth/logout`,
-  //   {},
-  //   {
-  //     headers: {
-  //       Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-  //     }
-  //   },
-  // ),
+    request.put(`/api/v1/users/${userId}`, { nickName: newNickName }),
 }
 
 export default userApi;

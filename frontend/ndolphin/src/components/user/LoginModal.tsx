@@ -79,17 +79,17 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
           <div className="space-y-4">
             <p>
               <button onClick={() => handleExternalLogin("google")} data-provider="google">
-                <img src="../../../assets/user/googleloginbtn.png" alt="구글로 로그인" />
+                <img src="/assets/user/googleloginbtn.png" alt="구글로 로그인" />
               </button>
             </p>
             <p>
               <button onClick={() => handleExternalLogin("naver")}>
-                <img src="../../../assets/user/naverloginbtn.png" alt="네이버로 로그인" />
+                <img src="/assets/user/naverloginbtn.png" alt="네이버로 로그인" />
               </button>
             </p>
             <p>
               <button onClick={() => handleExternalLogin("kakao")}>
-                <img src="../../../assets/user/kakaologinbtn.png" alt="카카오로 로그인" />
+                <img src="/assets/user/kakaologinbtn.png" alt="카카오로 로그인" />
               </button>
             </p>
           </div>
