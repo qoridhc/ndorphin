@@ -161,8 +161,18 @@ public class BoardMapper {
         relayBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
         relayBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
         relayBoardDetailResponseDto.setReactionTypeCounts(reactionTypeCounts);
-        relayBoardDetailResponseDto.setUserReactionId(reaction.getId());
-        relayBoardDetailResponseDto.setUserReactionType(reaction.getReactionType());
+
+//        relayBoardDetailResponseDto.setUserReactionId(reaction.getId());
+//        relayBoardDetailResponseDto.setUserReactionType(reaction.getReactionType());
+
+        // Reaction이 null인지 확인하고 적절한 기본값 설정
+        if (reaction != null) {
+            relayBoardDetailResponseDto.setUserReactionId(reaction.getId());
+            relayBoardDetailResponseDto.setUserReactionType(reaction.getReactionType());
+        } else {
+            relayBoardDetailResponseDto.setUserReactionId(null); // 또는 0L 등의 기본값
+            relayBoardDetailResponseDto.setUserReactionType(ReactionType.NONE); // 기본 반응 타입
+        }
 
         return relayBoardDetailResponseDto;
     }
