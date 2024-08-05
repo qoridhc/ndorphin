@@ -9,7 +9,7 @@ const userApi = {
     const oauthUrl = `${baseURL}/api/v1/auth/oauth2/${loginType}`;
     const newWindow = window.open(
       oauthUrl, 
-      'googleLogin', 
+      'Login', 
       'width=500,height=600'
     );
 
@@ -22,16 +22,6 @@ const userApi = {
         Authorization: `Bearer ${token}`,
       }
     }),
-  
-  // logout: () => request.post(
-  //   `${baseURL}/api/v1/auth/logout`,
-  //   {},
-  //   {
-  //     headers: {
-  //       Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-  //     }
-  //   },
-  // ),
 }
 
 export default userApi;
