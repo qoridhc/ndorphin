@@ -1,6 +1,7 @@
 import HTMLFlipBook from "react-pageflip";
 import React, { ForwardedRef } from "react";
 import { useState } from "react";
+import RelayApi from "../../api/RelayApi";
 import "../../css/RelayBook.css";
 import "../../css/Notes.css";
 import "../../css/InputPlaceHolder.css";
@@ -37,6 +38,31 @@ const MyAlbum: React.FC = () => {
 
   const cancelAiImage = () => {
     setIsModalOpen(false);
+  };
+
+  const handleRelayBookStart = async (userId: number, subject: string, content: string) => {
+    const formData = new FormData();
+
+    formData.append(
+      "request",
+      new Blob(
+        [
+          JSON.stringify({
+            subject: subject,
+            content: content,
+            boardType: "RELAY_BOARD",
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
+
+    try {
+      const response = await RelayApi.create(formData, userId, subject, content, "RELAY_BOARD");
+      console.log("릴레이북 이야기 작성 성공");
+    } catch (error) {
+      console.error("릴레이북 이야기 시작 오류: ", error);
+    }
   };
 
   return (
@@ -78,7 +104,13 @@ const MyAlbum: React.FC = () => {
           <Page>
             <div className="flex flex-col items-center justify-center">
               <div className="flex justify-end w-full px-8 my-2">
-                <button className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">등록</button>
+                <button
+                  onClick={() => {
+                    handleRelayBookStart(4, "제목입니다.", "릴레이북 내용입니다");
+                  }}
+                  className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
+                  등록
+                </button>
               </div>
               <div className="w-full">
                 <div className="flex flex-col items-center">

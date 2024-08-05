@@ -6,6 +6,8 @@ const token = process.env.REACT_APP_API_TOKEN;
 const userApi = {
   login: (loginType: string) => {
     console.log('새창')
+    console.log(baseURL)
+    console.log(loginType)
     const oauthUrl = `${baseURL}/api/v1/auth/oauth2/${loginType}`;
     const newWindow = window.open(
       oauthUrl, 
@@ -17,11 +19,7 @@ const userApi = {
   },
 
   update: (userId: string, newNickName: string) =>
-    request.put(`${baseURL}/api/v1/users/${userId}`, { nickName: newNickName }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    }),
+    request.put(`/api/v1/users/${userId}`, { nickName: newNickName }),
 }
 
 export default userApi;

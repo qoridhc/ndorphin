@@ -9,7 +9,6 @@ import com.web.ndolphin.domain.PointRule;
 import com.web.ndolphin.domain.Token;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
-import com.web.ndolphin.dto.auth.response.OAuth2ResponseDto;
 import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.favorite.FavoriteResponseDto;
@@ -31,6 +30,10 @@ import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.UserService;
+import com.web.ndolphin.util.LogUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,19 +58,44 @@ public class UserServiceImpl implements UserService {
     private final FileInfoService fileInfoService;
 
     @Override
-    public ResponseEntity<ResponseDto> signIn(Long userId) {
+    public void signIn(HttpServletRequest request, HttpServletResponse response, Long userId) {
+
+        LogUtil.info("signIn 실행");
 
         User user = null;
 
         try {
             user = userRepository.findByUserId(userId);
+
+            Token token = tokenRepository.findByUserId(userId);
+
+            // userId 쿠키 설정
+            Cookie userIdCookie = new Cookie("userId", String.valueOf(userId));
+            userIdCookie.setMaxAge(3600); // 1시간 유효
+            userIdCookie.setPath("/"); // 모든 경로에서 접근 가능
+
+            // accessToken 쿠키 설정
+            Cookie jwtCookie = new Cookie("accessToken", token.getAccessToken());
+            jwtCookie.setMaxAge(3600); // 1시간 유효
+            jwtCookie.setPath("/"); // 모든 경로에서 접근 가능
+
+            // refreshToken 쿠키 설정
+            Cookie refreshTokenCookie = new Cookie("refreshToken", token.getRefreshToken());
+            refreshTokenCookie.setMaxAge(3600); // 1시간 유효
+            refreshTokenCookie.setPath("/"); // 모든 경로에서 접근 가능
+
+            // 쿠키를 응답에 추가
+            response.addCookie(userIdCookie);
+            response.addCookie(jwtCookie);
+            response.addCookie(refreshTokenCookie);
+
+            // 리다이렉트
+            response.sendRedirect("http://localhost:3000");
+//            response.sendRedirect("http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com:80");
+
         } catch (Exception e) {
-            return ResponseDto.databaseError();
+            e.printStackTrace();
         }
-
-        Token token = tokenRepository.findByUserId(userId);
-
-        return OAuth2ResponseDto.success(token);
     }
 
     public ResponseEntity<ResponseDto> getUser(Long userId) {
@@ -124,6 +152,11 @@ public class UserServiceImpl implements UserService {
             }
 
             if (dto.getNickName() != null) {
+
+                if (dto.getNickName().equals(existingUser.getNickName())) {
+                    throw new IllegalArgumentException("Duplicate NickName userNickName : " + dto.getNickName());
+                }
+
                 existingUser.setNickName(dto.getNickName());
                 existingUser.setNickNameUpdatedAt(LocalDateTime.now());
             }
@@ -153,6 +186,8 @@ public class UserServiceImpl implements UserService {
             );
 
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+        } catch (IllegalArgumentException e) {
+            return ResponseDto.databaseError(e.getMessage());
         } catch (Exception e) {
             return ResponseDto.databaseError();
         }
