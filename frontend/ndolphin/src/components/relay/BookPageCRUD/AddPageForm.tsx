@@ -2,12 +2,13 @@ import "../../../css/InputPlaceHolder.css";
 import React, { useState, ChangeEvent } from "react";
 
 interface AddPageFormProps {
+  setPageAdd: any;
   handleAiImage: any;
   image: string | null;
   setImage: any;
 }
 
-const AddPageForm:React.FC<AddPageFormProps> = ({handleAiImage, image, setImage}) => {
+const AddPageForm: React.FC<AddPageFormProps> = ({ setPageAdd, handleAiImage, image, setImage }) => {
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -26,7 +27,17 @@ const AddPageForm:React.FC<AddPageFormProps> = ({handleAiImage, image, setImage}
       <div>
         <div className="w-full flex justify-between m-2">
           <p className="mx-4 text-lg font-bold">릴레이북 페이지 추가하기</p>
-          <button className="w-16 mx-12 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">등록</button>
+          <div>
+            <button
+              onClick={() => {
+                setPageAdd(false);
+              }}
+              className="w-16 mx-2 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200"
+            >
+              취소
+            </button>{" "}
+            <button className="w-16 mr-11 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">등록</button>
+          </div>
         </div>
         <div className="w-full mb-2">
           <div className="flex flex-col items-center">
@@ -58,7 +69,12 @@ const AddPageForm:React.FC<AddPageFormProps> = ({handleAiImage, image, setImage}
             <div className="py-3 h-full grid grid-cols-[49%_2%_49%]">
               {/* AI 이미지 첨부 버튼 */}
               <div className="flex flex-col items-center justify-center">
-                <button onClick={() => {handleAiImage()}} className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
+                <button
+                  onClick={() => {
+                    handleAiImage();
+                  }}
+                  className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800"
+                >
                   <img src="/assets/aiImageIcon.png" className="w-5" alt="#"></img>
                   <p className="text-xs">AI 이미지 생성</p>
                 </button>
@@ -84,6 +100,6 @@ const AddPageForm:React.FC<AddPageFormProps> = ({handleAiImage, image, setImage}
       </div>
     </div>
   );
-}
+};
 
 export default AddPageForm;
