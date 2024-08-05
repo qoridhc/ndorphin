@@ -27,20 +27,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
       const checkRedirect = setInterval(() => {
         try {
           const redirectedUrl = loginWindow.location.href;
-          console.log('주소ㄴ롸널', redirectedUrl)
-          const urlParams = new URLSearchParams(redirectedUrl.split("?")[1]);
-          console.log(urlParams);
-          if (redirectedUrl.includes("amazonaws.com")) {
-            console.log('찾음')
+          // 배포시 주석 바꾸고 진행
+          if (redirectedUrl.includes("localhost:3000")) {
+            // if (redirectedUrl.includes("amazonaws.com")) {
             clearInterval(checkRedirect);
             const urlParams = new URLSearchParams(redirectedUrl.split("?")[1]);
             const userId = urlParams.get("userId");
             const accessToken = urlParams.get("accessToken");
             const refreshToken = urlParams.get("refreshToken");
             const isNewUser = urlParams.get("isNewUser") === "true";
-            console.log(urlParams);
-            console.log(userId);
-            console.log(accessToken);
 
             if (userId && accessToken && refreshToken) {
               onLoginSuccess(userId, accessToken, refreshToken, isNewUser);
@@ -84,21 +79,18 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
             </span>
           </p>
           <div className="space-y-4">
-            <p>
-              <button onClick={() => handleExternalLogin("google")} data-provider="google">
-                <img src="/assets/user/googleloginbtn.png" alt="구글로 로그인" />
-              </button>
-            </p>
-            <p>
-              <button onClick={() => handleExternalLogin("naver")}>
-                <img src="/assets/user/naverloginbtn.png" alt="네이버로 로그인" />
-              </button>
-            </p>
-            <p>
-              <button onClick={() => handleExternalLogin("kakao")}>
-                <img src="/assets/user/kakaologinbtn.png" alt="카카오로 로그인" />
-              </button>
-            </p>
+            <button className="w-72 px-4 py-2 ms-5 bg-white border border-gray-300 rounded-md flex items-center hover:bg-gray-200" onClick={() => handleExternalLogin("google")}>
+              <img className="w-8 h-8" src="/assets/user/googleLoginButton.png" alt="구글로 로그인" />
+              <span className="flex-grow text-center text-sm">구글 계정으로 로그인</span>
+            </button>
+            <button className="w-72 px-4 py-2 ms-5 bg-white border border-[#03C75A] rounded-md flex items-center hover:bg-[#03C75A] hover:text-white" onClick={() => handleExternalLogin("naver")}>
+              <img className="w-8 h-8" src="/assets/user/naverLoginButton.png" alt="네이버로 로그인" />
+              <span className="flex-grow text-center text-sm">네이버로 로그인</span>
+            </button>
+            <button className="w-72 px-4 py-2 ms-5 bg-white border border-[#FEE500] rounded-md flex items-center hover:bg-[#FEE500] hover:text-white" onClick={() => handleExternalLogin("kakao")}>
+              <img className="w-8 h-8" src="/assets/user/kakaoLoginButton.png" alt="카카오로 로그인" />
+              <span className="flex-grow text-center text-sm">카카오 로그인</span>
+            </button>
           </div>
         </div>
       </div>
