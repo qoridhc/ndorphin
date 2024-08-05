@@ -9,6 +9,7 @@ import BookDetailPage from "../../components/relay/BookDetailPage";
 import BookPageCover from "../../components/relay/BookPageCover";
 import BookDetailDone from "../../components/relay/BookDetailDone";
 import DeleteModal from "../../components/relay/relayBookCRUD/BookDeleteModal";
+import AiImagePromptModal from "../../components/relay/AiImagePromptModal";
 
 // 마지막 페이지 이후 나오는 책 커버
 const PageEndCover = React.forwardRef<HTMLDivElement>((props, ref: ForwardedRef<HTMLDivElement>) => {
@@ -60,19 +61,20 @@ const RelayBookDetail: React.FC = () => {
     }
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteAIModalOpen] = useState(false);
 
   const handleDelete = () => {
-    setIsModalOpen(true);
+    setDeleteAIModalOpen(true);
   };
 
   const confirmDelete = () => {
-    setIsModalOpen(false);
+    setDeleteAIModalOpen(false);
     navigate("/relaybooklist");
   };
 
   const cancelDelete = () => {
-    setIsModalOpen(false);
+    setDeleteAIModalOpen(false);
   };
 
   const PageList = [
@@ -80,6 +82,8 @@ const RelayBookDetail: React.FC = () => {
       id: 1,
       userId: 1,
       user: "삶은계란",
+      badget: "N",
+      date: "2024-07-30 01:22",
       content: "내용입니다안녕하세요 제가 이예림입니다 하하하 입니다1안녕 ? 공부 많이 했어? 오늘 밥 뭐먹지 다1내용입니다진짜 내일은 통신하자 알겠지? 내용입니다1내용입니다1내용입니다1내용입니다",
       pageImage: "/assets/relay/relayStartSample1.png",
     },
@@ -87,6 +91,8 @@ const RelayBookDetail: React.FC = () => {
       id: 2,
       userId: 2,
       user: "만약핑인데",
+      badget: "S",
+      date: "2024-12-10 21:45",
       content: "내용입니다2",
       pageImage: "/assets/relay/relayStartSample2.png",
     },
@@ -94,6 +100,8 @@ const RelayBookDetail: React.FC = () => {
       id: 3,
       userId: 3,
       user: "별이 빛나는 밤",
+      badget: "S",
+      date: "2024-07-30 01:22",
       content: "내용입니다3",
       pageImage: "/assets/relay/relayStartSample3.png",
     },
@@ -101,13 +109,17 @@ const RelayBookDetail: React.FC = () => {
       id: 4,
       userId: 4,
       user: "코에촉촉",
-      content: "내용입니다4",
+      badget: "N",
+      date: "2024-07-30 01:22",
+      content: "내용입니다안녕하세요 제가 이예림입니다 하하하니다진짜 내일은 통신하자 알겠지? 내용입니다1내용입니다1내용입니다1내용입니다",
       pageImage: "/assets/relay/relayStartSample4.png",
     },
     {
       id: 5,
       userId: 5,
       user: "상상의 나무꾼",
+      badget: "N",
+      date: "2024-07-30 01:22",
       content: "내용입니다5",
       pageImage: "/assets/relay/relayStartSample5.png",
     },
@@ -115,6 +127,8 @@ const RelayBookDetail: React.FC = () => {
       id: 6,
       userId: 6,
       user: "상상의 나무꾼",
+      badget: "S",
+      date: "2024-07-30 01:22",
       content: "내용입니다5",
       pageImage: "/assets/relay/relayStartSample6.png",
     },
@@ -145,9 +159,25 @@ const RelayBookDetail: React.FC = () => {
     }
   };
 
+  // AI 이미지 모달 관련
+  const [image, setImage] = useState<string | null>(null);
+
+  const handleAiImage = () => {
+    setIsAiModalOpen(true);
+  };
+
+  const confirmAiImage = (image: string) => {
+    setIsAiModalOpen(false);
+    setImage(image);
+  };
+
+  const cancelAiImage = () => {
+    setIsAiModalOpen(false);
+  };
+
   return (
-    <>
-      <div className="relative grid grid-rows-[93%_7%] overflow-hidden" style={{ backgroundColor: "white" }}>
+    <div className="overflow-hidden">
+      <div className="relative grid grid-rows-[93%_7%]" style={{ backgroundColor: "white" }}>
         {/* 좌우 이동 버튼 */}
         <div className="h-full w-1/6 absolute top-0 hover:cursor-pointer hover:bg-zinc-300 hover:opacity-40" onClick={(e) => onPrev("Y")}>
           <button className="mt-[18rem] absolute left-5 ">
@@ -178,29 +208,30 @@ const RelayBookDetail: React.FC = () => {
             maxShadowOpacity={0.5}
             className="album-web"
             onFlip={onFlip}
-            useMouseEvents={false}>
-            <BookPageCover BookStart={BookStart} bookId={bookId} isOpen={isModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
+            useMouseEvents={false}
+          >
+            <BookPageCover BookStart={BookStart} bookId={bookId} isDeleteOpen={isDeleteModalOpen} isAiOpen={isAiModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
 
             {/* 페이지 매핑 */}
             {PageList.map((page) => (
-              <BookDetailPage bookId={bookId} number={page.id} page={page} totalPage={PageList.length}>
-                <div className="h-[80%] flex flex-col justify-around">
+              <BookDetailPage bookId={bookId} number={page.id} page={page} totalPage={PageList.length} handleAiImage={handleAiImage} image={image} setImage={setImage}>
+                <div className="py-3">
                   {page.id % 2 == 1 ? (
-                    <>
+                    <div className="p-2 grid grid-rows-[6.8fr_3.2fr]">
                       {/* 홀수쪽일 경우 그림, 글 순서 */}
-                      <div className="w-full flex justify-center">
-                        <img className="w-3/5" src={page.pageImage} alt="" />
+                      <div className="w-full h-72 flex justify-center">
+                        <img className="w-[78%] object-cover" src={page.pageImage} alt="" />
                       </div>
-                      <p className="mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
-                    </>
+                      <p className="h-full mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
+                    </div>
                   ) : (
-                    <>
+                    <div className="p-2 grid grid-rows-[3.2fr_6.8fr]">
                       {/* 짝수쪽일 경우 글, 그림 순서 */}
-                      <p className="mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
-                      <div className="w-full flex justify-center">
-                        <img className="w-3/5" src={page.pageImage} alt="" />
+                      <p className="h-full mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
+                      <div className="w-full h-72 flex justify-center">
+                        <img className="w-[78%] object-cover" src={page.pageImage} alt="" />
                       </div>
-                    </>
+                    </div>
                   )}
                 </div>
               </BookDetailPage>
@@ -209,23 +240,23 @@ const RelayBookDetail: React.FC = () => {
             {/* 마지막 페이지 */}
             {isFinished ? (
               // 완료된 이야기일 경우 이모티콘 반응
-              <BookDetailPage bookId={bookId} number={PageList.length + 1} page={PageList[0]} totalPage={PageList.length}>
+              <BookDetailPage bookId={bookId} number={PageList.length + 1} page={PageList[0]} totalPage={PageList.length} handleAiImage={handleAiImage} image={image} setImage={setImage}>
                 <BookDetailDone />
               </BookDetailPage>
             ) : (
               // 진행 중인 이야기일 경우 페이지 추가
-              <BookDetailPage bookId={bookId} number={PageList.length + 1} page={PageList[0]} totalPage={PageList.length}>
+              <BookDetailPage bookId={bookId} number={PageList.length + 1} page={PageList[0]} totalPage={PageList.length} handleAiImage={handleAiImage} image={image} setImage={setImage}>
                 <hr></hr>
-                <AddPage PageList={PageList} />
+                <AddPage PageList={PageList} handleAiImage={handleAiImage} image={image} setImage={setImage} />
               </BookDetailPage>
             )}
             {/* 페이지가 짝수일 경우 마지막 커버 표시 */}
-            {totalPage % 2 == 0 ? <PageEndCover></PageEndCover> : <></>}
+            {totalPage % 2 === 0 ? <PageEndCover></PageEndCover> : <></>}
           </HTMLFlipBook>
         </div>
 
         {/* 페이지 하단바 */}
-        <div className="py-[1.36rem] flex justify-center items-center bg-zinc-200">
+        <div className="relative py-[1.36rem] flex justify-center items-center bg-zinc-200 z-30">
           {isHoverd ? (
             <div
               onMouseEnter={() => {
@@ -234,7 +265,8 @@ const RelayBookDetail: React.FC = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-blue-500 rounded-sm ">
+              className="border-2 border-blue-500 rounded-sm "
+            >
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           ) : (
@@ -245,7 +277,8 @@ const RelayBookDetail: React.FC = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-stone-500 rounded-sm ">
+              className="border-2 border-stone-500 rounded-sm "
+            >
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           )}
@@ -255,8 +288,11 @@ const RelayBookDetail: React.FC = () => {
       </div>
 
       {/* 릴레이북 삭제 모달 */}
-      <DeleteModal isOpen={isModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />
-    </>
+      <DeleteModal isOpen={isDeleteModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />
+
+      {/* AI 이미지 생성 모달 */}
+      <AiImagePromptModal isOpen={isAiModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} />
+    </div>
   );
 };
 

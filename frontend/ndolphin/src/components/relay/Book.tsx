@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router";
+import { IoMdClose } from "react-icons/io";
 
 interface BookProps {
   book: {
@@ -14,6 +15,8 @@ function Book({ book }: BookProps) {
   const [join, setJoin] = useState(false);
   const [isLike, setIsLike] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [summary, setSummary] = useState("");
+  const [showSummary, setShowSummary] = useState(false);
   const navigate = useNavigate();
   const fullHeart = "/assets/relay/fullheart.png";
   const emptyHeart = "/assets/relay/emptyheart.png";
@@ -22,8 +25,21 @@ function Book({ book }: BookProps) {
     navigate(`/relaybookdetail/${id}`);
   };
 
+  const handleAISummary = () => {
+    if (showSummary) {
+      setShowSummary(false);
+    } else {
+      // AI 요약 호출 로직을 여기에 추가합니다.
+      // 예를 들어, AI 요약 API를 호출하고 결과를 setSummary로 설정할 수 있습니다.
+      setSummary(
+        "이것은 AI가 생성한 요약 예시입니다. 이것은은 AI가 생성한 요약 예시입니다. 이것은 AI가 생니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은다."
+      );
+      setShowSummary(true);
+    }
+  };
+
   return (
-    <div>
+    <div className="relative">
       <div className="flex justify-end">
         {join ? <span className="w-auto mx-1 px-3 py-1 rounded-t-lg text-xs font-bold text-zinc-900 bg-amber-300">참여</span> : <span className="w-auto mx-1 px-3 py-1 rounded-t-lg text-xs font-bold text-zinc-900 bg-zinc-300">미참여</span>}
       </div>
@@ -35,7 +51,7 @@ function Book({ book }: BookProps) {
               setIsLike(false);
             }}
             src="/assets/relay/fullheart.png"
-            className="w-9 absolute top-4 right-3 z-10 hover:cursor-pointer"
+            className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer"
             alt="#"
           />
         ) : (
@@ -50,7 +66,7 @@ function Book({ book }: BookProps) {
               setIsHovered(false);
             }}
             src={isHovered ? fullHeart : emptyHeart}
-            className="w-9 absolute top-4 right-3 z-10 hover:cursor-pointer"
+            className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer"
             alt="#"
           />
         )}{" "}
@@ -69,15 +85,42 @@ function Book({ book }: BookProps) {
           onClick={() => {
             goBookDetail(book.id);
           }}
-          className="hover:cursor-pointer font-bold text-lg">
+          className="hover:cursor-pointer font-bold text-lg"
+        >
           {book.title}
         </span>
-        <button className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border-2 border-solid border-zinc-300 font-bold text-zinc-800 mt-2">
+        <button onClick={handleAISummary} className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border-2 border-solid border-zinc-300 font-bold text-zinc-800 mt-2">
           <img src="/assets/aiSummaryButton.png" className="w-5" alt="#" />
           <p className="text-xs">AI 요약하기</p>
           <img src="/assets/arrow_right.png" className="w-2" alt="#" />
         </button>
       </div>
+
+      {/* AI 요약 모달 */}
+      {showSummary && (
+        <div className="relative">
+          {/* 말풍선 꼭지점 */}
+          <div
+            className="absolute -top-2 left-1/2 transform -translate-x-[4.5rem] 
+                       w-0 h-0 
+                       border-x-[12px] border-x-transparent 
+                       border-b-[12px] border-b-[#eff1f1] 
+                       z-50"
+          ></div>
+
+          <div
+            className="absolute top-1 transform
+                          z-50 bg-[#eff1f1] rounded-md w-72 p-4 
+                          max-h-64 overflow-y-auto"
+          >
+            <div className="mb-3 flex items-center">
+              <img className="w-5 mr-1" src="/assets/relay/aiSummaryChatIcon.png" alt="" />
+              <h3 className="font-bold text-xs text-zinc-600">AI로 지금까지의 이야기를 요약했어요</h3>
+            </div>
+            <p className="text-[0.73rem] text-justify">{summary}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

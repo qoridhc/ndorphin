@@ -1,16 +1,37 @@
-import { instance } from "./axiosConfig";
+import { request } from "./axiosConfig";
+
+const baseURL = process.env.REACT_APP_API_BASE_URL;
+const token = process.env.REACT_APP_API_TOKEN;
 
 const userApi = {
-  // 로그인 요청 시 서버의 OAuth URL로 리디렉션
   login: (loginType: string) => {
-    // window.location.href = `http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com:8080/api/v1/auth/oauth2/${loginType}`;
-    const oauthUrl = `http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com:8080/api/v1/auth/oauth2/${loginType}`;
-    window.open(
+    console.log('새창')
+    const oauthUrl = `${baseURL}/api/v1/auth/oauth2/${loginType}`;
+    const newWindow = window.open(
       oauthUrl, 
       'googleLogin', 
       'width=500,height=600'
     );
+
+    return newWindow;
   },
+
+  update: (userId: string, newNickName: string) =>
+    request.put(`${baseURL}/api/v1/users/${userId}`, { nickName: newNickName }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }),
+  
+  // logout: () => request.post(
+  //   `${baseURL}/api/v1/auth/logout`,
+  //   {},
+  //   {
+  //     headers: {
+  //       Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+  //     }
+  //   },
+  // ),
 }
 
 export default userApi;

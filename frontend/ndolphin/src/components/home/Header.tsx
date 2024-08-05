@@ -4,6 +4,7 @@ import LoginModal from "../user/LoginModal";
 import UserInfoEditModal from "../user/UserInfoEditModal";
 import NSModal from "../user/NSModal";
 import TimeDifference from "../common/TimeDifference";
+import userApi from "../../api/userApi";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -29,10 +30,11 @@ const Header = () => {
 
   // 로컬스토리지를 이용하여 로그인 정보 저장 및 유지, 추후 변경 필요
   useEffect(() => {
-    const loggedInStatus = localStorage.getItem("isLoggedIn") === 'true';
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      setIsLoggedIn(true);
+    }
     const storedProfileImage = localStorage.getItem("profileImage");
-
-    setIsLoggedIn(loggedInStatus);
     setProfileImage(storedProfileImage);
   }, []);
 
@@ -42,9 +44,16 @@ const Header = () => {
   const closeUserInfoEditModal = () => setIsUserInfoEditModalOpen(false);
   const closeNSModal = () => setIsNSModalOpen(false);
 
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = (userId: string, accessToken: string, refreshToken: string, isNewUser: boolean) => {
+    localStorage.setItem("userId", userId);
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    setIsLoggedIn(true);
     closeLoginModal();
-    setIsUserInfoEditModalOpen(true);
+
+    // if (isNewUser) {
+    //   setIsUserInfoEditModalOpen(true);
+    // }
   };
 
   const handleNext = () => {
@@ -59,12 +68,13 @@ const Header = () => {
   };
 
   const handleLogout = () => {
+    localStorage.clear()
+
     setIsLoggedIn(false);
     setProfileImage(null);
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("profileImage");
     setShowProfileDropdown(false);
     navigate("/");
+
   };
 
   const handleProfileDropdownClick = (event: React.MouseEvent) => {
@@ -119,8 +129,8 @@ const Header = () => {
 
   return (
     <>
-      <div className="w-full h-20 px-44 relative shadow-[0_2px_5px_0_rgba(0,0,0,0.2)] flex justify-between items-center">
-        <div className="w-1/2 flex justify-between items-center">
+      <div className="w-full h-20 px-44 relative z-50 shadow-[0_2px_5px_0_rgba(0,0,0,0.2)] flex justify-between items-center">
+        <div className="flex items-center">
           <img
             className="w-48 h-12 cursor-pointer"
             src="/assets/logo.PNG"
@@ -129,37 +139,45 @@ const Header = () => {
               navigate("/");
             }}
           />
-          <div className="w-2/3 flex justify-around items-center text-[#6C6C6C] font-semibold">
+
+          <div className="px-2 flex items-center text-[#6C6C6C] font-semibold">
             <button
-              className="hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
+              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
               onClick={() => {
                 navigate("/relaybooklist");
               }}>
               릴레이북
             </button>
             <button
-              className="hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
+              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
               onClick={() => {
                 navigate("/iflist");
               }}>
               만약에
             </button>
             <button
-              className="hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
+              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
+              onClick={() => {
+                navigate("/balancelist");
+              }}>
+              밸런스게임
+            </button>
+            <button
+              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
               onClick={() => {
                 navigate("/oklist");
               }}>
               괜찮아
             </button>
             <button
-              className="hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
+              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
               onClick={() => {
                 navigate("/bye");
               }}>
               작별인사
             </button>
             <button
-              className="hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
+              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
               onClick={() => {
                 navigate("/notice");
               }}>

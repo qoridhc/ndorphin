@@ -1,13 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import userApi from "../../api/userApi";
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLoginSuccess: () => void;
+  onLoginSuccess: (userId: string, accessToken: string, refreshToken: string, isNewUser: boolean) => void;
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
+  const [loginWindow, setLoginWindow] = useState<Window | null>(null);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -20,25 +22,40 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (loginWindow) {
+      const checkRedirect = setInterval(() => {
+        try {
+          const redirectedUrl = loginWindow.location.href;
+          if (redirectedUrl.includes('localhost:3000')) {
+            clearInterval(checkRedirect);
+            const urlParams = new URLSearchParams(redirectedUrl.split('?')[1]);
+            const userId = urlParams.get('userId');
+            const accessToken = urlParams.get('accessToken');
+            const refreshToken = urlParams.get('refreshToken');
+            const isNewUser = urlParams.get('isNewUser') === 'true';
+
+            if (userId && accessToken && refreshToken) {
+              onLoginSuccess(userId, accessToken, refreshToken, isNewUser);
+              loginWindow.close();
+              setLoginWindow(null);
+            }
+          }
+        } catch (error) {
+          console.log('에러???', error);
+        }
+      }, 500);
+
+      return () => clearInterval(checkRedirect);
+    }
+  }, [loginWindow, onLoginSuccess]);
+
   if (!isOpen) return null;
 
-  // const handleExternalLogin = (event: React.MouseEvent<HTMLButtonElement>) => {
-  //   const provider = event.currentTarget.getAttribute('data-provider');
-  //   if (provider) {
-  //     // 여기에 외부 로그인 로직을 구현
-  //     console.log(`${provider} 로그인 시도`);
-
-  //     // 로그인 성공을 시뮬레이션
-  //     setTimeout(() => {
-  //       onLoginSuccess();
-  //     }, 100);
-  //   }
-  // };
-
-  const handleExternalLogin = async (loginType: string) => {
-    userApi.login(loginType);
-    // window.location.href = "http://localhost:3000";
-  };
+  const handleExternalLogin = (loginType: string) => {
+    const newWindow = userApi.login(loginType);
+    setLoginWindow(newWindow);
+    }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={onClose}>
