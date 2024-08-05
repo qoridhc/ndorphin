@@ -17,11 +17,7 @@ const userApi = {
   },
 
   update: (userId: string, newNickName: string) =>
-    request.put(`${baseURL}/api/v1/users/${userId}`, { nickName: newNickName }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    }),
+    request.put(`/api/v1/users/${userId}`, { nickName: newNickName }),
 }
 
 export default userApi;
