@@ -14,7 +14,7 @@ interface BookCoverAiPromptModalProps {
 const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ isOpen, onClose, onConfirm, setImage, image, coverImage }) => {
   const API_KEY = process.env.REACT_APP_OPEN_AI_APIKEY;
   const [imageUrl, setImageUrl] = useState("");
-  const [inputPrompt, setInputPrompt] = useState("")
+  const [inputPrompt, setInputPrompt] = useState("");
 
   const generateImage = () => {
     axios

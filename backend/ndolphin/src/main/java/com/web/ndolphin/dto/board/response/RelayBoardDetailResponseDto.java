@@ -13,6 +13,7 @@ public class RelayBoardDetailResponseDto extends BoardDto {
 
     private String contentFileUrl;
     private boolean hasParticipated;
+    private int maxPage;
     private List<CommentResponseDto> commentResponseDtos;
     private Map<ReactionType, Long> reactionTypeCounts;
     private Long userReactionId;

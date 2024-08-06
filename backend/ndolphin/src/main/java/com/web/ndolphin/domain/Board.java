@@ -40,6 +40,8 @@ public class Board {
 
     private String summary;
 
+    private int maxPage;
+
     private int hit;
 
     @Enumerated(EnumType.STRING)
