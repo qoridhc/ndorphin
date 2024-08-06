@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import userApi from '../../api/userApi';
 
 interface NSModalProps {
   isOpen: boolean;
@@ -12,11 +13,17 @@ interface NSItem {
 
 const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose }) => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       setSelectedItems([]);
+
+      const storedUserId = localStorage.getItem("userId");
+      if (storedUserId) {
+        setUserId(storedUserId);
+      }
     } else {
       document.body.style.overflow = 'unset';
     }
@@ -25,8 +32,6 @@ const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose }) => {
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
-
-  if (!isOpen) return null;
 
   const nsItems: NSItem[] = [
     { id: 1, text: '창의력이 좋다' },
@@ -55,6 +60,31 @@ const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose }) => {
     );
   };
 
+  const handleSubmit = async () => {
+    const nsValue = selectedItems.length >= 10 ? "N" : "S";
+    localStorage.setItem("nsValue", nsValue);
+
+    if (userId) {
+      try {
+        const formData = new FormData();
+        formData.append('mbti', nsValue);
+  
+        await userApi.update(userId, formData);
+        onClose();
+      } catch (error) {
+        console.error("NS 값 전송 오류 : ", error);
+        alert("설문 전송 중 오류가 발생했습니다")
+      }
+    }
+  }
+
+  const handleSkip = () => {
+    localStorage.setItem("nsValue", "");
+    onClose();
+  }
+
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
       <div className="w-11/12 max-w-md bg-white rounded-lg shadow-lg">
@@ -66,9 +96,7 @@ const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose }) => {
           <div className="grid grid-cols-4 gap-2">
             {nsItems.map((item) => (
               <div className="relative w-full h-24 bg-blue-100 rounded-lg flex items-center justify-center cursor-pointer" key={item.id} onClick={() => handleItemClick(item.id)}>
-                {selectedItems.includes(item.id) && (
-                  <img className="absolute inset-0 w-full h-full" src="/assets/user/stamp.png" alt="도장" style={{ objectFit: 'contain' }} />
-                )}
+                {selectedItems.includes(item.id) && <img className="absolute inset-0 w-full h-full" src="/assets/user/stamp.png" alt="도장" style={{ objectFit: "contain" }} />}
                 <span className="relative z-10">{item.text}</span>
               </div>
             ))}
@@ -78,8 +106,12 @@ const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose }) => {
             <span className="w-2 h-2 bg-gray-500 rounded-full"></span>
           </div>
           <div className="mt-6 flex justify-between">
-            <button className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg text-sm" onClick={onClose}>건너뛰기</button>
-            <button className="px-4 py-2 bg-yellow-400 text-white rounded-lg text-sm" onClick={onClose}>완료</button>
+            <button className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg text-sm" onClick={handleSkip}>
+              건너뛰기
+            </button>
+            <button className="px-4 py-2 bg-yellow-400 text-white rounded-lg text-sm" onClick={handleSubmit}>
+              완료
+            </button>
           </div>
         </div>
       </div>

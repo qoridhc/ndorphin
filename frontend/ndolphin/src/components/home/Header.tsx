@@ -47,6 +47,20 @@ const Header = () => {
     localStorage.setItem("userId", userId);
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
+
+    // 로그인 성공 시 유저 정보 조회하여 로컬 스토리지에 저장 로직 추가
+    userApi.getUserInfo(userId)
+      .then(res => {
+        localStorage.setItem("email", res.data.data.email);
+        localStorage.setItem("mbti", res.data.data.mbti);
+        localStorage.setItem("nickName", res.data.data.nickName);
+        localStorage.setItem("npoint", res.data.data.npoint.toString());
+        localStorage.setItem("profileImage", res.data.data.profileImage);
+      })
+      .catch(err => {
+        console.error('유저 정보 에러', err)
+      })
+
     setIsLoggedIn(true);
     closeLoginModal();
 
