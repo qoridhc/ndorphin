@@ -178,8 +178,7 @@ public class BoardServiceImpl implements BoardService {
                         Long boardId = board.getId();
 
                         String thumbNailUrl = fileInfoService.getFileUrl(
-                            board.getUser().getUserId(),
-                            EntityType.POST);
+                            boardId, EntityType.POST);
 
                         boolean hasParticipated = commentRepository.existsByBoardIdAndUserId(
                             boardId, board.getUser().getUserId());
@@ -223,7 +222,7 @@ public class BoardServiceImpl implements BoardService {
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     okBoardDtos);
                 break;
-            case BYE_BOARD:
+            case BYE_BOARD, ANNOUNCEMENT_BOARD:
                 // (welcome, bye)각각의 반응 수, 반응 했는지, 어디에서 어디로 바뀌었는지
                 List<ByeBoardDto> byeBoardDtos = new ArrayList<>();
                 for (Board board : boards) {
@@ -350,7 +349,7 @@ public class BoardServiceImpl implements BoardService {
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
                     relayBoardDetailResponseDto);
                 break;
-            case OK_BOARD:
+            case OK_BOARD, ANNOUNCEMENT_BOARD:
                 // 괜찮아 게시판 - 댓글 가능
 
                 // 파일 정보를 가져오기

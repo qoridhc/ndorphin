@@ -32,7 +32,7 @@ function App() {
           <Route path="/relaybookdetail/:bookId" element={<RelayBookDetail />}></Route>
           <Route path="/iflist" element={<IfList />}></Route>
           <Route path="/ifstart" element={<IfStart />}></Route>
-          <Route path="/ifdetail/:id" element={<IfDetail />}></Route>
+          <Route path="/ifdetail/:boardId" element={<IfDetail />}></Route>
           <Route path="/balancelist" element={<BalanceList />}></Route>
           <Route path="/balancedetail/:id" element={<BalanceDetail />}></Route>
           <Route path="/profile" element={<Profile />}></Route>
