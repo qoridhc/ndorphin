@@ -93,6 +93,11 @@ public class BoardServiceImpl implements BoardService {
             // 파일 업로드 처리
             fileInfoService.uploadFiles(board.getId(), EntityType.POST, multipartFiles);
 
+            // Dall-E 처리
+            if(boardRequestDto.getDalleUrl() != null){
+                fileInfoService.uploadDallEFile(board.getId(), EntityType.POST, boardRequestDto.getDalleUrl());
+            }
+
             // 투표 처리
             if (boardRequestDto.getBoardType() == BoardType.VOTE_BOARD) {
                 boardRequestDto.getVoteContents().stream()

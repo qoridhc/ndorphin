@@ -28,4 +28,6 @@ public interface FileInfoService {
     List<String> parseDeleteFilesJson(String deleteFilesJson);
 
     String getFileUrl(Long Id, EntityType entityType);
+
+    void uploadDallEFile(Long entityId, EntityType entityType, String url);
 }
