@@ -26,6 +26,13 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
       if (storedProfileImage) {
         localSetProfileImage(storedProfileImage);
       }
+      const storedNickname = localStorage.getItem("nickname");
+      if (storedNickname) {
+        setNickname(storedNickname);
+        setIsNicknameChecked(true);
+        setIsNicknameValid(true);
+        setNicknameMessage("사용 가능한 닉네임입니다");
+      }
     } else {
       document.body.style.overflow = "unset";
     }
@@ -78,14 +85,14 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
 
     try {
       const response = await userApi.checkNickname(trimNickname);
-      const isValid = !response.data.isDuplicate;
-      setIsNicknameValid(isValid);
-      setNicknameMessage(isValid ? "사용 가능한 닉네임입니다" : "이미 사용 중인 닉네임입니다");
+      setIsNicknameValid(true);
+      setNicknameMessage("사용 가능한 닉네임입니다");
       setIsNicknameChecked(true);
+      localStorage.setItem('nickName', trimNickname)
     } catch (error) {
       console.error("닉네임 중복 확인 오류: ", error);
       setIsNicknameValid(false);
-      setNicknameMessage("중복 확인 중 오류가 발생했습니다");
+      setNicknameMessage("이미 사용 중인 닉네임입니다");
       setIsNicknameChecked(false);
     }
   };
@@ -108,10 +115,12 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
       if (!userId) throw new Error("User ID not found");
 
       const formData = new FormData();
-      formData.append("nickname", nickname.trim());
+      formData.append("nickName", nickname.trim());
+      
+      // 프로필 이미지를 선택하지 않았을 경우 null 값 설정
       if (profileImage) {
-        const imageBlob = await fetch(profileImage).then(res => res.blob());
-        formData.append("ProfileImage", imageBlob, "profile.jpg");
+        // 프로필 이미지 업로드 시 에러 발생, 일부러 이름을 다르게 해서 오류 피하는 중, 고쳐야 함
+        formData.append("ProfileImage", profileImage);
       }
 
       await userApi.update(userId, formData);
