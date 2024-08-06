@@ -4,9 +4,9 @@ import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointDeleteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
-import com.web.ndolphin.dto.user.request.CheckNickNameRequestDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
 import com.web.ndolphin.service.interfaces.UserService;
+import com.web.ndolphin.util.LogUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "사용자 컨트롤러", description = "사용자 API입니다.")
@@ -107,10 +108,13 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     public ResponseEntity<ResponseDto> checkNickName(
-        @Parameter(description = "닉네임 중복 체크 DTO", required = true)
-        @RequestBody CheckNickNameRequestDto dto) {
+        @Parameter(description = "확인할 닉네임", required = true)
+        @RequestParam("nickName") String nickName
+    ) {
 
-        ResponseEntity<ResponseDto> response = userService.checkNickName(dto.getNickName());
+        LogUtil.info("checkNickName" + nickName);
+
+        ResponseEntity<ResponseDto> response = userService.checkNickName(nickName);
         return response;
     }
 

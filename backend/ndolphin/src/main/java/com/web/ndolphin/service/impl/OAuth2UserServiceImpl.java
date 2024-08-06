@@ -48,8 +48,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
             if (oauthClientName.equals("kakao")) {
                 responseMap = oAuth2User.getAttributes();
 
-                Map<String, Object> kakaoAccount = (Map<String, Object>) responseMap.get(
-                    "kakao_account");
+                Map<String, Object> kakaoAccount = (Map<String, Object>) responseMap.get("kakao_account");
 
                 user.setEmail((String) kakaoAccount.get("email"));
                 user.setType(LoginType.KAKAO);
@@ -83,7 +82,6 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
             } else {
                 // DB에 유저 정보 저장 (회원가입)
                 user.setCreatedAt(LocalDateTime.now());
-                user.setProfileImage("/images/default_profile.png");
                 user = userRepository.save(user);
             }
 
