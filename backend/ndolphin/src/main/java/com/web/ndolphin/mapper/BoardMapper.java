@@ -65,7 +65,8 @@ public class BoardMapper {
     }
 
     // Entity -> OkBoardDto 변환
-    public static OkBoardDto toOkBoardDto(Board board, List<String> fileNames, List<String> fileUrls) {
+    public static OkBoardDto toOkBoardDto(Board board, List<String> fileNames,
+        List<String> fileUrls) {
 
         OkBoardDto dto = new OkBoardDto();
         mapCommonFields(board, dto);
@@ -185,6 +186,7 @@ public class BoardMapper {
         board.setUser(user);
         board.setSubject(dto.getSubject());
         board.setContent(dto.getContent());
+        board.setMaxPage(dto.getMaxPage());
         board.setBoardType(dto.getBoardType());
 
         return board;
