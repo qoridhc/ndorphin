@@ -5,6 +5,7 @@ import SettingMenu from "../../components/common/SettingMenu";
 import OpinionCard from "../../components/if/OpinionCard";
 import ifApi from "../../api/ifApi";
 import boardApi from "../../api/boardApi";
+import commentApi from "../../api/commentApi";
 
 interface IfBoard {
   avatarUrl: string;
@@ -91,13 +92,6 @@ const IfDetail = () => {
     }
   };
 
-  useEffect(() => {
-    if (params.boardId !== undefined) {
-      readBoardData(params.boardId);
-      getRecommendationList();
-    }
-  }, [params.boardId]);
-
   const handleTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const text = event.target.value.length;
     setTextCount(text);
@@ -107,6 +101,41 @@ const IfDetail = () => {
       textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
     }
   };
+
+  const handleComment = async () => {
+    if (params.boardId !== undefined && textareaRef.current) {
+      const formData = new FormData();
+
+      formData.append(
+        "request",
+        new Blob(
+          [
+            JSON.stringify({
+              content: textareaRef.current.value,
+            }),
+          ],
+          { type: "application/json" }
+        )
+      );
+
+      try {
+        const response = await commentApi.create(params.boardId, formData);
+        if (response.status === 200) {
+          readBoardData(params.boardId);
+          textareaRef.current.value = "";
+        }
+      } catch (error) {
+        console.log("commentApi create : ", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (params.boardId !== undefined) {
+      readBoardData(params.boardId);
+      getRecommendationList();
+    }
+  }, [params.boardId]);
 
   return (
     <>
@@ -157,7 +186,7 @@ const IfDetail = () => {
                       <textarea className="w-full min-h-10 text-xl outline-none resize-none" placeholder="댓글을 작성해 주세요" id="target" ref={textareaRef} onChange={(e) => handleTextareaChange(e)} />
                     </div>
                     <div className="flex justify-end">
-                      <button className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0}>
+                      <button className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0} onClick={() => handleComment()}>
                         등록
                       </button>
                     </div>
@@ -179,7 +208,7 @@ const IfDetail = () => {
                         <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
                         <div className="flex justify-between items-center">
                           <div className="flex">
-                            <button>{userData.profileImgUrl[comment.commentId] ? <img className="w-4" src="/assets/like/likeCheckedIcon.png" alt="" /> : <img className="w-4" src="/assets/like/likeIcon.png" alt="" />}</button>
+                            <button>{comment.likedByUser ? <img className="w-4" src="/assets/like/likeCheckedIcon.png" alt="" /> : <img className="w-4" src="/assets/like/likeIcon.png" alt="" />}</button>
                             {comment.likeCnt === 0 ? <></> : <p className="px-1 text-sm text-[#565656] font-semibold">{comment.likeCnt}</p>}
                           </div>
                           <p className="text-sm text-[#565656] text-right">{comment.createdAt}</p>
