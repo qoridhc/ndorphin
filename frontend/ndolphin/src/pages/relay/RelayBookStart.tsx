@@ -43,7 +43,7 @@ const MyAlbum: React.FC = () => {
     const filename = image.split("/").pop(); // url 구조에 맞게 수정할 것
     const metadata = { type: `image/${ext}` };
     const file = new File([data], filename!, metadata);
-    console.log(file)
+    console.log(file);
     setFile(file);
   };
 
@@ -73,8 +73,10 @@ const MyAlbum: React.FC = () => {
     );
 
     try {
-      await relayApi.create(formData, "RELAY_BOARD");
-      console.log("릴레이북 이야기 작성 성공");
+      const response = await relayApi.create(formData);
+      if (response.status === 200) {
+        console.log("릴레이북 이야기 작성 성공");
+      }
     } catch (error) {
       console.error("릴레이북 이야기 시작 오류: ", error);
     }

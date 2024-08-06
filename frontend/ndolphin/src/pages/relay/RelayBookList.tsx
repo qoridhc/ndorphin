@@ -1,12 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import relayApi from "../../api/relayApi";
 import BookList from "../../components/relay/BookList";
 import SearchBar from "../../components/relay/SearchBar";
 
 function Relaybooklist() {
   const navigate = useNavigate();
   const [tabs, setTabs] = useState<number>(0);
+  const [bookList, setbookList] = useState([]);
   const underline = "underline underline-offset-[10px] decoration-4 decoration-yellow-300";
+
+  // useEffect -> 렌더링이 다 되고나서 실행 (html부터 다 그려준 뒤 실행)
+  useEffect(() => {
+    const getRelayList = async () => {
+      try {
+        const response = await relayApi.list();
+        if (response.status === 200) {
+          const bookList = response.data.data;
+          console.log(response.data.data);
+          setbookList(bookList);
+        }
+      } catch (error) {
+        console.log("릴레이북 목록 불러오기 오류: ", error);
+      }
+    };
+
+    getRelayList()
+  }, []); // 디펜던시 작성 시 변수가 변할 때만 실행됨
+  // 빈 배열로 적으면 mount 시에만 실행됨 (1회만)
 
   return (
     <div>
@@ -21,16 +42,14 @@ function Relaybooklist() {
               className={`px-10 py-3 pb-5 font-semibold ${tabs === 0 ? underline : "text-[#6C6C6C]"} z-20`}
               onClick={() => {
                 setTabs(0);
-              }}
-            >
+              }}>
               진행 중
             </button>
             <button
               className={`px-10 py-3 pb-5 font-semibold ${tabs === 1 ? underline : "text-[#6C6C6C]"} z-20`}
               onClick={() => {
                 setTabs(1);
-              }}
-            >
+              }}>
               완료
             </button>
           </div>
@@ -48,12 +67,11 @@ function Relaybooklist() {
           className="px-7 py-1 shadow-md rounded-xl font-bold bg-amber-300 text-white"
           onClick={() => {
             navigate("/relaybookstart");
-          }}
-        >
+          }}>
           이야기 시작하기
         </button>
       </div>
-      <BookList />
+      <BookList bookList={bookList} />
     </div>
   );
 }

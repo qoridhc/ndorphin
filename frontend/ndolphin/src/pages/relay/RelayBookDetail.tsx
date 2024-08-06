@@ -171,17 +171,17 @@ const RelayBookDetail = () => {
     setIsAiModalOpen(false);
     setImage(image);
 
-    try {
-      const response = await fetch(image);
-      const data = await response.blob();
-      const ext = image.split(".").pop() || "";
-      const filename = image.split("/").pop() || "";
-      const metadata = { type: `image/${ext}` };
-      const file = new File([data], filename, metadata);
-      setFile(file);
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    // try {
+    //   const response = await fetch(image);
+    //   const data = await response.blob();
+    //   const ext = image.split(".").pop() || "";
+    //   const filename = image.split("/").pop() || "";
+    //   const metadata = { type: `image/${ext}` };
+    //   const file = new File([data], filename, metadata);
+    //   setFile(file);
+    // } catch (error) {
+    //   console.error("Error:", error);
+    // }
   };
 
   const cancelAiImage = () => {
