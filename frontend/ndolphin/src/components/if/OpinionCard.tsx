@@ -17,12 +17,12 @@ interface Props {
 
 const OpinionCard = ({ opinion }: Props) => {
   const navigate = useNavigate();
-  const goToDetail = (id: number, type: string) => {
-    navigate(`/ifdetail/${id}?type=${type}`);
+  const goToDetail = (boardId: number) => {
+    navigate(`/ifdetail/${boardId}`);
   };
 
   return (
-    <div className="h-72 p-5 border-solid border-[#565656] border-[1px] rounded-lg grid grid-rows-[1fr_1fr_3fr] gap-3 cursor-pointer duration-300 ease-out hover:-translate-y-3 hover:shadow-lg" onClick={() => goToDetail(opinion.id, "opinion")}>
+    <div className="h-72 p-5 border-solid border-[#565656] border-[1px] rounded-lg grid grid-rows-[1fr_1fr_3fr] gap-3 cursor-pointer duration-300 ease-out hover:-translate-y-3 hover:shadow-lg" onClick={() => goToDetail(opinion.id)}>
       <div className="flex justify-between">
         <div className="flex items-center">
           <img className="w-9 h-9 mr-3 rounded-[50%]" src={`/assets/profile/${opinion.profileImgUrl}.png`} alt="" />

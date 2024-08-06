@@ -12,6 +12,7 @@ const IfStart = () => {
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState<string | null>(null);
+  const [aiImage, setAiImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -55,29 +56,18 @@ const IfStart = () => {
       formData.append("files", file);
     }
 
-    if (image) {
-      const httpURL = image.replace(/^https:\/\//, "http://");
-      console.log("!! : ", httpURL);
-
-      try {
-        const response = await fetch(httpURL);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.blob();
-        const filename = httpURL.split("/").pop() || "image.png";
-        formData.append("files", new File([data], filename));
-      } catch (error) {
-        console.error("이미지 파일 변환 오류: ", error);
-        return;
-      }
+    if (aiImage) {
+      console.log("생성형 : ", aiImage);
     }
 
     try {
-      ifApi.create(formData);
-      console.log("만약에 작성 성공!");
+      const response = await ifApi.create(formData);
+      if (response.status === 200) {
+        navigate("/ifdetail/1");
+        console.log(response);
+      }
     } catch (error) {
-      console.error("만약에 작성 오류 :", error);
+      console.error("ifApi create : ", error);
     }
   };
 
@@ -123,7 +113,7 @@ const IfStart = () => {
         </button>
       </div>
 
-      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} setImage={setImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
+      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
     </div>
   );
 };
