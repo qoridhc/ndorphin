@@ -28,36 +28,26 @@ const BalanceCard = ({ balance }: Props) => {
   };
 
   return (
-    <div className="h-72 p-5 border-solid border-[#565656] border-[1px] rounded-lg grid grid-rows-[1fr_3fr_1fr_5fr] gap-3 cursor-pointer duration-300 ease-out hover:-translate-y-3 hover:shadow-lg" onClick={() => goToDetail(balance.id)}>
-      <div className="flex justify-between">
+    <div className="p-5 border-solid border-[#565656] border-[1px] rounded-lg grid gap-3 cursor-pointer duration-300 ease-out hover:-translate-y-3 hover:shadow-lg" onClick={() => goToDetail(balance.id)}>
+      <img className="aspect-[5/3] object-cover" src="/assets/relay/relayStartSample3.png" alt="" />
+
+      <div className="grid gap-1">
         <div className="flex items-center">
-          <img className="w-9 h-9 mr-3 rounded-[50%]" src={`/assets/profile/${balance.profileImgUrl}.png`} alt="" />
-          <div>
-            <div className="w-40 flex justify-between items-center">
-              <div className="flex items-center">
-                <p className="font-bold">{balance.user}</p>
-                {<img className="w-5 h-5 ml-1" src={`/assets/${balance.badget === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
-              </div>
-            </div>
-            <div className="">
-              <p className="text-xs text-left">{balance.date}</p>
+          <img className="w-5 h-5 mr-2 rounded-[50%]" src={`/assets/profile/${balance.profileImgUrl}.png`} alt="" />
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <p className="text-sm font-medium">{balance.user}</p>
+              {<img className="w-5 h-5 ml-1" src={`/assets/${balance.badget === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
             </div>
           </div>
         </div>
 
-        <IoIosArrowForward className="text-2xl" />
+        <p className="text-xl font-semibold text-justify line-clamp-2">{balance.title}</p>
       </div>
-      <p className="py-2 text-justify line-clamp-2 hover:underline hover:underline-offset-2">{balance.title}</p>
-      <p className="text-sm font-semibold text-[#565656] text-right">투표수 {balance.joinCount}회</p>
 
-      <div className={`grid ${voteGrids[balance.category.length - 2]} gap-1`}>
-        {balance.category.map((item) => (
-          <div className={`border-solid border-2 ${voteColors[item.id - 1]} rounded-[10px] flex justify-center items-center`}>
-            <p className={`px-3 text-xs font-semibold text-[#565656] text-center ${voteLineClamp[balance.category.length - 2]}`} key={item.id}>
-              {item.content}
-            </p>
-          </div>
-        ))}
+      <div className="grid gap-1">
+        <p className="text-sm text-[#565656] text-right">{balance.joinCount}명 참여</p>
+        <button className="w-full py-2 text-md font-medium border-2 border-amber-300 rounded-md">참여하기</button>
       </div>
     </div>
   );

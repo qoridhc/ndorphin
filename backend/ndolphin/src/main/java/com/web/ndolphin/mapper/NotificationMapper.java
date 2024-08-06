@@ -10,36 +10,35 @@ import java.util.stream.Collectors;
 
 public class NotificationMapper {
 
-  public static NotificationResponseDto toDto(Notification notification) {
+    public static NotificationResponseDto toDto(Notification notification) {
 
-    NotificationResponseDto dto = new NotificationResponseDto();
+        NotificationResponseDto dto = new NotificationResponseDto();
+        dto.setContent(notification.getContent());
+        dto.setRead(true);
+        dto.setCreatedAt(notification.getCreatedAt());
+        dto.setNotificationId(notification.getId());
+        dto.setUserId(notification.getUser().getUserId());
 
-    dto.setContent(notification.getContent());
-    dto.setRead(notification.isRead());
-    dto.setCreatedAt(notification.getCreatedAt());
-    dto.setNotificationId(notification.getId());
-    dto.setUserId(notification.getUser().getUserId());
+        return dto;
+    }
 
-    return dto;
-  }
+    public static Notification toEntity(User user, NotificationRequestDto requestDto) {
 
-  public static Notification toEntity(User user, NotificationRequestDto requestDto) {
+        Notification notification = new Notification();
 
-    Notification notification = new Notification();
+        notification.setUser(user);
+        notification.setContent(requestDto.getContent());
+        notification.setCreatedAt(LocalDateTime.now());
+        notification.setRead(false);
 
-    notification.setUser(user);
-    notification.setContent(requestDto.getContent());
-    notification.setCreatedAt(LocalDateTime.now());
-    notification.setRead(false);
-
-    return notification;
-  }
+        return notification;
+    }
 
 
-  public static List<NotificationResponseDto> toDtoList(List<Notification> notifications) {
-    return notifications.stream()
-        .map(NotificationMapper::toDto)
-        .collect(Collectors.toList());
-  }
+    public static List<NotificationResponseDto> toDtoList(List<Notification> notifications) {
+        return notifications.stream()
+            .map(NotificationMapper::toDto)
+            .collect(Collectors.toList());
+    }
 
 }

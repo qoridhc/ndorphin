@@ -14,8 +14,10 @@ import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.service.interfaces.S3Service;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,7 +71,10 @@ public class S3ServiceImpl implements S3Service {
                 break;
         }
 
-        String fullFileName = folder + fileName;
+//        String fullFileName = folder + fileName;
+//        UUID를 생성하여 고유한 파일 이름을 생성합니다.
+        String uuid = UUID.randomUUID().toString();
+        String fullFileName = folder + uuid + "_" + fileName;
 
         try {
             ObjectMetadata metadata = new ObjectMetadata();
@@ -80,6 +85,7 @@ public class S3ServiceImpl implements S3Service {
                     CannedAccessControlList.PublicRead));
 
             System.out.println("AWS S3 성공!!!");
+            System.out.println("fullFileName = " + fullFileName);
         } catch (AmazonServiceException e) {
             e.printStackTrace();
         } catch (SdkClientException e) {
