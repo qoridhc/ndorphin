@@ -13,6 +13,8 @@ const Header = () => {
   const [isNSModalOpen, setIsNSModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userNickName, setuserNickName] = useState<string | null>(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [isNew, setIsNew] = useState(true);
   const [showAlarmDropdown, setShowAlarmDropdown] = useState(false);
@@ -34,7 +36,12 @@ const Header = () => {
       setIsLoggedIn(true);
     }
     const storedProfileImage = localStorage.getItem("profileImage");
+    const storedEmail = localStorage.getItem('email');
+    const storedNickName = localStorage.getItem('nickName');
+
     setProfileImage(storedProfileImage);
+    setUserEmail(storedEmail);
+    setuserNickName(storedNickName);
   }, []);
 
   const openLoginModal = () => setIsLoginModalOpen(true);
@@ -250,8 +257,8 @@ const Header = () => {
                   <div className="p-4 flex items-center">
                     <img className="w-15 h-15 rounded-full" src={profileImage || "/assets/user/profile.png"} alt="Profile" />
                     <div className="ml-3">
-                      <div className="font-semibold">닉네임</div>
-                      <div className="text-sm text-gray-500">test@test.com</div>
+                      <div className="font-semibold">{ userNickName }</div>
+                      <div className="text-sm text-gray-500">{ userEmail }</div>
                     </div>
                   </div>
                   <hr />
