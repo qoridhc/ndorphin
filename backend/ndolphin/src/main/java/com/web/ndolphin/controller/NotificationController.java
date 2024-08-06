@@ -68,6 +68,17 @@ public class NotificationController {
         return response;
     }
 
+    @GetMapping("/unread/{userId}")
+    public ResponseEntity<ResponseDto> checkNewNotification(
+        @Parameter(description = "현재유저 읽지 않은 알림 존재 여부 ", required = true)
+        @PathVariable Long userId
+    ) {
+
+        ResponseEntity<ResponseDto> response = notificationService.checkUnReadNotifications(userId);
+
+        return response;
+    }
+
     @Operation(summary = "알림 삭제", description = "기존 알림을 삭제합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "알림 삭제 성공",

@@ -13,7 +13,6 @@ public class NotificationMapper {
     public static NotificationResponseDto toDto(Notification notification) {
 
         NotificationResponseDto dto = new NotificationResponseDto();
-
         dto.setContent(notification.getContent());
         dto.setRead(true);
         dto.setCreatedAt(notification.getCreatedAt());
