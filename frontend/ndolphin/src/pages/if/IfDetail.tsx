@@ -44,9 +44,13 @@ const IfDetail = () => {
   const navigate = useNavigate();
   const params = useParams();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const contentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [textCount, setTextCount] = useState(0);
+  const [contentTextCount, setContentTextCount] = useState(0);
   const [ifBoardData, setIfBoardData] = useState<IfBoard | null>(null);
   const [recommendationList, setRecommendationList] = useState<If[] | null>(null);
+  const [isCommentUpdate, setIsCommentUpdate] = useState(0);
+  const [currentContent, setCurrentContent] = useState("");
 
   const userData = {
     profileImgUrl: "/assets/profile/profile4.png",
@@ -102,6 +106,17 @@ const IfDetail = () => {
     }
   };
 
+  const handleContentTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    setCurrentContent(event.target.value);
+    const text = event.target.value.length;
+    setContentTextCount(text);
+
+    if (contentTextareaRef.current) {
+      contentTextareaRef.current.style.height = "auto";
+      contentTextareaRef.current.style.height = contentTextareaRef.current.scrollHeight + "px";
+    }
+  };
+
   const handleComment = async () => {
     if (params.boardId !== undefined && textareaRef.current) {
       const formData = new FormData();
@@ -130,12 +145,41 @@ const IfDetail = () => {
     }
   };
 
+  const handleCommentUpdate = async (commentId: number, commentContent: string) => {
+    if (params.boardId !== undefined && contentTextareaRef.current) {
+      setCurrentContent(commentContent);
+
+      const data = {
+        content: contentTextareaRef.current.value,
+      };
+
+      try {
+        const response = await commentApi.update(params.boardId, commentId, data);
+        if (response.status === 200) {
+          readBoardData(params.boardId);
+          setIsCommentUpdate(0);
+        }
+      } catch (error) {
+        console.log("commentApi update : ", error);
+      }
+    }
+  };
+
   useEffect(() => {
     if (params.boardId !== undefined) {
       readBoardData(params.boardId);
       getRecommendationList();
     }
   }, [params.boardId]);
+
+  useEffect(() => {
+    if (isCommentUpdate !== null && contentTextareaRef.current) {
+      setContentTextCount(contentTextareaRef.current.value.length);
+      // 텍스트 길이만큼 커서를 이동시켜서 커서가 텍스트 끝에 위치하도록 설정
+      contentTextareaRef.current.setSelectionRange(contentTextareaRef.current.value.length, contentTextareaRef.current.value.length);
+      contentTextareaRef.current.focus(); // 텍스트 영역에 포커스
+    }
+  }, [isCommentUpdate]);
 
   return (
     <>
@@ -202,10 +246,25 @@ const IfDetail = () => {
                             <p className="font-bold">{comment.nickName}</p>
                             <p className="text-xs text-[#565656]">3일 전</p>
                           </div>
-                          <SettingMenu />
+                          <SettingMenu commentId={comment.commentId} setIsCommentUpdate={setIsCommentUpdate} />
                         </div>
 
-                        <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
+                        {isCommentUpdate !== comment.commentId ? (
+                          <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
+                        ) : (
+                          <div className="">
+                            <textarea className="w-full min-h-10 outline-none resize-none" placeholder="댓글을 작성해 주세요" value={currentContent} id="target" ref={contentTextareaRef} onChange={(e) => handleContentTextareaChange(e)} />
+                            <div className="flex justify-end">
+                              <button
+                                className={`px-7 py-1 rounded-md text-[#565656] font-bold border-2 border-amber-300 ${contentTextCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`}
+                                disabled={contentTextCount === 0}
+                                onClick={() => handleCommentUpdate(comment.commentId, comment.content)}>
+                                수정
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
                         <div className="flex justify-between items-center">
                           <div className="flex">
                             <button>{comment.likedByUser ? <img className="w-4" src="/assets/like/likeCheckedIcon.png" alt="" /> : <img className="w-4" src="/assets/like/likeIcon.png" alt="" />}</button>
