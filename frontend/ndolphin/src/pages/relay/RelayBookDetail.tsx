@@ -5,29 +5,18 @@ import boardApi from "../../api/boardApi";
 import "../../css/RelayBook.css";
 import "../../css/Notes.css";
 import { useParams } from "react-router";
-import AddPage from "../../components/relay/BookPageCRUD/AddPage";
 import BookDetailPage from "../../components/relay/BookDetailPage";
 import BookPageCover from "../../components/relay/BookPageCover";
-import BookDetailDone from "../../components/relay/BookDetailDone";
 import DeleteModal from "../../components/relay/relayBookCRUD/BookDeleteModal";
 import AiImagePromptModal from "../../components/relay/AiImagePromptModal";
-import RelayBook from "./RelayBook";
 
-interface Page {
-  commentId: number;
-  nickName: string;
-  content: string;
-  likeCnt: number;
-  createdAt: string | null;
-  updatedAt: string | null;
-  avatarUrl: string | null;
-  contentFileUrl: string | null;
-  likedByUser: boolean;
+interface PageEndCoverProps {
+  totalPage: number;
 }
 
 // 마지막 페이지 이후 나오는 책 커버
-const PageEndCover = React.forwardRef<HTMLDivElement>((props, ref: ForwardedRef<HTMLDivElement>) => {
-  return <div className="cover" ref={ref} data-density="hard"></div>;
+const PageEndCover = React.forwardRef<HTMLDivElement, PageEndCoverProps>(({ totalPage }: PageEndCoverProps, ref: ForwardedRef<HTMLDivElement>) => {
+  return totalPage % 2 === 0 ? <div className="cover" ref={ref} data-density="hard"></div> : <></>;
 });
 
 const RelayBookDetail = () => {
@@ -35,7 +24,7 @@ const RelayBookDetail = () => {
   const { bookId } = useParams();
   const [pages, setPages] = useState<any[]>([]);
   const [page, setPage] = useState<number>(1);
-  const [totalPage, setTotalPage] = useState<number>(10);
+  const [totalPage, setTotalPage] = useState<number>(pages.length);
   const bookRef = useRef<typeof HTMLFlipBook>();
   const [isFinished, setIsFinished] = useState(false);
   const [inputPage, setInputPage] = useState<number | string>(page);
@@ -43,6 +32,20 @@ const RelayBookDetail = () => {
   const [image, setImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const pageElements: any[] = [];
+
+  const lastPage = [
+    {
+      commentId: 1,
+      nickName: "1",
+      content: "1",
+      likeCnt: 1,
+      createdAt: "1",
+      updatedAt: "1",
+      avatarUrl: "1",
+      contentFileUrl: "1",
+      likedByUser: true,
+    },
+  ];
 
   // useEffect -> 렌더링이 다 되고나서 실행 (html부터 다 그려준 뒤 실행)
   useEffect(() => {
@@ -193,7 +196,7 @@ const RelayBookDetail = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (!isNaN(Number(value)) && Number(value) >= 1 && Number(value) <= totalPage) {
+    if (!isNaN(Number(value)) && Number(value) >= 1 && Number(value) <= pages.length + 1) {
       setInputPage(Number(value));
     } else {
       setInputPage(value);
@@ -209,7 +212,6 @@ const RelayBookDetail = () => {
   };
 
   // AI 이미지 모달 관련
-
   const handleAiImage = () => {
     setIsAiModalOpen(true);
   };
@@ -234,30 +236,6 @@ const RelayBookDetail = () => {
   const cancelAiImage = () => {
     setIsAiModalOpen(false);
   };
-
-  for (let index = 0; index < pages.length; index++) {
-    const page = pages[index];
-
-    pageElements.push(
-      <BookDetailPage key={page.commentId} bookId={bookId} number={index + 1} page={page} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage}>
-        <div className="py-3">
-          {(index + 1) % 2 === 1 ? (
-            <div className="p-2 grid grid-rows-[6.8fr_3.2fr]">
-              {/* 홀수쪽일 경우 그림, 글 순서 */}
-              <div className="w-full h-72 flex justify-center">{page.contentFileUrl && <img className="w-[78%] object-cover" src={page.contentFileUrl} alt="" />}</div>
-              <p className="h-full mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
-            </div>
-          ) : (
-            <div className="p-2 grid grid-rows-[3.2fr_6.8fr]">
-              {/* 짝수쪽일 경우 글, 그림 순서 */}
-              <p className="h-full mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
-              <div className="w-full h-72 flex justify-center">{page.contentFileUrl && <img className="w-[78%] object-cover" src={page.contentFileUrl} alt="" />}</div>
-            </div>
-          )}
-        </div>
-      </BookDetailPage>
-    );
-  }
 
   return (
     <div className="overflow-hidden">
@@ -292,50 +270,17 @@ const RelayBookDetail = () => {
             maxShadowOpacity={0.5}
             className="album-web"
             onFlip={onFlip}
-            useMouseEvents={false}>
+            useMouseEvents={false}
+          >
             <BookPageCover BookStart={BookStart} bookId={bookId} isDeleteOpen={isDeleteModalOpen} isAiOpen={isAiModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
 
-            <div>{pageElements[0]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[0]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
-            <div>{pageElements[1]}</div>
+            {/* 내부 상세 페이지 */}
 
-            {/* 마지막 페이지 */}
-            {isFinished ? (
-              // 완료된 이야기일 경우 이모티콘 반응
-              <BookDetailPage bookId={bookId} number={pages.length + 1} page={pages[0]} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage}>
-                <BookDetailDone />
-              </BookDetailPage>
-            ) : (
-              // 진행 중인 이야기일 경우 페이지 추가
-              <BookDetailPage bookId={bookId} number={pages.length + 1} page={pages[0]} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage}>
-                <hr></hr>
-                <AddPage pages={pages} handleAiImage={handleAiImage} image={image} setImage={setImage} />
-              </BookDetailPage>
-            )}
+            <BookDetailPage readPage={true} bookId={bookId} number={page} pages={pages} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
+            <BookDetailPage readPage={false} bookId={bookId} number={page} pages={lastPage} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
+
             {/* 페이지가 짝수일 경우 마지막 커버 표시 */}
-            {totalPage % 2 === 0 && <PageEndCover />}
+            <PageEndCover totalPage={totalPage} />
           </HTMLFlipBook>
         </div>
 
@@ -349,7 +294,8 @@ const RelayBookDetail = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-blue-500 rounded-sm ">
+              className="border-2 border-blue-500 rounded-sm "
+            >
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           ) : (
@@ -360,12 +306,13 @@ const RelayBookDetail = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-stone-500 rounded-sm ">
+              className="border-2 border-stone-500 rounded-sm "
+            >
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           )}
           <span className="pl-4 font-bold">/</span>
-          <span className="pl-4 font-bold">{totalPage + 1}</span>
+          <span className="pl-4 font-bold">{pages.length + 1}</span>
         </div>
       </div>
 
