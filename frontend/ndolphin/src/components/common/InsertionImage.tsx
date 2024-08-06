@@ -1,11 +1,12 @@
 import React, { useState, ChangeEvent } from "react";
 
 interface Props {
+  handleAiImage: () => void;
   setImage: (image: string) => void;
   setFile: (file: File) => void;
 }
 
-const InsertionImage = ({ setImage, setFile }: Props) => {
+const InsertionImage = ({ handleAiImage, setImage, setFile }: Props) => {
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -24,7 +25,7 @@ const InsertionImage = ({ setImage, setFile }: Props) => {
       {/* 이미지 첨부 버튼 */}
       {/* AI 이미지 첨부 버튼 */}
       <div className="flex flex-col items-center justify-center">
-        <button className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
+        <button className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800" onClick={handleAiImage}>
           <img src="/assets/aiImageIcon.png" className="w-5" alt="#"></img>
           <p className="text-xs">AI 이미지 생성</p>
         </button>
