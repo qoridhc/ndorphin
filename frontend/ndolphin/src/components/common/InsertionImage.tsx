@@ -1,11 +1,15 @@
 import React, { useState, ChangeEvent } from "react";
 
-const InsertionImage = () => {
-  const [image, setImage] = useState<string | null>(null);
+interface Props {
+  setImage: (image: string) => void;
+  setFile: (file: File) => void;
+}
 
+const InsertionImage = ({ setImage, setFile }: Props) => {
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
@@ -16,7 +20,7 @@ const InsertionImage = () => {
   };
 
   return (
-    <div className="py-3 h-full grid grid-cols-[49%_2%_49%]">
+    <div className="py-3 grid grid-cols-[49%_2%_49%]">
       {/* 이미지 첨부 버튼 */}
       {/* AI 이미지 첨부 버튼 */}
       <div className="flex flex-col items-center justify-center">

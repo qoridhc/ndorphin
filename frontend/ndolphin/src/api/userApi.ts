@@ -1,13 +1,13 @@
 import { request } from "./axiosConfig";
 
-const baseURL = process.env.REACT_APP_API_BASE_URL;
-const token = process.env.REACT_APP_API_TOKEN;
+const baseURL = 'http://ec2-54-180-146-64.ap-northeast-2.compute.amazonaws.com:8080';
+
+interface NicknameCheckResponse {
+  isDuplicate: boolean;
+}
 
 const userApi = {
   login: (loginType: string) => {
-    console.log('새창')
-    console.log(baseURL)
-    console.log(loginType)
     const oauthUrl = `${baseURL}/api/v1/auth/oauth2/${loginType}`;
     const newWindow = window.open(
       oauthUrl, 
@@ -18,11 +18,14 @@ const userApi = {
     return newWindow;
   },
 
-  update: (userId: string, newNickName: string) =>
-    request.put(`${baseURL}/api/v1/users/${userId}`, { nickName: newNickName }, {
+  checkNickname: (nickname: string) =>
+    request.get<NicknameCheckResponse>(`/api/v1/users/check-nickname`, { params: { nickname } }),
+
+  update: (userId: string, formData: FormData) =>
+    request.put(`/api/v1/users/${userId}`, formData, {
       headers: {
-        Authorization: `Bearer ${token}`,
-      }
+        'Content-Type': 'multipart/form-data',
+      },
     }),
 }
 

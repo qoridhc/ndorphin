@@ -6,14 +6,18 @@ import com.web.ndolphin.dto.npoint.request.NPointDeleteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
 import com.web.ndolphin.dto.user.response.BestNResponseDto;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
-    ResponseEntity<ResponseDto> signIn(Long userId);
+    void signIn(HttpServletRequest request, HttpServletResponse response, Long userId);
 
     ResponseEntity<ResponseDto> getFavorites(Long userId);
+
+    ResponseEntity<ResponseDto> checkNickName(String nickName);
 
     ResponseEntity<ResponseDto> addFavorite(FavoriteRequestDto favoriteRequestDto);
 
