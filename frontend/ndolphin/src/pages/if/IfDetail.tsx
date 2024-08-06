@@ -246,7 +246,7 @@ const IfDetail = () => {
                             <p className="font-bold">{comment.nickName}</p>
                             <p className="text-xs text-[#565656]">3일 전</p>
                           </div>
-                          <SettingMenu commentId={comment.commentId} setIsCommentUpdate={setIsCommentUpdate} />
+                          <SettingMenu boardId={params.boardId} commentId={comment.commentId} setIsCommentUpdate={setIsCommentUpdate} readBoardData={readBoardData} />
                         </div>
 
                         {isCommentUpdate !== comment.commentId ? (

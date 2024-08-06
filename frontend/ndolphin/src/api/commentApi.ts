@@ -15,6 +15,10 @@ const commentApi = {
         'Content-Type': 'application/json'
       }
     })
+  },
+  
+  delete: (boardId: string, commentId: number) => {
+    return request.delete(`/api/v1/boards/${boardId}/comments/${commentId}`);
   }
 }
 
