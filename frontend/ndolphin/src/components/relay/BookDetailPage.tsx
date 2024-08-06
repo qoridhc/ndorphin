@@ -9,13 +9,15 @@ interface BookDetailPageProps {
   number?: any;
   children?: React.ReactNode;
   page: {
-    id: number;
-    userId: number;
-    user: string;
-    badget: string;
-    date: string;
+    commentId: number;
+    nickName: string;
     content: string;
-    pageImage: string;
+    likeCnt: number;
+    createdAt: string | null;
+    updatedAt: string | null;
+    avatarUrl: string | null;
+    contentFileUrl: string | null;
+    likedByUser: boolean;
   };
   totalPage: number;
   handleAiImage: any;
@@ -47,18 +49,18 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ 
       {pageUpdate ? (
         <RelayBookPageUpdate page={page} setPageUpdate={setPageUpdate} handleAiImage={handleAiImage} image={image} setImage={setImage} />
       ) : (
-        <>{number === totalPage + 1 ? null : <UserInfo user={page.user} userId={page.userId} badget={page.badget} setPageUpdate={setPageUpdate} handleDelete={handleDelete} />}</>
+        <>{number === totalPage + 1 ? null : <UserInfo user={page.nickName} badget={"N"} setPageUpdate={setPageUpdate} handleDelete={handleDelete} />}</>
       )}
       {!pageUpdate && <div className="h-full">{children}</div>}
       {pageUpdate || number === totalPage + 1 ? null : number % 2 == 1 ? (
         <div>
           <div className="absolute bottom-5 mx-5">{number}</div>
-          <p className="text-zinc-500 text-xs absolute bottom-6 left-12">{page.date}</p>
+          <p className="text-zinc-500 text-xs absolute bottom-6 left-12">{page.createdAt}</p>
         </div>
       ) : (
         <div>
           <div className="absolute bottom-5 right-0 mx-5">{number}</div>
-          <p className="text-zinc-500 text-xs absolute bottom-6 right-12">{page.date}</p>
+          <p className="text-zinc-500 text-xs absolute bottom-6 right-12">{page.createdAt}</p>
         </div>
       )}
       <BookPageDeleteModal isOpen={isModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />

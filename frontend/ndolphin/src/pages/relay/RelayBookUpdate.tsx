@@ -2,6 +2,7 @@ import HTMLFlipBook from "react-pageflip";
 import React, { ForwardedRef } from "react";
 import { useState, ChangeEvent } from "react";
 import { useLocation } from "react-router";
+import boardApi from "../../api/boardApi";
 import "../../css/RelayBook.css";
 import "../../css/Notes.css";
 import "../../css/InputPlaceHolder.css";
@@ -31,6 +32,38 @@ const RelayBookUpdate: React.FC = () => {
   const [file, setFile] = useState<File | null>(null)
   const [titleUpdate, setTitleUpdate] = useState(title);
   const [contentUpdate, setContentUpdate] = useState(content);
+
+  // axios PUT
+  const handleRelayBookUpdate = async (subject: string, content: string) => {
+    const formData = new FormData();
+
+    if (file) {
+      formData.append("files", file);
+    }
+
+    formData.append(
+      "request",
+      new Blob(
+        [
+          JSON.stringify({
+            subject: subject,
+            content: content,
+            boardType: "RELAY_BOARD",
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
+
+    try {
+      const response = await boardApi.create(formData);
+      if (response.status === 200) {
+        console.log("릴레이북 이야기 수정 성공");
+      }
+    } catch (error) {
+      console.error("릴레이북 이야기 수정 오류: ", error);
+    }
+  };
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -125,8 +158,11 @@ const RelayBookUpdate: React.FC = () => {
           <Page>
             {/* 표지 이미지 form */}
             <div className="flex flex-col items-center justify-center">
+              {/* 수정 버튼 */}
               <div className="flex justify-end w-full px-8 my-2">
-                <button className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">수정</button>
+                <button onClick={() => { handleRelayBookUpdate(titleUpdate, contentUpdate); }} className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
+                  수정
+                </button>
               </div>
               <div className="w-full">
                 <div className="flex flex-col items-center">
@@ -184,7 +220,7 @@ const RelayBookUpdate: React.FC = () => {
           </Page>
         </HTMLFlipBook>
       </div>
-      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={coverImage} setImage={setImage} setFile={setFile}/>
+      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={coverImage} setImage={setImage} setFile={setFile} />
     </div>
   );
 };

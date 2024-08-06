@@ -21,6 +21,10 @@ const boardApi = {
     return request.put(`/api/v1/boards/${boardId}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data'}
     })
+  },
+
+  delete: (boardId: string) => {
+    return request.delete(`/api/v1/boards/${boardId}`)
   }
 }
 

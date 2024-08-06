@@ -1,7 +1,7 @@
 import HTMLFlipBook from "react-pageflip";
 import React, { ForwardedRef } from "react";
 import { useState } from "react";
-import relayApi from "../../api/relayApi";
+import boardApi from "../../api/boardApi";
 import axios from "axios";
 import "../../css/RelayBook.css";
 import "../../css/Notes.css";
@@ -73,7 +73,7 @@ const MyAlbum: React.FC = () => {
     );
 
     try {
-      const response = await relayApi.create(formData);
+      const response = await boardApi.create(formData);
       if (response.status === 200) {
         console.log("릴레이북 이야기 작성 성공");
       }

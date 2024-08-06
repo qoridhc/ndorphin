@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import relayApi from "../../api/relayApi";
+import boardApi from "../../api/boardApi";
 import BookList from "../../components/relay/BookList";
 import SearchBar from "../../components/relay/SearchBar";
 
@@ -14,7 +14,7 @@ function Relaybooklist() {
   useEffect(() => {
     const getRelayList = async () => {
       try {
-        const response = await relayApi.list();
+        const response = await boardApi.list("RELAY_BOARD");
         if (response.status === 200) {
           const bookList = response.data.data;
           console.log(response.data.data);
