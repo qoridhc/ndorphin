@@ -450,7 +450,7 @@ const IfCardList: React.FC = () => {
 
   return (
     <div>
-      <div className="px-44 py-10 grid grid-cols-4 gap-5">{combinedList.map((content, index) => (content.type === "vote" ? <BalanceCard key={index} balance={content.data} /> : <OpinionCard key={index} opinion={content.data} />))}</div>
+      {/* <div className="px-44 py-10 grid grid-cols-4 gap-5">{combinedList.map((content, index) => (content.type === "vote" ? <BalanceCard key={index} balance={content.data} /> : <OpinionCard key={index} opinion={content.data} />))}</div> */}
     </div>
   );
 };

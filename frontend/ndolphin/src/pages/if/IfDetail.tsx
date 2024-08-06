@@ -191,9 +191,7 @@ const IfDetail = () => {
 
             <div>
               {opinionList.map((opinion) => (
-                <div className="pb-5">
-                  <OpinionCard key={opinion.id} opinion={opinion} />
-                </div>
+                <div className="pb-5">{/* <OpinionCard key={opinion.id} ifBoard={opinion} /> */}</div>
               ))}
             </div>
           </div>
