@@ -12,11 +12,9 @@ import lombok.ToString;
 @NoArgsConstructor
 public class NotificationResponseDto {
 
-  private Long notificationId;
-  private Long userId;
-  private String content;
-  private LocalDateTime createdAt;
-  private boolean isRead;
-
-
+    private Long notificationId;
+    private Long userId;
+    private String content;
+    private LocalDateTime createdAt;
+    private boolean isRead;
 }
