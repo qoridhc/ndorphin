@@ -65,7 +65,8 @@ public class BoardMapper {
     }
 
     // Entity -> OkBoardDto 변환
-    public static OkBoardDto toOkBoardDto(Board board, List<String> fileNames, List<String> fileUrls) {
+    public static OkBoardDto toOkBoardDto(Board board, List<String> fileNames,
+        List<String> fileUrls) {
 
         OkBoardDto dto = new OkBoardDto();
         mapCommonFields(board, dto);
@@ -145,6 +146,7 @@ public class BoardMapper {
         relayBoardResponseDto.setHasParticipated(hasParticipated);
         relayBoardResponseDto.setFavorite(isFavorite);
         relayBoardResponseDto.setThumbNailUrl(thumbNailUrl);
+        relayBoardResponseDto.setMaxPage(board.getMaxPage());
 
         return relayBoardResponseDto;
     }
@@ -157,13 +159,11 @@ public class BoardMapper {
         RelayBoardDetailResponseDto relayBoardDetailResponseDto = new RelayBoardDetailResponseDto();
 
         mapCommonFields(board, relayBoardDetailResponseDto);
+        relayBoardDetailResponseDto.setMaxPage(board.getMaxPage());
         relayBoardDetailResponseDto.setHasParticipated(hasParticipated);
         relayBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
         relayBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
         relayBoardDetailResponseDto.setReactionTypeCounts(reactionTypeCounts);
-
-//        relayBoardDetailResponseDto.setUserReactionId(reaction.getId());
-//        relayBoardDetailResponseDto.setUserReactionType(reaction.getReactionType());
 
         // Reaction이 null인지 확인하고 적절한 기본값 설정
         if (reaction != null) {
@@ -185,6 +185,7 @@ public class BoardMapper {
         board.setUser(user);
         board.setSubject(dto.getSubject());
         board.setContent(dto.getContent());
+        board.setMaxPage(dto.getMaxPage());
         board.setBoardType(dto.getBoardType());
 
         return board;
