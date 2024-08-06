@@ -178,8 +178,7 @@ public class BoardServiceImpl implements BoardService {
                         Long boardId = board.getId();
 
                         String thumbNailUrl = fileInfoService.getFileUrl(
-                            board.getUser().getUserId(),
-                            EntityType.POST);
+                            boardId, EntityType.POST);
 
                         boolean hasParticipated = commentRepository.existsByBoardIdAndUserId(
                             boardId, board.getUser().getUserId());
