@@ -49,6 +49,7 @@
     ]
   },
   "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
     "@types/axios": "^0.14.0",
     "@types/react-js-pagination": "^3.0.7",
     "@types/react-router": "^5.1.20",
