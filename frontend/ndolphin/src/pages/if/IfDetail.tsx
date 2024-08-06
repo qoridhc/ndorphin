@@ -4,11 +4,20 @@ import { useNavigate, useParams } from "react-router";
 import SettingMenu from "../../components/common/SettingMenu";
 import OpinionCard from "../../components/if/OpinionCard";
 import ifApi from "../../api/ifApi";
+import boardApi from "../../api/boardApi";
 
-interface ifBoard {
+interface IfBoard {
   avatarUrl: string;
   commentCount: number | null;
-  commentResponseDtos: [];
+  commentResponseDtos: {
+    avatarUrl: string | null;
+    commentId: number;
+    content: string;
+    createdAt: string | null;
+    likeCnt: number;
+    likedByUser: false;
+    nickName: string;
+  }[];
   content: string;
   contentFileUrl: string | null;
   createdAt: string;
@@ -18,45 +27,25 @@ interface ifBoard {
   userId: 2;
 }
 
+interface If {
+  avatarUrl: string | null;
+  bestComment: string | null;
+  commentCount: number;
+  createdAt: string;
+  hit: number;
+  id: number;
+  nickName: string;
+  subject: string;
+  badget: "N";
+}
+
 const IfDetail = () => {
   const navigate = useNavigate();
   const params = useParams();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [textCount, setTextCount] = useState(0);
-  const [ifBoardData, setIfBoardData] = useState<ifBoard | null>(null);
-
-  const opinionList = [
-    {
-      id: 1,
-      profileImgUrl: "profile5",
-      user: "코에촉촉",
-      badget: "S",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      comment: "티라노가 나 가지고 놀면 ㅠ? 6수 가자",
-    },
-    {
-      id: 2,
-      profileImgUrl: "profile3",
-      user: "코에촉촉",
-      badget: "N",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타났는데 도망은 못가고 잡아먹지도 않는다 숨을 것이냐 싸울 것이냐? 어떻게 할 것이냐",
-      joinCount: 0,
-      comment: null,
-    },
-    {
-      id: 3,
-      profileImgUrl: "profile2",
-      user: "코에촉촉",
-      badget: "S",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      comment: "티라노가 나 가지고 놀면 ㅠ? 6수 가자",
-    },
-  ];
+  const [ifBoardData, setIfBoardData] = useState<IfBoard | null>(null);
+  const [recommendationList, setRecommendationList] = useState<If[] | null>(null);
 
   const userData = {
     profileImgUrl: "/assets/profile/profile4.png",
@@ -90,9 +79,22 @@ const IfDetail = () => {
     }
   };
 
+  const getRecommendationList = async () => {
+    try {
+      const response = await boardApi.list("OPINION_BOARD");
+      if (response.status === 200) {
+        // console.log(response.data.data);
+        setRecommendationList(response.data.data);
+      }
+    } catch (error) {
+      console.error("boardApi list : ", error);
+    }
+  };
+
   useEffect(() => {
     if (params.boardId !== undefined) {
       readBoardData(params.boardId);
+      getRecommendationList();
     }
   }, [params.boardId]);
 
@@ -108,7 +110,7 @@ const IfDetail = () => {
 
   return (
     <>
-      {ifBoardData ? (
+      {ifBoardData && recommendationList ? (
         <div className="px-44 py-5">
           <button className="py-4 flex" onClick={() => navigate("/iflist")}>
             <FaArrowLeftLong className="text-3xl" />
@@ -161,14 +163,14 @@ const IfDetail = () => {
                     </div>
                   </div>
 
-                  {/* {ifBoardData.commentResponseDtos.map((comment) => (
-                    <div className="p-5 border-b flex" key={comment.id}>
-                      <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${comment.profileImgUrl}`} alt="" />
+                  {ifBoardData.commentResponseDtos.map((comment) => (
+                    <div className="p-5 border-b flex" key={comment.commentId}>
+                      <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${comment.avatarUrl}`} alt="" />
 
                       <div className="w-full grid gap-2">
                         <div className="grid grid-cols-[6fr_1fr]">
                           <div className="flex flex-col justify-around">
-                            <p className="font-bold">{comment.user}</p>
+                            <p className="font-bold">{comment.nickName}</p>
                             <p className="text-xs text-[#565656]">3일 전</p>
                           </div>
                           <SettingMenu />
@@ -177,21 +179,23 @@ const IfDetail = () => {
                         <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
                         <div className="flex justify-between items-center">
                           <div className="flex">
-                            <button>{userData.profileImgUrl[comment.id] ? <img className="w-4" src="/assets/like/likeCheckedIcon.png" alt="" /> : <img className="w-4" src="/assets/like/likeIcon.png" alt="" />}</button>
-                            {comment.likeCount === 0 ? <></> : <p className="px-1 text-sm text-[#565656] font-semibold">{comment.likeCount}</p>}
+                            <button>{userData.profileImgUrl[comment.commentId] ? <img className="w-4" src="/assets/like/likeCheckedIcon.png" alt="" /> : <img className="w-4" src="/assets/like/likeIcon.png" alt="" />}</button>
+                            {comment.likeCnt === 0 ? <></> : <p className="px-1 text-sm text-[#565656] font-semibold">{comment.likeCnt}</p>}
                           </div>
-                          <p className="text-sm text-[#565656] text-right">{comment.date}</p>
+                          <p className="text-sm text-[#565656] text-right">{comment.createdAt}</p>
                         </div>
                       </div>
                     </div>
-                  ))} */}
+                  ))}
                 </div>
               </div>
             </div>
 
             <div>
-              {opinionList.map((opinion) => (
-                <div className="pb-5">{/* <OpinionCard key={opinion.id} ifBoard={opinion} /> */}</div>
+              {recommendationList.map((opinion) => (
+                <div className="pb-5">
+                  <OpinionCard key={opinion.id} ifBoard={opinion} />
+                </div>
               ))}
             </div>
           </div>

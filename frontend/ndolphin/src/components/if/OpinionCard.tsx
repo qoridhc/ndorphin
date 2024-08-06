@@ -6,7 +6,6 @@ interface If {
   avatarUrl: string | null;
   bestComment: string | null;
   commentCount: number;
-  content: string;
   createdAt: string;
   hit: number;
   id: number;
