@@ -135,7 +135,14 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
           <h2 className="text-lg font-semibold flex-grow text-center">프로필 이미지 및 닉네임 설정</h2>
         </div>
         <div className="p-6 text-center">
-          <p className="mb-4 font-semibold">N돌핀에서 사용할 프로필 사진과 닉네임을 설정해 주세요!</p>
+          <p className="mb-4 font-semibold">
+            <span className="inline-block">
+              <span className="relative">
+                <span className="underline decoration-yellow-300 decoration-4">N돌핀</span>
+                에서 사용할 프로필 사진과 닉네임을 설정해 주세요!
+              </span>
+            </span>
+          </p>
           <div className="flex flex-col items-center space-y-2">
             <div className="relative" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
               <label htmlFor="profile-image-input">
@@ -148,12 +155,21 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
               </label>
               <input className="hidden" id="profile-image-input" type="file" accept="image/*" onChange={handleImageChange} />
             </div>
-            <input className="w-72 border-b rounded-lg text-center text-sm focus:outline-none" type="text" placeholder={nicknamePlaceholder} value={nickname} onChange={handleNicknameChange} onFocus={handleFocus} onBlur={handleBlur} onKeyPress={handleKeyPress} />
+            <input
+              className="w-72 border-b rounded-lg text-center text-sm focus:outline-none"
+              type="text"
+              placeholder={nicknamePlaceholder}
+              value={nickname}
+              onChange={handleNicknameChange}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              onKeyPress={handleKeyPress}
+            />
             <div className="flex items-center">
-              {isNicknameValid !== null && (
-                <span className={`ml-2 text-xs ${isNicknameValid ? 'text-green-500' : 'text-red-500'}`}>{nicknameMessage}</span>
-              )}
-              <button className="border rounded-lg px-3 py-1 text-xs" onClick={checkNinameDuplicate}>중복확인</button>
+              {isNicknameValid !== null && <span className={`ml-2 text-xs ${isNicknameValid ? "text-green-500" : "text-red-500"}`}>{nicknameMessage}</span>}
+              <button className="border rounded-lg px-3 py-1 text-xs" onClick={checkNinameDuplicate}>
+                중복확인
+              </button>
             </div>
           </div>
           <div className="mt-4 flex justify-center space-x-2">
