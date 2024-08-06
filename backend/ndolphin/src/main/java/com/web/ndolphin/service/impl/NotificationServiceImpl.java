@@ -50,8 +50,7 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             List<Notification> notifications = notificationRepository.findAllByUserId(userId);
 
-            List<NotificationResponseDto> responseList = NotificationMapper.toDtoList(
-                notifications);
+            List<NotificationResponseDto> responseList = NotificationMapper.toDtoList(notifications);
 
             ResponseDto<List<NotificationResponseDto>> responseDto = new ResponseDto<>(
                 ResponseCode.SUCCESS,
