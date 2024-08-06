@@ -170,6 +170,8 @@ public class UserServiceImpl implements UserService {
 
             existingUser.setUpdatedAt(LocalDateTime.now());
 
+            LogUtil.info("LocalDateTime" + LocalDateTime.now());
+
             userRepository.save(existingUser);
 
             UserDto userDto = UserMapper.toDto(existingUser);
