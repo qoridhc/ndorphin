@@ -6,6 +6,26 @@ interface NicknameCheckResponse {
   isDuplicate: boolean;
 }
 
+interface ApiResponse<T> {
+  code: string;
+  data: T;
+  message: string;
+}
+
+interface UserInfoResponse {
+  createdAt: string;
+  email: string;
+  mbti: string;
+  nickName: string;
+  nickNameUpdatedAt: string;
+  npoint: number;
+  profileImage: string;
+  role: string;
+  type: string;
+  updatedAt: string;
+  userId: number;
+}
+
 const userApi = {
   login: (loginType: string) => {
     const oauthUrl = `${baseURL}/api/v1/auth/oauth2/${loginType}`;
@@ -18,15 +38,14 @@ const userApi = {
     return newWindow;
   },
 
-  checkNickname: (nickname: string) =>
-    request.get<NicknameCheckResponse>(`/api/v1/users/check-nickname`, { params: { nickname } }),
+  checkNickname: async (nickName: string) => { return request.get<NicknameCheckResponse>(`${baseURL}/api/v1/users/nickname-check`, { params: { nickName } }) },
 
-  update: (userId: string, formData: FormData) =>
-    request.put(`/api/v1/users/${userId}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }),
+  update: async (userId: string, formData: FormData) => 
+    request.put(`${baseURL}/api/v1/users/${userId}`, formData,),
+
+  getUserInfo: (userId: string) =>
+    request.get<ApiResponse<UserInfoResponse>>(`${baseURL}/api/v1/users/${userId}`),
+
 }
 
 export default userApi;
