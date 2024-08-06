@@ -10,6 +10,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-  @Query("SELECT n FROM Notification n WHERE n.user.userId = :userId")
-  List<Notification> findAllByUserId(@Param("userId") Long userId);
+    @Query("SELECT n FROM Notification n WHERE n.user.userId = :userId")
+    List<Notification> findAllByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT COUNT(n) > 0 FROM Notification n WHERE n.user.userId = :userId AND n.isRead = false")
+    boolean existsByUserIdAndIsReadFalse(@Param("userId") Long userId);
 }

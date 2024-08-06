@@ -11,6 +11,7 @@ import com.web.ndolphin.repository.FileInfoRepository;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.S3Service;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +41,20 @@ public class FileInfoServiceImpl implements FileInfoService {
     }
 
     @Transactional
+    public void uploadDallEFile(Long entityId, EntityType entityType, String url){
+
+        FileInfo fileInfo = new FileInfo();
+
+        fileInfo.setFileName("dalle-generated_" + url);
+        fileInfo.setFileUrl(url);
+        fileInfo.setEntityType(entityType);
+        fileInfo.setEntityId(entityId);
+        fileInfo.setUpdateAt(LocalDateTime.now());
+
+        fileInfoRepository.save(fileInfo);
+    }
+
+    @Transactional
     public void uploadAndSaveFiles(Long entityId, EntityType entityType,
         List<MultipartFile> multipartFiles)
         throws IOException {
@@ -52,17 +67,6 @@ public class FileInfoServiceImpl implements FileInfoService {
             System.out.println("fileInfoResponseDtos.get(i) " + fileInfoResponseDtos);
 
             FileInfo fileInfo = new FileInfo();
-
-//            fileInfo.setFileName(fileInfoResponseDtos.get(i).getFileName());
-//            fileInfo.setFileUrl(fileInfoResponseDtos.get(i).getFileUrl());
-//            fileInfo.setFileSize(fileInfoResponseDtos.get(i).getFileSize());
-//            fileInfo.setFileType(fileInfoResponseDtos.get(i).getFileType());
-//
-//            fileInfo.setEntityType(fileInfoResponseDtos.get(i).getEntityType());
-//
-//            fileInfo.setEntityId(fileInfoResponseDtos.get(i).getEntityId());
-//            fileInfo.setCreatedAt(fileInfoResponseDtos.get(i).getCreatedAt());
-//            fileInfo.setUpdateAt(fileInfoResponseDtos.get(i).getUpdateAt());
 
             fileInfo = FileInfoMapper.toEntity(fileInfoResponseDtos.get(i));
 
@@ -79,8 +83,13 @@ public class FileInfoServiceImpl implements FileInfoService {
 
         // 파일 정보 삭제
         for (FileInfo fileInfo : fileInfos) {
-            // AWS S3 bucket에서 삭제
-            s3Service.deleteSingleFile(fileInfo.getFileName(), fileInfo.getFileType());
+            if (fileInfo.getFileName().contains("dalle-generated")) {
+                System.out.println("DALL-E URL이므로 S3에서 삭제하지 않음: " + fileInfo.getFileUrl());
+            } else {
+                System.out.println("AWS S3 bucket에서 삭제");
+                // AWS S3 bucket에서 삭제
+                s3Service.deleteSingleFile(fileInfo.getFileName(), fileInfo.getFileType());
+            }
             // 데이터베이스에서 파일 정보 삭제
             fileInfoRepository.delete(fileInfo);
         }
