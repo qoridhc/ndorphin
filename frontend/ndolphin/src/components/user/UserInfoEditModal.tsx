@@ -114,18 +114,31 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
       const userId = localStorage.getItem("userId");
       if (!userId) throw new Error("User ID not found");
 
+      const formData = new FormData();
+
       const requestBody = {
+        email: localStorage.getItem('email'),
+        profileImage: localStorage.getItem('profileImage'),
         nickName: nickname.trim(),
+        mbti: localStorage.getItem('mbti'),
+        role: "USER",
+        npoint: localStorage.getItem("npoint")
       };
 
-      const formData = new FormData();
-      formData.append("request", new Blob([JSON.stringify(requestBody)], { type: "application/json" }));
+      formData.append(
+        "request",
+        new Blob([JSON.stringify(requestBody)], { type: "application/json" })
+      );
       
       if (profileImage) {
         formData.append("file", profileImage);
       }
 
-      await userApi.update(userId, formData);
+      const response = await userApi.update(userId, formData);
+
+      if (response.status === 200) {
+        console.log('성공')
+      }
       setProfileImage(profileImage);
       onNext();
     } catch (error) {
