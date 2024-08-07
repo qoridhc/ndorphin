@@ -53,18 +53,20 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
   if (!isOpen) return null;
 
   const handleExternalLogin = (loginType: string) => {
-    // const newWindow = userApi.login(loginType);
-    // setLoginWindow(newWindow);
+    const newWindow = userApi.login(loginType);
+    setLoginWindow(newWindow);
 
-    // 로컬 테스트, 배포 시 위 두줄 주석 해제 및 아래 코드 삭제
-    localStorage.setItem("userId", '4');
-    localStorage.setItem("accessToken", 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0IiwiaWF0IjoxNzIzMDI2ODgzLCJleHAiOjE3MjU2MTg4ODN9.r2GUDydJYM5csqsrPUEPKYAJaTDgBWGlrve7QvRIi80');
-    localStorage.setItem("refreshToken", 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0IiwiaWF0IjoxNzIzMDI2ODgzLCJleHAiOjE3MjM2MzE2ODN9.Zhz0bq7_rvoHWGrj8qbHE9WFG9xaWQRh_jPrsUUcq44');
-    localStorage.setItem("email", 'lstork48@gmail.com');
-    localStorage.setItem("mbti", 'S');
-    localStorage.setItem("nickName", 'ㅅㄷㄴㅅ0');
-    localStorage.setItem("npoint", '0');
-    localStorage.setItem("profileImage", 'null');
+    // // 로컬 테스트, 배포 시 위 두줄 주석 해제 및 아래 코드 삭제
+    // // 로그인 모달 자동으로 안 닫힘, 버튼 누르고 모달 닫고 새로 고침 후 진행
+    // localStorage.setItem("userId", '4');
+    // localStorage.setItem("accessToken", 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0IiwiaWF0IjoxNzIzMDI2ODgzLCJleHAiOjE3MjU2MTg4ODN9.r2GUDydJYM5csqsrPUEPKYAJaTDgBWGlrve7QvRIi80');
+    // localStorage.setItem("refreshToken", 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0IiwiaWF0IjoxNzIzMDI2ODgzLCJleHAiOjE3MjM2MzE2ODN9.Zhz0bq7_rvoHWGrj8qbHE9WFG9xaWQRh_jPrsUUcq44');
+    // localStorage.setItem("email", 'lstork48@gmail.com');
+    // localStorage.setItem("mbti", 'S');
+    // localStorage.setItem("nickName", 'ㅅㄷㄴㅅ0');
+    // localStorage.setItem("npoint", '0');
+    // localStorage.setItem("profileImage", 'null');
+    // window.location.href = window.location.href
     }
 
   return (

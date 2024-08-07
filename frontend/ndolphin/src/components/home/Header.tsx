@@ -45,7 +45,11 @@ const Header = () => {
     const storedEmail = localStorage.getItem("email");
     const storedNickName = localStorage.getItem("nickName");
 
-    setProfileImage(storedProfileImage);
+    if (storedProfileImage === 'null') {
+      setProfileImage("/assets/user/profile.png")
+    } else {
+      setProfileImage(storedProfileImage);
+    }
     setUserEmail(storedEmail);
     setuserNickName(storedNickName);
   }, []);
@@ -92,6 +96,8 @@ const Header = () => {
     closeNSModal();
     setIsLoggedIn(true);
     localStorage.setItem("isLoggedIn", "true");
+
+    window.location.href = window.location.href
   };
 
   const handleLogout = () => {
@@ -251,11 +257,8 @@ const Header = () => {
                     </div>
                   </div>
                   <hr />
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate("/profile"))}>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate(`/profile/${localStorage.getItem('userId')}`))}>
                     프로필
-                  </button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(openUserInfoEditModalOpen)}>
-                    계정 관리
                   </button>
                   <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate("/wishlist"))}>
                     찜 목록
@@ -277,7 +280,7 @@ const Header = () => {
 
       <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} onLoginSuccess={handleLoginSuccess} />
       <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onNext={handleNext} setProfileImage={updateProfileImage} />
-      <NSModal isOpen={isNSModalOpen} onClose={handleFinish} />
+      <NSModal isOpen={isNSModalOpen} onClose={handleFinish} mode={'survey'} />
     </>
   );
 };
