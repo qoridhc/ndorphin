@@ -14,9 +14,9 @@ function Filter({ setSearchFilter2 }: Props) {
   };
 
   return (
-    <div className="flex">
-      <div className="flex w-28 justify-between">
-        <div className="">
+    <div className="flex items-center justify-start">
+      <div className="flex items-center mr-3 w-28 justify-between">
+        <div>
           <button
             className={`${tabs === "popularity" ? textStyle : "text-gray-400"}`}
             onClick={() => {

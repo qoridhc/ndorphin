@@ -97,8 +97,8 @@ const OkList = () => {
       <div className="flex flex-col justify-center">
         <div className="w-full px-44 py-6 flex-col items-center">
           <div className="py-5 flex items-end">
-            <p className="text-xl font-bold">괜찮아</p>
-            <p className="pl-3 text-xs">‘만약에~’로 시작된 걱정으로 고민하는 사람들이 위로받는 공간</p>
+            <p className="text-2xl font-bold">괜찮아</p>
+            <p className="pl-3 text-md">‘만약에~’로 시작된 걱정으로 고민하는 사람들이 위로받는 공간</p>
           </div>
           <hr className="w-full" />
         </div>

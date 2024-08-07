@@ -1,14 +1,14 @@
 import HTMLFlipBook from "react-pageflip";
-import React, { ForwardedRef } from "react";
-import { useState, ChangeEvent } from "react";
-import { useLocation } from "react-router";
+import React, { ForwardedRef, useMemo, useRef } from "react";
+import { useState, ChangeEvent, useEffect, useCallback } from "react";
+import { useLocation, useParams } from "react-router";
 import boardApi from "../../api/boardApi";
 import "../../css/RelayBook.css";
 import "../../css/Notes.css";
 import "../../css/InputPlaceHolder.css";
-import BookImage from "../../components/relay/relayBookCRUD/BookImage";
 import EndPage from "../../components/relay/EndPage";
 import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
+import RelayBookUpdateLeftForm from "./RelayBookUpdateLeftForm";
 
 interface PageProps {
   number?: string;
@@ -24,17 +24,50 @@ const Page = React.forwardRef<HTMLDivElement, PageProps>((props, ref: ForwardedR
 });
 
 const RelayBookUpdate: React.FC = () => {
-  const { state } = useLocation();
-  const coverImage = state.BookStart[0].coverImage;
-  const title = state.BookStart[0].title;
-  const content = state.BookStart[0].content;
-  const [image, setImage] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null)
-  const [titleUpdate, setTitleUpdate] = useState(title);
-  const [contentUpdate, setContentUpdate] = useState(content);
+  const { bookId } = useParams();
+  const bookIdNumber = useMemo(() => (bookId ? parseInt(bookId, 10) : NaN), [bookId]);
+  const subject = useRef<string>("");
+  const content = useRef<string>("");
+  const [contentFileUrl, setContentFileUrl] = useState("");
+  const [image, setImage] = useState<string>(contentFileUrl);
+  const [file, setFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    // axios GET
+    const getRelayDetail = async () => {
+      try {
+        if (bookId) {
+          const response = await boardApi.read(bookId);
+          if (response.status === 200 && isMounted) {
+            const book = response.data.data;
+            console.log("릴레이북 이야기 상세 조회 성공");
+            const contentFileUrl = book.contentFileUrl;
+            subject.current = book.subject;
+            content.current = book.content;
+            setContentFileUrl(contentFileUrl);
+            setImage(contentFileUrl);
+          }
+        }
+      } catch (error) {
+        console.log("릴레이북 상세 불러오기 오류: ", error);
+      }
+    };
+
+    getRelayDetail();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [bookId]);
+
+  useEffect(() => {
+    console.log("Subject updated: ", subject.current);
+    console.log("Content updated: ", content.current);
+  }, [contentFileUrl]); // contentFileUrl이 변경될 때 로그를 찍어 최신 값을 확인
 
   // axios PUT
-  const handleRelayBookUpdate = async (subject: string, content: string) => {
+  const handleRelayBookUpdate = async () => {
     const formData = new FormData();
 
     if (file) {
@@ -56,7 +89,7 @@ const RelayBookUpdate: React.FC = () => {
     );
 
     try {
-      const response = await boardApi.create(formData);
+      const response = await boardApi.update(formData, bookIdNumber);
       if (response.status === 200) {
         console.log("릴레이북 이야기 수정 성공");
       }
@@ -77,15 +110,15 @@ const RelayBookUpdate: React.FC = () => {
     }
   };
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSubjectChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setTitleUpdate(value);
-  };
+    subject.current = value;
+  }, []);
 
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    setContentUpdate(value);
-  };
+    content.current = value;
+  }, []);
 
   // AI 이미지 모달 관련
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -98,18 +131,19 @@ const RelayBookUpdate: React.FC = () => {
     setIsModalOpen(false);
     setImage(image);
 
-    try {
-      const response = await fetch(image);
-      const data = await response.blob();
-      const ext = image.split(".").pop() || "";
-      const filename = image.split("/").pop() || "";
-      const metadata = { type: `image/${ext}` };
-      const file = new File([data], filename, metadata);
-      setFile(file);
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    // try {
+    //   const response = await fetch(image);
+    //   const data = await response.blob();
+    //   const ext = image.split(".").pop() || "";
+    //   const filename = image.split("/").pop() || "";
+    //   const metadata = { type: `image/${ext}` };
+    //   const file = new File([data], filename, metadata);
+    //   setFile(file);
+    // } catch (error) {
+    //   console.error("Error:", error);
+    // }
   };
+
   const cancelAiImage = () => {
     setIsModalOpen(false);
   };
@@ -120,47 +154,13 @@ const RelayBookUpdate: React.FC = () => {
       <div className="">
         {/* @ts-ignore */}
         <HTMLFlipBook width={480} height={580} minWidth={315} maxWidth={1000} minHeight={420} maxHeight={1350} flippingTime={600} style={{ margin: "0 auto" }} maxShadowOpacity={0.5} useMouseEvents={false}>
-          <Page>
-            <div className="flex justify-center items-center">
-              <div className="pt-[2.8rem] mr-[7%] flex flex-col items-end w-full">
-                <div className="w-[95%]">
-                  <div className="flex flex-col items-center">
-                    <hr className="w-full border-zinc-950" />
-                    <input onChange={handleTitleChange} className="w-full my-3 p-1 rounded-lg focus:outline-none bg-yellow-200 text-left" type="text" placeholder="제목을 입력해 주세요 (최대 30자)" aria-label={titleUpdate} value={titleUpdate} />
-                  </div>
-                </div>
-
-                {/* 본문 작성 form */}
-                <div className="w-[95%] border border-zinc-950">
-                  <p className="m-2 text-xl font-bold">본문</p>
-                  <hr className="mx-3 my-2 border-zinc-900" />
-                  <textarea
-                    onChange={handleContentChange}
-                    className="notes w-full h-[283px] resize-none focus:outline-none placeholder:text-zinc-400"
-                    placeholder="이야기가 시작될 '만약에~' 내용을 입력해 주세요 (최소 글자수 100자 이상)"
-                    aria-label={contentUpdate}
-                    value={contentUpdate}></textarea>
-                </div>
-
-                {/* 종료 장수 선택 form */}
-                <div className="w-[95%] mt-3 border border-zinc-950">
-                  <p className="m-2 text-xl font-bold">종료장수</p>
-                  <hr className="mx-3 border-zinc-900" />
-                  <div className="p-4 flex justify-center">
-                    <div className="w-4/5 flex justify-between">
-                      <EndPage />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Page>
-          <Page>
+          <Page key="left-form">{<RelayBookUpdateLeftForm handleSubjectChange={handleSubjectChange} handleContentChange={handleContentChange} subject={subject} content={content} />}</Page>
+          <Page key="right-form">
             {/* 표지 이미지 form */}
             <div className="flex flex-col items-center justify-center">
               {/* 수정 버튼 */}
               <div className="flex justify-end w-full px-8 my-2">
-                <button onClick={() => { handleRelayBookUpdate(titleUpdate, contentUpdate); }} className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
+                <button onClick={handleRelayBookUpdate} className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
                   수정
                 </button>
               </div>
@@ -174,7 +174,7 @@ const RelayBookUpdate: React.FC = () => {
                 <hr className="mx-3 my-2 border-zinc-900" />
                 <div className="grid grid-rows-[60%_40%]">
                   <div className="flex justify-center items-center">
-                    <img src={image || coverImage} alt="coverImage" className="w-[22rem] h-64 border rounded-md" />
+                    <img src={image} alt="coverImage" className="w-[22rem] h-64 border rounded-md" />
                   </div>
 
                   {/* 이미지 첨부 버튼 */}
@@ -220,7 +220,7 @@ const RelayBookUpdate: React.FC = () => {
           </Page>
         </HTMLFlipBook>
       </div>
-      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={coverImage} setImage={setImage} setFile={setFile} />
+      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={image} setImage={setImage} setFile={setFile} />
     </div>
   );
 };

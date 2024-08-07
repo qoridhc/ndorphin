@@ -24,7 +24,7 @@ const RelayBookDetail = () => {
   const { bookId } = useParams();
   const [pages, setPages] = useState<any[]>([]);
   const [page, setPage] = useState<number>(1);
-  const [totalPage, setTotalPage] = useState<number>(pages.length);
+  const [totalPage, setTotalPage] = useState<number>(pages.length+1);
   const bookRef = useRef<typeof HTMLFlipBook>();
   const [isFinished, setIsFinished] = useState(false);
   const [inputPage, setInputPage] = useState<number | string>(page);
@@ -32,6 +32,7 @@ const RelayBookDetail = () => {
   const [image, setImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const pageElements: any[] = [];
+  const [firstPage, setFirstPage] = useState<any[]>([]);
 
   const lastPage = [
     {
@@ -57,9 +58,10 @@ const RelayBookDetail = () => {
           const response = await boardApi.read(bookId);
           if (response.status === 200 && isMounted) {
             const bookDetail = response.data.data.commentResponseDtos;
+            const firstPage = response.data.data;
             console.log("릴레이북 이야기 상세 조회 성공");
             setPages(bookDetail);
-            console.log(pages);
+            setFirstPage([firstPage]);
           }
         }
       } catch (error) {
@@ -76,7 +78,8 @@ const RelayBookDetail = () => {
 
   useEffect(() => {
     console.log("Pages updated:", pages);
-  }, [pages]);
+    console.log("first Pages update: ", firstPage)
+  }, [pages, firstPage]);
 
   // 페이지 넘어갈 시 page를 현재 페이지 쪽수로 업데이트
   const onFlip = useCallback((e: { data: number }) => {
@@ -186,13 +189,6 @@ const RelayBookDetail = () => {
   //   },
   // ];
 
-  const BookStart = [
-    {
-      coverImage: "/assets/relay/relayStartSample1.png",
-      title: "책 제목1",
-      content: "아무말",
-    },
-  ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -270,14 +266,15 @@ const RelayBookDetail = () => {
             maxShadowOpacity={0.5}
             className="album-web"
             onFlip={onFlip}
-            useMouseEvents={false}
-          >
-            <BookPageCover BookStart={BookStart} bookId={bookId} isDeleteOpen={isDeleteModalOpen} isAiOpen={isAiModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
+            useMouseEvents={false}>
+            <BookPageCover firstPage={firstPage} bookId={bookId} isDeleteOpen={isDeleteModalOpen} isAiOpen={isAiModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
 
+            {/* 첫 번째 페이지 */}
+            <BookDetailPage readPage={"first"} bookId={bookId} number={page} pages={firstPage} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
             {/* 내부 상세 페이지 */}
-
-            <BookDetailPage readPage={true} bookId={bookId} number={page} pages={pages} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
-            <BookDetailPage readPage={false} bookId={bookId} number={page} pages={lastPage} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
+            <BookDetailPage readPage={"content"} bookId={bookId} number={page} pages={pages} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
+            {/* 마지막 페이지 (이모티콘 반응 or 페이지 추가) */}
+            <BookDetailPage readPage={"last"} bookId={bookId} number={page} pages={lastPage} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
 
             {/* 페이지가 짝수일 경우 마지막 커버 표시 */}
             <PageEndCover totalPage={totalPage} />
@@ -294,8 +291,7 @@ const RelayBookDetail = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-blue-500 rounded-sm "
-            >
+              className="border-2 border-blue-500 rounded-sm ">
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           ) : (
@@ -306,13 +302,12 @@ const RelayBookDetail = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-stone-500 rounded-sm "
-            >
+              className="border-2 border-stone-500 rounded-sm ">
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           )}
           <span className="pl-4 font-bold">/</span>
-          <span className="pl-4 font-bold">{pages.length + 1}</span>
+          <span className="pl-4 font-bold">{pages.length + 2}</span>
         </div>
       </div>
 
