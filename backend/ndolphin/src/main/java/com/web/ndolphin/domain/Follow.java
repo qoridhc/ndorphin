@@ -10,7 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -22,7 +21,7 @@ import lombok.ToString;
 @Table(name = "follow", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"follower_id", "following_id"})
 })
-public class Follow {
+public class Follow extends DateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +35,4 @@ public class Follow {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "following_id")
     private User following; //following -> following_id
-
-    private LocalDateTime createdAt;
 }

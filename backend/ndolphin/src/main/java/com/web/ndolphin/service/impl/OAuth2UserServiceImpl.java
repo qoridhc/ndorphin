@@ -8,7 +8,6 @@ import com.web.ndolphin.domain.User;
 import com.web.ndolphin.provider.JwtProvider;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.util.LogUtil;
-import java.time.LocalDateTime;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +47,8 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
             if (oauthClientName.equals("kakao")) {
                 responseMap = oAuth2User.getAttributes();
 
-                Map<String, Object> kakaoAccount = (Map<String, Object>) responseMap.get("kakao_account");
+                Map<String, Object> kakaoAccount = (Map<String, Object>) responseMap.get(
+                    "kakao_account");
 
                 user.setEmail((String) kakaoAccount.get("email"));
                 user.setType(LoginType.KAKAO);
@@ -81,7 +81,6 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
                 user = userRepository.findByEmail(user.getEmail());
             } else {
                 // DB에 유저 정보 저장 (회원가입)
-                user.setCreatedAt(LocalDateTime.now());
                 user = userRepository.save(user);
             }
 

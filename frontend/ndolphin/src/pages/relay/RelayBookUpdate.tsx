@@ -67,7 +67,7 @@ const RelayBookUpdate: React.FC = () => {
   }, [contentFileUrl]); // contentFileUrl이 변경될 때 로그를 찍어 최신 값을 확인
 
   // axios PUT
-  const handleRelayBookUpdate = async () => {
+  const handleRelayBookUpdate = async (subject: string, content: string) => {
     const formData = new FormData();
 
     if (file) {
@@ -154,16 +154,12 @@ const RelayBookUpdate: React.FC = () => {
       <div className="">
         {/* @ts-ignore */}
         <HTMLFlipBook width={480} height={580} minWidth={315} maxWidth={1000} minHeight={420} maxHeight={1350} flippingTime={600} style={{ margin: "0 auto" }} maxShadowOpacity={0.5} useMouseEvents={false}>
-          <Page key="left-form">{<RelayBookUpdateLeftForm handleSubjectChange={handleSubjectChange} handleContentChange={handleContentChange} subject={subject} content={content} />}</Page>
+          <Page key="left-form">
+            {<RelayBookUpdateLeftForm handleSubjectChange={handleSubjectChange} handleContentChange={handleContentChange} handleRelayBookUpdate={handleRelayBookUpdate} subject={subject} content={content} />}
+          </Page>
           <Page key="right-form">
             {/* 표지 이미지 form */}
-            <div className="flex flex-col items-center justify-center">
-              {/* 수정 버튼 */}
-              <div className="flex justify-end w-full px-8 my-2">
-                <button onClick={handleRelayBookUpdate} className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
-                  수정
-                </button>
-              </div>
+            <div className="mt-11 flex flex-col items-center justify-center">
               <div className="w-full">
                 <div className="flex flex-col items-center">
                   <hr className="flex justify-center w-[88%] border-zinc-950" />

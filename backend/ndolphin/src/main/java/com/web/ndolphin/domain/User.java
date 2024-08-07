@@ -23,7 +23,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-public class User {
+public class User extends DateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,10 +45,6 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private RoleType role;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
 
     private LocalDateTime nickNameUpdatedAt;
 

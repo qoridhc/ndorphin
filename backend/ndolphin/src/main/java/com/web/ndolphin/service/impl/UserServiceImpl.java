@@ -141,7 +141,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto, MultipartFile profileImage) {
+    public ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto,
+        MultipartFile profileImage) {
 
         LogUtil.info("userId" + userId);
         LogUtil.info("UserUpdateRequestDto" + dto);
@@ -189,12 +190,11 @@ public class UserServiceImpl implements UserService {
                     multipartFiles
                 );
 
-                String fileUrl = fileInfoService.getFileUrl(existingUser.getUserId(), EntityType.USER);
+                String fileUrl = fileInfoService.getFileUrl(existingUser.getUserId(),
+                    EntityType.USER);
 
                 existingUser.setProfileImage(fileUrl);
             }
-
-            existingUser.setUpdatedAt(LocalDateTime.now());
 
             userRepository.save(existingUser);
 
@@ -363,7 +363,8 @@ public class UserServiceImpl implements UserService {
             : userRepository.findTopUsersByNPoint(1);
 
         return IntStream.range(0, users.size())
-            .mapToObj(i -> new BestNResponseDto((long) (i + 1), users.get(i).getNickName(), users.get(i).getNPoint()))
+            .mapToObj(i -> new BestNResponseDto((long) (i + 1), users.get(i).getNickName(),
+                users.get(i).getNPoint()))
             .collect(Collectors.toList());
     }
 }
