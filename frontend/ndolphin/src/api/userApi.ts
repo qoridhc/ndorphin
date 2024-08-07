@@ -40,8 +40,14 @@ const userApi = {
 
   checkNickname: async (nickName: string) => { return request.get<NicknameCheckResponse>(`${baseURL}/api/v1/users/nickname-check`, { params: { nickName } }) },
 
-  update: async (userId: string, formData: FormData) => 
-    request.put(`${baseURL}/api/v1/users/${userId}`, formData,),
+  update: (userId: string, formData: FormData) => {
+    return request.put(`/api/v1/users/${userId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  },
+    
 
   getUserInfo: (userId: string) =>
     request.get<ApiResponse<UserInfoResponse>>(`${baseURL}/api/v1/users/${userId}`),
