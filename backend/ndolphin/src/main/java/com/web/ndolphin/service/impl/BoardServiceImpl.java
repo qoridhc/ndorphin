@@ -105,7 +105,7 @@ public class BoardServiceImpl implements BoardService {
                 setVoteContents(boardRequestDto, board);
             }
 
-            return ResponseDto.success();
+            return getBoardById(board.getId());
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage());
         }
