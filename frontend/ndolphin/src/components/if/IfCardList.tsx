@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Filter from "../common/Filter";
 import Paging from "../common/Paging";
 import boardApi from "../../api/boardApi";
 import OpinionCard from "./OpinionCard";
@@ -35,8 +34,6 @@ const IfCardList = () => {
 
   return (
     <div>
-      <Filter />
-
       {ifBoardList ? (
         <div className="px-44 py-10 grid grid-cols-4 gap-5">
           {ifBoardList.map((ifBoard) => (

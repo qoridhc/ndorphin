@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
 
@@ -27,7 +28,7 @@ public interface UserService {
 
     ResponseEntity<ResponseDto> deleteUser(Long userId);
 
-    ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto);
+    ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto, MultipartFile profileImage);
 
     ResponseEntity<ResponseDto> addNPoint(Long userId, NPointRequestDto dto);
 

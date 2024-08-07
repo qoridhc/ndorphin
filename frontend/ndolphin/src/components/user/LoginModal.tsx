@@ -27,7 +27,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
       const checkRedirect = setInterval(() => {
         try {
           const redirectedUrl = loginWindow.location.href;
-          // 배포시 주석 바꾸고 진행
           if (redirectedUrl.includes("localhost:3000")) {
             // if (redirectedUrl.includes("amazonaws.com")) {
             clearInterval(checkRedirect);

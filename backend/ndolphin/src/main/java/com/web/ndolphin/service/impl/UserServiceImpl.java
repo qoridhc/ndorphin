@@ -3,6 +3,7 @@ package com.web.ndolphin.service.impl;
 import com.web.ndolphin.common.ResponseCode;
 import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.domain.Board;
+import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.Favorite;
 import com.web.ndolphin.domain.NPoint;
 import com.web.ndolphin.domain.PointRule;
@@ -36,6 +37,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -44,6 +46,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -138,7 +141,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto) {
+    public ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto, MultipartFile profileImage) {
+
+        LogUtil.info("userId" + userId);
+        LogUtil.info("UserUpdateRequestDto" + dto);
+        LogUtil.info("profileImage" + profileImage);
 
         try {
             User existingUser = userRepository.findByUserId(userId);
@@ -166,6 +173,25 @@ public class UserServiceImpl implements UserService {
 
             if (dto.getRole() != null) {
                 existingUser.setRole(dto.getRole());
+            }
+
+            // 프로필 이미지가 존재하는 경우 처리
+            if (profileImage != null && !profileImage.isEmpty()) {
+                // 이미지 파일 처리 로직 (예: 저장, 변환 등)
+                List<MultipartFile> multipartFiles = new ArrayList<>();
+                multipartFiles.add(profileImage);
+
+                fileInfoService.deleteAndDeleteFiles(existingUser.getUserId(), EntityType.USER);
+
+                fileInfoService.uploadAndSaveFiles(
+                    existingUser.getUserId(),
+                    EntityType.USER,
+                    multipartFiles
+                );
+
+                String fileUrl = fileInfoService.getFileUrl(existingUser.getUserId(), EntityType.USER);
+
+                existingUser.setProfileImage(fileUrl);
             }
 
             existingUser.setUpdatedAt(LocalDateTime.now());

@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "사용자 컨트롤러", description = "사용자 API입니다.")
 @RestController
@@ -93,9 +95,12 @@ public class UserController {
     @PutMapping("/{userId}")
     public ResponseEntity<ResponseDto> updateUser(
         @Parameter(description = "수정할 사용자의 ID", required = true) @PathVariable("userId") Long userId,
-        @Parameter(description = "수정할 사용자 정보", required = true) @RequestBody UserUpdateRequestDto updateDto) {
+        @Parameter(description = "수정할 사용자 정보", required = true) @RequestPart(name = "request") UserUpdateRequestDto updateDto,
+        @Parameter(description = "사용자 프로필 이미지 (선택 사항)") @RequestPart(name = "file", required = false) MultipartFile profileImage
+    ) {
 
-        ResponseEntity<ResponseDto> response = userService.updateUser(userId, updateDto);
+        LogUtil.info("updateUser");
+        ResponseEntity<ResponseDto> response = userService.updateUser(userId, updateDto, profileImage);
 
         return response;
     }

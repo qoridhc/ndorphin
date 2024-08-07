@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import boardApi from "../../api/boardApi";
 import BookList from "../../components/relay/BookList";
 import SearchBar from "../../components/relay/SearchBar";
+import Filter from "../../components/common/Filter";
 
 function Relaybooklist() {
   const navigate = useNavigate();
@@ -31,11 +32,14 @@ function Relaybooklist() {
 
   return (
     <div>
-      <div className="relative flex flex-col justify-center">
+      <div className="flex flex-col justify-center">
         <div className="w-full px-44 py-6 flex-col items-center">
           <div className="py-5 flex items-end">
             <p className="text-xl font-bold">릴레이북</p>
-            <p className="pl-3 text-xs">‘만약에~’를 이어 하나의 이야기를 완성시키는 릴레이북 게시판</p>
+            <p className="pl-3 text-xs">‘만약에~’를 이어 하나의 이야기로 만들어요</p>
+          </div>
+          <div className="py-6 pb-10 flex flex-col justify-around">
+            <SearchBar />
           </div>
           <div className="flex justify-center">
             <button
@@ -55,14 +59,10 @@ function Relaybooklist() {
           </div>
           <hr className="w-full" />
         </div>
-        <div className="flex items-center flex-col">
-          <div className="w-full py-6 pb-10 flex flex-col justify-around">
-            <SearchBar />
-          </div>
-        </div>
       </div>
 
-      <div className="px-44 text-right">
+      <div className="flex justify-between items-center px-44 text-right">
+        <Filter />
         <button
           className="px-7 py-1 shadow-md rounded-xl font-bold bg-amber-300 text-white"
           onClick={() => {
