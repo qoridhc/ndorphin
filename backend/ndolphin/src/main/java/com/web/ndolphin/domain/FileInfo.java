@@ -7,14 +7,13 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-public class FileInfo {
+public class FileInfo extends DateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,10 +32,4 @@ public class FileInfo {
     private EntityType entityType;
 
     private Long entityId;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updateAt;
-
-
 }

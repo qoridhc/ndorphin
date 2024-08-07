@@ -19,7 +19,7 @@ import lombok.Setter;
 @Table(name = "favorite", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"user_id", "board_id"})
 })
-public class Favorite {
+public class Favorite extends DateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
