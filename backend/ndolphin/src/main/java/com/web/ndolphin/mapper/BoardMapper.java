@@ -25,7 +25,7 @@ public class BoardMapper {
     // 공통된 Entity -> DTO 변환 로직
     private static void mapCommonFields(Board board, BoardDto dto) {
 
-        dto.setUserDto(UserMapper.toDto(board.getUser()));
+        dto.setUser(UserMapper.toDto(board.getUser()));
         dto.setId(board.getId());
         dto.setSubject(board.getSubject());
         dto.setContent(board.getContent());
@@ -132,7 +132,8 @@ public class BoardMapper {
     }
 
     public static RelayBoardResponseDto toRelayBoardResponseDto(Board board,
-        boolean hasParticipated, boolean isFavorite, String thumbNailUrl, Long commentCount, boolean isDone) {
+        boolean hasParticipated, boolean isFavorite, String thumbNailUrl, Long commentCount,
+        boolean isDone) {
 
         RelayBoardResponseDto relayBoardResponseDto = new RelayBoardResponseDto();
 
