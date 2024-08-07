@@ -3,7 +3,6 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router";
 import SettingMenu from "../../components/common/SettingMenu";
 import OpinionCard from "../../components/if/OpinionCard";
-import ifApi from "../../api/ifApi";
 import boardApi from "../../api/boardApi";
 import commentApi from "../../api/commentApi";
 
@@ -56,7 +55,7 @@ const IfDetail = () => {
 
   const readBoardData = async (boardId: string) => {
     try {
-      const response = await ifApi.read(boardId);
+      const response = await boardApi.read(boardId);
       if (response.status === 200) {
         setIfBoardData(response.data.data);
       }
