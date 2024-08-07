@@ -40,8 +40,16 @@ const userApi = {
 
   checkNickname: async (nickName: string) => { return request.get<NicknameCheckResponse>(`${baseURL}/api/v1/users/nickname-check`, { params: { nickName } }) },
 
-  update: async (userId: string, formData: FormData) => 
-    request.put(`${baseURL}/api/v1/users/${userId}`, formData,),
+  update: async (userId: string, formData: FormData) => {
+    console.log(userId);
+    console.log(formData);
+    try {
+      const response = request.put(`${baseURL}/api/v1/users/${userId}`, formData,);
+      console.log("res status", (await response).status);
+    } catch (error) {
+      console.error('update request faile: ', error)
+    }
+  },
 
   getUserInfo: (userId: string) =>
     request.get<ApiResponse<UserInfoResponse>>(`${baseURL}/api/v1/users/${userId}`),

@@ -46,6 +46,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
   const handleImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      localStorage.setItem('확인용22', 'file')
       const reader = new FileReader();
       reader.onloadend = async () => {
         const result = reader.result as string;
@@ -149,10 +150,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
       console.log("요청 전");
 
       const response = await userApi.update(userId, formData);
-
-      if (response.status === 200) {
-        console.log("성공");
-      }
+      
       setProfileImage(profileImage);
       onNext();
     } catch (error) {
