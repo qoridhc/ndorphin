@@ -26,7 +26,7 @@ function Relaybooklist() {
       }
     };
 
-    getRelayList()
+    getRelayList();
   }, []); // 디펜던시 작성 시 변수가 변할 때만 실행됨
   // 빈 배열로 적으면 mount 시에만 실행됨 (1회만)
 
@@ -38,9 +38,7 @@ function Relaybooklist() {
             <p className="text-xl font-bold">릴레이북</p>
             <p className="pl-3 text-xs">‘만약에~’를 이어 하나의 이야기로 만들어요</p>
           </div>
-          <div className="py-6 pb-10 flex flex-col justify-around">
-            <SearchBar />
-          </div>
+          <div className="py-6 pb-10 flex flex-col justify-around">{/* <SearchBar /> */}</div>
           <div className="flex justify-center">
             <button
               className={`px-10 py-3 pb-5 font-semibold ${tabs === 0 ? underline : "text-[#6C6C6C]"} z-20`}
@@ -62,7 +60,7 @@ function Relaybooklist() {
       </div>
 
       <div className="flex justify-between items-center px-44 text-right">
-        <Filter />
+        {/* <Filter /> */}
         <button
           className="px-7 py-1 shadow-md rounded-xl font-bold bg-amber-300 text-white"
           onClick={() => {

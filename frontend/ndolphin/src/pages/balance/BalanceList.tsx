@@ -15,16 +15,14 @@ const BalanceList = () => {
             <p className="text-xl font-bold">밸런스게임</p>
             <p className="pl-3 text-xs">‘만약에~’ 밸런스게임</p>
           </div>
-          <div className="py-6 pb-10 flex flex-col justify-around">
-            <SearchBar />
-          </div>
+          <div className="py-6 pb-10 flex flex-col justify-around">{/* <SearchBar /> */}</div>
           <hr className="w-full" />
         </div>
       </div>
 
       <div className="">
         <div className="px-44 text-right flex justify-between items-center">
-          <Filter />
+          {/* <Filter /> */}
           <button
             className="px-7 py-1 shadow-md rounded-xl font-bold bg-amber-300 text-white"
             onClick={() => {
