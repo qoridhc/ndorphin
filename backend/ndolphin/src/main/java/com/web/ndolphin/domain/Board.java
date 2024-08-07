@@ -68,9 +68,4 @@ public class Board {
         hit = 0;
         createdAt = LocalDateTime.now();
     }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 }

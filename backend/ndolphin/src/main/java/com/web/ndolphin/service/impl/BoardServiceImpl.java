@@ -105,7 +105,8 @@ public class BoardServiceImpl implements BoardService {
                     .forEach(voteContentRepository::save);
             }
 
-            return ResponseDto.success();
+//            return ResponseDto.success();
+            return getBoardById(board.getId());
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage());
         }
@@ -399,7 +400,7 @@ public class BoardServiceImpl implements BoardService {
         Board existingBoard = optionalBoard.get();
         existingBoard.setSubject(boardRequestDto.getSubject());
         existingBoard.setContent(boardRequestDto.getContent());
-        existingBoard.setHit(existingBoard.getHit() + 1);
+//        existingBoard.setHit(existingBoard.getHit() + 1);
         existingBoard.setUpdatedAt(LocalDateTime.now());
         boardRepository.save(existingBoard);
 
