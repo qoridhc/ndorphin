@@ -1,30 +1,82 @@
 import HTMLFlipBook from "react-pageflip";
-import React, { useRef, useState, useCallback, ForwardedRef } from "react";
+import React, { useRef, useState, useCallback, ForwardedRef, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router";
+import boardApi from "../../api/boardApi";
 import "../../css/RelayBook.css";
 import "../../css/Notes.css";
 import { useParams } from "react-router";
-import AddPage from "../../components/relay/BookPageCRUD/AddPage";
 import BookDetailPage from "../../components/relay/BookDetailPage";
 import BookPageCover from "../../components/relay/BookPageCover";
-import BookDetailDone from "../../components/relay/BookDetailDone";
 import DeleteModal from "../../components/relay/relayBookCRUD/BookDeleteModal";
 import AiImagePromptModal from "../../components/relay/AiImagePromptModal";
 
+interface PageEndCoverProps {
+  totalPage: number;
+}
+
 // 마지막 페이지 이후 나오는 책 커버
-const PageEndCover = React.forwardRef<HTMLDivElement>((props, ref: ForwardedRef<HTMLDivElement>) => {
-  return <div className="cover" ref={ref} data-density="hard"></div>;
+const PageEndCover = React.forwardRef<HTMLDivElement, PageEndCoverProps>(({ totalPage }: PageEndCoverProps, ref: ForwardedRef<HTMLDivElement>) => {
+  return totalPage % 2 === 0 ? <div className="cover" ref={ref} data-density="hard"></div> : <></>;
 });
 
 const RelayBookDetail = () => {
   const navigate = useNavigate();
   const { bookId } = useParams();
+  const [pages, setPages] = useState<any[]>([]);
   const [page, setPage] = useState<number>(1);
-  const [totalPage, setTotalPage] = useState<number>(6);
+  const [totalPage, setTotalPage] = useState<number>(pages.length);
   const bookRef = useRef<typeof HTMLFlipBook>();
   const [isFinished, setIsFinished] = useState(false);
   const [inputPage, setInputPage] = useState<number | string>(page);
   const [isHoverd, setIsHoverd] = useState(false);
+  const [image, setImage] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const pageElements: any[] = [];
+
+  const lastPage = [
+    {
+      commentId: 1,
+      nickName: "1",
+      content: "1",
+      likeCnt: 1,
+      createdAt: "1",
+      updatedAt: "1",
+      avatarUrl: "1",
+      contentFileUrl: "1",
+      likedByUser: true,
+    },
+  ];
+
+  // useEffect -> 렌더링이 다 되고나서 실행 (html부터 다 그려준 뒤 실행)
+  useEffect(() => {
+    let isMounted = true;
+    // axios GET
+    const getRelayDetail = async () => {
+      try {
+        if (bookId) {
+          const response = await boardApi.read(bookId);
+          if (response.status === 200 && isMounted) {
+            const bookDetail = response.data.data.commentResponseDtos;
+            console.log("릴레이북 이야기 상세 조회 성공");
+            setPages(bookDetail);
+            console.log(pages);
+          }
+        }
+      } catch (error) {
+        console.log("릴레이북 목록 불러오기 오류: ", error);
+      }
+    };
+
+    getRelayDetail();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [bookId]);
+
+  useEffect(() => {
+    console.log("Pages updated:", pages);
+  }, [pages]);
 
   // 페이지 넘어갈 시 page를 현재 페이지 쪽수로 업데이트
   const onFlip = useCallback((e: { data: number }) => {
@@ -36,7 +88,7 @@ const RelayBookDetail = () => {
   const onPrev = (hasFlip = "N") => {
     if (bookRef.current) {
       // @ts-ignore
-      const pageIndex = bookRef.current.pageFlip().getCurrentPageIndex();
+      // const pageIndex = bookRef.current.pageFlip().getCurrentPageIndex();
       if (hasFlip === "Y") {
         // @ts-ignore
         bookRef.current.pageFlip().flipPrev("bottom");
@@ -77,74 +129,74 @@ const RelayBookDetail = () => {
     setDeleteAIModalOpen(false);
   };
 
-  const PageList = [
-    {
-      id: 1,
-      userId: 1,
-      user: "삶은계란",
-      badget: "N",
-      date: "2024-07-30 01:22",
-      content: "내용입니다안녕하세요 제가 이예림입니다 하하하 입니다1안녕 ? 공부 많이 했어? 오늘 밥 뭐먹지 다1내용입니다진짜 내일은 통신하자 알겠지? 내용입니다1내용입니다1내용입니다1내용입니다",
-      pageImage: "/assets/relay/relayStartSample1.png",
-    },
-    {
-      id: 2,
-      userId: 2,
-      user: "만약핑인데",
-      badget: "S",
-      date: "2024-12-10 21:45",
-      content: "내용입니다2",
-      pageImage: "/assets/relay/relayStartSample2.png",
-    },
-    {
-      id: 3,
-      userId: 3,
-      user: "별이 빛나는 밤",
-      badget: "S",
-      date: "2024-07-30 01:22",
-      content: "내용입니다3",
-      pageImage: "/assets/relay/relayStartSample3.png",
-    },
-    {
-      id: 4,
-      userId: 4,
-      user: "코에촉촉",
-      badget: "N",
-      date: "2024-07-30 01:22",
-      content: "내용입니다안녕하세요 제가 이예림입니다 하하하니다진짜 내일은 통신하자 알겠지? 내용입니다1내용입니다1내용입니다1내용입니다",
-      pageImage: "/assets/relay/relayStartSample4.png",
-    },
-    {
-      id: 5,
-      userId: 5,
-      user: "상상의 나무꾼",
-      badget: "N",
-      date: "2024-07-30 01:22",
-      content: "내용입니다5",
-      pageImage: "/assets/relay/relayStartSample5.png",
-    },
-    {
-      id: 6,
-      userId: 6,
-      user: "상상의 나무꾼",
-      badget: "S",
-      date: "2024-07-30 01:22",
-      content: "내용입니다5",
-      pageImage: "/assets/relay/relayStartSample6.png",
-    },
-  ];
+  // const PageList = [
+  //   {
+  //     id: 1,
+  //     userId: 1,
+  //     user: "삶은계란",
+  //     badget: "N",
+  //     date: "2024-07-30 01:22",
+  //     content: "내용입니다안녕하세요 제가 이예림입니다 하하하 입니다1안녕 ? 공부 많이 했어? 오늘 밥 뭐먹지 다1내용입니다진짜 내일은 통신하자 알겠지? 내용입니다1내용입니다1내용입니다1내용입니다",
+  //     pageImage: "/assets/relay/relayStartSample1.png",
+  //   },
+  //   {
+  //     id: 2,
+  //     userId: 2,
+  //     user: "만약핑인데",
+  //     badget: "S",
+  //     date: "2024-12-10 21:45",
+  //     content: "내용입니다2",
+  //     pageImage: "/assets/relay/relayStartSample2.png",
+  //   },
+  //   {
+  //     id: 3,
+  //     userId: 3,
+  //     user: "별이 빛나는 밤",
+  //     badget: "S",
+  //     date: "2024-07-30 01:22",
+  //     content: "내용입니다3",
+  //     pageImage: "/assets/relay/relayStartSample3.png",
+  //   },
+  //   {
+  //     id: 4,
+  //     userId: 4,
+  //     user: "코에촉촉",
+  //     badget: "N",
+  //     date: "2024-07-30 01:22",
+  //     content: "내용입니다안녕하세요 제가 이예림입니다 하하하니다진짜 내일은 통신하자 알겠지? 내용입니다1내용입니다1내용입니다1내용입니다",
+  //     pageImage: "/assets/relay/relayStartSample4.png",
+  //   },
+  //   {
+  //     id: 5,
+  //     userId: 5,
+  //     user: "상상의 나무꾼",
+  //     badget: "N",
+  //     date: "2024-07-30 01:22",
+  //     content: "내용입니다5",
+  //     pageImage: "/assets/relay/relayStartSample5.png",
+  //   },
+  //   {
+  //     id: 6,
+  //     userId: 6,
+  //     user: "상상의 나무꾼",
+  //     badget: "S",
+  //     date: "2024-07-30 01:22",
+  //     content: "내용입니다5",
+  //     pageImage: "/assets/relay/relayStartSample6.png",
+  //   },
+  // ];
 
   const BookStart = [
     {
       coverImage: "/assets/relay/relayStartSample1.png",
       title: "책 제목1",
-      content: PageList[0].content,
+      content: "아무말",
     },
   ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (!isNaN(Number(value)) && Number(value) >= 1 && Number(value) <= totalPage) {
+    if (!isNaN(Number(value)) && Number(value) >= 1 && Number(value) <= pages.length + 1) {
       setInputPage(Number(value));
     } else {
       setInputPage(value);
@@ -160,15 +212,25 @@ const RelayBookDetail = () => {
   };
 
   // AI 이미지 모달 관련
-  const [image, setImage] = useState<string | null>(null);
-
   const handleAiImage = () => {
     setIsAiModalOpen(true);
   };
 
-  const confirmAiImage = (image: string) => {
+  const confirmAiImage = async (image: string) => {
     setIsAiModalOpen(false);
     setImage(image);
+
+    // try {
+    //   const response = await fetch(image);
+    //   const data = await response.blob();
+    //   const ext = image.split(".").pop() || "";
+    //   const filename = image.split("/").pop() || "";
+    //   const metadata = { type: `image/${ext}` };
+    //   const file = new File([data], filename, metadata);
+    //   setFile(file);
+    // } catch (error) {
+    //   console.error("Error:", error);
+    // }
   };
 
   const cancelAiImage = () => {
@@ -212,46 +274,13 @@ const RelayBookDetail = () => {
           >
             <BookPageCover BookStart={BookStart} bookId={bookId} isDeleteOpen={isDeleteModalOpen} isAiOpen={isAiModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
 
-            {/* 페이지 매핑 */}
-            {PageList.map((page) => (
-              <BookDetailPage bookId={bookId} number={page.id} page={page} totalPage={PageList.length} handleAiImage={handleAiImage} image={image} setImage={setImage}>
-                <div className="py-3">
-                  {page.id % 2 == 1 ? (
-                    <div className="p-2 grid grid-rows-[6.8fr_3.2fr]">
-                      {/* 홀수쪽일 경우 그림, 글 순서 */}
-                      <div className="w-full h-72 flex justify-center">
-                        <img className="w-[78%] object-cover" src={page.pageImage} alt="" />
-                      </div>
-                      <p className="h-full mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
-                    </div>
-                  ) : (
-                    <div className="p-2 grid grid-rows-[3.2fr_6.8fr]">
-                      {/* 짝수쪽일 경우 글, 그림 순서 */}
-                      <p className="h-full mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
-                      <div className="w-full h-72 flex justify-center">
-                        <img className="w-[78%] object-cover" src={page.pageImage} alt="" />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </BookDetailPage>
-            ))}
+            {/* 내부 상세 페이지 */}
 
-            {/* 마지막 페이지 */}
-            {isFinished ? (
-              // 완료된 이야기일 경우 이모티콘 반응
-              <BookDetailPage bookId={bookId} number={PageList.length + 1} page={PageList[0]} totalPage={PageList.length} handleAiImage={handleAiImage} image={image} setImage={setImage}>
-                <BookDetailDone />
-              </BookDetailPage>
-            ) : (
-              // 진행 중인 이야기일 경우 페이지 추가
-              <BookDetailPage bookId={bookId} number={PageList.length + 1} page={PageList[0]} totalPage={PageList.length} handleAiImage={handleAiImage} image={image} setImage={setImage}>
-                <hr></hr>
-                <AddPage PageList={PageList} handleAiImage={handleAiImage} image={image} setImage={setImage} />
-              </BookDetailPage>
-            )}
+            <BookDetailPage readPage={true} bookId={bookId} number={page} pages={pages} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
+            <BookDetailPage readPage={false} bookId={bookId} number={page} pages={lastPage} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
+
             {/* 페이지가 짝수일 경우 마지막 커버 표시 */}
-            {totalPage % 2 === 0 ? <PageEndCover></PageEndCover> : <></>}
+            <PageEndCover totalPage={totalPage} />
           </HTMLFlipBook>
         </div>
 
@@ -283,7 +312,7 @@ const RelayBookDetail = () => {
             </div>
           )}
           <span className="pl-4 font-bold">/</span>
-          <span className="pl-4 font-bold">{totalPage + 1}</span>
+          <span className="pl-4 font-bold">{pages.length + 1}</span>
         </div>
       </div>
 
@@ -291,7 +320,7 @@ const RelayBookDetail = () => {
       <DeleteModal isOpen={isDeleteModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />
 
       {/* AI 이미지 생성 모달 */}
-      <AiImagePromptModal isOpen={isAiModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} />
+      <AiImagePromptModal isOpen={isAiModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} setFile={setFile} />
     </div>
   );
 };

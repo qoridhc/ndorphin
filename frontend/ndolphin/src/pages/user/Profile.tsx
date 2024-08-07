@@ -6,6 +6,8 @@ import TopButton from "../../components/common/TopButton";
 import OkList from "../../components/user/OkList";
 import IfCardList from "../../components/user/IfCardList";
 import ByeList from "../../components/user/ByeList";
+import BalanceList from "../../components/user/BalanceList";
+
 
 const Profile = () => {
   const location = useLocation();
@@ -18,6 +20,9 @@ const Profile = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isFollowModalOpen, setIsFollowModalOpen] = useState(false);
   const [activeFollowTab, setActiveFollowTab] = useState<string>("팔로워");
+
+  // 본인의 프로필일 때는 수정 버튼과 NS 설문조사 버튼 만들고, 헤더의 프로필 이미지의 계정 관리 삭제?
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
 
   // 탭 정보를 URL쿼리에 저장(뒤로가거나 새로고침해도 상태 유지 가능)
   useEffect(() => {
@@ -41,6 +46,8 @@ const Profile = () => {
         return <RelayBookList />;
       case "만약에":
         return <IfCardList />;
+      case "밸런스게임":
+        return <BalanceList />;
       case "괜찮아":
         return <OkList />;
       case "작별인사":
@@ -51,13 +58,13 @@ const Profile = () => {
   };
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4 hide-scrollbar">
       <div className="mt-12 gap-10 flex justify-center items-center">
         <img className="w-36 h-36 mr-6 bg-gray-200 rounded-full" src={profileImage || "assets/user/profile.png"} alt="Profile" />
         <div>
           <h2 className="text-xl font-bold flex items-center">
             행복한 구름
-            <img className="ml-2 w-9 h-8" src="assets/user/nbadge.png" alt="nbadge" />
+            <img className="ml-2 w-8 h-8" src="assets/user/nbadge.png" alt="nbadge" />
             {/* 팔로우 버튼 예시, 본인 일 땐 표시 안 함 */}
             <button
               className={`ms-10 text-xs w-auto h-auto p-2 rounded-lg border-none shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 ${
@@ -89,16 +96,19 @@ const Profile = () => {
       </div>
 
       <div className="mt-8 bg-white border-b space-x-4 flex justify-center sticky top-0">
-        <button className={buttonClass("릴레이북")} onClick={() => setSelectedTab("릴레이북")}>
+        <button className={buttonClass("릴레이북")} onClick={() => {setSelectedTab("릴레이북"); window.scrollTo(0, 0);}}>
           릴레이북
         </button>
-        <button className={buttonClass("만약에")} onClick={() => setSelectedTab("만약에")}>
+        <button className={buttonClass("만약에")} onClick={() => {setSelectedTab("만약에"); window.scrollTo(0, 0);}}>
           만약에
         </button>
-        <button className={buttonClass("괜찮아")} onClick={() => setSelectedTab("괜찮아")}>
+        <button className={buttonClass("밸런스게임")} onClick={() => {setSelectedTab("밸런스게임"); window.scrollTo(0, 0);}}>
+          밸런스게임
+        </button>
+        <button className={buttonClass("괜찮아")} onClick={() => {setSelectedTab("괜찮아"); window.scrollTo(0, 0);}}>
           괜찮아
         </button>
-        <button className={buttonClass("작별인사")} onClick={() => setSelectedTab("작별인사")}>
+        <button className={buttonClass("작별인사")} onClick={() => {setSelectedTab("작별인사"); window.scrollTo(0, 0);}}>
           작별인사
         </button>
       </div>

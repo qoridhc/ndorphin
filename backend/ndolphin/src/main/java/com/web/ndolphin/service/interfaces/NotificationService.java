@@ -12,4 +12,7 @@ public interface NotificationService {
 
     ResponseEntity<ResponseDto> delete(Long notificationId);
 
+    ResponseEntity<ResponseDto> checkUnReadNotifications(Long notificationId);
+
+
 }
