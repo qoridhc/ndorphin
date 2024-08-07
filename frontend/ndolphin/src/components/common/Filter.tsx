@@ -5,7 +5,7 @@ interface Props {
 }
 
 function Filter({ setSearchFilter2 }: Props) {
-  const [tabs, setTabs] = useState("");
+  const [tabs, setTabs] = useState("recent");
   const textStyle = "font-bold";
 
   const handleTabs = (tab: string) => {
