@@ -27,6 +27,7 @@ interface IfBoard {
   subject: string;
   userId: number;
   badget: "N";
+  hasParticipated: boolean;
 }
 
 interface If {
@@ -205,15 +206,26 @@ const IfDetail = () => {
 
                 <div>
                   <div className="p-5 border-y">
-                    <div className="flex">
-                      <img className="w-11 h-11 mr-3 rounded-[50%]" src={`${ifBoardData.avatarUrl}`} alt="" />
-                      <textarea className="w-full min-h-10 text-xl outline-none resize-none" placeholder="댓글을 작성해 주세요" id="target" ref={textareaRef} onChange={(e) => handleTextareaChange(e)} />
-                    </div>
-                    <div className="flex justify-end">
-                      <button className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0} onClick={() => handleComment()}>
-                        등록
-                      </button>
-                    </div>
+                    {ifBoardData.hasParticipated ? (
+                      <div role="alert" className="alert">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-info h-6 w-6 shrink-0">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p className="text-sm font-medium">이미 의견이 제출되었습니다.</p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex">
+                          <img className="w-11 h-11 mr-3 rounded-[50%]" src={`${ifBoardData.avatarUrl}`} alt="" />
+                          <textarea className="w-full min-h-10 text-xl outline-none resize-none" placeholder="댓글을 작성해 주세요" id="target" ref={textareaRef} onChange={(e) => handleTextareaChange(e)} />
+                        </div>
+                        <div className="flex justify-end">
+                          <button className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0} onClick={() => handleComment()}>
+                            등록
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   {ifBoardData.commentResponseDtos.map((comment) => (
