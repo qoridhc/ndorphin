@@ -6,6 +6,10 @@ import Filter from "../../components/common/Filter";
 
 const IfList = () => {
   const navigate = useNavigate();
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchFilter1, setSearchFilter1] = useState("");
+  const [searchFilter2, setSearchFilter2] = useState("");
+  const [isSearch, setIsSearch] = useState(false);
 
   return (
     <div>
@@ -17,14 +21,14 @@ const IfList = () => {
           </div>
           <hr className="w-full" />
           <div className="py-6 pb-10 flex flex-col justify-around">
-            <SearchBar />
+            <SearchBar setSearchKeyword={setSearchKeyword} setSearchFilter1={setSearchFilter1} setIsSearch={setIsSearch} />
           </div>
         </div>
       </div>
 
       <div>
         <div className="px-44 text-right flex justify-between items-center">
-          <Filter />
+          <Filter setSearchFilter2={setSearchFilter2} />
           <button
             className="px-7 py-1 shadow-md rounded-xl font-bold bg-amber-300 text-white"
             onClick={() => {
@@ -34,7 +38,7 @@ const IfList = () => {
           </button>
         </div>
 
-        <IfCardList />
+        <IfCardList searchKeyword={searchKeyword} searchFilter1={searchFilter1} searchFilter2={searchFilter2} isSearch={isSearch} setIsSearch={setIsSearch} />
       </div>
     </div>
   );

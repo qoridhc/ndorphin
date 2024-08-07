@@ -16,17 +16,21 @@ import com.web.ndolphin.repository.LikesRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.CommentService;
 import com.web.ndolphin.service.interfaces.FileInfoService;
+import com.web.ndolphin.service.interfaces.OpenAIService;
 import com.web.ndolphin.service.interfaces.TokenService;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentServiceImpl implements CommentService {
 
     private final UserRepository userRepository;
@@ -35,6 +39,37 @@ public class CommentServiceImpl implements CommentService {
     private final LikesRepository likesRepository;
     private final FileInfoService fileInfoService;
     private final TokenService tokenService;
+    private final OpenAIService openAIService;
+
+    // addComment 메서드 이후에 추가될 비동기 요약 메서드
+    @Async
+    public void summarizeBoardContentAsync(Long boardId) {
+        try {
+            // 게시판과 댓글 내용 가져오기
+            Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
+
+            List<Comment> comments = commentRepository.findByBoardId(boardId);
+
+            // 게시판과 댓글 내용 결합
+            StringBuilder contentBuilder = new StringBuilder();
+            contentBuilder.append(board.getContent()).append(" ");
+            for (Comment comment : comments) {
+                contentBuilder.append(comment.getContent()).append(" ");
+            }
+
+            String fullContent = contentBuilder.toString();
+
+            // OpenAI API를 통해 요약
+            String summary = openAIService.summarizeText(fullContent);
+
+            // 요약 결과를 게시판에 저장
+            board.setSummary(summary);
+            boardRepository.save(board);
+        } catch (Exception e) {
+            log.info("Error summarizing board content", e);
+        }
+    }
 
     @Override
     @Transactional
@@ -53,6 +88,9 @@ public class CommentServiceImpl implements CommentService {
 
             commentRepository.save(comment);
             fileInfoService.uploadFiles(comment.getId(), EntityType.COMMENT, multipartFiles);
+
+            // 비동기 요약 작업 시작
+            summarizeBoardContentAsync(boardId);
 
             return ResponseDto.success(); // 성공 시 응답
         } catch (Exception e) {

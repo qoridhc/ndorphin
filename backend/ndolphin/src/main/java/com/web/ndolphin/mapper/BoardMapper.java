@@ -143,6 +143,7 @@ public class BoardMapper {
         RelayBoardResponseDto relayBoardResponseDto = new RelayBoardResponseDto();
 
         mapCommonFields(board, relayBoardResponseDto);
+        relayBoardResponseDto.setSummary(board.getSummary());
         relayBoardResponseDto.setHasParticipated(hasParticipated);
         relayBoardResponseDto.setFavorite(isFavorite);
         relayBoardResponseDto.setThumbNailUrl(thumbNailUrl);

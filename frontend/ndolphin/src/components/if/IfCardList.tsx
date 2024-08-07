@@ -16,7 +16,15 @@ interface If {
   badget: "N";
 }
 
-const IfCardList = () => {
+interface Props {
+  searchKeyword: string;
+  searchFilter1: string;
+  searchFilter2: string;
+  isSearch: boolean;
+  setIsSearch: (state: boolean) => void;
+}
+
+const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, setIsSearch }: Props) => {
   const [ifBoardList, setIfBoardList] = useState<If[] | null>(null);
 
   const getIfBoardList = async () => {
@@ -28,9 +36,23 @@ const IfCardList = () => {
     }
   };
 
+  const getSearchIfBoardList = async () => {
+    try {
+      const response = await boardApi.list("OPINION_BOARD", searchKeyword, searchFilter1, searchFilter2);
+      setIfBoardList(response.data.data);
+    } catch (error) {
+      console.log("boardApi search : ", error);
+    }
+  };
+
   useEffect(() => {
     getIfBoardList();
-  });
+  }, []);
+
+  useEffect(() => {
+    getSearchIfBoardList();
+    setIsSearch(false);
+  }, [isSearch]);
 
   return (
     <div>

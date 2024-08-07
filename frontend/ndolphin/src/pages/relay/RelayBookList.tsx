@@ -27,6 +27,7 @@ function Relaybooklist() {
     };
 
     getRelayList();
+    getRelayList();
   }, []); // 디펜던시 작성 시 변수가 변할 때만 실행됨
   // 빈 배열로 적으면 mount 시에만 실행됨 (1회만)
 
@@ -41,7 +42,7 @@ function Relaybooklist() {
           <hr className="w-full" />
 
           <div className="py-6 pb-10 flex flex-col">
-            <SearchBar />
+            {/* <SearchBar /> */}
           </div>
           <div className="w-full flex justify-end items-center">
             <div className="flex justify-center mr-[16rem]">
@@ -70,7 +71,7 @@ function Relaybooklist() {
               </button>
             </div>
           </div>
-          <Filter />
+          {/* <Filter /> */}
         </div>
       </div>
 
