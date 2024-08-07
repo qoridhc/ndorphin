@@ -10,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -19,7 +18,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Comment {
+public class Comment extends DateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,10 +34,6 @@ public class Comment {
     private User user;
 
     private String content;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Likes> likes = new ArrayList<>();

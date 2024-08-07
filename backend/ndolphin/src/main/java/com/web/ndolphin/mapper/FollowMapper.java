@@ -5,7 +5,6 @@ import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.follow.FollowDto;
 import com.web.ndolphin.dto.follow.response.FollowerReponseDto;
 import com.web.ndolphin.dto.follow.response.FollowingResponseDto;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +16,6 @@ public class FollowMapper {
 
         follow.setFollower(followBy);
         follow.setFollowing(followTo);
-        follow.setCreatedAt(LocalDateTime.now());
 
         return follow;
     }
