@@ -32,7 +32,7 @@ const Header = () => {
   ]);
 
   useEffect(() => {
-    const storedMenu = localStorage.getItem("selectedMenu");
+    const storedMenu = sessionStorage.getItem("selectedMenu");
     if (storedMenu) {
       setSelectedMenu(storedMenu);
     }
@@ -138,7 +138,7 @@ const Header = () => {
 
   const handleMenuClick = (menu: string) => {
     setSelectedMenu(menu);
-    localStorage.setItem("selectedMenu", menu); // 로컬 스토리지에 선택된 메뉴 저장
+    sessionStorage.setItem("selectedMenu", menu); // 로컬 스토리지에 선택된 메뉴 저장
     navigate(`/${menu}`);
   };
 
