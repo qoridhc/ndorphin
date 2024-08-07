@@ -27,7 +27,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
       const checkRedirect = setInterval(() => {
         try {
           const redirectedUrl = loginWindow.location.href;
-          if (redirectedUrl.includes("amazonaws.com")) {
+          if (redirectedUrl.includes("localhost:3000")) {
+            // if (redirectedUrl.includes("amazonaws.com")) {
             clearInterval(checkRedirect);
             const urlParams = new URLSearchParams(redirectedUrl.split("?")[1]);
             const userId = urlParams.get("userId");
