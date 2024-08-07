@@ -36,8 +36,8 @@ const Header = () => {
       setIsLoggedIn(true);
     }
     const storedProfileImage = localStorage.getItem("profileImage");
-    const storedEmail = localStorage.getItem('email');
-    const storedNickName = localStorage.getItem('nickName');
+    const storedEmail = localStorage.getItem("email");
+    const storedNickName = localStorage.getItem("nickName");
 
     setProfileImage(storedProfileImage);
     setUserEmail(storedEmail);
@@ -56,17 +56,18 @@ const Header = () => {
     localStorage.setItem("refreshToken", refreshToken);
 
     // 로그인 성공 시 유저 정보 조회하여 로컬 스토리지에 저장 로직 추가
-    userApi.getUserInfo(userId)
-      .then(res => {
+    userApi
+      .getUserInfo(userId)
+      .then((res) => {
         localStorage.setItem("email", res.data.data.email);
         localStorage.setItem("mbti", res.data.data.mbti);
         localStorage.setItem("nickName", res.data.data.nickName);
         localStorage.setItem("npoint", res.data.data.npoint.toString());
         localStorage.setItem("profileImage", res.data.data.profileImage);
       })
-      .catch(err => {
-        console.error('유저 정보 에러', err)
-      })
+      .catch((err) => {
+        console.error("유저 정보 에러", err);
+      });
 
     setIsLoggedIn(true);
     closeLoginModal();
@@ -88,13 +89,12 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    localStorage.clear()
+    localStorage.clear();
 
     setIsLoggedIn(false);
     setProfileImage(null);
     setShowProfileDropdown(false);
     navigate("/");
-
   };
 
   const handleProfileDropdownClick = (event: React.MouseEvent) => {
@@ -257,8 +257,8 @@ const Header = () => {
                   <div className="p-4 flex items-center">
                     <img className="w-15 h-15 rounded-full" src={profileImage || "/assets/user/profile.png"} alt="Profile" />
                     <div className="ml-3">
-                      <div className="font-semibold">{ userNickName }</div>
-                      <div className="text-sm text-gray-500">{ userEmail }</div>
+                      <div className="font-semibold">{userNickName}</div>
+                      <div className="text-sm text-gray-500">{userEmail}</div>
                     </div>
                   </div>
                   <hr />
