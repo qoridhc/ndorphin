@@ -3,6 +3,7 @@ package com.web.ndolphin.controller;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.notification.request.NotificationRequestDto;
 import com.web.ndolphin.service.impl.NotificationServiceImpl;
+import com.web.ndolphin.util.LogUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,7 +13,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "알림 컨트롤러", description = "알림 API입니다.")
 @RestController
@@ -36,12 +43,14 @@ public class NotificationController {
         @Parameter(description = "알림을 생성할 사용자의 ID", required = true) @PathVariable Long userId,
         @Parameter(description = "알림 생성 요청 데이터", required = true) @RequestBody NotificationRequestDto dto) {
 
+        LogUtil.info("createNotification", dto);
+
         ResponseEntity<ResponseDto> response = notificationService.create(userId, dto);
 
         return response;
     }
 
-    @Operation(summary = "모든 알림 조회", description = "사용자의 모든 알림을 조회합니다.")
+    @Operation(summary = "모든 알림 조회 (모든 알림 자동 읽음 처리)", description = "사용자의 모든 알림을 조회합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "알림 조회 성공",
             content = @Content(schema = @Schema(implementation = ResponseDto.class))),
@@ -55,6 +64,17 @@ public class NotificationController {
         @Parameter(description = "알림을 조회할 사용자의 ID", required = true) @PathVariable Long userId) {
 
         ResponseEntity<ResponseDto> response = notificationService.selectAllByUserId(userId);
+
+        return response;
+    }
+
+    @GetMapping("/unread/{userId}")
+    public ResponseEntity<ResponseDto> checkNewNotification(
+        @Parameter(description = "현재유저 읽지 않은 알림 존재 여부 ", required = true)
+        @PathVariable Long userId
+    ) {
+
+        ResponseEntity<ResponseDto> response = notificationService.checkUnReadNotifications(userId);
 
         return response;
     }

@@ -132,15 +132,18 @@ public class BoardMapper {
     }
 
     public static RelayBoardResponseDto toRelayBoardResponseDto(Board board,
-        boolean hasParticipated, boolean isFavorite, String thumbNailUrl) {
+        boolean hasParticipated, boolean isFavorite, String thumbNailUrl, Long commentCount, boolean isDone) {
 
         RelayBoardResponseDto relayBoardResponseDto = new RelayBoardResponseDto();
 
         mapCommonFields(board, relayBoardResponseDto);
+        relayBoardResponseDto.setSummary(board.getSummary());
         relayBoardResponseDto.setHasParticipated(hasParticipated);
         relayBoardResponseDto.setFavorite(isFavorite);
         relayBoardResponseDto.setThumbNailUrl(thumbNailUrl);
         relayBoardResponseDto.setMaxPage(board.getMaxPage());
+        relayBoardResponseDto.setCommentCount(commentCount);
+        relayBoardResponseDto.setDone(isDone);
 
         return relayBoardResponseDto;
     }

@@ -1,9 +1,18 @@
 import React from "react";
-import Filter from "../common/Filter";
-import Paging from "../common/Paging";
-import BalanceCard from "./BalanceCard";
+import BalanceCard from "../balance/BalanceCard";
 
-const BalanceCardList = () => {
+interface Vote {
+  id: number;
+  profileImgUrl: string;
+  user: string;
+  badget: string;
+  title: string;
+  joinCount: number;
+  date: string;
+  category: { id: number; content: string }[];
+}
+
+const BalanceList = () => {
   const balanceList = [
     {
       id: 1,
@@ -260,10 +269,8 @@ const BalanceCardList = () => {
           <BalanceCard key={balance.id} balance={balance} />
         ))}
       </div>
-
-      <Paging />
     </div>
-  );
-};
+  )
+}
 
-export default BalanceCardList;
+export default BalanceList;

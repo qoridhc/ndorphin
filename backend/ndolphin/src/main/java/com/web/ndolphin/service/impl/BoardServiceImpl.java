@@ -83,11 +83,16 @@ public class BoardServiceImpl implements BoardService {
 
         try {
             Long userId = tokenService.getUserIdFromToken();
+
             User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
             Board board = BoardMapper.toEntity(boardRequestDto, user);
+
+            // 게시글 처리
             boardRepository.save(board);
+
+            // 파일 업로드 처리
             fileInfoService.uploadFiles(board.getId(), EntityType.POST, multipartFiles);
 
             // Dall-E 처리
@@ -193,9 +198,11 @@ public class BoardServiceImpl implements BoardService {
                 boolean isFavorite = favoriteRepository.existsByBoardIdAndUserId(boardId,
                     board.getUser().getUserId());
                 String thumbNailUrl = fileInfoService.getFileUrl(boardId, EntityType.POST);
+                Long commentCount = commentRepository.countCommentsByBoardId(boardId);
+                boolean isDone = (commentCount + 1) == board.getMaxPage();
 
                 return BoardMapper.toRelayBoardResponseDto(board, hasParticipated, isFavorite,
-                    thumbNailUrl);
+                    thumbNailUrl, commentCount, isDone);
             })
             .collect(toList());
     }
@@ -343,7 +350,7 @@ public class BoardServiceImpl implements BoardService {
         Board existingBoard = optionalBoard.get();
         existingBoard.setSubject(boardRequestDto.getSubject());
         existingBoard.setContent(boardRequestDto.getContent());
-        existingBoard.setHit(existingBoard.getHit() + 1);
+//        existingBoard.setHit(existingBoard.getHit() + 1);
         existingBoard.setUpdatedAt(LocalDateTime.now());
         boardRepository.save(existingBoard);
 

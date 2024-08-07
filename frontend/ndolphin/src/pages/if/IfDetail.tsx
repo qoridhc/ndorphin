@@ -4,11 +4,21 @@ import { useNavigate, useParams } from "react-router";
 import SettingMenu from "../../components/common/SettingMenu";
 import OpinionCard from "../../components/if/OpinionCard";
 import ifApi from "../../api/ifApi";
+import boardApi from "../../api/boardApi";
+import commentApi from "../../api/commentApi";
 
-interface ifBoard {
+interface IfBoard {
   avatarUrl: string;
   commentCount: number | null;
-  commentResponseDtos: [];
+  commentResponseDtos: {
+    avatarUrl: string | null;
+    commentId: number;
+    content: string;
+    createdAt: string | null;
+    likeCnt: number;
+    likedByUser: false;
+    nickName: string;
+  }[];
   content: string;
   contentFileUrl: string | null;
   createdAt: string;
@@ -18,45 +28,29 @@ interface ifBoard {
   userId: 2;
 }
 
+interface If {
+  avatarUrl: string | null;
+  bestComment: string | null;
+  commentCount: number;
+  createdAt: string;
+  hit: number;
+  id: number;
+  nickName: string;
+  subject: string;
+  badget: "N";
+}
+
 const IfDetail = () => {
   const navigate = useNavigate();
   const params = useParams();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const contentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [textCount, setTextCount] = useState(0);
-  const [ifBoardData, setIfBoardData] = useState<ifBoard | null>(null);
-
-  const opinionList = [
-    {
-      id: 1,
-      profileImgUrl: "profile5",
-      user: "코에촉촉",
-      badget: "S",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      comment: "티라노가 나 가지고 놀면 ㅠ? 6수 가자",
-    },
-    {
-      id: 2,
-      profileImgUrl: "profile3",
-      user: "코에촉촉",
-      badget: "N",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타났는데 도망은 못가고 잡아먹지도 않는다 숨을 것이냐 싸울 것이냐? 어떻게 할 것이냐",
-      joinCount: 0,
-      comment: null,
-    },
-    {
-      id: 3,
-      profileImgUrl: "profile2",
-      user: "코에촉촉",
-      badget: "S",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      comment: "티라노가 나 가지고 놀면 ㅠ? 6수 가자",
-    },
-  ];
+  const [contentTextCount, setContentTextCount] = useState(0);
+  const [ifBoardData, setIfBoardData] = useState<IfBoard | null>(null);
+  const [recommendationList, setRecommendationList] = useState<If[] | null>(null);
+  const [isCommentUpdate, setIsCommentUpdate] = useState(0);
+  const [currentContent, setCurrentContent] = useState("");
 
   const userData = {
     profileImgUrl: "/assets/profile/profile4.png",
@@ -90,11 +84,17 @@ const IfDetail = () => {
     }
   };
 
-  useEffect(() => {
-    if (params.boardId !== undefined) {
-      readBoardData(params.boardId);
+  const getRecommendationList = async () => {
+    try {
+      const response = await boardApi.list("OPINION_BOARD");
+      if (response.status === 200) {
+        // console.log(response.data.data);
+        setRecommendationList(response.data.data);
+      }
+    } catch (error) {
+      console.error("boardApi list : ", error);
     }
-  }, [params.boardId]);
+  };
 
   const handleTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const text = event.target.value.length;
@@ -106,9 +106,84 @@ const IfDetail = () => {
     }
   };
 
+  const handleContentTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    setCurrentContent(event.target.value);
+    const text = event.target.value.length;
+    setContentTextCount(text);
+
+    if (contentTextareaRef.current) {
+      contentTextareaRef.current.style.height = "auto";
+      contentTextareaRef.current.style.height = contentTextareaRef.current.scrollHeight + "px";
+    }
+  };
+
+  const handleComment = async () => {
+    if (params.boardId !== undefined && textareaRef.current) {
+      const formData = new FormData();
+
+      formData.append(
+        "request",
+        new Blob(
+          [
+            JSON.stringify({
+              content: textareaRef.current.value,
+            }),
+          ],
+          { type: "application/json" }
+        )
+      );
+
+      try {
+        const response = await commentApi.create(params.boardId, formData);
+        if (response.status === 200) {
+          readBoardData(params.boardId);
+          textareaRef.current.value = "";
+        }
+      } catch (error) {
+        console.log("commentApi create : ", error);
+      }
+    }
+  };
+
+  const handleCommentUpdate = async (commentId: number, commentContent: string) => {
+    if (params.boardId !== undefined && contentTextareaRef.current) {
+      setCurrentContent(commentContent);
+
+      const data = {
+        content: contentTextareaRef.current.value,
+      };
+
+      try {
+        const response = await commentApi.update(params.boardId, commentId, data);
+        if (response.status === 200) {
+          readBoardData(params.boardId);
+          setIsCommentUpdate(0);
+        }
+      } catch (error) {
+        console.log("commentApi update : ", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (params.boardId !== undefined) {
+      readBoardData(params.boardId);
+      getRecommendationList();
+    }
+  }, [params.boardId]);
+
+  useEffect(() => {
+    if (isCommentUpdate !== null && contentTextareaRef.current) {
+      setContentTextCount(contentTextareaRef.current.value.length);
+      // 텍스트 길이만큼 커서를 이동시켜서 커서가 텍스트 끝에 위치하도록 설정
+      contentTextareaRef.current.setSelectionRange(contentTextareaRef.current.value.length, contentTextareaRef.current.value.length);
+      contentTextareaRef.current.focus(); // 텍스트 영역에 포커스
+    }
+  }, [isCommentUpdate]);
+
   return (
     <>
-      {ifBoardData ? (
+      {ifBoardData && recommendationList ? (
         <div className="px-44 py-5">
           <button className="py-4 flex" onClick={() => navigate("/iflist")}>
             <FaArrowLeftLong className="text-3xl" />
@@ -155,44 +230,59 @@ const IfDetail = () => {
                       <textarea className="w-full min-h-10 text-xl outline-none resize-none" placeholder="댓글을 작성해 주세요" id="target" ref={textareaRef} onChange={(e) => handleTextareaChange(e)} />
                     </div>
                     <div className="flex justify-end">
-                      <button className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0}>
+                      <button className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0} onClick={() => handleComment()}>
                         등록
                       </button>
                     </div>
                   </div>
 
-                  {/* {ifBoardData.commentResponseDtos.map((comment) => (
-                    <div className="p-5 border-b flex" key={comment.id}>
-                      <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${comment.profileImgUrl}`} alt="" />
+                  {ifBoardData.commentResponseDtos.map((comment) => (
+                    <div className="p-5 border-b flex" key={comment.commentId}>
+                      <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${comment.avatarUrl}`} alt="" />
 
                       <div className="w-full grid gap-2">
                         <div className="grid grid-cols-[6fr_1fr]">
                           <div className="flex flex-col justify-around">
-                            <p className="font-bold">{comment.user}</p>
+                            <p className="font-bold">{comment.nickName}</p>
                             <p className="text-xs text-[#565656]">3일 전</p>
                           </div>
-                          <SettingMenu />
+                          <SettingMenu boardId={params.boardId} commentId={comment.commentId} setIsCommentUpdate={setIsCommentUpdate} readBoardData={readBoardData} />
                         </div>
 
-                        <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
+                        {isCommentUpdate !== comment.commentId ? (
+                          <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
+                        ) : (
+                          <div className="">
+                            <textarea className="w-full min-h-10 outline-none resize-none" placeholder="댓글을 작성해 주세요" value={currentContent} id="target" ref={contentTextareaRef} onChange={(e) => handleContentTextareaChange(e)} />
+                            <div className="flex justify-end">
+                              <button
+                                className={`px-7 py-1 rounded-md text-[#565656] font-bold border-2 border-amber-300 ${contentTextCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`}
+                                disabled={contentTextCount === 0}
+                                onClick={() => handleCommentUpdate(comment.commentId, comment.content)}>
+                                수정
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
                         <div className="flex justify-between items-center">
                           <div className="flex">
-                            <button>{userData.profileImgUrl[comment.id] ? <img className="w-4" src="/assets/like/likeCheckedIcon.png" alt="" /> : <img className="w-4" src="/assets/like/likeIcon.png" alt="" />}</button>
-                            {comment.likeCount === 0 ? <></> : <p className="px-1 text-sm text-[#565656] font-semibold">{comment.likeCount}</p>}
+                            <button>{comment.likedByUser ? <img className="w-4" src="/assets/like/likeCheckedIcon.png" alt="" /> : <img className="w-4" src="/assets/like/likeIcon.png" alt="" />}</button>
+                            {comment.likeCnt === 0 ? <></> : <p className="px-1 text-sm text-[#565656] font-semibold">{comment.likeCnt}</p>}
                           </div>
-                          <p className="text-sm text-[#565656] text-right">{comment.date}</p>
+                          <p className="text-sm text-[#565656] text-right">{comment.createdAt}</p>
                         </div>
                       </div>
                     </div>
-                  ))} */}
+                  ))}
                 </div>
               </div>
             </div>
 
             <div>
-              {opinionList.map((opinion) => (
+              {recommendationList.map((opinion) => (
                 <div className="pb-5">
-                  <OpinionCard key={opinion.id} opinion={opinion} />
+                  <OpinionCard key={opinion.id} ifBoard={opinion} />
                 </div>
               ))}
             </div>
