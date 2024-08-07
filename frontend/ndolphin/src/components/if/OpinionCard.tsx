@@ -42,7 +42,7 @@ const OpinionCard = ({ ifBoard }: Props) => {
           </div>
         </div>
 
-        <IoIosArrowForward className="text-2xl" />
+        {/* <IoIosArrowForward className="text-2xl" /> */}
       </div>
       <p className="text-justify line-clamp-2">{ifBoard.subject}</p>
 

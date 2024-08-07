@@ -26,7 +26,7 @@ function Relaybooklist() {
       }
     };
 
-    getRelayList()
+    getRelayList();
   }, []); // 디펜던시 작성 시 변수가 변할 때만 실행됨
   // 빈 배열로 적으면 mount 시에만 실행됨 (1회만)
 
@@ -35,42 +35,45 @@ function Relaybooklist() {
       <div className="flex flex-col justify-center">
         <div className="w-full px-44 py-6 flex-col items-center">
           <div className="py-5 flex items-end">
-            <p className="text-xl font-bold">릴레이북</p>
-            <p className="pl-3 text-xs">‘만약에~’를 이어 하나의 이야기로 만들어요</p>
-          </div>
-          <div className="py-6 pb-10 flex flex-col justify-around">
-            <SearchBar />
-          </div>
-          <div className="flex justify-center">
-            <button
-              className={`px-10 py-3 pb-5 font-semibold ${tabs === 0 ? underline : "text-[#6C6C6C]"} z-20`}
-              onClick={() => {
-                setTabs(0);
-              }}>
-              진행 중
-            </button>
-            <button
-              className={`px-10 py-3 pb-5 font-semibold ${tabs === 1 ? underline : "text-[#6C6C6C]"} z-20`}
-              onClick={() => {
-                setTabs(1);
-              }}>
-              완료
-            </button>
+            <p className="text-2xl font-bold">릴레이북</p>
+            <p className="pl-3 text-md">‘만약에~’를 이어 하나의 이야기로 만들어요</p>
           </div>
           <hr className="w-full" />
+
+          <div className="py-6 pb-10 flex flex-col">
+            <SearchBar />
+          </div>
+          <div className="w-full flex justify-end items-center">
+            <div className="flex justify-center mr-[16rem]">
+              <button
+                className={`px-10 py-3 pb-5 font-semibold ${tabs === 0 ? underline : "text-[#6C6C6C]"} z-20`}
+                onClick={() => {
+                  setTabs(0);
+                }}>
+                진행 중
+              </button>
+              <button
+                className={`px-10 py-3 pb-5 font-semibold ${tabs === 1 ? underline : "text-[#6C6C6C]"} z-20`}
+                onClick={() => {
+                  setTabs(1);
+                }}>
+                완료
+              </button>
+            </div>
+            <div className="">
+              <button
+                className="px-7 py-1 shadow-md rounded-xl font-bold bg-amber-300 text-white"
+                onClick={() => {
+                  navigate("/relaybookstart");
+                }}>
+                이야기 시작하기
+              </button>
+            </div>
+          </div>
+          <Filter />
         </div>
       </div>
 
-      <div className="flex justify-between items-center px-44 text-right">
-        <Filter />
-        <button
-          className="px-7 py-1 shadow-md rounded-xl font-bold bg-amber-300 text-white"
-          onClick={() => {
-            navigate("/relaybookstart");
-          }}>
-          이야기 시작하기
-        </button>
-      </div>
       <BookList bookList={bookList} />
     </div>
   );

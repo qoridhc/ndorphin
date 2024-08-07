@@ -3,7 +3,7 @@ import DropDown from "./relayBookCRUD/RelayBookDropDown";
 import DeleteModal from "./relayBookCRUD/BookDeleteModal";
 
 interface BookPageCoverProps {
-  BookStart: any;
+  firstPage: any;
   bookId: any;
   isDeleteOpen: boolean;
   isAiOpen: boolean;
@@ -12,13 +12,13 @@ interface BookPageCoverProps {
   handleDelete: () => void;
 }
 
-const BookPageCover = React.forwardRef<HTMLDivElement, BookPageCoverProps>(({ BookStart, bookId, handleDelete }, ref: ForwardedRef<HTMLDivElement>) => {
+const BookPageCover = React.forwardRef<HTMLDivElement, BookPageCoverProps>(({ firstPage, bookId, handleDelete }, ref: ForwardedRef<HTMLDivElement>) => {
   return (
     <>
       <div className="cover" ref={ref} data-density="hard">
         <div className="h-full flex flex-col justify-between">
           <div className="pt-5 pr-5 ">
-            <DropDown bookId={bookId} handleDelete={handleDelete} BookStart={BookStart} />
+            <DropDown bookId={bookId} handleDelete={handleDelete} firstPage={firstPage} />
           </div>
           <div className="flex justify-center">
             <img src="/assets/relay/relayStartSample1.png" width="300px" alt="#"></img>

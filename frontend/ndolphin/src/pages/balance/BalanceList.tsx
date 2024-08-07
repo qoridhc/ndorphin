@@ -12,13 +12,13 @@ const BalanceList = () => {
       <div className="flex flex-col justify-center">
         <div className="w-full px-44 py-6 flex-col items-center">
           <div className="py-5 flex items-end">
-            <p className="text-xl font-bold">밸런스게임</p>
-            <p className="pl-3 text-xs">‘만약에~’ 밸런스게임</p>
+            <p className="text-2xl font-bold">밸런스게임</p>
+            <p className="pl-3 text-md">‘만약에~’ 밸런스게임</p>
           </div>
+          <hr className="w-full" />
           <div className="py-6 pb-10 flex flex-col justify-around">
             <SearchBar />
           </div>
-          <hr className="w-full" />
         </div>
       </div>
 
@@ -30,7 +30,7 @@ const BalanceList = () => {
             onClick={() => {
               navigate("/ifstart");
             }}>
-            만약에 등록
+            밸런스게임 등록
           </button>
         </div>
 

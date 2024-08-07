@@ -28,7 +28,7 @@ function App() {
           <Route path="/" element={<Home />}></Route>
           <Route path="/relaybooklist" element={<RelayBookList />}></Route>
           <Route path="/relaybookstart" element={<RelayBookStart />}></Route>
-          <Route path="/relaybookupdate/:id" element={<RelayBookUpdate />}></Route>
+          <Route path="/relaybookupdate/:bookId" element={<RelayBookUpdate />}></Route>
           <Route path="/relaybookdetail/:bookId" element={<RelayBookDetail />}></Route>
           <Route path="/iflist" element={<IfList />}></Route>
           <Route path="/ifstart" element={<IfStart />}></Route>

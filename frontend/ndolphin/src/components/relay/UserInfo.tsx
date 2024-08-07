@@ -1,13 +1,14 @@
 import BookPageDropDown from "./BookPageCRUD/BookPageDropDown";
 
 interface UserInfoProps {
+  firstPage: boolean;
   user: string;
   badget: string;
   setPageUpdate: (type: boolean) => void;
   handleDelete: () => void;
 }
 
-const UserInfo: React.FC<UserInfoProps> = ({ user, badget, setPageUpdate, handleDelete }) => {
+const UserInfo: React.FC<UserInfoProps> = ({ firstPage, user, badget, setPageUpdate, handleDelete }) => {
   return (
     <>
       <div className="px-14 py-2" key={user}>
@@ -19,7 +20,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, badget, setPageUpdate, handle
               {<img className="w-5 ml-1" src={`/assets/${badget === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
             </span>
           </div>
-          <BookPageDropDown setPageUpdate={setPageUpdate} handleDelete={handleDelete} />
+          {!firstPage && <BookPageDropDown setPageUpdate={setPageUpdate} handleDelete={handleDelete} />}
         </div>
       </div>
       <hr className="bg-[#9E9E9E]" />
