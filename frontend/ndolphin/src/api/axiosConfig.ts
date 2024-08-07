@@ -17,7 +17,6 @@ request.interceptors.request.use(
     try {
       const token = await localStorage.getItem('accessToken');  // 비동기 함수로 변경
       if (token) {
-        console.log("token : ", token);
         config.headers.Authorization = `Bearer ${token}`;
       }
     } catch (error) {
