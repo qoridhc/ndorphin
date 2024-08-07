@@ -25,7 +25,8 @@ interface IfBoard {
   hit: number;
   nickName: string | null;
   subject: string;
-  userId: 2;
+  userId: number;
+  badget: "N";
 }
 
 interface If {
@@ -52,31 +53,10 @@ const IfDetail = () => {
   const [isCommentUpdate, setIsCommentUpdate] = useState(0);
   const [currentContent, setCurrentContent] = useState("");
 
-  const userData = {
-    profileImgUrl: "/assets/profile/profile4.png",
-    user: "콘수수",
-    badget: "N",
-    isLikedList: [
-      {
-        id: 1,
-        isLiked: true,
-      },
-      {
-        id: 2,
-        isLiked: true,
-      },
-      {
-        id: 3,
-        isLiked: false,
-      },
-    ],
-  };
-
   const readBoardData = async (boardId: string) => {
     try {
       const response = await ifApi.read(boardId);
       if (response.status === 200) {
-        console.log(response.data.data);
         setIfBoardData(response.data.data);
       }
     } catch (error) {
@@ -199,7 +179,7 @@ const IfDetail = () => {
                     <div className="w-40 flex justify-between items-center">
                       <div className="flex items-center">
                         <p className="font-bold">{ifBoardData.nickName}</p>
-                        {<img className="w-5 h-5 ml-1" src={`/assets/${userData.badget === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                        {<img className="w-5 h-5 ml-1" src={`/assets/${ifBoardData.badget === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
                       </div>
                     </div>
                     <div className="">
@@ -226,7 +206,7 @@ const IfDetail = () => {
                 <div>
                   <div className="p-5 border-y">
                     <div className="flex">
-                      <img className="w-11 h-11 mr-3 rounded-[50%]" src={`${userData.profileImgUrl}`} alt="" />
+                      <img className="w-11 h-11 mr-3 rounded-[50%]" src={`${ifBoardData.avatarUrl}`} alt="" />
                       <textarea className="w-full min-h-10 text-xl outline-none resize-none" placeholder="댓글을 작성해 주세요" id="target" ref={textareaRef} onChange={(e) => handleTextareaChange(e)} />
                     </div>
                     <div className="flex justify-end">
@@ -243,7 +223,10 @@ const IfDetail = () => {
                       <div className="w-full grid gap-2">
                         <div className="grid grid-cols-[6fr_1fr]">
                           <div className="flex flex-col justify-around">
-                            <p className="font-bold">{comment.nickName}</p>
+                            <div className="flex items-center">
+                              <p className="font-bold">{comment.nickName}</p>
+                              {<img className="w-5 h-5 ml-1" src={`/assets/${ifBoardData.badget === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                            </div>
                             <p className="text-xs text-[#565656]">3일 전</p>
                           </div>
                           <SettingMenu boardId={params.boardId} commentId={comment.commentId} setIsCommentUpdate={setIsCommentUpdate} readBoardData={readBoardData} />
