@@ -142,15 +142,17 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public List<CommentResponseDto> getBoardDetail(Long boardId) {
+
         Board board = boardRepository.findById(boardId)
             .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
 
         List<Comment> comments = commentRepository.findByBoardId(boardId);
+
         return comments.stream().map(comment -> {
             Long commentId = comment.getId();
             long likeCount = likesRepository.countByCommentId(commentId);
             boolean isLikedByUser = likesRepository.existsByUserIdAndCommentId(
-                board.getUser().getUserId(), commentId);
+                tokenService.getUserIdFromToken(), commentId);
             return new CommentResponseDto(commentId, comment.getContent(), likeCount,
                 isLikedByUser);
         }).collect(Collectors.toList());
