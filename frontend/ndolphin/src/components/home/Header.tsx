@@ -250,7 +250,7 @@ const Header = () => {
               {showProfileDropdown && (
                 <div className="absolute right-0 mt-2 w-72 py-1 bg-white rounded-lg shadow-lg z-50" onClick={(e) => e.stopPropagation()}>
                   <div className="p-4 flex items-center">
-                    <img className="w-15 h-15 rounded-full" src={profileImage || "/assets/user/profile.png"} alt="Profile" />
+                    <img className="w-12 h-12 rounded-full" src={profileImage || "/assets/user/profile.png"} alt="Profile" />
                     <div className="ml-3">
                       <div className="font-semibold">{userNickName}</div>
                       <div className="text-sm text-gray-500">{userEmail}</div>

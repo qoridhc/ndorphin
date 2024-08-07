@@ -35,18 +35,27 @@ const Profile = () => {
   const userId = localStorage.getItem('userId')
 
   useEffect(() => {
-    document.body.style.overflow = "hidden";
-
     const profileUserId = location.pathname.split('/')[2];
     if (profileUserId === userId) {
       setIsOwnProfile(true);
-      setNickName(localStorage.getItem('nickName'));
-      setMbti(localStorage.getItem('mbti'));
-      setNpoint(localStorage.getItem('npoint') ? Number(localStorage.getItem('npoint')) : null);
-      setProfileImage(localStorage.getItem('profileImage'));
-      if (profileImage === 'null') {
-        setProfileImage("/assets/user/profile.png")
-      }
+      userApi.getUserInfo(profileUserId)
+        .then(response => {
+          if (response.data.code == 'SU') {
+            const userInfo = response.data.data;
+            setNickName(userInfo.nickName);
+            setMbti(userInfo.mbti);
+            setNpoint(userInfo.npoint);
+            setProfileImage(userInfo.profileImage);
+
+            localStorage.setItem('nickName', userInfo.nickName);
+            localStorage.setItem('mbti', userInfo.mbti);
+            localStorage.setItem('npoint', userInfo.npoint.toString());
+            localStorage.setItem('profileImage', userInfo.profileImage);
+          }
+        })
+        .catch(error => {
+          console.error('Failed to fetch user info: ', error);
+        });
     } else {
       setIsOwnProfile(false);
       userApi.getUserInfo(profileUserId)

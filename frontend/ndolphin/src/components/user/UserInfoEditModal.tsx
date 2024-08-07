@@ -16,6 +16,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
   const [isNicknameValid, setIsNicknameValid] = useState<boolean | null>(null);
   const [nicknameMessage, setNicknameMessage] = useState<string>("");
   const [isNicknameChecked, setIsNicknameChecked] = useState<boolean>(false);
+  const [isImageChecked, setIsImageChecked] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>();
   const [image, setImage] = useState<string | null>(null);
 
@@ -53,6 +54,10 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
       reader.onloadend = () => {
         const result = reader.result as string;
         setImage(result);
+
+        if (onClose) {
+          setIsImageChecked(true)
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -108,7 +113,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
   };
 
   const handleUserUpdate = async () => {
-    if (!isNicknameValid || !isNicknameChecked) {
+    if (!isImageChecked && (!isNicknameValid || !isNicknameChecked)) {
       alert("닉네임을 다시 확인해 주세요");
       return;
     }
@@ -117,11 +122,19 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
     if (!userId) throw new Error("User ID not found");
 
     const formData = new FormData();
-    const requestBody = {
-      nickName: nickname.trim(),
-    };
 
-    formData.append("request", new Blob([JSON.stringify(requestBody)], { type: "application/json" }));
+    const trimNickname = nickname.trim();
+    if (trimNickname) {
+      const requestBody = {
+        nickName: trimNickname,
+      };
+      formData.append("request", new Blob([JSON.stringify(requestBody)], { type: "application/json" }));
+    } else {
+      const requestBody = {
+        nickName: localStorage.getItem('nickName'),
+      };
+      formData.append("request", new Blob([JSON.stringify(requestBody)], { type: "application/json" }));
+    }
 
     if (file) {
       formData.append("file", file);
@@ -131,13 +144,24 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
       const response = await userApi.update(userId, formData);
       console.log(response.data);
       if (response.status === 200) {
-        localStorage.setItem("nickName", nickname.trim());        
-        // setProfileImage(profileImage);
-      }
-      if (onClose) {
-        onClose();
-      } else {
-        onNext();
+        userApi
+          .getUserInfo('4')
+          .then(response => {
+            if (response.data.code == 'SU') {
+              const userInfo = response.data.data;
+              localStorage.setItem('nickName', userInfo.nickName);
+              localStorage.setItem('profileImage', userInfo.profileImage);
+            }
+          })
+          .catch(error => {
+            console.error('Failed to fetch user info: ', error);
+          });
+
+        if (onClose) {
+          onClose();
+        } else {
+          onNext();
+        }
       }
     } catch (error) {
       console.log("회원정보 수정 오류: ", error);
@@ -145,7 +169,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
     }
   };
 
-  const isNextButtonEnabled = isNicknameValid && isNicknameChecked;
+  const isNextButtonEnabled = isImageChecked || (isNicknameValid && isNicknameChecked);
 
   if (!isOpen) return null;
 
