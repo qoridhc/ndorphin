@@ -63,8 +63,7 @@ const IfStart = () => {
     try {
       const response = await ifApi.create(formData);
       if (response.status === 200) {
-        navigate("/ifdetail/1");
-        console.log(response);
+        navigate(`/ifdetail/${response.data.data.id}`);
       }
     } catch (error) {
       console.error("ifApi create : ", error);
