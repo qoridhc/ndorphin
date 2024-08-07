@@ -7,10 +7,9 @@ import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.domain.QBoard;
 import com.web.ndolphin.service.interfaces.TokenService;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,7 +19,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     private final TokenService tokenService;
 
     @Override
-    public List<Board> findByTypeAndFilters(BoardType boardType, String filter1, String filter2, String search) {
+    public List<Board> findByTypeAndFilters(BoardType boardType, String filter1, String filter2,
+        String search) {
 
         Long userId = tokenService.getUserIdFromToken(); // 현재 사용자의 ID를 가져옴
 
@@ -41,12 +41,11 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 case "author":
                     builder.and(board.user.nickName.containsIgnoreCase(search)); // 작성자 기준 검색
                     break;
-                default:
-                    builder.and(board.subject.containsIgnoreCase(search)
-                        .or(board.content.containsIgnoreCase(search))
-                        .or(board.user.nickName.containsIgnoreCase(search))); // 기본 검색 (제목, 내용, 작성자)
-                    break;
             }
+        } else {
+            builder.and(board.subject.containsIgnoreCase(search)
+                .or(board.content.containsIgnoreCase(search))
+                .or(board.user.nickName.containsIgnoreCase(search))); // 기본 검색 (제목, 내용, 작성자)
         }
 
         // 필터 2 조건 처리 및 정렬
@@ -68,7 +67,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                             .where(builder)
                             .orderBy(board.voteContents.size().desc()) // VOTE_BOARD는 투표 수 기준 정렬
                             .fetch();
-                    }else{
+                    } else {
                         return queryFactory.selectFrom(board).where(builder)
                             .orderBy(board.reactions.size().desc()) // RELAY_BOARD는 반응 수 기준 정렬
                             .fetch();
