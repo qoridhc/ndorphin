@@ -25,9 +25,8 @@ public class BoardMapper {
     // 공통된 Entity -> DTO 변환 로직
     private static void mapCommonFields(Board board, BoardDto dto) {
 
+        dto.setUserDto(UserMapper.toDto(board.getUser()));
         dto.setId(board.getId());
-        dto.setUserId(board.getUser().getUserId());
-        dto.setNickName(board.getUser().getNickName());
         dto.setSubject(board.getSubject());
         dto.setContent(board.getContent());
         dto.setHit(board.getHit());
@@ -77,27 +76,24 @@ public class BoardMapper {
     }
 
     public static VoteBoardResponseDto toVoteBoardResponseDto(Board board,
-        List<String> voteContents, long totalVoteCnt, String avatarUrl) {
+        List<String> voteContents, long totalVoteCnt) {
 
         VoteBoardResponseDto voteBoardResponseDto = new VoteBoardResponseDto();
 
         mapCommonFields(board, voteBoardResponseDto);
         voteBoardResponseDto.setVoteContents(voteContents);
         voteBoardResponseDto.setTotalVoteCnt(totalVoteCnt);
-        voteBoardResponseDto.setAvatarUrl(avatarUrl);
 
         return voteBoardResponseDto;
     }
 
     public static VoteBoardDetailResponseDto toVoteBoardDetailResponseDto(Board board,
-        String avatarUrl, String contentFileUrl, List<VoteInfo> voteInfos,
-        UserVoteContent userVoteContent) {
+        String contentFileUrl, List<VoteInfo> voteInfos, UserVoteContent userVoteContent) {
 
         VoteBoardDetailResponseDto voteBoardDetailResponseDto = new VoteBoardDetailResponseDto();
 
         mapCommonFields(board, voteBoardDetailResponseDto);
         voteBoardDetailResponseDto.setVoteInfos(voteInfos);
-        voteBoardDetailResponseDto.setAvatarUrl(avatarUrl);
         voteBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
 
         if (userVoteContent != null) {
@@ -109,26 +105,24 @@ public class BoardMapper {
     }
 
     public static OpinionBoardResponseDto toOpinionBoardResponseDto(Board board,
-        String bestComment, Long commentCount, String avatarUrl) {
+        String bestComment, Long commentCount) {
 
         OpinionBoardResponseDto opinionBoardResponseDto = new OpinionBoardResponseDto();
 
         mapCommonFields(board, opinionBoardResponseDto);
         opinionBoardResponseDto.setBestComment(bestComment);
         opinionBoardResponseDto.setCommentCount(commentCount);
-        opinionBoardResponseDto.setAvatarUrl(avatarUrl);
 
         return opinionBoardResponseDto;
     }
 
     public static OpinionBoardDetailResponseDto toOpinionBoardDetailResponseDto(Board board,
-        String avatarUrl, String contentFileUrl, boolean hasParticipated, int commentCount,
+        String contentFileUrl, boolean hasParticipated, int commentCount,
         List<CommentResponseDto> commentResponseDtos) {
 
         OpinionBoardDetailResponseDto opinionBoardDetailResponseDto = new OpinionBoardDetailResponseDto();
 
         mapCommonFields(board, opinionBoardDetailResponseDto);
-        opinionBoardDetailResponseDto.setAvatarUrl(avatarUrl);
         opinionBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
         opinionBoardDetailResponseDto.setHasParticipated(hasParticipated);
         opinionBoardDetailResponseDto.setCommentCount(commentCount);

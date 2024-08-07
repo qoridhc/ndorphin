@@ -107,6 +107,7 @@ public class UserController {
         @ApiResponse(responseCode = "200", description = "사용 가능한 닉네임"),
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
+
     public ResponseEntity<ResponseDto> checkNickName(
         @Parameter(description = "확인할 닉네임", required = true)
         @RequestParam("nickName") String nickName
@@ -128,6 +129,7 @@ public class UserController {
         @ApiResponse(responseCode = "500", description = "서버 오류",
             content = @Content(schema = @Schema()))
     })
+
     @GetMapping("/{userId}/favorites")
     public ResponseEntity<ResponseDto> getFavoritesByUserId(
         @Parameter(description = "조회할 사용자의 ID", required = true) @PathVariable Long userId) {
@@ -208,7 +210,8 @@ public class UserController {
         @Parameter(description = "삭제할 사용자의 ID", required = true) @PathVariable Long userId,
         @Parameter(description = "삭제할 nPoint 정보", required = true) @RequestBody NPointDeleteRequestDto nPointDeleteRequestDto) {
 
-        ResponseEntity<ResponseDto> response = userService.deleteNPoint(userId, nPointDeleteRequestDto);
+        ResponseEntity<ResponseDto> response = userService.deleteNPoint(userId,
+            nPointDeleteRequestDto);
 
         return response;
     }

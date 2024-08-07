@@ -1,6 +1,7 @@
 package com.web.ndolphin.dto.board.response;
 
 import com.web.ndolphin.domain.BoardType;
+import com.web.ndolphin.dto.user.UserDto;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -8,9 +9,7 @@ import lombok.Data;
 public class BoardDto {
 
     private Long id;
-    private Long userId;
-    private String nickName;
-    private String avatarUrl;
+    private UserDto userDto;
     private String subject;
     private String content;
     private int hit;

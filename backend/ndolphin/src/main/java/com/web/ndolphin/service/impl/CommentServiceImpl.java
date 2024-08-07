@@ -8,8 +8,10 @@ import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.comment.CommentRequestDto;
 import com.web.ndolphin.dto.comment.CommentResponseDto;
+import com.web.ndolphin.dto.user.UserDto;
 import com.web.ndolphin.mapper.CommentMapper;
 import com.web.ndolphin.mapper.LikeMapper;
+import com.web.ndolphin.mapper.UserMapper;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.LikesRepository;
@@ -146,13 +148,21 @@ public class CommentServiceImpl implements CommentService {
             .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
 
         List<Comment> comments = commentRepository.findByBoardId(boardId);
-        return comments.stream().map(comment -> {
-            Long commentId = comment.getId();
-            long likeCount = likesRepository.countByCommentId(commentId);
-            boolean isLikedByUser = likesRepository.existsByUserIdAndCommentId(
-                board.getUser().getUserId(), commentId);
-            return new CommentResponseDto(commentId, comment.getContent(), likeCount,
-                isLikedByUser);
-        }).collect(Collectors.toList());
+
+        return comments.stream()
+            .map(comment -> {
+                Long commentId = comment.getId();
+
+                long likeCount = likesRepository.countByCommentId(commentId);
+                boolean isLikedByUser = likesRepository.existsByUserIdAndCommentId(
+                    tokenService.getUserIdFromToken(), commentId);
+                String contentFileUrl = fileInfoService.getFileUrl(commentId, EntityType.COMMENT);
+                UserDto userDto = UserMapper.toDto(comment.getUser());
+
+                CommentResponseDto commentResponseDto = CommentMapper.toDto(comment, likeCount,
+                    isLikedByUser, userDto, contentFileUrl);
+
+                return commentResponseDto;
+            }).collect(Collectors.toList());
     }
 }
