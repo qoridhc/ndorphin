@@ -52,7 +52,7 @@ const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, set
   useEffect(() => {
     getSearchIfBoardList();
     setIsSearch(false);
-  }, [isSearch]);
+  }, [isSearch, searchFilter2]);
 
   return (
     <div>
