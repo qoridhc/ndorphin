@@ -16,7 +16,7 @@ public class CommentMapper {
 
         commentResponseDto.setCommentId(comment.getId());
         commentResponseDto.setContent(comment.getContent());
-        commentResponseDto.setUserDto(userDto);
+        commentResponseDto.setUser(userDto);
         commentResponseDto.setLikeCnt(likeCnt);
         commentResponseDto.setLikedByUser(isLiked);
         commentResponseDto.setContentFileUrl(contentFileUrl);
