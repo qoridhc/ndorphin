@@ -8,6 +8,7 @@ import userApi from "../../api/userApi";
 
 const Header = () => {
   const navigate = useNavigate();
+  const [selectedMenu, setSelectedMenu] = useState<string>("");
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserInfoEditModalOpen, setIsUserInfoEditModalOpen] = useState(false);
   const [isNSModalOpen, setIsNSModalOpen] = useState(false);
@@ -31,6 +32,11 @@ const Header = () => {
   ]);
 
   useEffect(() => {
+    const storedMenu = localStorage.getItem("selectedMenu");
+    if (storedMenu) {
+      setSelectedMenu(storedMenu);
+    }
+
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
       setIsLoggedIn(true);
@@ -130,6 +136,18 @@ const Header = () => {
     setNotifications([]);
   };
 
+  const handleMenuClick = (menu: string) => {
+    setSelectedMenu(menu);
+    localStorage.setItem("selectedMenu", menu); // 로컬 스토리지에 선택된 메뉴 저장
+    navigate(`/${menu}`);
+  };
+
+  const handleHomeClick = () => {
+    setSelectedMenu("");
+    localStorage.setItem("selectedMenu", "");
+    navigate("/");
+  };
+
   useEffect(() => {
     if (showProfileDropdown || showAlarmDropdown) {
       document.addEventListener("click", handleOutsideClick);
@@ -156,53 +174,24 @@ const Header = () => {
             src="/assets/logo.PNG"
             alt="Logo"
             onClick={() => {
-              navigate("/");
+              handleHomeClick();
             }}
           />
 
           <div className="px-2 flex items-center text-[#6C6C6C] font-semibold">
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/relaybooklist");
-              }}>
-              릴레이북
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/iflist");
-              }}>
-              만약에
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/balancelist");
-              }}>
-              밸런스게임
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/oklist");
-              }}>
-              괜찮아
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/bye");
-              }}>
-              작별인사
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/notice");
-              }}>
-              공지사항
-            </button>
+            {["relaybooklist", "iflist", "balancelist", "oklist", "bye", "notice"].map((menu) => (
+              <button
+                key={menu}
+                className={`px-3 hover:pb-3 decoration-[#FFDE2F] decoration-4 duration-300 underline-offset-8 ${selectedMenu === menu ? "underline text-black" : "hover:underline hover:text-black"} duration-300`}
+                onClick={() => handleMenuClick(menu)}>
+                {menu === "relaybooklist" && "릴레이북"}
+                {menu === "iflist" && "만약에"}
+                {menu === "balancelist" && "밸런스게임"}
+                {menu === "oklist" && "괜찮아"}
+                {menu === "bye" && "작별인사"}
+                {menu === "notice" && "공지사항"}
+              </button>
+            ))}
           </div>
         </div>
 
