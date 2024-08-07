@@ -5,17 +5,18 @@ import com.web.ndolphin.domain.Comment;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.comment.CommentRequestDto;
 import com.web.ndolphin.dto.comment.CommentResponseDto;
+import com.web.ndolphin.dto.user.UserDto;
 
 public class CommentMapper {
 
     public static CommentResponseDto toDto(Comment comment, Long likeCnt, boolean isLiked,
-        String contentFileUrl) {
+        UserDto userDto, String contentFileUrl) {
 
         CommentResponseDto commentResponseDto = new CommentResponseDto();
 
         commentResponseDto.setCommentId(comment.getId());
-        commentResponseDto.setNickName(comment.getUser().getNickName());
         commentResponseDto.setContent(comment.getContent());
+        commentResponseDto.setUserDto(userDto);
         commentResponseDto.setLikeCnt(likeCnt);
         commentResponseDto.setLikedByUser(isLiked);
         commentResponseDto.setContentFileUrl(contentFileUrl);
