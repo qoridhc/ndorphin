@@ -15,6 +15,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
   const [isNicknameValid, setIsNicknameValid] = useState<boolean | null>(null);
   const [nicknameMessage, setNicknameMessage] = useState<string>("");
   const [isNicknameChecked, setIsNicknameChecked] = useState<boolean>(false);
+  const [file, setFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -42,14 +43,22 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
     };
   }, [isOpen]);
 
-  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         const result = reader.result as string;
         localSetProfileImage(result);
         setProfileImage(result);
+
+        const response = await fetch(result);
+        const data = await response.blob();
+        const ext = file.name.split(".").pop();
+        const filename = file.name;
+        const metadata = { type: `image/${ext}` };
+        const newFile = new File([data], filename!, metadata);
+        setFile(newFile);
 
         localStorage.setItem("profileImage", result);
       };
@@ -88,7 +97,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
       setIsNicknameValid(true);
       setNicknameMessage("사용 가능한 닉네임입니다");
       setIsNicknameChecked(true);
-      localStorage.setItem('nickName', trimNickname)
+      localStorage.setItem("nickName", trimNickname);
     } catch (error) {
       console.error("닉네임 중복 확인 오류: ", error);
       setIsNicknameValid(false);
@@ -98,39 +107,57 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
   };
 
   const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       event.preventDefault();
       checkNinameDuplicate();
     }
-  }
+  };
 
   const handleUserUpdate = async () => {
     if (!isNicknameValid || !isNicknameChecked) {
-      alert("닉네임을 다시 확인해 주세요")
+      alert("닉네임을 다시 확인해 주세요");
       return;
     }
+
+    console.log("함수 진입");
 
     try {
       const userId = localStorage.getItem("userId");
       if (!userId) throw new Error("User ID not found");
 
-      const requestBody = {
-        nickName: nickname.trim(),
-      };
+      console.log("시도");
 
       const formData = new FormData();
+
+      const requestBody = {
+        email: localStorage.getItem("email"),
+        profileImage: localStorage.getItem("profileImage"),
+        nickName: nickname.trim(),
+        mbti: localStorage.getItem("mbti"),
+        role: "USER",
+        npoint: localStorage.getItem("npoint"),
+      };
+
       formData.append("request", new Blob([JSON.stringify(requestBody)], { type: "application/json" }));
-      
-      if (profileImage) {
-        formData.append("file", profileImage);
+
+      console.log("리퀘스트바디 추가");
+
+      if (file) {
+        formData.append("file", file);
       }
 
-      await userApi.update(userId, formData);
+      console.log("요청 전");
+
+      const response = await userApi.update(userId, formData);
+
+      if (response.status === 200) {
+        console.log("성공");
+      }
       setProfileImage(profileImage);
       onNext();
     } catch (error) {
       console.log("회원정보 수정 오류: ", error);
-      alert("회원정보 수정 중 오류가 발생했습니다.")
+      alert("회원정보 수정 중 오류가 발생했습니다.");
     }
   };
 
