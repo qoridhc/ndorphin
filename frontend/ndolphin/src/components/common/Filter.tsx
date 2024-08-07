@@ -1,17 +1,26 @@
 import { useState } from "react";
 
-function Filter() {
-  const [tabs, setTabs] = useState(0);
+interface Props {
+  setSearchFilter2: (filter1: string) => void;
+}
+
+function Filter({ setSearchFilter2 }: Props) {
+  const [tabs, setTabs] = useState("");
   const textStyle = "font-bold";
+
+  const handleTabs = (tab: string) => {
+    setTabs(tab);
+    setSearchFilter2(tab);
+  };
 
   return (
     <div className="flex">
       <div className="flex w-28 justify-between">
         <div className="">
           <button
-            className={`${tabs === 0 ? textStyle : "text-gray-400"}`}
+            className={`${tabs === "popularity" ? textStyle : "text-gray-400"}`}
             onClick={() => {
-              setTabs(0);
+              handleTabs("popularity");
             }}>
             인기순
           </button>
@@ -19,9 +28,9 @@ function Filter() {
         <div>|</div>
         <div>
           <button
-            className={`${tabs === 1 ? textStyle : "text-gray-400"}`}
+            className={`${tabs === "recent" ? textStyle : "text-gray-400"}`}
             onClick={() => {
-              setTabs(1);
+              handleTabs("recent");
             }}>
             최신순
           </button>
