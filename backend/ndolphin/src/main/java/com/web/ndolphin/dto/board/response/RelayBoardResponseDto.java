@@ -12,4 +12,6 @@ public class RelayBoardResponseDto extends BoardDto {
     private int maxPage;
     private boolean hasParticipated;
     private boolean isFavorite;
+    private long commentCount = 0L;
+    private boolean isDone = false;
 }

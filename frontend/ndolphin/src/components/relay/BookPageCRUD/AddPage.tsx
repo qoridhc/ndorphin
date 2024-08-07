@@ -5,24 +5,28 @@ import AlreadyWrittenPage from "../relayBookCRUD/AlreadyWrittenPage";
 import AiImagePromptModal from "../AiImagePromptModal";
 
 interface Page {
-  id: number;
-  userId: number;
-  user: string;
+  commentId: number;
+  nickName: string;
   content: string;
-  pageImage: string;
+  likeCnt: number;
+  createdAt: string | null;
+  updatedAt: string | null;
+  avatarUrl: string | null;
+  contentFileUrl: string | null;
+  likedByUser: boolean;
 }
 
 interface AddPageProps {
-  PageList: Page[];
+  pages: Page[];
   handleAiImage: any;
   image: string | null;
   setImage: any;
 }
 
-const AddPage = ({ PageList, handleAiImage, image, setImage }: AddPageProps) => {
+const AddPage = ({ pages, handleAiImage, image, setImage }: AddPageProps) => {
   const [isPageAdd, setPageAdd] = useState(false);
   const userName = "코에촉";
-  const userHasWritten = PageList.some((page) => page.user === userName);
+  const userHasWritten = pages.some((page) => page.nickName === userName);
 
   return (
     <>
@@ -36,8 +40,7 @@ const AddPage = ({ PageList, handleAiImage, image, setImage }: AddPageProps) => 
               onClick={() => {
                 setPageAdd(true);
               }}
-              className="w-[30%]"
-            >
+              className="w-[30%]">
               <img src="/assets/addPageButton.png" alt="#" />
             </button>
             <p className="text-outline text-2xl font-bold drop-shadow-md text-[#F4D325]">버튼을 눌러 페이지 추가</p>

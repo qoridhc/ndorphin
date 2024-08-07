@@ -3,11 +3,15 @@ import React, { useState, ChangeEvent } from "react";
 
 interface RelayBookPageUpdateProps {
   page: {
-    id: number;
-    userId: number;
-    user: string;
+    commentId: number;
+    nickName: string;
     content: string;
-    pageImage: string;
+    likeCnt: number;
+    createdAt: string | null;
+    updatedAt: string | null;
+    avatarUrl: string | null;
+    contentFileUrl: string | null;
+    likedByUser: boolean;
   };
   setPageUpdate: (type: boolean) => void;
   handleAiImage: any;
@@ -80,7 +84,7 @@ const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ page, setPage
           <hr className="mx-3 my-1 border-zinc-900" />
           <div className="mt-2">
             <div className="flex justify-center items-center">
-              <img src={image || page.pageImage} alt="#" className="w-64 h-56 border rounded-md" />
+              {page.contentFileUrl ? <img src={image || page.contentFileUrl} alt="#" className="w-64 h-56 border rounded-md" /> : <img src="/assets/bookCoverDefault.png" alt="#" className="w-64 h-56 border rounded-md" />}
             </div>
 
             {/* 이미지 첨부 버튼 */}

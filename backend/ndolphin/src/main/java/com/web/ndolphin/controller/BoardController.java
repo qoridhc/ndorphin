@@ -115,7 +115,7 @@ public class BoardController {
         @ApiResponse(responseCode = "500", description = "서버 오류입니다.",
             content = @Content(schema = @Schema()))
     })
-    @PutMapping("/{boardId}")
+    @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDto> updateBoard(
         @Parameter(description = "수정할 게시글 ID", required = true)
         @PathVariable("boardId") Long boardId,

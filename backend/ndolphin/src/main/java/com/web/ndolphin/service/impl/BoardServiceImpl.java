@@ -105,7 +105,8 @@ public class BoardServiceImpl implements BoardService {
                     .forEach(voteContentRepository::save);
             }
 
-            return ResponseDto.success();
+//            return ResponseDto.success();
+            return getBoardById(board.getId());
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage());
         }
@@ -178,12 +179,11 @@ public class BoardServiceImpl implements BoardService {
                 break;
             case RELAY_BOARD:
                 // 요약, 사진, 참여 여부, 관심 여부
-                List<RelayBoardResponseDto> relayBoardResponseDto = boards.stream()
+                List<RelayBoardResponseDto> relayBoardResponseDtos = boards.stream()
                     .map(board -> {
                         Long boardId = board.getId();
 
-                        String thumbNailUrl = fileInfoService.getFileUrl(
-                            boardId, EntityType.POST);
+                        String thumbNailUrl = fileInfoService.getFileUrl(boardId, EntityType.POST);
 
                         boolean hasParticipated = commentRepository.existsByBoardIdAndUserId(
                             boardId, board.getUser().getUserId());
@@ -191,14 +191,19 @@ public class BoardServiceImpl implements BoardService {
                         boolean isFavorite = favoriteRepository.existsByBoardIdAndUserId(
                             boardId, board.getUser().getUserId());
 
+                        Long commentCount = commentRepository.countCommentsByBoardId(boardId);
+
+                        // isDone 계산: commentCount - 1이 maxPage와 동일한지 확인
+                        boolean isDone = (commentCount + 1) == board.getMaxPage();
+
+                        // isDone을 BoardMapper에 추가로 전달합니다.
                         return BoardMapper.toRelayBoardResponseDto(board, hasParticipated,
-                            isFavorite, thumbNailUrl);
+                            isFavorite, thumbNailUrl, commentCount, isDone);
                     })
-                    .collect(toList());
+                    .collect(Collectors.toList());
 
                 responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS,
-                    relayBoardResponseDto);
-
+                    relayBoardResponseDtos);
                 break;
             case OK_BOARD:
                 // 댓글 수, 사진
@@ -399,7 +404,7 @@ public class BoardServiceImpl implements BoardService {
         Board existingBoard = optionalBoard.get();
         existingBoard.setSubject(boardRequestDto.getSubject());
         existingBoard.setContent(boardRequestDto.getContent());
-        existingBoard.setHit(existingBoard.getHit() + 1);
+//        existingBoard.setHit(existingBoard.getHit() + 1);
         existingBoard.setUpdatedAt(LocalDateTime.now());
         boardRepository.save(existingBoard);
 

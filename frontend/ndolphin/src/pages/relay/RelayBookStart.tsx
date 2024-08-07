@@ -1,7 +1,8 @@
 import HTMLFlipBook from "react-pageflip";
 import React, { ForwardedRef } from "react";
 import { useState } from "react";
-import RelayApi from "../../api/RelayApi";
+import boardApi from "../../api/boardApi";
+import axios from "axios";
 import "../../css/RelayBook.css";
 import "../../css/Notes.css";
 import "../../css/InputPlaceHolder.css";
@@ -26,22 +27,36 @@ const MyAlbum: React.FC = () => {
   // AI 이미지 모달 관련
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [image, setImage] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
 
   const handleAiImage = () => {
     setIsModalOpen(true);
   };
 
-  const confirmAiImage = (image: string) => {
+  const confirmAiImage = async (image: string) => {
     setIsModalOpen(false);
     setImage(image);
+
+    const response = await fetch(image);
+    const data = await response.blob();
+    const ext = image.split(".").pop(); // url 구조에 맞게 수정할 것
+    const filename = image.split("/").pop(); // url 구조에 맞게 수정할 것
+    const metadata = { type: `image/${ext}` };
+    const file = new File([data], filename!, metadata);
+    console.log(file);
+    setFile(file);
   };
 
   const cancelAiImage = () => {
     setIsModalOpen(false);
   };
 
-  const handleRelayBookStart = async (userId: number, subject: string, content: string) => {
+  const handleRelayBookStart = async (subject: string, content: string) => {
     const formData = new FormData();
+
+    if (file) {
+      formData.append("files", file);
+    }
 
     formData.append(
       "request",
@@ -58,8 +73,10 @@ const MyAlbum: React.FC = () => {
     );
 
     try {
-      const response = await RelayApi.create(formData, userId, subject, content, "RELAY_BOARD");
-      console.log("릴레이북 이야기 작성 성공");
+      const response = await boardApi.create(formData);
+      if (response.status === 200) {
+        console.log("릴레이북 이야기 작성 성공");
+      }
     } catch (error) {
       console.error("릴레이북 이야기 시작 오류: ", error);
     }
@@ -104,25 +121,35 @@ const MyAlbum: React.FC = () => {
           <Page>
             <div className="flex flex-col items-center justify-center">
               <div className="flex justify-end w-full px-8 my-2">
-                <button
-                  onClick={() => {
-                    handleRelayBookStart(4, "제목입니다.", "릴레이북 내용입니다");
-                  }}
-                  className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
-                  등록
-                </button>
+                {file ? (
+                  <button
+                    onClick={() => {
+                      handleRelayBookStart("파일 업로드 테스트 제목", "파일 업로드 테스트 내용");
+                    }}
+                    className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
+                    등록
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      handleRelayBookStart("파일 업로드 테스트 제목", "파일 업로드 테스트 내용");
+                    }}
+                    className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
+                    등록
+                  </button>
+                )}
               </div>
               <div className="w-full">
                 <div className="flex flex-col items-center">
                   <hr className="flex justify-center w-[88%] border-zinc-950" />
                 </div>
               </div>
-              <BookImage handleAiImage={handleAiImage} image={image} setImage={setImage} />
+              <BookImage handleAiImage={handleAiImage} image={image} setImage={setImage} setFile={setFile} />
             </div>
           </Page>
         </HTMLFlipBook>
       </div>
-      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} setImage={setImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
+      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} setImage={setImage} coverImage={"/assets/relay/bookCoverDefault.png"} setFile={setFile} />
     </div>
   );
 };

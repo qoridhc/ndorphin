@@ -4,13 +4,14 @@ interface BookImageProps {
   handleAiImage: () => void;
   image: string | null;
   setImage: any;
+  setFile: (file: File) => void;
 }
 
-const BookImage: React.FC<BookImageProps> = ({handleAiImage, image, setImage}) => {
-
+const BookImage: React.FC<BookImageProps> = ({ handleAiImage, image, setImage, setFile }) => {
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
@@ -71,6 +72,6 @@ const BookImage: React.FC<BookImageProps> = ({handleAiImage, image, setImage}) =
       </div>
     </>
   );
-}
+};
 
 export default BookImage;

@@ -296,7 +296,7 @@ const OkDetail = () => {
                     <p className="font-bold">{comment.user}</p>
                     <p className="text-xs text-[#565656]">3일 전</p>
                   </div>
-                  <SettingsMenu />
+                  {/* <SettingsMenu /> */}
                 </div>
 
                 <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
