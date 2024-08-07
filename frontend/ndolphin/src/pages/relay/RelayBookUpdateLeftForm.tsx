@@ -7,11 +7,12 @@ import "../../css/InputPlaceHolder.css";
 interface RelayBookUpdateLeftFormProps {
   handleSubjectChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleContentChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  handleRelayBookUpdate: (subjectValue: string, contentValue: string) => void;
   subject: any;
   content: any;
 }
 
-const RelayBookUpdateLeftForm = ({ handleSubjectChange, handleContentChange, subject, content }: RelayBookUpdateLeftFormProps) => {
+const RelayBookUpdateLeftForm = ({ handleSubjectChange, handleContentChange, handleRelayBookUpdate, subject, content }: RelayBookUpdateLeftFormProps) => {
   const [subjectValue, setSubjectValue] = useState(subject.current);
   const [contentValue, setContentValue] = useState(content.current);
 
@@ -36,7 +37,7 @@ const RelayBookUpdateLeftForm = ({ handleSubjectChange, handleContentChange, sub
 
   return (
     <>
-      { 
+      {
         <div className="flex justify-center items-center">
           <div className="pt-[2.8rem] mr-[7%] flex flex-col items-end w-full">
             <div className="w-[95%]">
@@ -54,7 +55,8 @@ const RelayBookUpdateLeftForm = ({ handleSubjectChange, handleContentChange, sub
                 onChange={onChangeContent}
                 className="notes w-full h-[283px] resize-none focus:outline-none placeholder:text-zinc-400"
                 placeholder="이야기가 시작될 '만약에~' 내용을 입력해 주세요 (최소 글자수 100자 이상)"
-                value={contentValue}></textarea>
+                value={contentValue}
+              ></textarea>
             </div>
 
             {/* 종료 장수 선택 form */}
@@ -67,6 +69,12 @@ const RelayBookUpdateLeftForm = ({ handleSubjectChange, handleContentChange, sub
                 </div>
               </div>
             </div>
+          </div>
+          <div className="absolute z-[99] flex justify-start w-full px-8 my-2 top-0 -left-2">
+            <button onClick={() => { handleRelayBookUpdate(subjectValue, contentValue) }} className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
+              수정
+            </button>
+            <button className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200">취소</button>
           </div>
         </div>
       }

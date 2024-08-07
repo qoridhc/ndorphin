@@ -54,7 +54,7 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ 
               {pageUpdateStates[index] ? (
                 <RelayBookPageUpdate page={page} setPageUpdate={(value: boolean) => handlePageUpdate(index, value)} handleAiImage={handleAiImage} image={image} setImage={setImage} />
               ) : (
-                index !== totalPage + 1 && <UserInfo firstPage={false} user={page.nickName} badget={"N"} setPageUpdate={(value: boolean) => handlePageUpdate(index, value)} handleDelete={handleDelete} />
+                index !== totalPage + 1 && <UserInfo firstPage={false} user={page.user.nickName} badget={"N"} setPageUpdate={(value: boolean) => handlePageUpdate(index, value)} handleDelete={handleDelete} />
               )}
               {!pageUpdateStates[index] && (
                 <div className="h-full">
@@ -104,7 +104,7 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ 
         : // readPage == first일 경우 첫 번째 페이지 보여줌
           pages.map((page, index) => (
             <div key={index} className="page" ref={ref}>
-              <UserInfo firstPage={true} user={page.nickName} badget={"N"} setPageUpdate={(value: boolean) => handlePageUpdate(index, value)} handleDelete={handleDelete} />
+              <UserInfo firstPage={true} user={page.user.nickName} badget={"N"} setPageUpdate={(value: boolean) => handlePageUpdate(index, value)} handleDelete={handleDelete} />
               <div className="h-full">
                 <div className="py-3">
                   {(index + 1) % 2 === 1 ? (

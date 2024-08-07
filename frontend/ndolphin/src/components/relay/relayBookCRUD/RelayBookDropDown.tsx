@@ -4,19 +4,20 @@ import { useState, useEffect } from "react";
 interface RelayBookDropDownProps {
   firstPage: {
     id: number;
-    userId: number;
-    nickName: string;
-    avatarUrl: string | null;
+    user: {};
     subject: string;
     content: string;
     hit: number;
     boardType: string;
     createdAt: string;
-    updatedAt: string | null;
-    summary: null;
-    thumbNailUrl: string;
-    hasParticipated: false;
-    favorite: false;
+    updatedAt: string;
+    contentFileUrl: string;
+    hasParticipated: boolean;
+    maxPage: number;
+    commentResponseDtos: [];
+    reactionTypeCounts: {};
+    userReactionId: null;
+    userReactionType: string;
   }[];
   bookId: any;
   handleDelete: () => void;
