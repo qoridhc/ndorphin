@@ -29,6 +29,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
         builder.and(board.boardType.eq(boardType)); // BoardType에 따른 필터 적용
 
+        search = (search == null) ? "" : search;
+
         // 필터 1 조건 처리
         if (filter1 != null && !filter1.isEmpty()) {
             switch (filter1) {
