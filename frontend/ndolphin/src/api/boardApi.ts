@@ -9,8 +9,9 @@ const boardApi = {
     })
   },
 
-  list: (boardType: string) => {
-    return request.get(`/api/v1/boards?type=${boardType}`)
+  list: (boardType: string, keyword?: string, filter1?: string, filter2?: string) => {
+    console.log(request.get(`/api/v1/boards?type=${boardType}&filter1=${filter1}&filter2=${filter2}&search=${keyword}`))
+    return request.get(`/api/v1/boards?type=${boardType}&filter1=${filter1}&filter2=${filter2}&search=${keyword}`)
   },
 
   read: (boardId: string) => {
@@ -25,7 +26,7 @@ const boardApi = {
 
   delete: (boardId: string) => {
     return request.delete(`/api/v1/boards/${boardId}`)
-  }
+  },
 }
 
 export default boardApi;
