@@ -139,13 +139,13 @@ const Header = () => {
   const handleMenuClick = (menu: string) => {
     setSelectedMenu(menu);
     sessionStorage.setItem("selectedMenu", menu); // 로컬 스토리지에 선택된 메뉴 저장
-    navigate(`/${menu}`);
+    window.location.href = `/${menu}`;
   };
 
   const handleHomeClick = () => {
-    setSelectedMenu("");
-    localStorage.setItem("selectedMenu", "");
-    navigate("/");
+    setSelectedMenu("home");
+    localStorage.setItem("selectedMenu", "home");
+    window.location.href = "/";
   };
 
   useEffect(() => {
@@ -182,7 +182,7 @@ const Header = () => {
             {["relaybooklist", "iflist", "balancelist", "oklist", "bye", "notice"].map((menu) => (
               <button
                 key={menu}
-                className={`px-3 hover:pb-3 decoration-[#FFDE2F] decoration-4 duration-300 underline-offset-8 ${selectedMenu === menu ? "underline text-black" : "hover:underline hover:text-black"} duration-300`}
+                className={`px-3 hover:pb-3 decoration-[#FFDE2F] decoration-4 duration-300 underline-offset-8 ${selectedMenu === menu ? "underline text-black" : "hover:underline hover:text-black"}`}
                 onClick={() => handleMenuClick(menu)}>
                 {menu === "relaybooklist" && "릴레이북"}
                 {menu === "iflist" && "만약에"}

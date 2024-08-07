@@ -38,7 +38,7 @@ const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, set
 
   const getSearchIfBoardList = async () => {
     try {
-      const response = await boardApi.list("OPINION_BOARD", searchKeyword, searchFilter1, searchFilter2);
+      const response = await boardApi.search("OPINION_BOARD", searchKeyword, searchFilter1, searchFilter2);
       setIfBoardList(response.data.data);
     } catch (error) {
       console.log("boardApi search : ", error);
@@ -46,13 +46,13 @@ const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, set
   };
 
   useEffect(() => {
-    getIfBoardList();
-  }, []);
-
-  useEffect(() => {
-    getSearchIfBoardList();
-    setIsSearch(false);
-  }, [isSearch]);
+    if (searchKeyword || searchFilter2 === "popularity") {
+      getSearchIfBoardList();
+      setIsSearch(false);
+    } else {
+      getIfBoardList();
+    }
+  }, [isSearch, searchFilter2]);
 
   return (
     <div>
