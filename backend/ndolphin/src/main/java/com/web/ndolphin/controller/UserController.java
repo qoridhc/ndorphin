@@ -100,6 +100,7 @@ public class UserController {
         return response;
     }
 
+
     @GetMapping("/nickname-check")
     @Operation(summary = "닉네임 중복 확인",
         description = "닉네임의 중복 여부를 확인합니다.")
