@@ -57,7 +57,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
         const ext = file.name.split(".").pop();
         const filename = file.name;
         const metadata = { type: `image/${ext}` };
-        const newFile = new File([data], filename, metadata);
+        const newFile = new File([data], filename!, metadata);
         setFile(newFile);
 
         localStorage.setItem("profileImage", result);
