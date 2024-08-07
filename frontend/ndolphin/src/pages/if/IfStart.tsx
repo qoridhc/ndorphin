@@ -63,7 +63,6 @@ const IfStart = () => {
     try {
       const response = await boardApi.create(formData);
       if (response.status === 200) {
-        console.log("응답 : ", response);
         navigate(`/ifdetail/${response.data.data.id}`);
       }
     } catch (error) {
