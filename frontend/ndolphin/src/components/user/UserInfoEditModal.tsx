@@ -114,13 +114,15 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
       const userId = localStorage.getItem("userId");
       if (!userId) throw new Error("User ID not found");
 
+      const requestBody = {
+        nickName: nickname.trim(),
+      };
+
       const formData = new FormData();
-      formData.append("nickName", nickname.trim());
+      formData.append("request", new Blob([JSON.stringify(requestBody)], { type: "application/json" }));
       
-      // 프로필 이미지를 선택하지 않았을 경우 null 값 설정
       if (profileImage) {
-        // 프로필 이미지 업로드 시 에러 발생, 일부러 이름을 다르게 해서 오류 피하는 중, 고쳐야 함
-        formData.append("ProfileImage", profileImage);
+        formData.append("file", profileImage);
       }
 
       await userApi.update(userId, formData);
