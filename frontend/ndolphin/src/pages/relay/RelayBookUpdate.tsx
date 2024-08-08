@@ -29,8 +29,10 @@ const RelayBookUpdate: React.FC = () => {
   const subject = useRef<string>("");
   const content = useRef<string>("");
   const [contentFileUrl, setContentFileUrl] = useState("");
+  const [currentEndPage, setCurrentEndPage] = useState<number | null>(null);
   const [image, setImage] = useState<string>(contentFileUrl);
   const [file, setFile] = useState<File | null>(null);
+  const [dalleUrl, setDalleUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -42,11 +44,12 @@ const RelayBookUpdate: React.FC = () => {
           if (response.status === 200 && isMounted) {
             const book = response.data.data;
             console.log("릴레이북 이야기 상세 조회 성공");
-            const contentFileUrl = book.contentFileUrl;
+            const contentFileUrl = book.fileNames[0];
             subject.current = book.subject;
             content.current = book.content;
             setContentFileUrl(contentFileUrl);
             setImage(contentFileUrl);
+            setCurrentEndPage(book.maxPage);
           }
         }
       } catch (error) {
@@ -61,10 +64,6 @@ const RelayBookUpdate: React.FC = () => {
     };
   }, [bookId]);
 
-  useEffect(() => {
-    console.log("Subject updated: ", subject.current);
-    console.log("Content updated: ", content.current);
-  }, [contentFileUrl]); // contentFileUrl이 변경될 때 로그를 찍어 최신 값을 확인
 
   // axios PUT
   const handleRelayBookUpdate = async (subject: string, content: string) => {
@@ -100,6 +99,13 @@ const RelayBookUpdate: React.FC = () => {
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+
+    // 이미 AI 생성 이미지가 있을 경우
+    if (dalleUrl) {
+      setDalleUrl(null);
+      console.log("AI 이미지 제거 완료")
+    }
+
     if (file) {
       setFile(file);
       const reader = new FileReader();
@@ -111,15 +117,6 @@ const RelayBookUpdate: React.FC = () => {
     }
   };
 
-  const handleSubjectChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    subject.current = value;
-  }, []);
-
-  const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value;
-    content.current = value;
-  }, []);
 
   // AI 이미지 모달 관련
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -155,7 +152,7 @@ const RelayBookUpdate: React.FC = () => {
       <div className="">
         {/* @ts-ignore */}
         <HTMLFlipBook width={480} height={580} minWidth={315} maxWidth={1000} minHeight={420} maxHeight={1350} flippingTime={600} style={{ margin: "0 auto" }} maxShadowOpacity={0.5} useMouseEvents={false}>
-          <Page key="left-form">{<RelayBookUpdateLeftForm handleSubjectChange={handleSubjectChange} handleContentChange={handleContentChange} handleRelayBookUpdate={handleRelayBookUpdate} subject={subject} content={content} />}</Page>
+          <Page key="left-form">{<RelayBookUpdateLeftForm bookId={bookId} handleRelayBookUpdate={handleRelayBookUpdate} subject={subject} content={content} currentEndPage={currentEndPage} setCurrentEndPage={setCurrentEndPage} />}</Page>
           <Page key="right-form">
             {/* 표지 이미지 form */}
             <div className="mt-11 flex flex-col items-center justify-center">
@@ -215,7 +212,7 @@ const RelayBookUpdate: React.FC = () => {
           </Page>
         </HTMLFlipBook>
       </div>
-      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={image} setImage={setImage} setFile={setFile} />
+      <BookCoverAiPromptModal file={file} isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={image} setImage={setImage} setFile={setFile} setDalleUrl={setDalleUrl} />
     </div>
   );
 };

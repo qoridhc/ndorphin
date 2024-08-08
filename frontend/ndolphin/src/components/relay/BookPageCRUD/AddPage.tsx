@@ -17,13 +17,14 @@ interface Page {
 }
 
 interface AddPageProps {
+  bookId: string;
   pages: Page[];
   handleAiImage: any;
   image: string | null;
   setImage: any;
 }
 
-const AddPage = ({ pages, handleAiImage, image, setImage }: AddPageProps) => {
+const AddPage = ({ bookId, pages, handleAiImage, image, setImage }: AddPageProps) => {
   const [isPageAdd, setPageAdd] = useState(false);
   const userName = "코에촉";
   const userHasWritten = pages.some((page) => page.nickName === userName);
@@ -50,7 +51,7 @@ const AddPage = ({ pages, handleAiImage, image, setImage }: AddPageProps) => {
       ) : (
         // 페이지 추가 버튼 클릭 후 form으로 전환
         <div>
-          <AddPageForm setPageAdd={setPageAdd} handleAiImage={handleAiImage} image={image} setImage={setImage} />
+          <AddPageForm bookId={bookId} setPageAdd={setPageAdd} handleAiImage={handleAiImage} image={image} setImage={setImage} />
         </div>
       )}
     </>

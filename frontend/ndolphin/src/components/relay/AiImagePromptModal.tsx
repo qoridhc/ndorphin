@@ -3,16 +3,18 @@ import axios from "axios";
 import { useState } from "react";
 
 interface BookCoverAiPromptModalProps {
+  file: File | null;
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (image: string) => void;
-  setFile: (file: File) => void;
+  setFile: (file: File | null) => void;
+  setDalleUrl: (dalleUrl: string) => void;
   setImage: any;
   image: any;
   coverImage: any;
 }
 
-const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ isOpen, onClose, onConfirm, setImage, setFile, image, coverImage }) => {
+const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ file, isOpen, onClose, onConfirm, setImage, setFile, setDalleUrl, image, coverImage }) => {
   const API_KEY = process.env.REACT_APP_OPEN_AI_APIKEY;
   const [imageUrl, setImageUrl] = useState("");
   const [inputPrompt, setInputPrompt] = useState("");
@@ -38,6 +40,16 @@ const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ isOpen,
       .then((res: any) => {
         const imageUrl = res.data.data[0].url;
         setImageUrl(imageUrl);
+
+        // 이미 파일이 존재할 경우
+        if (file) {
+          setFile(null);
+          setDalleUrl(imageUrl)
+          console.log("File을 비우고 AI 이미지를 등록했어요")
+        } else {
+          setDalleUrl(imageUrl)
+        }
+        
       })
       .catch((err: any) => {
         console.error("Error:", err);

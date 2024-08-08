@@ -13,8 +13,9 @@ const IfStart = () => {
   const [content, setContent] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [aiImage, setAiImage] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>();
+  const [file, setFile] = useState<File | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dalleUrl, setDalleUrl] = useState<string | null>(null);
 
   const boxClass = "h-full mb-3 border border-[#9E9E9E]";
   const boxContentClass = "p-5";
@@ -112,7 +113,7 @@ const IfStart = () => {
         </button>
       </div>
 
-      <BookCoverAiPromptModal setFile={setFile} isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
+      <BookCoverAiPromptModal file={file} setFile={setFile} isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} setDalleUrl={setDalleUrl} />
     </div>
   );
 };
