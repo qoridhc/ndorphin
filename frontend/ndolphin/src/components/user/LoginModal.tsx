@@ -56,7 +56,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
     // 로컬 테스트와 배포 모두 가능
     const nowURL = window.location.href;
     if (nowURL.includes('localhost')) {
-      userApi.getUserInfo('4')
+      userApi.getUserInfo('12')
         .then(response => {
           if (response.data.code == 'SU') {
             const userInfo = response.data.data;
