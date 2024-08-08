@@ -12,6 +12,7 @@ import com.web.ndolphin.mapper.NotificationMapper;
 import com.web.ndolphin.repository.NotificationRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.NotificationService;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -74,16 +75,24 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public ResponseEntity<ResponseDto> delete(Long notificationId) {
+    @Transactional
+    public ResponseEntity<ResponseDto> deleteAllByUserId(Long userId) {
 
         try {
-            notificationRepository.deleteById(notificationId);
+
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist : " + userId));
+
+            notificationRepository.deleteAllByUser_UserId(userId);
+
+            return ResponseDto.success();
+        } catch (IllegalArgumentException e) {
+            return ResponseDto.databaseError(e.getMessage());
         } catch (Exception e) {
             return ResponseDto.databaseError();
         }
-
-        return ResponseDto.success();
     }
+
 
     @Override
     public ResponseEntity<ResponseDto> checkUnReadNotifications(Long userId) {
