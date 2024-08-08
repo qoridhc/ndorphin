@@ -37,14 +37,14 @@ const MyAlbum: React.FC = () => {
     setIsModalOpen(false);
     setImage(image);
 
-    const response = await fetch(image);
-    const data = await response.blob();
-    const ext = image.split(".").pop(); // url 구조에 맞게 수정할 것
-    const filename = image.split("/").pop(); // url 구조에 맞게 수정할 것
-    const metadata = { type: `image/${ext}` };
-    const file = new File([data], filename!, metadata);
-    console.log(file);
-    setFile(file);
+    // const response = await fetch(image);
+    // const data = await response.blob();
+    // const ext = image.split(".").pop(); // url 구조에 맞게 수정할 것
+    // const filename = image.split("/").pop(); // url 구조에 맞게 수정할 것
+    // const metadata = { type: `image/${ext}` };
+    // const file = new File([data], filename!, metadata);
+    // console.log(file);
+    // setFile(file);
   };
 
   const cancelAiImage = () => {
