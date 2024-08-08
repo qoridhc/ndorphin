@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
 
 interface UserInfo {
   id: number;
@@ -11,18 +10,20 @@ interface UserInfo {
 interface FollowListItemProps {
   follow: UserInfo;
   onFollowToggle: (id: number) => void;
+  onClose: () => void;
 }
 
-const FollowListItem: React.FC<FollowListItemProps> = ({ follow, onFollowToggle }) => {
-  const navigate = useNavigate();
+const FollowListItem: React.FC<FollowListItemProps> = ({ follow, onFollowToggle, onClose }) => {
 
   const shiftProfile = () => {
-    navigate(`/profile/${follow.id}`);
+    window.location.href = `/profile/${follow.id}`
+    onClose();
   }
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event?.stopPropagation();
-    onFollowToggle(follow.id);
+  const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    await onFollowToggle(follow.id);
+
   };
 
   return (
