@@ -125,6 +125,11 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<ResponseDto> deleteUser(Long userId) {
 
         try {
+
+            boolean existUser = userRepository.existsById(userId);
+
+            LogUtil.info("existUser" + existUser);
+
             int deleteCnt = userRepository.deleteUserByUserId(userId);
 
             // 삭제 실패
