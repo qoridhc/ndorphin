@@ -17,4 +17,7 @@ public interface FileInfoRepository extends JpaRepository<FileInfo, Long> {
 
     // fileName으로 FileInfo 찾기
     FileInfo findByFileName(String fileName);
+
+    // entityId와 fileName으로 FileInfo 찾기
+    FileInfo findByEntityIdAndFileName(Long entityId, String fileName);
 }
