@@ -33,6 +33,7 @@ const RelayBookDetail = () => {
   const [file, setFile] = useState<File | null>(null);
   const pageElements: any[] = [];
   const [firstPage, setFirstPage] = useState<any[]>([]);
+  const [dalleUrl, setDalleUrl] = useState<string | null>(null);
 
   const lastPage = [
     {
@@ -75,11 +76,6 @@ const RelayBookDetail = () => {
       isMounted = false;
     };
   }, [bookId]);
-
-  useEffect(() => {
-    console.log("Pages updated:", pages);
-    console.log("first Pages update: ", firstPage);
-  }, [pages, firstPage]);
 
   // 페이지 넘어갈 시 page를 현재 페이지 쪽수로 업데이트
   const onFlip = useCallback((e: { data: number }) => {
@@ -125,6 +121,7 @@ const RelayBookDetail = () => {
     setDeleteAIModalOpen(true);
   };
 
+  // 삭제 모달 확인 시 axios delete
   const confirmDelete = async () => {
     setDeleteAIModalOpen(false);
 
@@ -141,6 +138,7 @@ const RelayBookDetail = () => {
     navigate("/relaybooklist");
   };
 
+  // 삭제 모달 취소 시 모달 닫음
   const cancelDelete = () => {
     setDeleteAIModalOpen(false);
   };
@@ -227,18 +225,6 @@ const RelayBookDetail = () => {
   const confirmAiImage = async (image: string) => {
     setIsAiModalOpen(false);
     setImage(image);
-
-    // try {
-    //   const response = await fetch(image);
-    //   const data = await response.blob();
-    //   const ext = image.split(".").pop() || "";
-    //   const filename = image.split("/").pop() || "";
-    //   const metadata = { type: `image/${ext}` };
-    //   const file = new File([data], filename, metadata);
-    //   setFile(file);
-    // } catch (error) {
-    //   console.error("Error:", error);
-    // }
   };
 
   const cancelAiImage = () => {
@@ -328,7 +314,7 @@ const RelayBookDetail = () => {
       <DeleteModal bookId={bookId} isOpen={isDeleteModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />
 
       {/* AI 이미지 생성 모달 */}
-      <AiImagePromptModal isOpen={isAiModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} setFile={setFile} />
+      <AiImagePromptModal isOpen={isAiModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} setFile={setFile} setDalleUrl={setDalleUrl} file={file} />
     </div>
   );
 };

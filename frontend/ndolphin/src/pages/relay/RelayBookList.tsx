@@ -17,7 +17,7 @@ function Relaybooklist() {
       try {
         const response = await boardApi.list("RELAY_BOARD");
         if (response.status === 200) {
-          const bookList = response.data.data;
+          const bookList = response.data.data.content;
           console.log("릴레이북 목록 불러오기 성공", response.data);
           setbookList(bookList);
         }

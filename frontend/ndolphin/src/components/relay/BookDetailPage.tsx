@@ -62,7 +62,7 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ 
                     {(index + 1) % 2 === 0 ? (
                       <div className="p-2 grid grid-rows-[6.8fr_3.2fr]">
                         {/* 홀수쪽일 경우 그림, 글 순서 */}
-                        <div className="w-full h-72 flex justify-center">{page.contentFileUrl && <img className="w-[78%] object-cover" src={page.contentFileUrl} alt="" />}</div>
+                        <div className="w-full h-72 flex justify-center">{page.contentFileUrl && <img className="w-[78%] object-cover" src={page.fileNames[0]} alt="" />}</div>
                         <p className="h-full mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
                       </div>
                     ) : (
@@ -97,7 +97,7 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ 
                 <BookDetailDone />
               ) : (
                 // 진행 중인 이야기일 경우 페이지 추가
-                <AddPage pages={pages} handleAiImage={handleAiImage} image={image} setImage={setImage} />
+                <AddPage bookId={bookId} pages={pages} handleAiImage={handleAiImage} image={image} setImage={setImage} />
               )}
             </div>
           ))
@@ -110,14 +110,14 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(({ 
                   {(index + 1) % 2 === 1 ? (
                     <div className="p-2 grid grid-rows-[6.8fr_3.2fr]">
                       {/* 홀수쪽일 경우 그림, 글 순서 */}
-                      <div className="w-full h-72 flex justify-center">{page.contentFileUrl && <img className="w-[78%] object-cover" src={page.contentFileUrl} alt="" />}</div>
+                      <div className="w-full h-72 flex justify-center">{page.fileNames[0] && <img className="w-[78%] object-cover" src={page.fileNames[0]} alt="" />}</div>
                       <p className="h-full mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
                     </div>
                   ) : (
                     <div className="p-2 grid grid-rows-[3.2fr_6.8fr]">
                       {/* 짝수쪽일 경우 글, 그림 순서 */}
                       <p className="h-full mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
-                      <div className="w-full h-72 flex justify-center">{page.contentFileUrl && <img className="w-[78%] object-cover" src={page.contentFileUrl} alt="" />}</div>
+                      <div className="w-full h-72 flex justify-center">{page.fileNames[0] && <img className="w-[78%] object-cover" src={page.fileNames[0]} alt="" />}</div>
                     </div>
                   )}
                 </div>
