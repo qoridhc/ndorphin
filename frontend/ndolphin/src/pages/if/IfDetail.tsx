@@ -325,7 +325,7 @@ const IfDetail = () => {
               <div className="grid gap-3">
                 <div className="flex justify-between">
                   <div className="flex">
-                    <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${ifBoardData.user.profileImage}`} alt="" />
+                    <img className="w-9 h-9 mr-3 border rounded-[50%]" src={`${ifBoardData.user.profileImage}`} alt="" />
                     <div>
                       <div className="w-40 flex justify-between items-center">
                         <div className="flex items-center">
@@ -413,7 +413,7 @@ const IfDetail = () => {
                     ) : (
                       <>
                         <div className="flex">
-                          <img className="w-11 h-11 mr-3 rounded-[50%]" src={`${ifBoardData.user.profileImage}`} alt="" />
+                          <img className="w-11 h-11 mr-3 border rounded-[50%]" src={`${localStorage.getItem("profileImage")}`} alt="" />
                           <textarea className="w-full min-h-10 text-xl outline-none resize-none" placeholder="의견을 작성해 주세요" id="target" ref={textareaRef} onChange={(e) => handleCreateCommentTextareaChange(e)} />
                         </div>
                         <div className="flex justify-end">
@@ -427,7 +427,7 @@ const IfDetail = () => {
 
                   {ifBoardData.commentResponseDtos.map((comment) => (
                     <div className="p-5 border-b flex" key={comment.commentId}>
-                      <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${comment.user.profileImage}`} alt="" />
+                      <img className="w-9 h-9 mr-3 border rounded-[50%]" src={`${comment.user.profileImage}`} alt="" />
 
                       <div className="w-full grid gap-2">
                         <div className="grid grid-cols-[6fr_1fr]">
