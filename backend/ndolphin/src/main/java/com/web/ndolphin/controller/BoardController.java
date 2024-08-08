@@ -106,7 +106,7 @@ public class BoardController {
         @RequestParam(value = "search", required = false) String search,
 
         @Parameter(description = "페이징 정보", required = false)
-        @PageableDefault(size = 10) Pageable pageable) {
+        @PageableDefault(size = 12) Pageable pageable) {
 
         ResponseEntity<ResponseDto<Page<BoardDto>>> responseEntity = boardService.getBoardsByType(boardType, filter1, filter2, search, pageable);
         return responseEntity;
