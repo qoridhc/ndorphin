@@ -1,5 +1,7 @@
 import "../../../css/InputPlaceHolder.css";
 import React, { useState, ChangeEvent } from "react";
+import { useNavigate } from "react-router";
+import commentApi from "../../../api/commentApi";
 
 interface AddPageFormProps {
   bookId: string;
@@ -7,17 +9,55 @@ interface AddPageFormProps {
   handleAiImage: any;
   image: string | null;
   setImage: any;
+  file: File | null;
+  setFile: (file: File) => void;
 }
 
-const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiImage, image, setImage }) => {
-  const [file, setFile] = useState<File | null>(null);
-  const [subject, setSubject] = useState("")
-  const [content, setContent] = useState("")
+const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiImage, image, setImage, file, setFile }) => {
+  const navigate = useNavigate();
+  const [content, setContent] = useState("");
+
+  const handlePageAdd = async () => {
+    const formData = new FormData();
+
+    if (file) {
+      formData.append("files", file);
+    }
+
+    formData.append(
+      "request",
+      new Blob(
+        [
+          JSON.stringify({
+            content: content,
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
+
+    try {
+      const response = await commentApi.create(bookId, formData);
+      if (response.status === 200 && response.data) {
+        console.log("릴레이북 페이지 작성 성공");
+        // navigate(`/relaybookdetail/${bookId}`);
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("릴레이북 페이지 작성 오류: ", error);
+    }
+  };
+
+  const onChangeContent = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    setContent(newValue);
+  };
+
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setFile(file)
+      setFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
@@ -38,10 +78,11 @@ const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiI
               onClick={() => {
                 setPageAdd(false);
               }}
-              className="w-16 mx-2 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200">
+              className="w-16 mx-2 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200"
+            >
               취소
             </button>{" "}
-            <button className="w-16 mr-11 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">등록</button>
+            <button onClick={handlePageAdd} className="w-16 mr-11 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">등록</button>
           </div>
         </div>
         <div className="w-full mb-2">
@@ -56,7 +97,7 @@ const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiI
         <div className="w-[90%] border border-zinc-950">
           <p className="mx-2 my-1 font-bold flex">본문</p>
           <hr className="mx-3 my-1 border-zinc-900" />
-          <textarea className="notes w-full h-[100px] resize-none focus:outline-none placeholder:text-zinc-400" placeholder="'만약에~' 내용을 입력해 이야기를 이어주세요"></textarea>
+          <textarea onChange={onChangeContent} className="notes w-full h-[100px] resize-none focus:outline-none placeholder:text-zinc-400" placeholder="'만약에~' 내용을 입력해 이야기를 이어주세요" value={content}></textarea>
         </div>
       </div>
 
@@ -78,7 +119,8 @@ const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiI
                   onClick={() => {
                     handleAiImage();
                   }}
-                  className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
+                  className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800"
+                >
                   <img src="/assets/aiImageIcon.png" className="w-5" alt="#"></img>
                   <p className="text-xs">AI 이미지 생성</p>
                 </button>
@@ -96,7 +138,7 @@ const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiI
                     <p className="ml-5 text-xs">사진 첨부</p>
                   </div>
                 </label>
-                <input className="hidden" id="image-input" type="file" accept="image/*" onChange={handleImageChange} />
+                <input className="hidden" id="image-input" type="file" accept="image/jpeg, image/png, image/bmp" onChange={handleImageChange} />
               </div>
             </div>
           </div>

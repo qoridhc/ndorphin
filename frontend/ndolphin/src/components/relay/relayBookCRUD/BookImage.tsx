@@ -61,7 +61,7 @@ const BookImage: React.FC<BookImageProps> = ({ dalleUrl, setDalleUrl, handleAiIm
                   <p className="ml-5 text-xs">사진 첨부</p>
                 </div>
               </label>
-              <input className="hidden" id="image-input" type="file" accept="image/*" onChange={handleImageChange} />
+              <input className="hidden" id="image-input" type="file" accept="image/jpeg, image/png, image/bmp" onChange={handleImageChange} />
 
               <div className="my-5 flex flex-col items-center">
                 <span>

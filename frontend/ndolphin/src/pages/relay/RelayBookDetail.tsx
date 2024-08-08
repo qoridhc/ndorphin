@@ -263,16 +263,53 @@ const RelayBookDetail = () => {
             maxShadowOpacity={0.5}
             className="album-web"
             onFlip={onFlip}
-            useMouseEvents={false}>
+            useMouseEvents={false}
+          >
             {/* 책 표지 */}
             <BookPageCover firstPage={firstPage} bookId={bookId} isDeleteOpen={isDeleteModalOpen} isAiOpen={isAiModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
 
             {/* 첫 번째 페이지 */}
-            <BookDetailPage readPage={"first"} bookId={bookId} number={page} pages={firstPage} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
+            <BookDetailPage
+              readPage={"first"}
+              bookId={bookId}
+              number={page}
+              pages={firstPage}
+              totalPage={pages.length}
+              handleAiImage={handleAiImage}
+              image={image}
+              setImage={setImage}
+              file={file}
+              setFile={setFile}
+              isFinished={isFinished}
+            ></BookDetailPage>
             {/* 내부 상세 페이지 */}
-            <BookDetailPage readPage={"content"} bookId={bookId} number={page} pages={pages} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
+            <BookDetailPage
+              readPage={"content"}
+              bookId={bookId}
+              number={page}
+              pages={pages}
+              totalPage={pages.length}
+              handleAiImage={handleAiImage}
+              image={image}
+              setImage={setImage}
+              file={file}
+              setFile={setFile}
+              isFinished={isFinished}
+            ></BookDetailPage>
             {/* 마지막 페이지 (이모티콘 반응 or 페이지 추가) */}
-            <BookDetailPage readPage={"last"} bookId={bookId} number={page} pages={lastPage} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
+            <BookDetailPage
+              readPage={"last"}
+              bookId={bookId}
+              number={page}
+              pages={lastPage}
+              totalPage={pages.length}
+              handleAiImage={handleAiImage}
+              image={image}
+              setImage={setImage}
+              file={file}
+              setFile={setFile}
+              isFinished={isFinished}
+            ></BookDetailPage>
 
             {/* 페이지가 짝수일 경우 마지막 커버 표시 */}
             <PageEndCover totalPage={totalPage} />
@@ -289,7 +326,8 @@ const RelayBookDetail = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-blue-500 rounded-sm ">
+              className="border-2 border-blue-500 rounded-sm "
+            >
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           ) : (
@@ -300,7 +338,8 @@ const RelayBookDetail = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-stone-500 rounded-sm ">
+              className="border-2 border-stone-500 rounded-sm "
+            >
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           )}
@@ -313,7 +352,7 @@ const RelayBookDetail = () => {
       <DeleteModal bookId={bookId} isOpen={isDeleteModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />
 
       {/* AI 이미지 생성 모달 */}
-      <AiImagePromptModal isOpen={isAiModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} setFile={setFile} setDalleUrl={setDalleUrl} file={file} />
+      <AiImagePromptModal isOpen={isAiModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} setFile={setFile} />
     </div>
   );
 };
