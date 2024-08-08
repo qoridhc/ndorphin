@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 public class OpinionBoardDetailResponseDto extends BoardDto {
 
-    private String contentFileUrl;
     private int commentCount;
     private boolean hasParticipated;
     private List<CommentResponseDto> commentResponseDtos;

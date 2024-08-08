@@ -20,8 +20,10 @@ public class FileInfo extends DateEntity {
     @Column(name = "file_info_id")
     private Long id;
 
+    @Column(length = 1000)
     private String fileName;
 
+    @Column(length = 1000)
     private String fileUrl;
 
     private int fileSize;
