@@ -445,18 +445,18 @@ const IfDetail = () => {
                           <>
                             <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
                             <div className="flex justify-between items-center">
-                              <div className="flex">
+                              <div className="flex items-center">
                                 {comment.likedByUser ? (
                                   <button onClick={() => handleDeleteLiked(comment.commentId)}>
-                                    <img className="w-4" src="/assets/like/likeCheckedIcon.png" alt="" />
+                                    <img className="w-4 py-1" src="/assets/like/likeCheckedIcon.png" alt="" />
                                   </button>
                                 ) : (
                                   <button onClick={() => handleCreateLiked(comment.commentId)}>
-                                    <img className="w-4" src="/assets/like/likeIcon.png" alt="" />{" "}
+                                    <img className="w-4 py-1" src="/assets/like/likeIcon.png" alt="" />{" "}
                                   </button>
                                 )}
 
-                                {comment.likeCnt === 0 ? <></> : <p className="px-1 text-sm text-[#565656] font-semibold">{comment.likeCnt}</p>}
+                                <p className={`px-1 text-sm text-[#565656] font-semibold ${comment.likeCnt === 0 ? "hidden" : ""}`}>{comment.likeCnt}</p>
                               </div>
                             </div>
                           </>
