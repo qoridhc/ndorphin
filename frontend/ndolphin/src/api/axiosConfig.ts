@@ -15,8 +15,8 @@ request.interceptors.request.use(
   async config => {
     // 요청 전에 추가 작업 수행 (예: 토큰 추가)
     try {
-      const token = process.env.REACT_APP_ACCESS_TOKEN;
-      // const token = await localStorage.getItem('accessToken');  // 비동기 함수로 변경
+      // const token = process.env.REACT_APP_ACCESS_TOKEN;
+      const token = await localStorage.getItem('accessToken');  // 비동기 함수로 변경
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

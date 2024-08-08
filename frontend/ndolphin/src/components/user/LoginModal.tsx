@@ -53,29 +53,31 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
   if (!isOpen) return null;
 
   const handleExternalLogin = (loginType: string) => {
-    const newWindow = userApi.login(loginType);
-    setLoginWindow(newWindow);
-
-    // // 로컬 테스트, 배포 시 위 두줄 주석 해제 및 아래 코드 삭제
-    // // 로그인 모달 자동으로 안 닫힘, 버튼 누르고 모달 닫고 새로 고침 후 진행
-    // userApi.getUserInfo('4')
-    //   .then(response => {
-    //     if (response.data.code == 'SU') {
-    //       const userInfo = response.data.data;
-    //       localStorage.setItem("userId", userInfo.userId.toString());
-    //       localStorage.setItem('nickName', userInfo.nickName);
-    //       localStorage.setItem('mbti', userInfo.mbti);
-    //       localStorage.setItem('npoint', userInfo.npoint.toString());
-    //       localStorage.setItem('profileImage', userInfo.profileImage);
-    //       localStorage.setItem("accessToken", process.env.REACT_APP_ACCESS_TOKEN as string);
-    //       localStorage.setItem("email", userInfo.email);
-
-    //       window.location.href = window.location.href
-    //     }
-    //   })
-    //   .catch(error => {
-    //     console.error('Failed to fetch user info: ', error);
-    //   });
+    // 로컬 테스트와 배포 모두 가능
+    const nowURL = window.location.href;
+    if (nowURL.includes('localhost')) {
+      userApi.getUserInfo('4')
+        .then(response => {
+          if (response.data.code == 'SU') {
+            const userInfo = response.data.data;
+            localStorage.setItem("userId", userInfo.userId.toString());
+            localStorage.setItem('nickName', userInfo.nickName);
+            localStorage.setItem('mbti', userInfo.mbti);
+            localStorage.setItem('npoint', userInfo.npoint.toString());
+            localStorage.setItem('profileImage', userInfo.profileImage);
+            localStorage.setItem("accessToken", process.env.REACT_APP_ACCESS_TOKEN as string);
+            localStorage.setItem("email", userInfo.email);
+  
+            window.location.href = window.location.href
+          }
+        })
+        .catch(error => {
+          console.error('Failed to fetch user info: ', error);
+        });
+    } else {
+      const newWindow = userApi.login(loginType);
+      setLoginWindow(newWindow);
+    }
 
     }
 
