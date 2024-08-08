@@ -74,6 +74,8 @@ const Header = () => {
         localStorage.setItem("nickName", res.data.data.nickName);
         localStorage.setItem("npoint", res.data.data.npoint.toString());
         localStorage.setItem("profileImage", res.data.data.profileImage);
+
+        setProfileImage(res.data.data.profileImage);
       })
       .catch((err) => {
         console.error("유저 정보 에러", err);
@@ -81,6 +83,8 @@ const Header = () => {
 
     setIsLoggedIn(true);
     closeLoginModal();
+
+    window.location.href = window.location.href;
 
     if (isNewUser) {
       setIsUserInfoEditModalOpen(true);
