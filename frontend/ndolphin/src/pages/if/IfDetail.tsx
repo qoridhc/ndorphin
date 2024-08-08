@@ -86,6 +86,8 @@ const IfDetail = () => {
   useEffect(() => {
     if (updateBoardSubjectRef.current) {
       updateBoardSubjectRef.current.focus();
+
+      console.log(updateBoardSubject, " + ", updateBoardContent);
     }
 
     if (updateCommentTextareaRef.current) {
@@ -99,16 +101,23 @@ const IfDetail = () => {
     }
   }, [isUpdate, isCommentUpdate]);
 
+  useEffect(() => {
+    if (params.boardId !== undefined) {
+      readBoardData(params.boardId);
+      getRecommendationList();
+    }
+    setIsUpdate(false);
+  }, [params.boardId]);
+
   // 데이터 조회
   const readBoardData = async (boardId: string) => {
     try {
       const response = await boardApi.read(boardId);
       if (response.status === 200) {
-        console.log(response.data.data);
         setIfBoardData(response.data.data);
         setUpdateBoardSubject(response.data.data.subject);
         setUpdateBoardContent(response.data.data.content);
-        setImage(response.data.data.contentFileUrl);
+        setImage(response.data.data.fileUrls[0]);
       }
     } catch (error) {
       console.error("ifApi read : ", error);
@@ -211,14 +220,6 @@ const IfDetail = () => {
   const cancelAiImage = () => {
     setIsModalOpen(false);
   };
-
-  useEffect(() => {
-    if (params.boardId !== undefined) {
-      readBoardData(params.boardId);
-      getRecommendationList();
-    }
-    setIsUpdate(false);
-  }, [params.boardId]);
 
   return (
     <>
