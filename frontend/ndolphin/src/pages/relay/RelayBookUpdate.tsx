@@ -25,7 +25,6 @@ const Page = React.forwardRef<HTMLDivElement, PageProps>((props, ref: ForwardedR
 
 const RelayBookUpdate: React.FC = () => {
   const { bookId } = useParams();
-  const bookIdNumber = useMemo(() => (bookId ? parseInt(bookId, 10) : NaN), [bookId]);
   const subject = useRef<string>("");
   const content = useRef<string>("");
   const [contentFileUrl, setContentFileUrl] = useState("");
@@ -88,13 +87,15 @@ const RelayBookUpdate: React.FC = () => {
       )
     );
 
-    try {
-      const response = await boardApi.update(formData, bookIdNumber);
-      if (response.status === 200) {
-        console.log("릴레이북 이야기 수정 성공");
+    if (bookId !== undefined) {
+      try {
+        const response = await boardApi.update(formData, bookId);
+        if (response.status === 200) {
+          console.log("릴레이북 이야기 수정 성공");
+        }
+      } catch (error) {
+        console.error("릴레이북 이야기 수정 오류: ", error);
       }
-    } catch (error) {
-      console.error("릴레이북 이야기 수정 오류: ", error);
     }
   };
 
@@ -154,9 +155,7 @@ const RelayBookUpdate: React.FC = () => {
       <div className="">
         {/* @ts-ignore */}
         <HTMLFlipBook width={480} height={580} minWidth={315} maxWidth={1000} minHeight={420} maxHeight={1350} flippingTime={600} style={{ margin: "0 auto" }} maxShadowOpacity={0.5} useMouseEvents={false}>
-          <Page key="left-form">
-            {<RelayBookUpdateLeftForm handleSubjectChange={handleSubjectChange} handleContentChange={handleContentChange} handleRelayBookUpdate={handleRelayBookUpdate} subject={subject} content={content} />}
-          </Page>
+          <Page key="left-form">{<RelayBookUpdateLeftForm handleSubjectChange={handleSubjectChange} handleContentChange={handleContentChange} handleRelayBookUpdate={handleRelayBookUpdate} subject={subject} content={content} />}</Page>
           <Page key="right-form">
             {/* 표지 이미지 form */}
             <div className="mt-11 flex flex-col items-center justify-center">
