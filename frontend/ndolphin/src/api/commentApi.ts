@@ -19,7 +19,15 @@ const commentApi = {
   
   delete: (boardId: string, commentId: number) => {
     return request.delete(`/api/v1/boards/${boardId}/comments/${commentId}`);
-  }
+  },
+
+  createLike: (boardId: string, commentId: number) => {
+    return request.post(`/api/v1/boards/${boardId}/comments/${commentId}/like`);
+  },
+
+  deleteLike: (boardId: string, commentId: number) => {
+    return request.delete(`/api/v1/boards/${boardId}/comments/${commentId}/like`);
+  },
 }
 
 export default commentApi;

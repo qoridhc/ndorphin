@@ -262,7 +262,7 @@ const IfDetail = () => {
       if (params.boardId !== undefined) {
         const response = await boardApi.update(formData, params.boardId);
         if (response.status === 200) {
-          window.location.href = `/ifdetail/${params.boardId}`;
+          readBoardData(params.boardId);
         }
       }
     } catch (error) {
@@ -282,6 +282,33 @@ const IfDetail = () => {
 
   const cancelAiImage = () => {
     setIsModalOpen(false);
+  };
+
+  // 좋아요
+  const handleCreateLiked = async (commentId: number) => {
+    try {
+      if (params.boardId !== undefined) {
+        const response = await commentApi.createLike(params.boardId, commentId);
+        if (response.status === 200) {
+          readBoardData(params.boardId);
+        }
+      }
+    } catch (error) {
+      console.log("commentApi createLike : ", error);
+    }
+  };
+
+  const handleDeleteLiked = async (commentId: number) => {
+    try {
+      if (params.boardId !== undefined) {
+        const response = await commentApi.deleteLike(params.boardId, commentId);
+        if (response.status === 200) {
+          readBoardData(params.boardId);
+        }
+      }
+    } catch (error) {
+      console.log("commentApi deleteLike : ", error);
+    }
   };
 
   return (
@@ -419,7 +446,16 @@ const IfDetail = () => {
                             <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
                             <div className="flex justify-between items-center">
                               <div className="flex">
-                                <button>{comment.likedByUser ? <img className="w-4" src="/assets/like/likeCheckedIcon.png" alt="" /> : <img className="w-4" src="/assets/like/likeIcon.png" alt="" />}</button>
+                                {comment.likedByUser ? (
+                                  <button onClick={() => handleDeleteLiked(comment.commentId)}>
+                                    <img className="w-4" src="/assets/like/likeCheckedIcon.png" alt="" />
+                                  </button>
+                                ) : (
+                                  <button onClick={() => handleCreateLiked(comment.commentId)}>
+                                    <img className="w-4" src="/assets/like/likeIcon.png" alt="" />{" "}
+                                  </button>
+                                )}
+
                                 {comment.likeCnt === 0 ? <></> : <p className="px-1 text-sm text-[#565656] font-semibold">{comment.likeCnt}</p>}
                               </div>
                             </div>
