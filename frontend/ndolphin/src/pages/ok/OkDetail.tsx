@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import OkDetailModal from "../../components/ok/OkDetailModal";
 import { FaArrowLeftLong, FaRegComment } from "react-icons/fa6";
-import SettingsMenu from "../../components/common/SettingMenu";
+import SettingsMenu from "../../components/if/CommentSettingMenu";
 import { useNavigate } from "react-router";
 
 const OkDetail = () => {

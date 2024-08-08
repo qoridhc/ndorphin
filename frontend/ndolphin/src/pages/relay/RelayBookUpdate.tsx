@@ -25,7 +25,6 @@ const Page = React.forwardRef<HTMLDivElement, PageProps>((props, ref: ForwardedR
 
 const RelayBookUpdate: React.FC = () => {
   const { bookId } = useParams();
-  const bookIdNumber = useMemo(() => (bookId ? parseInt(bookId, 10) : NaN), [bookId]);
   const subject = useRef<string>("");
   const content = useRef<string>("");
   const [contentFileUrl, setContentFileUrl] = useState("");
@@ -87,13 +86,15 @@ const RelayBookUpdate: React.FC = () => {
       )
     );
 
-    try {
-      const response = await boardApi.update(formData, bookIdNumber);
-      if (response.status === 200) {
-        console.log("릴레이북 이야기 수정 성공");
+    if (bookId !== undefined) {
+      try {
+        const response = await boardApi.update(formData, bookId);
+        if (response.status === 200) {
+          console.log("릴레이북 이야기 수정 성공");
+        }
+      } catch (error) {
+        console.error("릴레이북 이야기 수정 오류: ", error);
       }
-    } catch (error) {
-      console.error("릴레이북 이야기 수정 오류: ", error);
     }
   };
 

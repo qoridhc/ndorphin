@@ -17,7 +17,7 @@ const boardApi = {
     return request.get(`/api/v1/boards/${boardId}`)
   },
   
-  update: (formData: FormData, boardId: number) => {
+  update: (formData: FormData, boardId: string) => {
     return request.put(`/api/v1/boards/${boardId}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data'}
     })

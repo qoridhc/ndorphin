@@ -30,7 +30,7 @@ const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, set
   const getIfBoardList = async () => {
     try {
       const response = await boardApi.list("OPINION_BOARD");
-      setIfBoardList(response.data.data);
+      setIfBoardList(response.data.data.content);
     } catch (error) {
       console.error("boardApi list : ", error);
     }
