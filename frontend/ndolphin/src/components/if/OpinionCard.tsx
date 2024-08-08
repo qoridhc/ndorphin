@@ -3,15 +3,23 @@ import { IoIosArrowForward } from "react-icons/io";
 import { useNavigate } from "react-router";
 
 interface If {
+  id: number;
+  user: {
+    userId: number;
+    profileImage: string | null;
+    mbti: string | null;
+    nickName: string;
+  };
+  content: string;
+  subject: string;
+  fileNames: string[];
+  fileUrls: string[];
+  hit: number;
+  createdAt: string;
+  updatedAt: string | null;
   avatarUrl: string | null;
   bestComment: string | null;
   commentCount: number;
-  createdAt: string;
-  hit: number;
-  id: number;
-  nickName: string;
-  subject: string;
-  badget: "N";
 }
 
 interface Props {
@@ -28,12 +36,12 @@ const OpinionCard = ({ ifBoard }: Props) => {
     <div className="h-72 p-5 border-solid border-[#565656] border-[1px] rounded-lg grid grid-rows-[1fr_1fr_3fr] gap-3 cursor-pointer duration-300 ease-out hover:-translate-y-3 hover:shadow-lg" onClick={() => goToDetail(ifBoard.id)}>
       <div className="flex justify-between">
         <div className="flex items-center">
-          <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${ifBoard.avatarUrl}`} alt="" />
+          <img className="w-9 h-9 mr-3 border rounded-[50%]" src={ifBoard.user.profileImage === null ? "/assets/user/defaultProfile.png" : ifBoard.user.profileImage} alt="" />
           <div>
             <div className="w-40 flex justify-between items-center">
               <div className="flex items-center">
-                <p className="font-bold">{ifBoard.nickName}</p>
-                {<img className="w-5 h-5 ml-1" src={`/assets/${ifBoard.badget === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                <p className="font-bold">{ifBoard.user.nickName}</p>
+                {<img className="w-5 h-5 ml-1" src={`/assets/${ifBoard.user.mbti === null ? "noBadget.png" : ifBoard.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
               </div>
             </div>
             <div>
@@ -41,8 +49,6 @@ const OpinionCard = ({ ifBoard }: Props) => {
             </div>
           </div>
         </div>
-
-        {/* <IoIosArrowForward className="text-2xl" /> */}
       </div>
       <p className="text-justify line-clamp-2">{ifBoard.subject}</p>
 

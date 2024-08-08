@@ -77,14 +77,17 @@ const Header = () => {
 
         setProfileImage(res.data.data.profileImage);
       })
+      .then(() => {
+        setIsLoggedIn(true);
+        closeLoginModal();
+      })
+      .then(() => {
+        window.location.href = window.location.href;
+      })
       .catch((err) => {
         console.error("유저 정보 에러", err);
       });
 
-    setIsLoggedIn(true);
-    closeLoginModal();
-
-    window.location.href = window.location.href;
 
     if (isNewUser) {
       setIsUserInfoEditModalOpen(true);

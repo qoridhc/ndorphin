@@ -4,16 +4,23 @@ import boardApi from "../../api/boardApi";
 import OpinionCard from "./OpinionCard";
 
 interface If {
+  id: number;
+  user: {
+    userId: number;
+    profileImage: string | null;
+    mbti: string | null;
+    nickName: string;
+  };
+  content: string;
+  subject: string;
+  fileNames: string[];
+  fileUrls: string[];
+  hit: number;
+  createdAt: string;
+  updatedAt: string | null;
   avatarUrl: string | null;
   bestComment: string | null;
   commentCount: number;
-  content: string;
-  createdAt: string;
-  hit: number;
-  id: number;
-  nickName: string;
-  subject: string;
-  badget: "N";
 }
 
 interface Props {
