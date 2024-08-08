@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 public class VoteBoardDetailResponseDto extends BoardDto {
 
-    private String contentFileUrl;
     private List<VoteInfo> voteInfos;
     private Long userVoteId;
     private Long userVoteContentId;

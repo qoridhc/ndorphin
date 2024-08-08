@@ -29,5 +29,7 @@ public interface FileInfoService {
 
     String getFileUrl(Long Id, EntityType entityType);
 
+    String getFileName(Long Id, EntityType entityType);
+
     void uploadDallEFile(Long entityId, EntityType entityType, String url);
 }
