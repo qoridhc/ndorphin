@@ -92,13 +92,13 @@ public class FollowController {
         @ApiResponse(responseCode = "500", description = "서버 오류",
             content = @Content(schema = @Schema()))
     })
-    @DeleteMapping("/{follower}")
+    @DeleteMapping("/{followerId}")
     public ResponseEntity<ResponseDto> deleteFollow(
-        @Parameter(description = "팔로워의 ID", required = true) @PathVariable Long follower,
+        @Parameter(description = "팔로워의 ID", required = true) @PathVariable Long followerId,
         @Parameter(description = "언팔로우할 상대방 유저 ID", required = true) @RequestBody FollowRequestDto dto
     ) {
 
-        ResponseEntity<ResponseDto> response = followService.deleteFollow(follower, dto.getFollowingId());
+        ResponseEntity<ResponseDto> response = followService.deleteFollow(followerId, dto.getFollowingId());
 
         return response;
     }
