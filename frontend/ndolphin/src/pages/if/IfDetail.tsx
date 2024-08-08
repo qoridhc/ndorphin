@@ -50,6 +50,8 @@ interface If {
 }
 
 const IfDetail = () => {
+  const [dalleUrl, setDalleUrl] = useState<string | null>(null);
+
   const navigate = useNavigate();
   const params = useParams();
   const [userId, setUserId] = useState("");
@@ -71,7 +73,7 @@ const IfDetail = () => {
 
   const [image, setImage] = useState<string | null>(null);
   const [aiImage, setAiImage] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>();
+  const [file, setFile] = useState<File | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -457,7 +459,7 @@ const IfDetail = () => {
         <p>Loading...</p>
       )}
 
-      <BookCoverAiPromptModal setFile={setFile} isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
+      <BookCoverAiPromptModal setFile={setFile} isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} file={file} setDalleUrl={setDalleUrl} />
     </>
   );
 };
