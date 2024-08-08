@@ -21,8 +21,10 @@ interface IfBoard {
     user: { nickName: string; profileImage: string; mbti: string | null };
   }[];
   content: string;
-  contentFileUrl: string;
+  fileNames: string[];
+  fileUrls: string[];
   createdAt: string;
+  updatedAt: string;
   hasParticipated: boolean;
   hit: number;
   id: number;
@@ -117,7 +119,7 @@ const IfDetail = () => {
     try {
       const response = await boardApi.list("OPINION_BOARD");
       if (response.status === 200) {
-        setRecommendationList(response.data.data);
+        setRecommendationList(response.data.data.content);
       }
     } catch (error) {
       console.error("boardApi list : ", error);
@@ -289,7 +291,7 @@ const IfDetail = () => {
                 </div>
               ) : (
                 <div className="py-5 flex justify-center">
-                  <img className="max-w-full max-h-[400px] object-cover" src={`${ifBoardData.contentFileUrl}`} alt="" />
+                  <img className="max-w-full max-h-[400px] object-cover" src={`${ifBoardData.fileUrls[0]}`} alt="" />
                 </div>
               )}
 
