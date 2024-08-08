@@ -1,10 +1,11 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router";
-import SettingMenu from "../../components/common/SettingMenu";
+import CommentSettingsMenu from "../../components/if/CommentSettingMenu";
 import OpinionCard from "../../components/if/OpinionCard";
 import boardApi from "../../api/boardApi";
 import commentApi from "../../api/commentApi";
+import IfBoardSettingMenu from "../../components/if/IfBoardSettingMenu";
 
 interface IfBoard {
   commentCount: number;
@@ -47,6 +48,7 @@ interface If {
 const IfDetail = () => {
   const navigate = useNavigate();
   const params = useParams();
+  const [userId, setUserId] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const contentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [textCount, setTextCount] = useState(0);
@@ -54,7 +56,12 @@ const IfDetail = () => {
   const [ifBoardData, setIfBoardData] = useState<IfBoard | null>(null);
   const [recommendationList, setRecommendationList] = useState<If[] | null>(null);
   const [isCommentUpdate, setIsCommentUpdate] = useState(0);
+  const [isUpdate, setIsUpdate] = useState(false);
   const [currentContent, setCurrentContent] = useState("");
+
+  useEffect(() => {
+    setUserId(`${localStorage.getItem("userId")}`);
+  }, []);
 
   const readBoardData = async (boardId: string) => {
     try {
@@ -178,18 +185,22 @@ const IfDetail = () => {
             <div>
               <div className="grid gap-3">
                 <div className="flex items-center">
-                  <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${ifBoardData.user.profileImage}`} alt="" />
                   <div>
-                    <div className="w-40 flex justify-between items-center">
-                      <div className="flex items-center">
-                        <p className="font-bold">{ifBoardData.user.nickName}</p>
-                        {<img className="w-5 h-5 ml-1" src={`/assets/${ifBoardData.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                    <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${ifBoardData.user.profileImage}`} alt="" />
+                    <div>
+                      <div className="w-40 flex justify-between items-center">
+                        <div className="flex items-center">
+                          <p className="font-bold">{ifBoardData.user.nickName}</p>
+                          {<img className="w-5 h-5 ml-1" src={`/assets/${ifBoardData.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                        </div>
+                      </div>
+                      <div className="">
+                        <p className="text-xs text-left">{ifBoardData.createdAt}</p>
                       </div>
                     </div>
-                    <div className="">
-                      <p className="text-xs text-left">{ifBoardData.createdAt}</p>
-                    </div>
                   </div>
+
+                  {`${ifBoardData.user.userId}` === userId ? <IfBoardSettingMenu boardId={ifBoardData.id} setIsUpdate={setIsUpdate} /> : <></>}
                 </div>
 
                 <p className="text-xl font-bold">Q : {ifBoardData.subject}</p>
@@ -242,9 +253,9 @@ const IfDetail = () => {
                               <p className="font-bold">{comment.user.nickName}</p>
                               {<img className="w-5 h-5 ml-1" src={`/assets/${comment.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
                             </div>
-                            <p className="text-xs text-[#565656]">3일 전</p>
+                            <p className="text-xs text-[#565656]">{comment.createdAt}</p>
                           </div>
-                          <SettingMenu boardId={params.boardId} commentId={comment.commentId} setIsCommentUpdate={setIsCommentUpdate} readBoardData={readBoardData} />
+                          <CommentSettingsMenu boardId={params.boardId} commentId={comment.commentId} setIsCommentUpdate={setIsCommentUpdate} readBoardData={readBoardData} />
                         </div>
 
                         {isCommentUpdate !== comment.commentId ? (
