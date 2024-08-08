@@ -69,7 +69,6 @@ const RelayBookLeftForm = ({ dalleUrl, handleRelayBookStart }: RelayBookLeftForm
                 } else {
                   handleRelayBookStart(subjectValue, contentValue, endPageValue);
                 }
-                navigate(`/relaybooklist/`);
               }}
               className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
               등록

@@ -60,7 +60,6 @@ const RelayBookDetail = () => {
           if (response.status === 200 && isMounted) {
             const bookDetail = response.data.data.commentResponseDtos;
             const firstPage = response.data.data;
-            console.log("릴레이북 이야기 상세 조회 성공");
             setPages(bookDetail);
             setFirstPage([firstPage]);
           }
