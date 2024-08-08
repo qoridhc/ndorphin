@@ -45,12 +45,17 @@ const Profile = () => {
             setNickName(userInfo.nickName);
             setMbti(userInfo.mbti);
             setNpoint(userInfo.npoint);
-            setProfileImage(userInfo.profileImage);
+            const getProfileImage = userInfo.profileImage
+            if (getProfileImage) {
+              setProfileImage(userInfo.profileImage);
+            } else {
+              setProfileImage("/assets/user/profile.png");
+            }
 
             localStorage.setItem('nickName', userInfo.nickName);
             localStorage.setItem('mbti', userInfo.mbti);
             localStorage.setItem('npoint', userInfo.npoint.toString());
-            localStorage.setItem('profileImage', userInfo.profileImage);
+            localStorage.setItem("profileImage", getProfileImage);
           }
         })
         .catch(error => {
@@ -65,7 +70,12 @@ const Profile = () => {
             setNickName(userInfo.nickName);
             setMbti(userInfo.mbti);
             setNpoint(userInfo.npoint);
-            setProfileImage(userInfo.profileImage);
+            const getProfileImage = userInfo.profileImage;
+            if (getProfileImage) {
+              setProfileImage(userInfo.profileImage);
+            } else {
+              setProfileImage("/assets/user/profile.png");
+            }
           }
         })
         .catch(error => {
