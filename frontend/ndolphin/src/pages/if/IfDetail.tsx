@@ -65,7 +65,6 @@ const IfDetail = () => {
   const [boardSubjectTextCount, setBoardSubjectTextCount] = useState(0);
   const [boardContentTextCount, setBoardContentTextCount] = useState(0);
 
-  const [currentComment, setCurrentComment] = useState("");
   const [updateComment, setUpdateComment] = useState("");
   const [updateBoardSubject, setUpdateBoardSubject] = useState("");
   const [updateBoardContent, setUpdateBoardContent] = useState("");
@@ -78,6 +77,7 @@ const IfDetail = () => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const updateCommentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const updateBoardSubjectRef = useRef<HTMLInputElement>(null);
+  const updateBoardContentRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setUserId(`${localStorage.getItem("userId")}`);
@@ -86,8 +86,6 @@ const IfDetail = () => {
   useEffect(() => {
     if (updateBoardSubjectRef.current) {
       updateBoardSubjectRef.current.focus();
-
-      console.log(updateBoardSubject, " + ", updateBoardContent);
     }
 
     if (updateCommentTextareaRef.current) {
@@ -118,6 +116,9 @@ const IfDetail = () => {
         setUpdateBoardSubject(response.data.data.subject);
         setUpdateBoardContent(response.data.data.content);
         setImage(response.data.data.fileUrls[0]);
+
+        setBoardSubjectTextCount(updateBoardSubject.length);
+        setBoardContentTextCount(updateBoardContent.length);
       }
     } catch (error) {
       console.error("ifApi read : ", error);
@@ -146,6 +147,7 @@ const IfDetail = () => {
     }
   };
 
+  // 의견 생성 textarea 관리
   const handleCreateComment = async () => {
     if (params.boardId !== undefined && textareaRef.current) {
       const formData = new FormData();
@@ -174,23 +176,27 @@ const IfDetail = () => {
     }
   };
 
-  // 의견 수정
-  const handleUpdateCommentTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setUpdateComment(event.target.value);
+  // 게시글 본문, 의견 textarea 관리
+  const handleTextareaChange = (
+    setText: React.Dispatch<React.SetStateAction<string>>,
+    event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+    setTextCount: React.Dispatch<React.SetStateAction<number>>,
+    ref: React.RefObject<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    setText(event.target.value);
 
     const textLength = event.target.value.length;
-    setUpdateCommentCount(textLength);
+    setTextCount(textLength);
 
-    if (updateCommentTextareaRef.current) {
-      updateCommentTextareaRef.current.style.height = "auto";
-      updateCommentTextareaRef.current.style.height = updateCommentTextareaRef.current.scrollHeight + "px";
+    if (ref.current) {
+      ref.current.style.height = "auto";
+      ref.current.style.height = ref.current.scrollHeight + "px";
     }
   };
 
+  // 의견 수정
   const handleUpdateComment = async (commentId: number, commentContent: string) => {
     if (params.boardId !== undefined && updateCommentTextareaRef.current) {
-      setCurrentComment(commentContent);
-
       const data = {
         content: updateCommentTextareaRef.current.value,
       };
@@ -204,6 +210,53 @@ const IfDetail = () => {
       } catch (error) {
         console.log("commentApi update : ", error);
       }
+    }
+  };
+
+  // 게시글 제목 input 관리
+  const handleUpdateBoardSubjectTextareaChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setUpdateBoardSubject(event.target.value);
+
+    const textLength = event.target.value.length;
+    setBoardSubjectTextCount(textLength);
+
+    if (updateBoardSubjectRef.current) {
+      updateBoardSubjectRef.current.style.height = "auto";
+      updateBoardSubjectRef.current.style.height = updateBoardSubjectRef.current.scrollHeight + "px";
+    }
+  };
+
+  // 게시글 수정
+  const handleUpdateIfBoard = async () => {
+    const formData = new FormData();
+
+    formData.append(
+      "request",
+      new Blob(
+        [
+          JSON.stringify({
+            subject: updateBoardSubject,
+            content: updateBoardContent,
+            boardType: "OPINION_BOARD",
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
+
+    if (file) {
+      formData.append("files", file);
+    }
+
+    try {
+      if (params.boardId !== undefined) {
+        const response = await boardApi.update(formData, params.boardId);
+        if (response.status === 200) {
+          window.location.href = `/ifdetail/${params.boardId}`;
+        }
+      }
+    } catch (error) {
+      console.log("boardApi update : ", error);
     }
   };
 
@@ -251,7 +304,10 @@ const IfDetail = () => {
 
                   {isUpdate && `${ifBoardData.user.userId}` === userId ? (
                     <div>
-                      <button className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${boardSubjectTextCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`} disabled={boardSubjectTextCount === 0}>
+                      <button
+                        className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${boardSubjectTextCount === 0 || boardContentTextCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`}
+                        disabled={boardSubjectTextCount === 0 || boardContentTextCount === 0}
+                        onClick={() => handleUpdateIfBoard()}>
                         수정
                       </button>
                       <button className="px-5 py-1 rounded-md text-sm text-[#565656] font-bold border-2 border-gray-300 duration-300" onClick={() => setIsUpdate(false)}>
@@ -271,10 +327,16 @@ const IfDetail = () => {
                       placeholder="제목을 입력하세요"
                       value={updateBoardSubject}
                       ref={updateBoardSubjectRef}
-                      onChange={(e) => setUpdateBoardSubject(e.target.value)}
+                      onChange={(e) => handleUpdateBoardSubjectTextareaChange(e)}
                     />
                     <hr className="h-[1px] bg-[#9E9E9E]" />
-                    <textarea className="p-1 border border-[#9E9E9E] rounded-sm outline-none resize-none" placeholder="내용을 입력하세요" value={updateBoardContent} onChange={(e) => setUpdateBoardContent(e.target.value)} />
+                    <textarea
+                      className="p-1 border border-[#9E9E9E] rounded-sm outline-none resize-none"
+                      placeholder="내용을 입력하세요"
+                      value={updateBoardContent}
+                      ref={updateBoardContentRef}
+                      onChange={(e) => handleTextareaChange(setUpdateBoardContent, e, setBoardContentTextCount, updateBoardContentRef)}
+                    />
                   </>
                 ) : (
                   <>
@@ -360,7 +422,7 @@ const IfDetail = () => {
                               value={updateComment}
                               id="target"
                               ref={updateCommentTextareaRef}
-                              onChange={(e) => handleUpdateCommentTextareaChange(e)}
+                              onChange={(e) => handleTextareaChange(setUpdateComment, e, setUpdateCommentCount, updateCommentTextareaRef)}
                             />
                             <div className="flex justify-end">
                               <button
