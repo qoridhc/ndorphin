@@ -508,7 +508,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private String getFileName(Long entityId, EntityType entityType) {
-        return fileInfoService.getFileUrl(entityId, entityType);
+        return fileInfoService.getFileName(entityId, entityType);
     }
 
     private List<FileInfoResponseDto> getFileInfoDtos(Long entityId, EntityType entityType) {
