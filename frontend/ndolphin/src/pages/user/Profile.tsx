@@ -72,7 +72,7 @@ const Profile = () => {
             setNpoint(userInfo.npoint);
             const getProfileImage = userInfo.profileImage;
             if (getProfileImage) {
-              setProfileImage(userInfo.profileImage);
+              setProfileImage(getProfileImage);
             } else {
               setProfileImage("/assets/user/profile.png");
             }
@@ -80,6 +80,12 @@ const Profile = () => {
         })
         .catch(error => {
           console.error('Failed to fetch user info: ', error);
+          return new Promise<void>(resolve => {
+            alert('유저 정보가 없습니다');
+            resolve();
+          }).then(() => {
+            window.history.go(-1);
+          })
         });
     }
   }, [location.pathname, userId]);
