@@ -195,11 +195,12 @@ public class CommentServiceImpl implements CommentService {
                 long likeCount = likesRepository.countByCommentId(commentId);
                 boolean isLikedByUser = likesRepository.existsByUserIdAndCommentId(
                     tokenService.getUserIdFromToken(), commentId);
-                String contentFileUrl = fileInfoService.getFileUrl(commentId, EntityType.COMMENT);
+                String fileUrl = fileInfoService.getFileUrl(commentId, EntityType.COMMENT);
+                String fileName = fileInfoService.getFileName(commentId, EntityType.COMMENT);
                 UserDto userDto = UserMapper.toDto(comment.getUser());
 
                 CommentResponseDto commentResponseDto = CommentMapper.toDto(comment, likeCount,
-                    isLikedByUser, userDto, contentFileUrl);
+                    isLikedByUser, userDto, fileUrl, fileName);
 
                 return commentResponseDto;
             }).collect(Collectors.toList());
