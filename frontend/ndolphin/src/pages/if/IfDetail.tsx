@@ -218,15 +218,6 @@ const IfDetail = () => {
     setIsUpdate(false);
   }, [params.boardId]);
 
-  // useEffect(() => {
-  //   if (isCommentUpdate !== null && contentTextareaRef.current) {
-  //     setContentTextCount(contentTextareaRef.current.value.length);
-  //     // 텍스트 길이만큼 커서를 이동시켜서 커서가 텍스트 끝에 위치하도록 설정
-  //     contentTextareaRef.current.setSelectionRange(contentTextareaRef.current.value.length, contentTextareaRef.current.value.length);
-  //     contentTextareaRef.current.focus(); // 텍스트 영역에 포커스
-  //   }
-  // }, [isCommentUpdate]);
-
   return (
     <>
       {ifBoardData && recommendationList ? (
@@ -260,7 +251,9 @@ const IfDetail = () => {
                       <button className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${boardSubjectTextCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`} disabled={boardSubjectTextCount === 0}>
                         수정
                       </button>
-                      <button className="px-5 py-1 rounded-md text-sm text-[#565656] font-bold border-2 border-gray-300 duration-300">취소</button>
+                      <button className="px-5 py-1 rounded-md text-sm text-[#565656] font-bold border-2 border-gray-300 duration-300" onClick={() => setIsUpdate(false)}>
+                        취소
+                      </button>
                     </div>
                   ) : (
                     <></>
