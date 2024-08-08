@@ -35,7 +35,7 @@ function App() {
           <Route path="/ifdetail/:boardId" element={<IfDetail />}></Route>
           <Route path="/balancelist" element={<BalanceList />}></Route>
           <Route path="/balancedetail/:id" element={<BalanceDetail />}></Route>
-          <Route path="/profile" element={<Profile />}></Route>
+          <Route path="/profile/:userId" element={<Profile />}></Route>
           <Route path="/oklist" element={<OkList />}></Route>
           <Route path="/okdetail/:id" element={<OkDetail />}></Route>
           <Route path="/bye" element={<ByeList />}></Route>

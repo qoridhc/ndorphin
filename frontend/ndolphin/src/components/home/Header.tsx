@@ -45,7 +45,11 @@ const Header = () => {
     const storedEmail = localStorage.getItem("email");
     const storedNickName = localStorage.getItem("nickName");
 
-    setProfileImage(storedProfileImage);
+    if (storedProfileImage === 'null') {
+      setProfileImage("/assets/user/profile.png")
+    } else {
+      setProfileImage(storedProfileImage);
+    }
     setUserEmail(storedEmail);
     setuserNickName(storedNickName);
   }, []);
@@ -92,6 +96,8 @@ const Header = () => {
     closeNSModal();
     setIsLoggedIn(true);
     localStorage.setItem("isLoggedIn", "true");
+
+    window.location.href = window.location.href
   };
 
   const handleLogout = () => {
@@ -139,13 +145,13 @@ const Header = () => {
   const handleMenuClick = (menu: string) => {
     setSelectedMenu(menu);
     sessionStorage.setItem("selectedMenu", menu); // 로컬 스토리지에 선택된 메뉴 저장
-    navigate(`/${menu}`);
+    window.location.href = `/${menu}`;
   };
 
   const handleHomeClick = () => {
-    setSelectedMenu("");
-    localStorage.setItem("selectedMenu", "");
-    navigate("/");
+    setSelectedMenu("home");
+    localStorage.setItem("selectedMenu", "home");
+    window.location.href = "/";
   };
 
   useEffect(() => {
@@ -182,7 +188,7 @@ const Header = () => {
             {["relaybooklist", "iflist", "balancelist", "oklist", "bye", "notice"].map((menu) => (
               <button
                 key={menu}
-                className={`px-3 hover:pb-3 decoration-[#FFDE2F] decoration-4 duration-300 underline-offset-8 ${selectedMenu === menu ? "underline text-black" : "hover:underline hover:text-black"} duration-300`}
+                className={`px-3 hover:pb-3 decoration-[#FFDE2F] decoration-4 duration-300 underline-offset-8 ${selectedMenu === menu ? "underline text-black" : "hover:underline hover:text-black"}`}
                 onClick={() => handleMenuClick(menu)}>
                 {menu === "relaybooklist" && "릴레이북"}
                 {menu === "iflist" && "만약에"}
@@ -244,18 +250,15 @@ const Header = () => {
               {showProfileDropdown && (
                 <div className="absolute right-0 mt-2 w-72 py-1 bg-white rounded-lg shadow-lg z-50" onClick={(e) => e.stopPropagation()}>
                   <div className="p-4 flex items-center">
-                    <img className="w-15 h-15 rounded-full" src={profileImage || "/assets/user/profile.png"} alt="Profile" />
+                    <img className="w-12 h-12 rounded-full" src={profileImage || "/assets/user/profile.png"} alt="Profile" />
                     <div className="ml-3">
                       <div className="font-semibold">{userNickName}</div>
                       <div className="text-sm text-gray-500">{userEmail}</div>
                     </div>
                   </div>
                   <hr />
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate("/profile"))}>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate(`/profile/${localStorage.getItem('userId')}`))}>
                     프로필
-                  </button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(openUserInfoEditModalOpen)}>
-                    계정 관리
                   </button>
                   <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate("/wishlist"))}>
                     찜 목록
@@ -277,7 +280,7 @@ const Header = () => {
 
       <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} onLoginSuccess={handleLoginSuccess} />
       <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onNext={handleNext} setProfileImage={updateProfileImage} />
-      <NSModal isOpen={isNSModalOpen} onClose={handleFinish} />
+      <NSModal isOpen={isNSModalOpen} onClose={handleFinish} mode={'survey'} />
     </>
   );
 };

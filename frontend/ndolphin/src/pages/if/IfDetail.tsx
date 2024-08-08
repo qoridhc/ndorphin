@@ -3,31 +3,33 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router";
 import SettingMenu from "../../components/common/SettingMenu";
 import OpinionCard from "../../components/if/OpinionCard";
-import ifApi from "../../api/ifApi";
 import boardApi from "../../api/boardApi";
 import commentApi from "../../api/commentApi";
 
 interface IfBoard {
-  avatarUrl: string;
-  commentCount: number | null;
+  commentCount: number;
   commentResponseDtos: {
-    avatarUrl: string | null;
     commentId: number;
     content: string;
     createdAt: string | null;
     likeCnt: number;
-    likedByUser: false;
+    likedByUser: boolean;
     nickName: string;
+    user: { nickName: string; profileImage: string; mbti: string | null };
   }[];
   content: string;
-  contentFileUrl: string | null;
+  contentFileUrl: string;
   createdAt: string;
-  hit: number;
-  nickName: string | null;
-  subject: string;
-  userId: number;
-  badget: "N";
   hasParticipated: boolean;
+  hit: number;
+  id: number;
+  subject: string;
+  user: {
+    mbti: string | null;
+    nickName: string;
+    profileImage: string | null;
+    userId: number;
+  };
 }
 
 interface If {
@@ -56,9 +58,10 @@ const IfDetail = () => {
 
   const readBoardData = async (boardId: string) => {
     try {
-      const response = await ifApi.read(boardId);
+      const response = await boardApi.read(boardId);
       if (response.status === 200) {
         setIfBoardData(response.data.data);
+        console.log(response.data.data);
       }
     } catch (error) {
       console.error("ifApi read : ", error);
@@ -175,12 +178,12 @@ const IfDetail = () => {
             <div>
               <div className="grid gap-3">
                 <div className="flex items-center">
-                  <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${ifBoardData.avatarUrl}`} alt="" />
+                  <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${ifBoardData.user.profileImage}`} alt="" />
                   <div>
                     <div className="w-40 flex justify-between items-center">
                       <div className="flex items-center">
-                        <p className="font-bold">{ifBoardData.nickName}</p>
-                        {<img className="w-5 h-5 ml-1" src={`/assets/${ifBoardData.badget === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                        <p className="font-bold">{ifBoardData.user.nickName}</p>
+                        {<img className="w-5 h-5 ml-1" src={`/assets/${ifBoardData.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
                       </div>
                     </div>
                     <div className="">
@@ -216,7 +219,7 @@ const IfDetail = () => {
                     ) : (
                       <>
                         <div className="flex">
-                          <img className="w-11 h-11 mr-3 rounded-[50%]" src={`${ifBoardData.avatarUrl}`} alt="" />
+                          <img className="w-11 h-11 mr-3 rounded-[50%]" src={`${ifBoardData.user.profileImage}`} alt="" />
                           <textarea className="w-full min-h-10 text-xl outline-none resize-none" placeholder="댓글을 작성해 주세요" id="target" ref={textareaRef} onChange={(e) => handleTextareaChange(e)} />
                         </div>
                         <div className="flex justify-end">
@@ -230,14 +233,14 @@ const IfDetail = () => {
 
                   {ifBoardData.commentResponseDtos.map((comment) => (
                     <div className="p-5 border-b flex" key={comment.commentId}>
-                      <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${comment.avatarUrl}`} alt="" />
+                      <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${comment.user.profileImage}`} alt="" />
 
                       <div className="w-full grid gap-2">
                         <div className="grid grid-cols-[6fr_1fr]">
                           <div className="flex flex-col justify-around">
                             <div className="flex items-center">
-                              <p className="font-bold">{comment.nickName}</p>
-                              {<img className="w-5 h-5 ml-1" src={`/assets/${ifBoardData.badget === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                              <p className="font-bold">{comment.user.nickName}</p>
+                              {<img className="w-5 h-5 ml-1" src={`/assets/${comment.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
                             </div>
                             <p className="text-xs text-[#565656]">3일 전</p>
                           </div>

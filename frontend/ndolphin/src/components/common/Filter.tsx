@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 interface Props {
-  setSearchFilter2: (filter1: string) => void;
+  setSearchFilter2: (filter2: string) => void;
 }
 
 function Filter({ setSearchFilter2 }: Props) {

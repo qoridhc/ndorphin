@@ -11,7 +11,6 @@ import com.web.ndolphin.repository.FileInfoRepository;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.S3Service;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +30,8 @@ public class FileInfoServiceImpl implements FileInfoService {
     @Transactional(readOnly = true)
     public List<FileInfoResponseDto> getFileInfos(Long entityId, EntityType entityType) {
 
-        List<FileInfo> fileInfos = fileInfoRepository.findByEntityIdAndEntityType(entityId, entityType);
+        List<FileInfo> fileInfos = fileInfoRepository.findByEntityIdAndEntityType(entityId,
+            entityType);
         List<FileInfoResponseDto> fileInfoResponseDtos = new ArrayList<>();
         for (FileInfo fileInfo : fileInfos) {
             fileInfoResponseDtos.add(FileInfoMapper.toDto(fileInfo));
@@ -41,7 +41,7 @@ public class FileInfoServiceImpl implements FileInfoService {
     }
 
     @Transactional
-    public void uploadDallEFile(Long entityId, EntityType entityType, String url){
+    public void uploadDallEFile(Long entityId, EntityType entityType, String url) {
 
         FileInfo fileInfo = new FileInfo();
 
@@ -49,7 +49,6 @@ public class FileInfoServiceImpl implements FileInfoService {
         fileInfo.setFileUrl(url);
         fileInfo.setEntityType(entityType);
         fileInfo.setEntityId(entityId);
-        fileInfo.setUpdateAt(LocalDateTime.now());
 
         fileInfoRepository.save(fileInfo);
     }
@@ -60,7 +59,8 @@ public class FileInfoServiceImpl implements FileInfoService {
         throws IOException {
 
         // upload to AWS S3
-        List<FileInfoResponseDto> fileInfoResponseDtos = s3Service.uploadMultipleFiles(entityId, entityType, multipartFiles);
+        List<FileInfoResponseDto> fileInfoResponseDtos = s3Service.uploadMultipleFiles(entityId,
+            entityType, multipartFiles);
 
         // save to MySQL
         for (int i = 0; i < fileInfoResponseDtos.size(); i++) {

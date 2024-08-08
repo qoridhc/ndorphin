@@ -4,7 +4,7 @@ import { FaPlus } from "react-icons/fa6";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import InsertionImage from "../../components/common/InsertionImage";
 import { useNavigate } from "react-router";
-import ifApi from "../../api/ifApi";
+import boardApi from "../../api/boardApi";
 import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
 
 const IfStart = () => {
@@ -61,7 +61,7 @@ const IfStart = () => {
     }
 
     try {
-      const response = await ifApi.create(formData);
+      const response = await boardApi.create(formData);
       if (response.status === 200) {
         navigate(`/ifdetail/${response.data.data.id}`);
       }

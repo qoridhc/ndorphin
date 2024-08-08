@@ -20,7 +20,7 @@ public class FileInfoMapper {
         dto.setEntityType(fileInfo.getEntityType());
         dto.setEntityId(fileInfo.getEntityId());
         dto.setCreatedAt(fileInfo.getCreatedAt());
-        dto.setUpdateAt(fileInfo.getUpdateAt());
+        dto.setUpdateAt(fileInfo.getUpdatedAt());
 
         return dto;
     }
@@ -39,8 +39,6 @@ public class FileInfoMapper {
         fileInfo.setFileType(dto.getFileType());
         fileInfo.setEntityType(dto.getEntityType());
         fileInfo.setEntityId(dto.getEntityId());
-        fileInfo.setCreatedAt(dto.getCreatedAt());
-        fileInfo.setUpdateAt(dto.getUpdateAt());
 
         return fileInfo;
     }
