@@ -1,7 +1,7 @@
 import React from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router";
-import SettingMenu from "../../components/common/SettingMenu";
+import SettingMenu from "../../components/if/CommentSettingMenu";
 import BalanceCard from "../../components/balance/BalanceCard";
 
 const BalanceDetail = () => {

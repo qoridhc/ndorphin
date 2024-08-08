@@ -9,7 +9,7 @@ interface Props {
   readBoardData: (boardId: string) => void;
 }
 
-const SettingsMenu = ({ boardId, commentId, setIsCommentUpdate, readBoardData }: Props) => {
+const CommentSettingsMenu = ({ boardId, commentId, setIsCommentUpdate, readBoardData }: Props) => {
   const handleCommentDelete = async () => {
     if (boardId !== undefined) {
       try {
@@ -44,4 +44,4 @@ const SettingsMenu = ({ boardId, commentId, setIsCommentUpdate, readBoardData }:
   );
 };
 
-export default SettingsMenu;
+export default CommentSettingsMenu;
