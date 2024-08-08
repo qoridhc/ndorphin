@@ -14,8 +14,8 @@ export const request = axios.create({
 request.interceptors.request.use(
   config => {
     // 요청 전에 추가 작업 수행 (예: 토큰 추가)
-    const token = localStorage.getItem('accessToken');
-    // const token = process.env.REACT_APP_ACCESS_TOKEN;
+    // const token = localStorage.getItem('accessToken');
+    const token = process.env.REACT_APP_ACCESS_TOKEN;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

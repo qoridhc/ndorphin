@@ -19,7 +19,7 @@ public class CommentResponseDto {
     private LocalDateTime updatedAt;
     private String contentFileUrl;
     private boolean isLikedByUser;
-    private UserDto userDto;
+    private UserDto user;
 
     public CommentResponseDto() {
 

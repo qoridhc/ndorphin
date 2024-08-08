@@ -9,7 +9,7 @@ import lombok.Data;
 public class BoardDto {
 
     private Long id;
-    private UserDto userDto;
+    private UserDto user;
     private String subject;
     private String content;
     private int hit;
