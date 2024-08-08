@@ -31,12 +31,13 @@ public class NotificationServiceImpl implements NotificationService {
 
         try {
             User user = userRepository.findByUserId(userId);
+            User writer = userRepository.findByUserId(dto.getWriterId());
 
             if (user == null) {
                 return ResponseDto.databaseError();
             }
 
-            Notification notification = NotificationMapper.toEntity(user, dto);
+            Notification notification = NotificationMapper.toEntity(user, writer, dto);
 
             notificationRepository.save(notification);
 

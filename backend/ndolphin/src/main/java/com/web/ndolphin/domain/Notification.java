@@ -27,6 +27,10 @@ public class Notification extends DateEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer_id")
+    private User writer;
+
     private String content;
     private boolean isRead;
 }
