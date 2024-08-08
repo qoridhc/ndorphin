@@ -125,6 +125,11 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<ResponseDto> deleteUser(Long userId) {
 
         try {
+
+            boolean existUser = userRepository.existsById(userId);
+
+            LogUtil.info("existUser" + existUser);
+
             int deleteCnt = userRepository.deleteUserByUserId(userId);
 
             // 삭제 실패
@@ -144,19 +149,11 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto,
         MultipartFile profileImage) {
 
-        LogUtil.info("userId" + userId);
-        LogUtil.info("UserUpdateRequestDto" + dto);
-        LogUtil.info("profileImage" + profileImage);
-
         try {
             User existingUser = userRepository.findByUserId(userId);
 
             if (dto.getEmail() != null) {
                 existingUser.setEmail(dto.getEmail());
-            }
-
-            if (dto.getProfileImage() != null) {
-                existingUser.setProfileImage(dto.getProfileImage());
             }
 
             if (dto.getNickName() != null) {
@@ -207,6 +204,31 @@ public class UserServiceImpl implements UserService {
             );
 
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+        } catch (IllegalArgumentException e) {
+            return ResponseDto.databaseError(e.getMessage());
+        } catch (Exception e) {
+            return ResponseDto.databaseError();
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDto> deleteProfile(Long userId) {
+
+        try {
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+
+            if (user.getProfileImage() == null) {
+                throw new IllegalArgumentException("The Profile is not exist");
+            }
+
+            fileInfoService.deleteAndDeleteFiles(user.getUserId(), EntityType.USER);
+
+            user.setProfileImage(null);
+
+            userRepository.save(user);
+
+            return ResponseDto.success();
         } catch (IllegalArgumentException e) {
             return ResponseDto.databaseError(e.getMessage());
         } catch (Exception e) {

@@ -88,11 +88,11 @@ public class NotificationController {
         @ApiResponse(responseCode = "500", description = "서버 오류입니다.",
             content = @Content(schema = @Schema()))
     })
-    @DeleteMapping("/{notificationId}")
-    public ResponseEntity<ResponseDto> deleteNotification(
-        @Parameter(description = "삭제할 알림의 ID", required = true) @PathVariable Long notificationId) {
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<ResponseDto> deleteAllNotification(
+        @Parameter(description = "삭제할 알림의 ID", required = true) @PathVariable Long userId) {
 
-        ResponseEntity<ResponseDto> response = notificationService.delete(notificationId);
+        ResponseEntity<ResponseDto> response = notificationService.deleteAllByUserId(userId);
 
         return response;
     }

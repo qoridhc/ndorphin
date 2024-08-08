@@ -7,6 +7,9 @@ import OkList from "../../components/user/OkList";
 import IfCardList from "../../components/user/IfCardList";
 import ByeList from "../../components/user/ByeList";
 import BalanceList from "../../components/user/BalanceList";
+import UserInfoEditModal from "../../components/user/UserInfoEditModal";
+import NSModal from "../../components/user/NSModal";
+import userApi from "../../api/userApi";
 
 
 const Profile = () => {
@@ -21,8 +24,65 @@ const Profile = () => {
   const [isFollowModalOpen, setIsFollowModalOpen] = useState(false);
   const [activeFollowTab, setActiveFollowTab] = useState<string>("팔로워");
 
-  // 본인의 프로필일 때는 수정 버튼과 NS 설문조사 버튼 만들고, 헤더의 프로필 이미지의 계정 관리 삭제?
   const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [nickName, setNickName] = useState<string | null>(null);
+  const [mbti, setMbti] = useState<string | null>(null);
+  const [npoint, setNpoint] = useState<number | null>(null);
+
+  const [isUserInfoEditModalOpen, setIsUserInfoEditModalOpen] = useState(false);
+  const [isNSModalOpen, setIsNSModalOpen] = useState(false);
+
+  const userId = localStorage.getItem('userId')
+
+  useEffect(() => {
+    const profileUserId = location.pathname.split('/')[2];
+    if (profileUserId === userId) {
+      setIsOwnProfile(true);
+      userApi.getUserInfo(profileUserId)
+        .then(response => {
+          if (response.data.code == 'SU') {
+            const userInfo = response.data.data;
+            setNickName(userInfo.nickName);
+            setMbti(userInfo.mbti);
+            setNpoint(userInfo.npoint);
+            const getProfileImage = userInfo.profileImage
+            if (getProfileImage) {
+              setProfileImage(userInfo.profileImage);
+            } else {
+              setProfileImage("/assets/user/profile.png");
+            }
+
+            localStorage.setItem('nickName', userInfo.nickName);
+            localStorage.setItem('mbti', userInfo.mbti);
+            localStorage.setItem('npoint', userInfo.npoint.toString());
+            localStorage.setItem("profileImage", getProfileImage);
+          }
+        })
+        .catch(error => {
+          console.error('Failed to fetch user info: ', error);
+        });
+    } else {
+      setIsOwnProfile(false);
+      userApi.getUserInfo(profileUserId)
+        .then(response => {
+          if (response.data.code == 'SU') {
+            const userInfo = response.data.data;
+            setNickName(userInfo.nickName);
+            setMbti(userInfo.mbti);
+            setNpoint(userInfo.npoint);
+            const getProfileImage = userInfo.profileImage;
+            if (getProfileImage) {
+              setProfileImage(userInfo.profileImage);
+            } else {
+              setProfileImage("/assets/user/profile.png");
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Failed to fetch user info: ', error);
+        });
+    }
+  }, [location.pathname, userId]);
 
   // 탭 정보를 URL쿼리에 저장(뒤로가거나 새로고침해도 상태 유지 가능)
   useEffect(() => {
@@ -57,22 +117,68 @@ const Profile = () => {
     }
   };
 
+  const renderMbti = () => {
+    if (!mbti) {
+      return undefined;
+    }
+    if (mbti === 'N') {
+      return "/assets/user/nbadge.png";
+    } else if (mbti === 'S') {
+      return "/assets/user/sbadge.png";
+    }
+    return undefined;
+  };
+
+  const handleEditProfileClick = () => {
+    setIsUserInfoEditModalOpen(true);
+  };
+
+  const handleNSModalClick = () => {
+    setIsNSModalOpen(true);
+  };
+
+  const closeUserInfoEditModal = () => {
+    setIsUserInfoEditModalOpen(false);
+    window.location.href = window.location.href;
+  };
+
+  const closeNSModal = () => {
+    setIsNSModalOpen(false);
+    window.location.href = window.location.href;
+  };
+
   return (
     <div className="container mx-auto px-4 hide-scrollbar">
       <div className="mt-12 gap-10 flex justify-center items-center">
-        <img className="w-36 h-36 mr-6 bg-gray-200 rounded-full" src={profileImage || "assets/user/profile.png"} alt="Profile" />
+        {/* 타입 단언하였지만(로컬에서 string으로 null을 저장), 오류 나면 바꿀 예정(api로 가져올 때 null이면 에러날 듯) */}
+        <img className="w-36 h-36 mr-6 bg-gray-200 rounded-full" src={profileImage as string} alt="Profile" />
         <div>
           <h2 className="text-xl font-bold flex items-center">
-            행복한 구름
-            <img className="ml-2 w-8 h-8" src="assets/user/nbadge.png" alt="nbadge" />
-            {/* 팔로우 버튼 예시, 본인 일 땐 표시 안 함 */}
-            <button
-              className={`ms-10 text-xs w-auto h-auto p-2 rounded-lg border-none shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 ${
-                isFollowing ? "bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-300" : "bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-300"
-              }`}
-              onClick={handleClick}>
-              {isFollowing ? "팔로잉" : "팔로우"}
-            </button>
+            {nickName}
+            {mbti && (
+              <img className="ml-2 w-8 h-8" src={renderMbti()} alt="badge" />
+            )}
+            {/* 팔로우 버튼, 본인 일 땐 프로필 수정 버튼과 N/S 설문조사 버튼 */}
+            {!isOwnProfile && (
+              <button
+                className={`ms-10 text-xs w-auto h-auto p-2 rounded-lg border-none shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 ${
+                  isFollowing ? "bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-300" : "bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-300"
+                }`}
+                onClick={handleClick}>
+                {isFollowing ? "팔로잉" : "팔로우"}
+              </button>
+            )}
+            {/* 색깔 수정 필요 */}
+            {isOwnProfile && (
+              <div className="flex space-x-4 ms-10">
+                <button className="text-xs w-auto h-auto p-2 rounded-lg border-none shadow-md transition duration-200 ease-in-out bg-green-500 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300" onClick={handleEditProfileClick}>
+                  프로필 수정
+                </button>
+                <button className="text-xs w-auto h-auto p-2 rounded-lg border-none shadow-md transition duration-200 ease-in-out bg-orange-500 text-white hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-300" onClick={handleNSModalClick}>
+                  N/S 설문조사
+                </button>
+              </div>
+            )}
           </h2>
           <div className="flex mt-2 items-center space-x-10">
             <div className="flex flex-col items-center">
@@ -81,7 +187,7 @@ const Profile = () => {
               </button>
               <div className="flex flex-col items-center mt-2">
                 <p className="text-yellow-500 font-bold">N 포인트</p>
-                <p className="font-bold">1340</p>
+                <p className="font-bold">{npoint}</p>
               </div>
             </div>
             <div className="flex flex-col items-center">
@@ -114,10 +220,13 @@ const Profile = () => {
       </div>
 
       {/* 콘텐츠 공간 */}
+      {/* 통신 예정, 이미지 안 뜨는게 정상 */}
       <div>{renderContent()}</div>
 
       <TopButton />
       <FollowList isOpen={isFollowModalOpen} onClose={() => setIsFollowModalOpen(false)} activeTab={activeFollowTab} setActiveTab={setActiveFollowTab} />
+      {isUserInfoEditModalOpen && <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onNext={() => closeUserInfoEditModal()} setProfileImage={setProfileImage} onClose={closeUserInfoEditModal} />}
+      {isNSModalOpen && <NSModal isOpen={isNSModalOpen} onClose={closeNSModal} mode={'profile'} />}
     </div>
   );
 };

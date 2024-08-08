@@ -18,6 +18,7 @@ interface BookProps {
     thumbNailUrl: string;
     hasParticipated: false;
     favorite: false;
+    fileNames: any[];
   };
 }
 
@@ -48,7 +49,6 @@ function Book({ book }: BookProps) {
     }
   };
 
-  console.log(book.thumbNailUrl)
 
   return (
     <div className="relative">
@@ -86,7 +86,7 @@ function Book({ book }: BookProps) {
           onClick={() => {
             goBookDetail(book.id);
           }}
-          src={book.thumbNailUrl}
+          src={book.fileNames[0]}
           className="hover:cursor-pointer w-full h-[20rem] rounded-md"
           alt="#"
         />

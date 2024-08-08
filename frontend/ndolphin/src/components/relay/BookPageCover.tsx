@@ -19,6 +19,7 @@ interface BookPageCoverProps {
     reactionTypeCounts: {};
     userReactionId: null;
     userReactionType: string;
+    fileNames:any[],
   }[];
   bookId: any;
   isDeleteOpen: boolean;
@@ -28,14 +29,17 @@ interface BookPageCoverProps {
   handleDelete: () => void;
 }
 
+
 const BookPageCover = React.forwardRef<HTMLDivElement, BookPageCoverProps>(({ firstPage, bookId, handleDelete }, ref: ForwardedRef<HTMLDivElement>) => {
   const [contentFileUrl, setContentFileUrl] = useState("");
   const [subject, setSubject] = useState("");
-    
+  
+  
   useEffect(() => {
     if (firstPage && firstPage.length > 0) {
-      setContentFileUrl(firstPage[0].contentFileUrl);
+      setContentFileUrl(firstPage[0].fileNames[0]);
       setSubject(firstPage[0].subject);
+      console.log(firstPage[0].fileNames[0]);
     }
   }, [firstPage]);
 
@@ -48,7 +52,7 @@ const BookPageCover = React.forwardRef<HTMLDivElement, BookPageCoverProps>(({ fi
               <DropDown bookId={bookId} handleDelete={handleDelete} firstPage={firstPage} />
             </div>
             <div className="flex justify-center">
-              <img src={contentFileUrl} width="300px" alt="#"></img>
+              <img src={contentFileUrl} width="300px" alt="로딩 중..."></img>
             </div>
             <p className="text-xl font-bold">{subject}</p>
             <div className="w-full flex justify-end"></div>

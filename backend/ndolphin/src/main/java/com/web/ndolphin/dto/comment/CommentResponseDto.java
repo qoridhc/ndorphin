@@ -12,12 +12,12 @@ import lombok.ToString;
 public class CommentResponseDto {
 
     private Long commentId;
-    private String avatarUrl;
     private String content;
     private Long likeCnt = 0L;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String contentFileUrl;
+    private String fileUrl;
+    private String fileName;
     private boolean isLikedByUser;
     private UserDto user;
 

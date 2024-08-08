@@ -3,16 +3,18 @@ import axios from "axios";
 import { useState } from "react";
 
 interface BookCoverAiPromptModalProps {
+  file: File | null;
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (image: string) => void;
-  setFile: (file: File) => void;
+  setFile: (file: File | null) => void;
+  setDalleUrl: (dalleUrl: string) => void;
   setImage: any;
   image: any;
   coverImage: any;
 }
 
-const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ isOpen, onClose, onConfirm, setImage, setFile, image, coverImage }) => {
+const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ file, isOpen, onClose, onConfirm, setImage, setFile, setDalleUrl, image, coverImage }) => {
   const API_KEY = process.env.REACT_APP_OPEN_AI_APIKEY;
   const [imageUrl, setImageUrl] = useState("");
   const [inputPrompt, setInputPrompt] = useState("");
@@ -26,7 +28,7 @@ const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ isOpen,
           n: 1,
           model: "dall-e-3",
           size: "1024x1024",
-          // quality: "HD"
+          response_format: "b64_json",
         },
         {
           headers: {
@@ -36,8 +38,34 @@ const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ isOpen,
         }
       )
       .then((res: any) => {
-        const imageUrl = res.data.data[0].url;
-        setImageUrl(imageUrl);
+        const json = res.data.data[0].b64_json;
+        const base64Data = json;
+
+        // base64 문자열에서 데이터를 추출합니다.
+        const byteString = atob(base64Data);
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+
+        // Blob 객체를 생성합니다.
+        const blob = new Blob([ab], { type: "image/jpeg" });
+
+        // Blob 객체를 파일로 변환합니다.
+        const dallefile = new File([blob], "image.jpg", { type: "image/jpeg" });
+
+        
+        if (dallefile) {
+          setFile(dallefile);
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const result = reader.result as string;
+            setImageUrl(result);
+          };
+          reader.readAsDataURL(dallefile);
+        }
       })
       .catch((err: any) => {
         console.error("Error:", err);

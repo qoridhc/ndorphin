@@ -53,8 +53,32 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
   if (!isOpen) return null;
 
   const handleExternalLogin = (loginType: string) => {
-    const newWindow = userApi.login(loginType);
-    setLoginWindow(newWindow);
+    // 로컬 테스트와 배포 모두 가능
+    const nowURL = window.location.href;
+    if (nowURL.includes('localhost')) {
+      userApi.getUserInfo('4')
+        .then(response => {
+          if (response.data.code == 'SU') {
+            const userInfo = response.data.data;
+            localStorage.setItem("userId", userInfo.userId.toString());
+            localStorage.setItem('nickName', userInfo.nickName);
+            localStorage.setItem('mbti', userInfo.mbti);
+            localStorage.setItem('npoint', userInfo.npoint.toString());
+            localStorage.setItem('profileImage', userInfo.profileImage);
+            localStorage.setItem("accessToken", process.env.REACT_APP_ACCESS_TOKEN as string);
+            localStorage.setItem("email", userInfo.email);
+  
+            window.location.href = window.location.href
+          }
+        })
+        .catch(error => {
+          console.error('Failed to fetch user info: ', error);
+        });
+    } else {
+      const newWindow = userApi.login(loginType);
+      setLoginWindow(newWindow);
+    }
+
     }
 
   return (

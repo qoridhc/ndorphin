@@ -17,8 +17,8 @@ function Relaybooklist() {
       try {
         const response = await boardApi.list("RELAY_BOARD");
         if (response.status === 200) {
-          const bookList = response.data.data;
-          console.log(response.data.data);
+          const bookList = response.data.data.content;
+          console.log("릴레이북 목록 불러오기 성공", response.data);
           setbookList(bookList);
         }
       } catch (error) {
@@ -26,7 +26,6 @@ function Relaybooklist() {
       }
     };
 
-    getRelayList();
     getRelayList();
   }, []); // 디펜던시 작성 시 변수가 변할 때만 실행됨
   // 빈 배열로 적으면 mount 시에만 실행됨 (1회만)

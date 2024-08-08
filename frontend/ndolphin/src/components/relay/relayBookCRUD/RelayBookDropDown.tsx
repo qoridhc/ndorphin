@@ -23,16 +23,9 @@ interface RelayBookDropDownProps {
   handleDelete: () => void;
 }
 
-const RelayBookDropDown: React.FC<RelayBookDropDownProps> = ({ firstPage, handleDelete }) => {
+const RelayBookDropDown: React.FC<RelayBookDropDownProps> = ({ firstPage, handleDelete, bookId }) => {
   const navigate = useNavigate();
-  const [bookId, setBookId] = useState(0)
-
-  useEffect(() => {
-    if (firstPage && firstPage.length > 0) {
-      setBookId(firstPage[0].id);
-    }
-  }, [firstPage]);
-
+  const [currentBookId, setCurrentBookId] = useState(0)
 
   return (
     <>

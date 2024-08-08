@@ -24,7 +24,7 @@ const RelayBookDetail = () => {
   const { bookId } = useParams();
   const [pages, setPages] = useState<any[]>([]);
   const [page, setPage] = useState<number>(1);
-  const [totalPage, setTotalPage] = useState<number>(pages.length+1);
+  const [totalPage, setTotalPage] = useState<number>(pages.length + 1);
   const bookRef = useRef<typeof HTMLFlipBook>();
   const [isFinished, setIsFinished] = useState(false);
   const [inputPage, setInputPage] = useState<number | string>(page);
@@ -33,6 +33,7 @@ const RelayBookDetail = () => {
   const [file, setFile] = useState<File | null>(null);
   const pageElements: any[] = [];
   const [firstPage, setFirstPage] = useState<any[]>([]);
+  const [dalleUrl, setDalleUrl] = useState<string | null>(null);
 
   const lastPage = [
     {
@@ -59,7 +60,6 @@ const RelayBookDetail = () => {
           if (response.status === 200 && isMounted) {
             const bookDetail = response.data.data.commentResponseDtos;
             const firstPage = response.data.data;
-            console.log("릴레이북 이야기 상세 조회 성공");
             setPages(bookDetail);
             setFirstPage([firstPage]);
           }
@@ -75,11 +75,6 @@ const RelayBookDetail = () => {
       isMounted = false;
     };
   }, [bookId]);
-
-  useEffect(() => {
-    console.log("Pages updated:", pages);
-    console.log("first Pages update: ", firstPage)
-  }, [pages, firstPage]);
 
   // 페이지 넘어갈 시 page를 현재 페이지 쪽수로 업데이트
   const onFlip = useCallback((e: { data: number }) => {
@@ -116,18 +111,33 @@ const RelayBookDetail = () => {
     }
   };
 
+  // 릴레이북 삭제 관련
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteAIModalOpen] = useState(false);
 
+  // 삭제 버튼 클릭 시 모달 true
   const handleDelete = () => {
     setDeleteAIModalOpen(true);
   };
 
-  const confirmDelete = () => {
+  // 삭제 모달 확인 시 axios delete
+  const confirmDelete = async () => {
     setDeleteAIModalOpen(false);
+
+    try {
+      if (bookId) {
+        const response = await boardApi.delete(bookId);
+        if (response.status === 200) {
+          console.log("릴레이북 삭제 성공");
+        }
+      }
+    } catch (error) {
+      console.error("릴레이북 삭제 오류: ", error);
+    }
     navigate("/relaybooklist");
   };
 
+  // 삭제 모달 취소 시 모달 닫음
   const cancelDelete = () => {
     setDeleteAIModalOpen(false);
   };
@@ -189,7 +199,6 @@ const RelayBookDetail = () => {
   //   },
   // ];
 
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (!isNaN(Number(value)) && Number(value) >= 1 && Number(value) <= pages.length + 1) {
@@ -215,18 +224,6 @@ const RelayBookDetail = () => {
   const confirmAiImage = async (image: string) => {
     setIsAiModalOpen(false);
     setImage(image);
-
-    // try {
-    //   const response = await fetch(image);
-    //   const data = await response.blob();
-    //   const ext = image.split(".").pop() || "";
-    //   const filename = image.split("/").pop() || "";
-    //   const metadata = { type: `image/${ext}` };
-    //   const file = new File([data], filename, metadata);
-    //   setFile(file);
-    // } catch (error) {
-    //   console.error("Error:", error);
-    // }
   };
 
   const cancelAiImage = () => {
@@ -267,6 +264,7 @@ const RelayBookDetail = () => {
             className="album-web"
             onFlip={onFlip}
             useMouseEvents={false}>
+            {/* 책 표지 */}
             <BookPageCover firstPage={firstPage} bookId={bookId} isDeleteOpen={isDeleteModalOpen} isAiOpen={isAiModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
 
             {/* 첫 번째 페이지 */}
@@ -312,10 +310,10 @@ const RelayBookDetail = () => {
       </div>
 
       {/* 릴레이북 삭제 모달 */}
-      <DeleteModal isOpen={isDeleteModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />
+      <DeleteModal bookId={bookId} isOpen={isDeleteModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} />
 
       {/* AI 이미지 생성 모달 */}
-      <AiImagePromptModal isOpen={isAiModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} setFile={setFile} />
+      <AiImagePromptModal isOpen={isAiModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} setFile={setFile} setDalleUrl={setDalleUrl} file={file} />
     </div>
   );
 };

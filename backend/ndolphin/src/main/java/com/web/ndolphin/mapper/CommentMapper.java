@@ -10,7 +10,7 @@ import com.web.ndolphin.dto.user.UserDto;
 public class CommentMapper {
 
     public static CommentResponseDto toDto(Comment comment, Long likeCnt, boolean isLiked,
-        UserDto userDto, String contentFileUrl) {
+        UserDto userDto, String fileUrl, String fileName) {
 
         CommentResponseDto commentResponseDto = new CommentResponseDto();
 
@@ -19,7 +19,8 @@ public class CommentMapper {
         commentResponseDto.setUser(userDto);
         commentResponseDto.setLikeCnt(likeCnt);
         commentResponseDto.setLikedByUser(isLiked);
-        commentResponseDto.setContentFileUrl(contentFileUrl);
+        commentResponseDto.setFileUrl(fileUrl);
+        commentResponseDto.setFileName(fileName);
         commentResponseDto.setCreatedAt(comment.getCreatedAt());
         commentResponseDto.setUpdatedAt(comment.getUpdatedAt());
 
