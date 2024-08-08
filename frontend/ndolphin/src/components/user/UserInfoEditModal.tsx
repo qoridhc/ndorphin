@@ -1,5 +1,6 @@
 import React, { useEffect, useState, ChangeEvent, FocusEvent, KeyboardEvent } from "react";
 import userApi from "../../api/userApi";
+import { IoMdClose } from "react-icons/io";
 
 interface UserInfoEditModalProps {
   isOpen: boolean;
@@ -179,7 +180,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
         <div className="p-4 border-b shadow-lg flex justify-between items-center relative">
           <h2 className="text-lg font-semibold flex-grow text-center">프로필 이미지 및 닉네임 설정</h2>
           {onClose && (
-            <button className=" absolute top-4 right-6 text-gray-500 hover:text-gray-700" onClick={onClose}>X</button>
+            <IoMdClose className="absolute right-5" onClick={onClose} />
           )}
         </div>
         <div className="p-6 text-center">
@@ -194,7 +195,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
           <div className="flex flex-col items-center space-y-2">
             <div className="relative" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
               <label htmlFor="image-input">
-                <img className="cursor-pointer w-32 h-32 object-cover rounded-full" src={image || "/assets/user/profile.png"} alt="기본이미지" />
+                <img className="cursor-pointer w-32 h-32 object-cover rounded-full" src={profileImage || "/assets/user/profile.png"} alt="기본이미지" />
                 {isHovered && (
                   <div className="absolute inset-0 bg-gray-300 bg-opacity-50 flex justify-center items-center rounded-full">
                     <img src="/assets/user/upload_icon.png" alt="업로드 아이콘" className="w-8 h-8" />
