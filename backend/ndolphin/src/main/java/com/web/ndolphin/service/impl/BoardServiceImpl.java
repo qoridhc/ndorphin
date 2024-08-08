@@ -6,7 +6,6 @@ import com.web.ndolphin.common.ResponseCode;
 import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.BoardType;
-import com.web.ndolphin.domain.Comment;
 import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.Reaction;
 import com.web.ndolphin.domain.ReactionType;
@@ -27,7 +26,6 @@ import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.dto.vote.VoteInfo;
 import com.web.ndolphin.dto.voteContent.UserVoteContent;
 import com.web.ndolphin.mapper.BoardMapper;
-import com.web.ndolphin.mapper.CommentMapper;
 import com.web.ndolphin.mapper.VoteContentMapper;
 import com.web.ndolphin.repository.BoardRepository;
 import com.web.ndolphin.repository.CommentRepository;
@@ -197,12 +195,13 @@ public class BoardServiceImpl implements BoardService {
                 boolean hasParticipated = hasUserParticipated(boardId, board.getUser().getUserId());
                 boolean isFavorite = favoriteRepository.existsByBoardIdAndUserId(boardId,
                     board.getUser().getUserId());
-                String thumbNailUrl = fileInfoService.getFileUrl(boardId, EntityType.POST);
+                String fileUrl = getFileUrl(boardId, EntityType.POST);
+                String fileName = getFileName(boardId, EntityType.POST);
                 Long commentCount = commentRepository.countCommentsByBoardId(boardId);
                 boolean isDone = (commentCount + 1) == board.getMaxPage();
 
                 return BoardMapper.toRelayBoardResponseDto(board, hasParticipated, isFavorite,
-                    thumbNailUrl, commentCount, isDone);
+                    fileUrl, fileName, commentCount, isDone);
             })
             .collect(toList());
     }
@@ -266,31 +265,32 @@ public class BoardServiceImpl implements BoardService {
 
     private BoardDto getBoardDetail(Board board, Long userId) {
 
-        String contentFileUrl = getFileUrl(board.getId(), EntityType.POST);
+        String fileUrl = getFileUrl(board.getId(), EntityType.POST);
+        String fileName = getFileName(board.getId(), EntityType.POST);
 
         return switch (board.getBoardType()) {
-            case VOTE_BOARD -> getVoteBoardDetail(board, userId, contentFileUrl);
-            case OPINION_BOARD -> getOpinionBoardDetail(board, userId, contentFileUrl);
-            case RELAY_BOARD -> getRelayBoardDetail(board, userId, contentFileUrl);
+            case VOTE_BOARD -> getVoteBoardDetail(board, userId, fileUrl, fileName);
+            case OPINION_BOARD -> getOpinionBoardDetail(board, userId, fileUrl, fileName);
+            case RELAY_BOARD -> getRelayBoardDetail(board, userId, fileUrl, fileName);
             case OK_BOARD, ANNOUNCEMENT_BOARD -> getOkBoardDetail(board);
             default -> throw new IllegalArgumentException("Unsupported board type");
         };
     }
 
     private VoteBoardDetailResponseDto getVoteBoardDetail(Board board, Long userId,
-        String contentFileUrl) {
+        String fileUrl, String fileName) {
 
         List<VoteInfo> voteInfos = voteService.getVoteContents(board.getId());
 
         UserVoteContent userVoteContent = voteRepository.findVoteByBoardIdAndUserId(
             board.getId(), userId).orElse(null);
 
-        return BoardMapper.toVoteBoardDetailResponseDto(board, contentFileUrl, voteInfos,
+        return BoardMapper.toVoteBoardDetailResponseDto(board, fileUrl, fileName, voteInfos,
             userVoteContent);
     }
 
     private OpinionBoardDetailResponseDto getOpinionBoardDetail(Board board, Long userId,
-        String contentFileUrl) {
+        String fileUrl, String fileName) {
 
         // 참여 했으면 다시 참여 못하게 해야함.
         boolean hasParticipated = hasUserParticipated(board.getId(), userId);
@@ -298,18 +298,18 @@ public class BoardServiceImpl implements BoardService {
         int commentCount = commentResponseDtos.size();
 
         return BoardMapper.toOpinionBoardDetailResponseDto(
-            board, contentFileUrl, hasParticipated, commentCount, commentResponseDtos);
+            board, fileUrl, fileName, hasParticipated, commentCount, commentResponseDtos);
     }
 
     private RelayBoardDetailResponseDto getRelayBoardDetail(Board board, Long userId,
-        String contentFileUrl) {
+        String fileUrl, String fileName) {
 
         boolean hasParticipated = hasUserParticipated(board.getId(), userId);
         List<CommentResponseDto> comments = commentService.getBoardDetail(board.getId());
         Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(board.getId());
         Reaction reaction = reactionRepository.findByBoardIdAndUserId(board.getId(), userId);
 
-        return BoardMapper.toRelayBoardDetailResponseDto(board, hasParticipated, contentFileUrl,
+        return BoardMapper.toRelayBoardDetailResponseDto(board, hasParticipated, fileUrl, fileName,
             comments, reactionTypeCounts, reaction);
     }
 
@@ -418,39 +418,20 @@ public class BoardServiceImpl implements BoardService {
         List<RelayBoardDetailResponseDto> relayBoardDetailResponseDtos = new ArrayList<>();
         List<Board> boards = boardRepository.findRelayBoardsByPeriod(period);
 
-        String contentFileUrl;
-        List<Comment> comments;
-        List<CommentResponseDto> commentResponseDtos;
-        Long userId = tokenService.getUserIdFromToken();
-        boolean hasParticipated;
-
         for (Board board : boards) {
-            contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
-
-            hasParticipated = commentRepository.existsByBoardIdAndUserId(board.getId(), userId);
-
-            comments = commentRepository.findByBoardId(board.getId());
-
-            commentResponseDtos = comments
-                .stream()
-                .map(comment -> {
-                    String commentContentFileUrl = fileInfoService.getFileUrl(comment.getId(),
-                        EntityType.COMMENT);
-
-                    CommentResponseDto commentResponseDto = CommentMapper.toDto(comment, 0L,
-                        false, null, commentContentFileUrl);
-
-                    return commentResponseDto;
-                }).collect(toList());
+            String fileUrl = getFileUrl(board.getId(), EntityType.POST);
+            String fileName = getFileName(board.getId(), EntityType.POST);
 
             Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(board.getId());
-
-            Reaction reaction = reactionRepository.findByBoardIdAndUserId(board.getId(), userId);
+            Long reactionCount = reactionTypeCounts.values()
+                .stream()
+                .mapToLong(Long::longValue)
+                .sum();
 
             RelayBoardDetailResponseDto relayBoardDetailResponseDto = BoardMapper.toRelayBoardDetailResponseDto(
-                board, hasParticipated, contentFileUrl, commentResponseDtos, reactionTypeCounts,
-                reaction);
-
+                board, false, fileUrl, fileName, null, reactionTypeCounts,
+                null);
+            relayBoardDetailResponseDto.setReactionCount(reactionCount);
             relayBoardDetailResponseDtos.add(relayBoardDetailResponseDto);
         }
 
@@ -463,23 +444,12 @@ public class BoardServiceImpl implements BoardService {
         List<VoteBoardDetailResponseDto> voteBoardDetailResponseDtos = new ArrayList<>();
         List<Board> boards = boardRepository.findVoteBoardsByPeriod(period);
 
-        String contentFileUrl;
-        String avatarUrl;
-        Long userId = tokenService.getUserIdFromToken();
-
         for (Board board : boards) {
-            contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
-
-            avatarUrl = fileInfoService.getFileUrl(userId, EntityType.USER);
-
-            List<VoteInfo> voteInfos = voteService.getVoteContents(board.getId());
-
-            UserVoteContent userVoteContent = voteRepository.findVoteByBoardIdAndUserId(
-                    board.getId(), userId)
-                .orElse(null);
+            String fileUrl = getFileUrl(board.getId(), EntityType.POST);
+            String fileName = getFileName(board.getId(), EntityType.POST);
 
             VoteBoardDetailResponseDto voteBoardDetailResponseDto = BoardMapper.toVoteBoardDetailResponseDto(
-                board, contentFileUrl, voteInfos, userVoteContent);
+                board, fileUrl, fileName, null, null);
 
             voteBoardDetailResponseDtos.add(voteBoardDetailResponseDto);
         }
@@ -493,42 +463,13 @@ public class BoardServiceImpl implements BoardService {
         List<OpinionBoardDetailResponseDto> OpinionBoardDetailResponseDtos = new ArrayList<>();
         List<Board> boards = boardRepository.findOpinionBoardsByPeriod(period);
 
-        String contentFileUrl;
-        String avatarUrl;
-        List<Comment> comments;
-        List<CommentResponseDto> commentResponseDtos;
-        Long userId = tokenService.getUserIdFromToken();
-        boolean hasParticipated;
-        int commentCount;
-
         for (Board board : boards) {
-            contentFileUrl = fileInfoService.getFileUrl(board.getId(), EntityType.POST);
-
-            avatarUrl = fileInfoService.getFileUrl(userId, EntityType.USER);
-
-            hasParticipated = commentRepository.existsByBoardIdAndUserId(board.getId(), userId);
-
-            comments = commentRepository.findByBoardId(board.getId());
-
-            commentResponseDtos = comments
-                .stream()
-                .map(comment -> {
-                    Long likeCnt = commentRepository.countLovesByCommentId(comment.getId());
-
-                    boolean isLiked = commentRepository.existsByBoardIdAndUserId(board.getId(),
-                        userId);
-
-                    CommentResponseDto commentResponseDto = CommentMapper.toDto(comment,
-                        likeCnt, isLiked, null, null);
-
-                    return commentResponseDto;
-                }).collect(toList());
-
-            commentCount = commentResponseDtos.size();
+            String fileUrl = getFileUrl(board.getId(), EntityType.POST);
+            String fileName = getFileName(board.getId(), EntityType.POST);
+            int commentCount = board.getComments().size();
 
             OpinionBoardDetailResponseDto opinionBoardDetailResponseDto = BoardMapper.toOpinionBoardDetailResponseDto(
-                board, contentFileUrl, hasParticipated, commentCount,
-                commentResponseDtos);
+                board, fileUrl, fileName, false, commentCount, null);
 
             OpinionBoardDetailResponseDtos.add(opinionBoardDetailResponseDto);
         }
@@ -537,6 +478,10 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private String getFileUrl(Long entityId, EntityType entityType) {
+        return fileInfoService.getFileUrl(entityId, entityType);
+    }
+
+    private String getFileName(Long entityId, EntityType entityType) {
         return fileInfoService.getFileUrl(entityId, entityType);
     }
 

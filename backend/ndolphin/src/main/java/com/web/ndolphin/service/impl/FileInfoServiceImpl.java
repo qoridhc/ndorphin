@@ -117,19 +117,28 @@ public class FileInfoServiceImpl implements FileInfoService {
 
     public void deleteFiles(Long entityId, EntityType entityType, List<String> fileNamesToDelete)
         throws IOException {
+
         if (fileNamesToDelete != null && !fileNamesToDelete.isEmpty()) {
             deleteAndDeleteFiles(entityId, entityType, fileNamesToDelete);
         }
     }
 
+    public void deleteFiles(Long entityId, EntityType entityType)
+        throws IOException {
+
+        deleteAndDeleteFiles(entityId, entityType);
+    }
+
     public void uploadFiles(Long entityId, EntityType entityType,
         List<MultipartFile> multipartFiles) throws IOException {
+
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             uploadAndSaveFiles(entityId, entityType, multipartFiles);
         }
     }
 
     public List<String> parseDeleteFilesJson(String deleteFilesJson) {
+
         if (deleteFilesJson == null) {
             return Collections.emptyList();
         }
@@ -143,6 +152,7 @@ public class FileInfoServiceImpl implements FileInfoService {
     }
 
     public String getFileUrl(Long Id, EntityType entityType) {
+
         List<FileInfoResponseDto> file = getFileInfos(Id, entityType);
 
         String url = null;
@@ -151,5 +161,17 @@ public class FileInfoServiceImpl implements FileInfoService {
         }
 
         return url;
+    }
+
+    public String getFileName(Long Id, EntityType entityType) {
+
+        List<FileInfoResponseDto> file = getFileInfos(Id, entityType);
+
+        String name = null;
+        if (!file.isEmpty()) {
+            name = file.get(0).getFileName();
+        }
+
+        return name;
     }
 }
