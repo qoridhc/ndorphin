@@ -56,6 +56,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
     // 로컬 테스트와 배포 모두 가능
     const nowURL = window.location.href;
     if (nowURL.includes('localhost')) {
+      localStorage.setItem("accessToken", process.env.REACT_APP_ACCESS_TOKEN as string);
       userApi.getUserInfo('12')
         .then(response => {
           if (response.data.code == 'SU') {
@@ -65,7 +66,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
             localStorage.setItem('mbti', userInfo.mbti);
             localStorage.setItem('npoint', userInfo.npoint.toString());
             localStorage.setItem('profileImage', userInfo.profileImage);
-            localStorage.setItem("accessToken", process.env.REACT_APP_ACCESS_TOKEN as string);
             localStorage.setItem("email", userInfo.email);
   
             window.location.href = window.location.href
