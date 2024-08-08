@@ -22,9 +22,11 @@ interface AddPageProps {
   handleAiImage: any;
   image: string | null;
   setImage: any;
+  file: File | null;
+  setFile: (file: File) => void;
 }
 
-const AddPage = ({ bookId, pages, handleAiImage, image, setImage }: AddPageProps) => {
+const AddPage = ({ bookId, pages, handleAiImage, image, setImage, file, setFile }: AddPageProps) => {
   const [isPageAdd, setPageAdd] = useState(false);
   const userName = "코에촉";
   const userHasWritten = pages.some((page) => page.nickName === userName);
@@ -41,7 +43,8 @@ const AddPage = ({ bookId, pages, handleAiImage, image, setImage }: AddPageProps
               onClick={() => {
                 setPageAdd(true);
               }}
-              className="w-[30%]">
+              className="w-[30%]"
+            >
               <img src="/assets/addPageButton.png" alt="#" />
             </button>
             <p className="text-outline text-2xl font-bold drop-shadow-md text-[#F4D325]">버튼을 눌러 페이지 추가</p>
@@ -51,7 +54,7 @@ const AddPage = ({ bookId, pages, handleAiImage, image, setImage }: AddPageProps
       ) : (
         // 페이지 추가 버튼 클릭 후 form으로 전환
         <div>
-          <AddPageForm bookId={bookId} setPageAdd={setPageAdd} handleAiImage={handleAiImage} image={image} setImage={setImage} />
+          <AddPageForm bookId={bookId} setPageAdd={setPageAdd} handleAiImage={handleAiImage} image={image} setImage={setImage} file={file} setFile={setFile} />
         </div>
       )}
     </>

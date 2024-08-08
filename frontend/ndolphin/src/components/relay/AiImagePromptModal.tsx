@@ -3,18 +3,16 @@ import axios from "axios";
 import { useState } from "react";
 
 interface BookCoverAiPromptModalProps {
-  file: File | null;
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (image: string) => void;
   setFile: (file: File | null) => void;
-  setDalleUrl: (dalleUrl: string) => void;
   setImage: any;
   image: any;
   coverImage: any;
 }
 
-const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ file, isOpen, onClose, onConfirm, setImage, setFile, setDalleUrl, image, coverImage }) => {
+const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ isOpen, onClose, onConfirm, setFile, coverImage }) => {
   const API_KEY = process.env.REACT_APP_OPEN_AI_APIKEY;
   const [imageUrl, setImageUrl] = useState("");
   const [inputPrompt, setInputPrompt] = useState("");

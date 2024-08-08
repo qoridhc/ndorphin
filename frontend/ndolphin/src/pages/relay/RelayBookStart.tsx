@@ -133,7 +133,7 @@ const MyAlbum: React.FC = () => {
           </Page>
         </HTMLFlipBook>
       </div>
-      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} setImage={setImage} coverImage={"/assets/relay/bookCoverDefault.png"} setFile={setFile} setDalleUrl={setDalleUrl} file={file} />
+      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} setImage={setImage} coverImage={"/assets/relay/bookCoverDefault.png"} setFile={setFile}/>
     </div>
   );
 };
