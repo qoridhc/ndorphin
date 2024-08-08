@@ -42,9 +42,9 @@ const RelayBookUpdate: React.FC = () => {
         if (bookId) {
           const response = await boardApi.read(bookId);
           if (response.status === 200 && isMounted) {
-            const book = response.data.data;
+            const book = response.data.data.content;
             console.log("릴레이북 이야기 상세 조회 성공");
-            const contentFileUrl = book.fileNames[0];
+            const contentFileUrl = book.fileUrls[0];
             subject.current = book.subject;
             content.current = book.content;
             setContentFileUrl(contentFileUrl);
