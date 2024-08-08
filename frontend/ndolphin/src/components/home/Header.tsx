@@ -74,13 +74,20 @@ const Header = () => {
         localStorage.setItem("nickName", res.data.data.nickName);
         localStorage.setItem("npoint", res.data.data.npoint.toString());
         localStorage.setItem("profileImage", res.data.data.profileImage);
+
+        setProfileImage(res.data.data.profileImage);
+      })
+      .then(() => {
+        setIsLoggedIn(true);
+        closeLoginModal();
+      })
+      .then(() => {
+        window.location.href = window.location.href;
       })
       .catch((err) => {
         console.error("유저 정보 에러", err);
       });
 
-    setIsLoggedIn(true);
-    closeLoginModal();
 
     if (isNewUser) {
       setIsUserInfoEditModalOpen(true);

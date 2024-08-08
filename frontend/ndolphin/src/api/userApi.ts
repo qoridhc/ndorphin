@@ -50,8 +50,34 @@ const userApi = {
     
 
   getUserInfo: (userId: string) =>
-    request.get<ApiResponse<UserInfoResponse>>(`${baseURL}/api/v1/users/${userId}`),
+    request.get<ApiResponse<UserInfoResponse>>(`/api/v1/users/${userId}`),
 
+
+  follow: (userId: string, followUserId: string) => {
+    return request.post(
+      `/api/v1/follows/${userId}`,
+      { followingId: followUserId },
+      { headers: { 'Content-Type': 'application/json'} }
+    )
+  },
+
+  unFollow: (userId: string, followUserId: string) => {
+    return request.delete(
+      `/api/v1/follows/${userId}`,
+      {
+        data: { followingId: followUserId },
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
+  },
+
+  getFollowing: (userId: string) => {
+    return request.get(`/api/v1/follows/followings/${userId}`)
+  },
+
+  getFollower: (userId: string) => {
+    return request.get(`/api/v1/follows/followers/${userId}`)
+  },
 }
 
 export default userApi;
