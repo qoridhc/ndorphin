@@ -11,12 +11,6 @@ interface BookImageProps {
 
 const BookImage: React.FC<BookImageProps> = ({ dalleUrl, setDalleUrl, handleAiImage, image, setImage, setFile }) => {
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    // 이미 AI 생성 이미지가 있을 경우
-    if (dalleUrl) {
-      setDalleUrl(null);
-      console.log("AI 이미지 제거 완료");
-    }
-
     const file = event.target.files?.[0];
     if (file) {
       setFile(file);

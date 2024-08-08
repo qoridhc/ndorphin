@@ -28,7 +28,7 @@ const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ file, i
           n: 1,
           model: "dall-e-3",
           size: "1024x1024",
-          // quality: "HD"
+          response_format: "b64_json",
         },
         {
           headers: {
@@ -38,18 +38,34 @@ const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ file, i
         }
       )
       .then((res: any) => {
-        const imageUrl = res.data.data[0].url;
-        setImageUrl(imageUrl);
+        const json = res.data.data[0].b64_json;
+        const base64Data = json;
 
-        // 이미 파일이 존재할 경우
-        if (file) {
-          setFile(null);
-          setDalleUrl(imageUrl)
-          console.log("File을 비우고 AI 이미지를 등록했어요")
-        } else {
-          setDalleUrl(imageUrl)
+        // base64 문자열에서 데이터를 추출합니다.
+        const byteString = atob(base64Data);
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
         }
+
+        // Blob 객체를 생성합니다.
+        const blob = new Blob([ab], { type: "image/jpeg" });
+
+        // Blob 객체를 파일로 변환합니다.
+        const dallefile = new File([blob], "image.jpg", { type: "image/jpeg" });
+
         
+        if (dallefile) {
+          setFile(dallefile);
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const result = reader.result as string;
+            setImageUrl(result);
+          };
+          reader.readAsDataURL(dallefile);
+        }
       })
       .catch((err: any) => {
         console.error("Error:", err);

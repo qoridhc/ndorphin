@@ -6,8 +6,8 @@ import axios from "axios";
 import "../../css/RelayBook.css";
 import "../../css/Notes.css";
 import "../../css/InputPlaceHolder.css";
+import { useNavigate } from "react-router";
 import BookImage from "../../components/relay/relayBookCRUD/BookImage";
-import EndPage from "../../components/relay/EndPage";
 import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
 import RelayBookLeftForm from "../../components/relay/relayBookCRUD/RelayBookLeftForm";
 
@@ -25,13 +25,13 @@ const Page = React.forwardRef<HTMLDivElement, PageProps>((props, ref: ForwardedR
 });
 
 const MyAlbum: React.FC = () => {
+  const navigate = useNavigate();
   // AI 이미지 모달 관련
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [bookId, setBookId] = useState<number | null>(null)
   const [dalleUrl, setDalleUrl] = useState<string | null>(null);
-  const subject = useRef<string>("");
-  const content = useRef<string>("");
 
   const handleAiImage = () => {
     setIsModalOpen(true);
@@ -52,10 +52,10 @@ const MyAlbum: React.FC = () => {
   };
 
   const cancelAiImage = () => {
-    if (dalleUrl) {
-      setDalleUrl(null);
-    }
-    
+    // if (dalleUrl) {
+    //   setDalleUrl(null);
+    // }
+
     setIsModalOpen(false);
   };
 
@@ -66,32 +66,27 @@ const MyAlbum: React.FC = () => {
       formData.append("files", file);
     }
 
-    // 객체를 동적으로 생성하기 위해 변수를 사용
-    const requestData: {
-      subject: string;
-      content: string;
-      boardType: string;
-      maxPage: number | undefined;
-      dalleUrl?: string;
-    } = {
-      subject: subject,
-      content: content,
-      boardType: "RELAY_BOARD",
-      maxPage: endPage,
-    };
-
-    // dalleUrl이 있을 경우 추가
-    if (dalleUrl) {
-      console.log("잘왔나?", dalleUrl);
-      requestData.dalleUrl = dalleUrl;
-    }
-
-    formData.append("request", new Blob([JSON.stringify(requestData)], { type: "application/json" }));
+    formData.append(
+      "request",
+      new Blob(
+        [
+          JSON.stringify({
+            subject: subject,
+            content: content,
+            boardType: "RELAY_BOARD",
+            maxPage: endPage,
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
 
     try {
       const response = await boardApi.create(formData);
-      if (response.status === 200) {
+      if (response.status === 200 && response.data) {
         console.log("릴레이북 이야기 작성 성공");
+        const id = response.data.data.id;
+        navigate(`/relaybookdetail/${id}`);
       }
     } catch (error) {
       console.error("릴레이북 이야기 시작 오류: ", error);

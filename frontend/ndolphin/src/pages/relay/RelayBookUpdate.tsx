@@ -29,6 +29,7 @@ const RelayBookUpdate: React.FC = () => {
   const subject = useRef<string>("");
   const content = useRef<string>("");
   const [contentFileUrl, setContentFileUrl] = useState("");
+  const [endPageValue, setEndPageValue] = useState<number>();
   const [currentEndPage, setCurrentEndPage] = useState<number | null>(null);
   const [image, setImage] = useState<string>(contentFileUrl);
   const [file, setFile] = useState<File | null>(null);
@@ -42,7 +43,7 @@ const RelayBookUpdate: React.FC = () => {
         if (bookId) {
           const response = await boardApi.read(bookId);
           if (response.status === 200 && isMounted) {
-            const book = response.data.data.content;
+            const book = response.data.data;
             console.log("릴레이북 이야기 상세 조회 성공");
             const contentFileUrl = book.fileUrls[0];
             subject.current = book.subject;
@@ -63,7 +64,6 @@ const RelayBookUpdate: React.FC = () => {
       isMounted = false;
     };
   }, [bookId]);
-
 
   // axios PUT
   const handleRelayBookUpdate = async (subject: string, content: string) => {
@@ -103,7 +103,7 @@ const RelayBookUpdate: React.FC = () => {
     // 이미 AI 생성 이미지가 있을 경우
     if (dalleUrl) {
       setDalleUrl(null);
-      console.log("AI 이미지 제거 완료")
+      console.log("AI 이미지 제거 완료");
     }
 
     if (file) {
@@ -116,7 +116,6 @@ const RelayBookUpdate: React.FC = () => {
       reader.readAsDataURL(file);
     }
   };
-
 
   // AI 이미지 모달 관련
   const [isModalOpen, setIsModalOpen] = useState(false);
