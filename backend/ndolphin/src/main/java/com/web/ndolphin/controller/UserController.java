@@ -99,9 +99,24 @@ public class UserController {
         @Parameter(description = "사용자 프로필 이미지 (선택 사항)") @RequestPart(name = "file", required = false) MultipartFile profileImage
     ) {
 
-        LogUtil.info("updateUser");
         ResponseEntity<ResponseDto> response = userService.updateUser(userId, updateDto, profileImage);
 
+        return response;
+    }
+
+    @Operation(summary = "사용자 프로필 이미지 삭제", description = "ID로 사용자의 프로필 이미지를 삭제합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "프로필 이미지 삭제 성공",
+            content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+        @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
+            content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "500", description = "서버 오류",
+            content = @Content(schema = @Schema()))
+    })
+    @DeleteMapping("/image/{userId}")
+    public ResponseEntity<ResponseDto> deleteProfile(
+        @Parameter(description = "프로필 이미지를 삭제할 사용자의 ID", required = true) @PathVariable("userId") Long userId) {
+        ResponseEntity<ResponseDto> response = userService.deleteProfile(userId);
         return response;
     }
 
