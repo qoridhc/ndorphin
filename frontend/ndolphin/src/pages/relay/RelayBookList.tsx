@@ -8,6 +8,7 @@ import Filter from "../../components/common/Filter";
 function Relaybooklist() {
   const navigate = useNavigate();
   const [tabs, setTabs] = useState<number>(0);
+  const [hasParticipated, setHasPaeticipated] = useState<boolean>(false);
   const [bookList, setbookList] = useState<any[]>([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchFilter1, setSearchFilter1] = useState("");
@@ -78,7 +79,7 @@ function Relaybooklist() {
         </div>
       </div>
 
-      <BookList setBookList={setbookList} bookList={bookList} searchKeyword={searchKeyword} searchFilter1={searchFilter1} searchFilter2={searchFilter2} isSearch={isSearch} setIsSearch={setIsSearch} />
+      <BookList tabs={tabs} setBookList={setbookList} bookList={bookList} searchKeyword={searchKeyword} searchFilter1={searchFilter1} searchFilter2={searchFilter2} isSearch={isSearch} setIsSearch={setIsSearch} />
     </div>
   );
 }

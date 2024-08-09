@@ -33,7 +33,7 @@ const RelayBookDetail = () => {
   const [file, setFile] = useState<File | null>(null);
   const [firstPage, setFirstPage] = useState<any[]>([]);
   const [lastPage, setLastPage] = useState<any[]>([]);
-  const [hasParticipated, setHasPaeticipated] = useState<boolean>(false);
+  const [hasParticipated, setHasParticipated] = useState<boolean>(false);
   const [isChanged, setIsChanged] = useState<boolean>(false);
 
   // useEffect -> 렌더링이 다 되고나서 실행 (html부터 다 그려준 뒤 실행)
@@ -50,7 +50,7 @@ const RelayBookDetail = () => {
             setPages(bookDetail);
             setFirstPage([firstPage]);
             setLastPage([firstPage]);
-            setHasPaeticipated(firstPage.hasParticipated);
+            setHasParticipated(firstPage.hasParticipated);
           }
         }
       } catch (error) {

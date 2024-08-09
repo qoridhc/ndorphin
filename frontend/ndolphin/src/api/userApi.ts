@@ -78,6 +78,14 @@ const userApi = {
   getFollower: (userId: string) => {
     return request.get(`/api/v1/follows/followers/${userId}`)
   },
+
+  favorite: (userId: number, boardId: number) => {
+    return request.post(`api/v1/users/${userId}/favorites`,
+      {
+        userId: userId,
+        boardId: boardId
+      }, { headers: { 'Content-Type': 'application/json' } })
+  }
 }
 
 export default userApi;
