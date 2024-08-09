@@ -34,7 +34,7 @@ function App() {
           <Route path="/ifstart" element={<IfStart />}></Route>
           <Route path="/ifdetail/:boardId" element={<IfDetail />}></Route>
           <Route path="/balancelist" element={<BalanceList />}></Route>
-          <Route path="/balancedetail/:id" element={<BalanceDetail />}></Route>
+          <Route path="/balancedetail/:boardId" element={<BalanceDetail />}></Route>
           <Route path="/profile/:userId" element={<Profile />}></Route>
           <Route path="/oklist" element={<OkList />}></Route>
           <Route path="/okdetail/:id" element={<OkDetail />}></Route>

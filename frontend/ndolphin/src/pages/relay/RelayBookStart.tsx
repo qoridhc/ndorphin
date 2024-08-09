@@ -30,7 +30,7 @@ const MyAlbum: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [bookId, setBookId] = useState<number | null>(null)
+  const [bookId, setBookId] = useState<number | null>(null);
   const [dalleUrl, setDalleUrl] = useState<string | null>(null);
 
   const handleAiImage = () => {
@@ -40,22 +40,9 @@ const MyAlbum: React.FC = () => {
   const confirmAiImage = async (image: string) => {
     setIsModalOpen(false);
     setImage(image);
-
-    // const response = await fetch(image);
-    // const data = await response.blob();
-    // const ext = image.split(".").pop(); // url 구조에 맞게 수정할 것
-    // const filename = image.split("/").pop(); // url 구조에 맞게 수정할 것
-    // const metadata = { type: `image/${ext}` };
-    // const file = new File([data], filename!, metadata);
-    // console.log(file);
-    // setFile(file);
   };
 
   const cancelAiImage = () => {
-    // if (dalleUrl) {
-    //   setDalleUrl(null);
-    // }
-
     setIsModalOpen(false);
   };
 
@@ -133,7 +120,7 @@ const MyAlbum: React.FC = () => {
           </Page>
         </HTMLFlipBook>
       </div>
-      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} setImage={setImage} coverImage={"/assets/relay/bookCoverDefault.png"} setFile={setFile}/>
+      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} setImage={setImage} coverImage={"/assets/relay/bookCoverDefault.png"} setFile={setFile} />
     </div>
   );
 };
