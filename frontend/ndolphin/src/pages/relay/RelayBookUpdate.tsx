@@ -79,7 +79,6 @@ const RelayBookUpdate: React.FC = () => {
       console.log(file);
     } else if (currentFileName === null && file) {
       formData.append("files", file);
-      console.log("anjdi")
     }
     
     formData.append(
@@ -105,7 +104,6 @@ const RelayBookUpdate: React.FC = () => {
         }
       } catch (error) {
         console.error("릴레이북 이야기 수정 오류: ", error);
-        console.log(formData)
       }
     }
   };

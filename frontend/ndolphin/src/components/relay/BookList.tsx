@@ -1,11 +1,19 @@
+import { useState, useEffect } from "react";
+import boardApi from "../../api/boardApi";
 import Book from "./Book";
 import Paging from "../common/Paging";
 
 interface BookListProps {
   bookList: any[];
+  setBookList: (bookList: any[]) => void;
+  searchKeyword: string;
+  searchFilter1: string;
+  searchFilter2: string;
+  isSearch: boolean;
+  setIsSearch: (state: boolean) => void;
 }
 
-const BookList = ({bookList}: BookListProps) => {
+const BookList = ({ bookList, setBookList, searchKeyword, searchFilter1, searchFilter2, isSearch, setIsSearch }: BookListProps) => {
   // const bookList = [
   //   {
   //     id: 1,
@@ -81,18 +89,43 @@ const BookList = ({bookList}: BookListProps) => {
   //   },
   // ];
 
+  const getRelayBoardList = async () => {
+    try {
+      const response = await boardApi.list("RELAY_BOARD");
+      setBookList(response.data.data.content);
+    } catch (error) {
+      console.error("boardApi list : ", error);
+    }
+  };
+
+  const getSearchRelayBoardList = async () => {
+    try {
+      const response = await boardApi.search("RELAY_BOARD", searchKeyword, searchFilter1, searchFilter2);
+      setBookList(response.data.data.content);
+    } catch (error) {
+      console.log("boardApi search : ", error);
+    }
+  };
+
+  useEffect(() => {
+    if (searchKeyword || searchFilter2 === "popularity") {
+      getSearchRelayBoardList();
+      setIsSearch(false);
+    } else {
+      getRelayBoardList();
+    }
+  }, [isSearch, searchFilter2]);
+
   return (
     <div>
       <div className="px-44 py-10 grid grid-cols-2 lg:grid-cols-4 gap-x-14 gap-y-20">
-        {
-          bookList.map((book) => (
-            <Book key={book.id} book={book} />
-          ))
-        }
+        {bookList.map((book) => (
+          <Book key={book.id} book={book} />
+        ))}
       </div>
       <Paging />
     </div>
   );
-}
+};
 
 export default BookList;
