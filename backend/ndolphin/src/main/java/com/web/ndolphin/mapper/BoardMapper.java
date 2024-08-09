@@ -93,16 +93,16 @@ public class BoardMapper {
 
     public static VoteBoardDetailResponseDto toVoteBoardDetailResponseDto(Board board,
         String fileUrl, String fileName, List<VoteInfo> voteInfos, long totalVotes,
-        UserVoteContent userVoteContent, List<Board> sideBoards) {
+        UserVoteContent userVoteContent, List<? extends BoardDto> sideBoardDtos) {
 
         VoteBoardDetailResponseDto voteBoardDetailResponseDto = new VoteBoardDetailResponseDto();
 
         mapCommonFields(board, voteBoardDetailResponseDto);
         voteBoardDetailResponseDto.setTotalVotes(totalVotes);
         voteBoardDetailResponseDto.setVoteInfos(voteInfos);
+        voteBoardDetailResponseDto.setSideBoardDtos(sideBoardDtos);
         voteBoardDetailResponseDto.getFileUrls().add(fileUrl);
         voteBoardDetailResponseDto.getFileNames().add(fileName);
-        voteBoardDetailResponseDto.setSideBoards(sideBoards);
 
         if (userVoteContent != null) {
             voteBoardDetailResponseDto.setUserVoteId(userVoteContent.getVoteId());
@@ -128,7 +128,7 @@ public class BoardMapper {
 
     public static OpinionBoardDetailResponseDto toOpinionBoardDetailResponseDto(Board board,
         String fileUrl, String fileName, boolean hasParticipated, int commentCount,
-        List<CommentResponseDto> commentResponseDtos, List<Board> sideBoards) {
+        List<CommentResponseDto> commentResponseDtos, List<? extends BoardDto> sideBoards) {
 
         OpinionBoardDetailResponseDto opinionBoardDetailResponseDto = new OpinionBoardDetailResponseDto();
 
@@ -136,7 +136,7 @@ public class BoardMapper {
         opinionBoardDetailResponseDto.setHasParticipated(hasParticipated);
         opinionBoardDetailResponseDto.setCommentCount(commentCount);
         opinionBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
-        opinionBoardDetailResponseDto.setSideBoards(sideBoards);
+        opinionBoardDetailResponseDto.setSideBoardDtos(sideBoards);
         opinionBoardDetailResponseDto.getFileNames().add(fileName);
         opinionBoardDetailResponseDto.getFileUrls().add(fileUrl);
 
