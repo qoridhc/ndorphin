@@ -215,13 +215,15 @@ public class BoardServiceImpl implements BoardService {
 
     private List<RelayBoardResponseDto> getRelayBoardResponseDtos(List<Board> boards) {
 
+        Long userId = tokenService.getUserIdFromToken();
+
         return boards.stream()
             .map(board -> {
-                Long userId = board.getUser().getUserId();
+                Long writer = board.getUser().getUserId();
                 Long boardId = board.getId();
 
                 boolean hasParticipated = hasUserParticipated(boardId, userId);
-                if (board.getUser().getUserId() == userId) {
+                if (writer == userId) {
                     hasParticipated = true;
                 }
 
@@ -353,6 +355,10 @@ public class BoardServiceImpl implements BoardService {
 
         // 참여 했으면 다시 참여 못하게 해야함.
         boolean hasParticipated = hasUserParticipated(board.getId(), userId);
+        if (board.getUser().getUserId() == userId) {
+            hasParticipated = true;
+        }
+
         List<CommentResponseDto> commentResponseDtos = commentService.getBoardDetail(board.getId());
         int commentCount = commentResponseDtos.size();
 
