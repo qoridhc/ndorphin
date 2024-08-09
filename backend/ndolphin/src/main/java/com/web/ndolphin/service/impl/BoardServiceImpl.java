@@ -331,6 +331,10 @@ public class BoardServiceImpl implements BoardService {
         String fileUrl, String fileName) {
 
         boolean hasParticipated = hasUserParticipated(board.getId(), userId);
+        if (board.getUser().getUserId() == userId) {
+            hasParticipated = true;
+        }
+
         List<CommentResponseDto> comments = commentService.getBoardDetail(board.getId());
         Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(board.getId());
         Reaction reaction = reactionRepository.findByBoardIdAndUserId(board.getId(), userId);
