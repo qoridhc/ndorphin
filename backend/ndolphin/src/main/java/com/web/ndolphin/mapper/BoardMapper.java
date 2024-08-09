@@ -78,24 +78,27 @@ public class BoardMapper {
     }
 
     public static VoteBoardResponseDto toVoteBoardResponseDto(Board board,
-        List<String> voteContents, long totalVoteCnt) {
+        List<String> voteContents, long totalVoteCnt, String fileUrl, String fileName) {
 
         VoteBoardResponseDto voteBoardResponseDto = new VoteBoardResponseDto();
 
         mapCommonFields(board, voteBoardResponseDto);
         voteBoardResponseDto.setVoteContents(voteContents);
         voteBoardResponseDto.setTotalVoteCnt(totalVoteCnt);
+        voteBoardResponseDto.getFileUrls().add(fileUrl);
+        voteBoardResponseDto.getFileNames().add(fileName);
 
         return voteBoardResponseDto;
     }
 
     public static VoteBoardDetailResponseDto toVoteBoardDetailResponseDto(Board board,
-        String fileUrl, String fileName, List<VoteInfo> voteInfos,
+        String fileUrl, String fileName, List<VoteInfo> voteInfos, long totalVotes,
         UserVoteContent userVoteContent) {
 
         VoteBoardDetailResponseDto voteBoardDetailResponseDto = new VoteBoardDetailResponseDto();
 
         mapCommonFields(board, voteBoardDetailResponseDto);
+        voteBoardDetailResponseDto.setTotalVotes(totalVotes);
         voteBoardDetailResponseDto.setVoteInfos(voteInfos);
         voteBoardDetailResponseDto.getFileUrls().add(fileUrl);
         voteBoardDetailResponseDto.getFileNames().add(fileName);
@@ -109,13 +112,15 @@ public class BoardMapper {
     }
 
     public static OpinionBoardResponseDto toOpinionBoardResponseDto(Board board,
-        String bestComment, Long commentCount) {
+        String bestComment, Long commentCount, String fileUrl, String fileName) {
 
         OpinionBoardResponseDto opinionBoardResponseDto = new OpinionBoardResponseDto();
 
         mapCommonFields(board, opinionBoardResponseDto);
         opinionBoardResponseDto.setBestComment(bestComment);
         opinionBoardResponseDto.setCommentCount(commentCount);
+        opinionBoardResponseDto.getFileUrls().add(fileUrl);
+        opinionBoardResponseDto.getFileNames().add(fileName);
 
         return opinionBoardResponseDto;
     }

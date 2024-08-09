@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,7 +56,7 @@ public class AuthController {
     })
     @PostMapping("/token/reissue")
     public ResponseEntity<ResponseDto> reissueToken(
-        @Parameter(description = "토큰 재발급 요청 정보", required = true) @RequestBody TokenRequestDto tokenRequestDto) {
+        @Parameter(description = "토큰 재발급 요청 정보", required = true) @Valid @RequestBody TokenRequestDto tokenRequestDto) {
 
         ResponseEntity<ResponseDto> response = tokenService.reissue(tokenRequestDto);
         return response;

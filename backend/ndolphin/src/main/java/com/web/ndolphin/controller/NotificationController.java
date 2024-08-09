@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,7 +41,7 @@ public class NotificationController {
     @PostMapping("/{userId}")
     public ResponseEntity<ResponseDto> createNotification(
         @Parameter(description = "알림을 받을 사용자의 ID", required = true) @PathVariable Long userId,
-        @Parameter(description = "알림 생성 요청 데이터", required = true) @RequestBody NotificationRequestDto dto) {
+        @Parameter(description = "알림 생성 요청 데이터", required = true) @Valid @RequestBody NotificationRequestDto dto) {
 
         ResponseEntity<ResponseDto> response = notificationService.create(userId, dto);
 

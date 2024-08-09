@@ -31,7 +31,6 @@ import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.UserService;
-import com.web.ndolphin.util.LogUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -62,8 +61,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void signIn(HttpServletRequest request, HttpServletResponse response, Long userId) {
-
-        LogUtil.info("signIn 실행");
 
         User user = null;
 
@@ -128,8 +125,6 @@ public class UserServiceImpl implements UserService {
 
             boolean existUser = userRepository.existsById(userId);
 
-            LogUtil.info("existUser" + existUser);
-
             int deleteCnt = userRepository.deleteUserByUserId(userId);
 
             // 삭제 실패
@@ -151,10 +146,6 @@ public class UserServiceImpl implements UserService {
 
         try {
             User existingUser = userRepository.findByUserId(userId);
-
-            if (dto.getEmail() != null) {
-                existingUser.setEmail(dto.getEmail());
-            }
 
             if (dto.getNickName() != null) {
                 existingUser.setNickName(dto.getNickName());

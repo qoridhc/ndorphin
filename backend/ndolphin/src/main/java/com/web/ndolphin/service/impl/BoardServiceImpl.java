@@ -49,17 +49,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-
 
 @Service
 @RequiredArgsConstructor
@@ -128,9 +125,11 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(BoardType boardType, String filter1, String filter2, String search, Pageable pageable) {
+    public ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(BoardType boardType,
+        String filter1, String filter2, String search, Pageable pageable) {
         // Pageable을 사용하여 페이징된 게시글 목록을 가져옵니다.
-        Page<Board> boardsPage = boardRepository.findByTypeAndFilters(boardType, filter1, filter2, search, pageable);
+        Page<Board> boardsPage = boardRepository.findByTypeAndFilters(boardType, filter1, filter2,
+            search, pageable);
 
         // Page<Board>를 List<Board>로 변환하여 기존의 메서드를 재사용
         List<Board> boards = boardsPage.getContent();
@@ -144,25 +143,14 @@ public class BoardServiceImpl implements BoardService {
             .collect(Collectors.toList());
 
         // Page<BoardDto>로 변환
-        Page<BoardDto> boardDtosPage = new PageImpl<>(castedBoardDtos, pageable, boardsPage.getTotalElements());
+        Page<BoardDto> boardDtosPage = new PageImpl<>(castedBoardDtos, pageable,
+            boardsPage.getTotalElements());
 
-        ResponseDto<Page<BoardDto>> responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardDtosPage);
+        ResponseDto<Page<BoardDto>> responseBody = new ResponseDto<>(ResponseCode.SUCCESS,
+            ResponseMessage.SUCCESS, boardDtosPage);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
-
-
-//    private List<? extends BoardDto> getBoardDtos(BoardType boardType, List<Board> boards) {
-//
-//        return switch (boardType) {
-//            case VOTE_BOARD -> getVoteBoardResponseDtos(boards);
-//            case OPINION_BOARD -> getOpinionBoardResponseDtos(boards);
-//            case RELAY_BOARD -> getRelayBoardResponseDtos(boards);
-//            case OK_BOARD -> getOkBoardResponseDtos(boards);
-//            case BYE_BOARD, ANNOUNCEMENT_BOARD -> getByeBoardResponseDtos(boards);
-//            default -> throw new IllegalArgumentException("Unsupported board type");
-//        };
-//    }
 
     private List<? extends BoardDto> getBoardDtos(BoardType boardType, List<Board> boards) {
         return switch (boardType) {
@@ -190,7 +178,11 @@ public class BoardServiceImpl implements BoardService {
                     .map(VoteInfo::getVoteContent)
                     .collect(toList());
 
-                return BoardMapper.toVoteBoardResponseDto(board, voteContents, totalVotes);
+                String fileUrl = getFileUrl(boardId, EntityType.POST);
+                String fileName = getFileName(boardId, EntityType.POST);
+
+                return BoardMapper.toVoteBoardResponseDto(board, voteContents, totalVotes, fileUrl,
+                    fileName);
             })
             .collect(toList());
     }
@@ -208,7 +200,11 @@ public class BoardServiceImpl implements BoardService {
                 String bestComment = bestComments.isEmpty() ? null : bestComments.get(0);
                 Long commentCount = commentRepository.countCommentsByBoardId(boardId);
 
-                return BoardMapper.toOpinionBoardResponseDto(board, bestComment, commentCount);
+                String fileUrl = getFileUrl(boardId, EntityType.POST);
+                String fileName = getFileName(boardId, EntityType.POST);
+
+                return BoardMapper.toOpinionBoardResponseDto(board, bestComment, commentCount,
+                    fileUrl, fileName);
             })
             .collect(toList());
     }
@@ -308,11 +304,15 @@ public class BoardServiceImpl implements BoardService {
 
         List<VoteInfo> voteInfos = voteService.getVoteContents(board.getId());
 
+        long totalVotes = voteInfos.stream()
+            .mapToLong(VoteInfo::getVoteCount)
+            .sum();
+
         UserVoteContent userVoteContent = voteRepository.findVoteByBoardIdAndUserId(
             board.getId(), userId).orElse(null);
 
         return BoardMapper.toVoteBoardDetailResponseDto(board, fileUrl, fileName, voteInfos,
-            userVoteContent);
+            totalVotes, userVoteContent);
     }
 
     private OpinionBoardDetailResponseDto getOpinionBoardDetail(Board board, Long userId,
@@ -474,8 +474,14 @@ public class BoardServiceImpl implements BoardService {
             String fileUrl = getFileUrl(board.getId(), EntityType.POST);
             String fileName = getFileName(board.getId(), EntityType.POST);
 
+            List<VoteInfo> voteInfos = voteService.getVoteContents(board.getId());
+
+            long totalVotes = voteInfos.stream()
+                .mapToLong(VoteInfo::getVoteCount)
+                .sum();
+
             VoteBoardDetailResponseDto voteBoardDetailResponseDto = BoardMapper.toVoteBoardDetailResponseDto(
-                board, fileUrl, fileName, null, null);
+                board, fileUrl, fileName, null, totalVotes, null);
 
             voteBoardDetailResponseDtos.add(voteBoardDetailResponseDto);
         }
