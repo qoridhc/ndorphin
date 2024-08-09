@@ -409,8 +409,7 @@ const Profile = () => {
       </div>
 
       {/* 콘텐츠 공간 */}
-      {/* 통신 예정, 이미지 안 뜨는게 정상 */}
-      <div>{renderContent()}</div>
+      <div className="">{renderContent()}</div>
 
       <TopButton />
       <FollowList isOpen={isFollowModalOpen} onClose={() => setIsFollowModalOpen(false)} activeTab={activeFollowTab} setActiveTab={setActiveFollowTab} followingsList={followingsList} followersList={followersList} onFollowToggle={handleFollowToggle} />
