@@ -264,10 +264,10 @@ const Header = () => {
                     </div>
                   </div>
                   <hr />
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate(`/profile/${localStorage.getItem('userId')}`))}>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => window.location.href = (`/profile/${localStorage.getItem('userId')}`))}>
                     프로필
                   </button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate("/wishlist"))}>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => window.location.href = ("/wishlist"))}>
                     찜 목록
                   </button>
                   <hr />

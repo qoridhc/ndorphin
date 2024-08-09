@@ -14,6 +14,7 @@ import userApi from "../../api/userApi";
 interface Follow {
   followId: number;
   followingId: number;
+  followerId: number;
   createdAt: string;
 }
 
@@ -49,10 +50,10 @@ const Profile = () => {
   const [followingsList, setFollowingsList] = useState<UserInfo[]>([]);
   const [followersList, setFollowersList] = useState<UserInfo[]>([]);
 
-  const userId = localStorage.getItem('userId')
+  const userId = String(localStorage.getItem('userId'))
 
   useEffect(() => {
-    const profileUserId = location.pathname.split('/')[2];
+    const profileUserId = String(location.pathname.split('/')[2]);
     if (profileUserId === userId) {
       setIsOwnProfile(true);
       userApi.getUserInfo(profileUserId)
@@ -95,6 +96,15 @@ const Profile = () => {
             }
           }
         })
+        .then(async () => {
+          try {
+            const followingList = await userApi.getFollowing(userId)
+            const isFollowing = followingList.data.data.some((follow: any) => String(follow.followingId) === profileUserId);
+            setIsFollowing(isFollowing)
+          } catch (error) {
+            console.error('팔로잉 정보 조회 실패: ', error)
+          }
+        })
         .catch(error => {
           console.error('Failed to fetch user info: ', error);
           return new Promise<void>(resolve => {
@@ -110,32 +120,59 @@ const Profile = () => {
   // 팔로우 정보 받아오기
   useEffect(() => {
     const getfollowList = async (userId: string) => {
+      const profileUserId = Number(location.pathname.split("/")[2]);
       try {
         const followingList = await userApi.getFollowing(userId);
-        const followerList = await userApi.getFollower(userId);
+        const followerList = await userApi.getFollower(profileUserId.toString());
         if (followingList.data.code === 'SU' && followerList.data.code === 'SU') {
 
           const followingListData = followingList.data.data as Follow[];
           const followerListData = followerList.data.data as Follow[];
 
-          const fetchUserInfos = async (list: Follow[]): Promise<UserInfo[]> => {
+          const fetchUserFollowingInfos = async (list: Follow[]): Promise<UserInfo[]> => {
             return Promise.all(
               list.map(async (item) => {
-                const userInfoResponse = await userApi.getUserInfo(item.followingId.toString());
-                const userInfoResponseProfileImage = userInfoResponse.data.data.profileImage;
+                const userFollowingResponse = await userApi.getUserInfo(String(item.followingId));
+                const userFollowingResponseProfileImage = userFollowingResponse.data.data.profileImage;
                 const isFollowing = followingList.data.data.some((follow: any) => follow.followingId === item.followingId);
 
-                if (userInfoResponseProfileImage) {
+                if (userFollowingResponseProfileImage) {
                   return {
                     id: item.followingId,
-                    nickName: userInfoResponse.data.data.nickName,
-                    profileImage: userInfoResponse.data.data.profileImage,
+                    nickName: userFollowingResponse.data.data.nickName,
+                    profileImage: userFollowingResponse.data.data.profileImage,
                     isFollowing,
                   };
                 } else {
                   return {
                     id: item.followingId,
-                    nickName: userInfoResponse.data.data.nickName,
+                    nickName: userFollowingResponse.data.data.nickName,
+                    profileImage: "/assets/user/profile.png",
+                    isFollowing,
+                  };
+                };
+              })
+            );
+          };
+          const fetchUserFollowerInfos = async (list: Follow[]): Promise<UserInfo[]> => {
+            return Promise.all(
+              list.map(async (item) => {
+                console.log(item)
+                const userFollowerResponse = await userApi.getUserInfo(String(item.followerId));
+                const userFollowerResponseProfileImage = userFollowerResponse.data.data.profileImage;
+                const isFollowing = followingList.data.data.some((follow: any) => follow.followingId === item.followingId);
+
+                if (userFollowerResponseProfileImage) {
+                  return {
+                    id: item.followerId,
+                    nickName: userFollowerResponse.data.data.nickName,
+                    profileImage: userFollowerResponse.data.data.profileImage,
+                    isFollowing,
+                  };
+                } else {
+                  return {
+                    id: item.followerId,
+                    nickName: userFollowerResponse.data.data.nickName,
                     profileImage: "/assets/user/profile.png",
                     isFollowing,
                   };
@@ -144,15 +181,14 @@ const Profile = () => {
             );
           };
 
-          const followingsInfos = await fetchUserInfos(followingListData);
-          const followersInfos = await fetchUserInfos(followerListData);
+          const followingsInfos = await fetchUserFollowingInfos(followingListData);
+          const followersInfos = await fetchUserFollowerInfos(followerListData);
 
           setFollowings(followingList.data.data.length);
           setFollowers(followerList.data.data.length);
           setFollowingsList(followingsInfos);
           setFollowersList(followersInfos);
 
-          const profileUserId = Number(location.pathname.split("/")[2]);
           const isFollow = followingList.data.data.some((follow: any) => follow.followingId === profileUserId);
           setIsFollowing(isFollow);
         }
@@ -161,7 +197,8 @@ const Profile = () => {
       }
     };
 
-    getfollowList(userId as string);
+    const profileUserId = location.pathname.split('/')[2];
+    getfollowList(profileUserId as string);
   }, []);
 
   // 탭 정보를 URL쿼리에 저장(뒤로가거나 새로고침해도 상태 유지 가능)
@@ -172,13 +209,12 @@ const Profile = () => {
   const buttonClass = (tabName: string) => `relative px-4 py-2 ${selectedTab === tabName ? "text-black underline underline-offset-8 decoration-[#FFDE2F] decoration-4 duration-300" : "text-gray-400"}`;
 
   const handleClick = async () => {
-    
     const followingId = location.pathname.split("/")[2];
     
     if (isFollowing) {
       // 언팔로우 요청
       try {
-        await userApi.unFollow(userId as string, followingId);
+        await userApi.unFollow(userId, followingId);
         setIsFollowing(!isFollowing);
       } catch (error) {
         console.error('언팔로우 에러: ', error)
@@ -186,7 +222,7 @@ const Profile = () => {
     } else {
       // 팔로우 요청
       try {
-        await userApi.follow(userId as string, followingId);
+        await userApi.follow(userId, followingId);
         setIsFollowing(!isFollowing);
       } catch (error) {
         console.error('팔로우 에러: ', error)
@@ -244,6 +280,35 @@ const Profile = () => {
   const closeNSModal = () => {
     setIsNSModalOpen(false);
     window.location.href = window.location.href;
+  };
+
+  const handleFollowToggle = async (followUserId: number) => {
+    try {
+      const followingList = await userApi.getFollowing(userId)
+      const isFollowing = followingList.data.data.some((follow: any) => String(follow.followingId) === String(followUserId));
+      if (isFollowing) {
+        await userApi.unFollow(userId, followUserId.toString());
+      } else {
+        await userApi.follow(userId, followUserId.toString());
+      }
+  
+      // 상태 업데이트
+      setIsFollowing(!isFollowing);
+  
+      // FollowList 모달의 리스트도 업데이트
+      const updatedFollowingsList = followingsList.map((item) => 
+        item.id === followUserId ? { ...item, isFollowing: !item.isFollowing } : item
+      );
+      const updatedFollowersList = followersList.map((item) => 
+        item.id === followUserId ? { ...item, isFollowing: !item.isFollowing } : item
+      );
+      
+      setFollowingsList(updatedFollowingsList);
+      setFollowersList(updatedFollowersList);
+  
+    } catch (error) {
+      console.error('팔로우 상태 변경 에러: ', error);
+    }
   };
 
   return (
@@ -348,7 +413,7 @@ const Profile = () => {
       <div>{renderContent()}</div>
 
       <TopButton />
-      <FollowList isOpen={isFollowModalOpen} onClose={() => setIsFollowModalOpen(false)} activeTab={activeFollowTab} setActiveTab={setActiveFollowTab} followingsList={followingsList} followersList={followersList} />
+      <FollowList isOpen={isFollowModalOpen} onClose={() => setIsFollowModalOpen(false)} activeTab={activeFollowTab} setActiveTab={setActiveFollowTab} followingsList={followingsList} followersList={followersList} onFollowToggle={handleFollowToggle} />
       {isUserInfoEditModalOpen && <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onNext={() => closeUserInfoEditModal()} setProfileImage={setProfileImage} onClose={closeUserInfoEditModal} />}
       {isNSModalOpen && <NSModal isOpen={isNSModalOpen} onClose={closeNSModal} mode={"profile"} />}
     </div>
