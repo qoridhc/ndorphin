@@ -9,10 +9,10 @@ const commentApi = {
     })
   },
 
-  update: (boardId: string, commentId: number, data: { content: string }) => {
-    return request.put(`/api/v1/boards/${boardId}/comments/${commentId}`, data, {
+  update: (boardId: string, commentId: number, formData: FormData) => {
+    return request.put(`/api/v1/boards/${boardId}/comments/${commentId}`, formData, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'multipart/form-data'
       }
     })
   },
