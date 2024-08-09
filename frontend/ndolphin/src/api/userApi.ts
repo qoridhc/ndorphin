@@ -78,6 +78,26 @@ const userApi = {
   getFollower: (userId: string) => {
     return request.get(`/api/v1/follows/followers/${userId}`)
   },
+
+  getFavorites: (userId: string) => {
+    return request.get(`api/v1/users/${userId}/favorites`)
+  },
+
+  addFavorites: (userId: string, boardId: string) => {
+    return request.post(
+      `api/v1/users/${userId}/favorites`,
+      { userId: userId, boardId: boardId },
+      { headers: { 'Content-Type': 'application/json' } }
+    )
+  },
+
+  deleteFavorites: (userId: string, boardId: string) => {
+    return request.delete(`api/v1/users/${userId}/favorites/${boardId}`)
+  },
+
+  getNpointPercent: (userId: string) => {
+    return request.get(`/api/v1/users/${userId}/npoint-percent`)
+  },
 }
 
 export default userApi;

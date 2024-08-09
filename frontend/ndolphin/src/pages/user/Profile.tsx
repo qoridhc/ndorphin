@@ -41,6 +41,7 @@ const Profile = () => {
   const [nickName, setNickName] = useState<string | null>(null);
   const [mbti, setMbti] = useState<string | null>(null);
   const [npoint, setNpoint] = useState<number | null>(null);
+  const [rank, setRank] = useState<number>(100);
 
   const [isUserInfoEditModalOpen, setIsUserInfoEditModalOpen] = useState(false);
   const [isNSModalOpen, setIsNSModalOpen] = useState(false);
@@ -206,6 +207,19 @@ const Profile = () => {
     navigate({ search: `?tab=${selectedTab}` }, { replace: true });
   }, [selectedTab, navigate]);
 
+  // N 지수
+  useEffect(() => {
+    const profileUserId = String(location.pathname.split("/")[2]);
+
+    userApi.getNpointPercent(profileUserId as string)
+      .then((res) => {
+        const nPercent = res.data.data.userNPercent;
+        setRank(nPercent)
+      }).catch((err) => {
+      console.error('N지수 불러오기 실패: ', err)
+    })
+  })
+
   const buttonClass = (tabName: string) => `relative px-4 py-2 ${selectedTab === tabName ? "text-black underline underline-offset-8 decoration-[#FFDE2F] decoration-4 duration-300" : "text-gray-400"}`;
 
   const handleClick = async () => {
@@ -359,7 +373,7 @@ const Profile = () => {
               <button onClick={() => openFollowModal("팔로잉")}>{followings} followings</button>
               <div className="flex flex-col items-center mt-2">
                 <p className="text-yellow-500 font-bold">N 지수</p>
-                <p className="font-bold">상위 4%</p>
+                <p className="font-bold">상위 {rank}%</p>
               </div>
             </div>
           </div>
