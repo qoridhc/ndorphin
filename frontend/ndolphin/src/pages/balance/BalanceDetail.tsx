@@ -170,11 +170,11 @@ const BalanceDetail = () => {
           </div>
         </div>
 
-        <div className="grid grid-rows-3 gap-5">
+        {/* <div className="grid grid-rows-3 gap-5">
           {balanceList.map((balance) => (
             <BalanceCard key={balance.id} balance={balance} />
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );
