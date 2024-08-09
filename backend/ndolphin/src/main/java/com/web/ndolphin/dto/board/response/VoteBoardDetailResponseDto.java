@@ -13,4 +13,5 @@ public class VoteBoardDetailResponseDto extends BoardDto {
     private List<VoteInfo> voteInfos;
     private Long userVoteId;
     private Long userVoteContentId;
+    private List<? extends BoardDto> sideBoardDtos;
 }

@@ -224,4 +224,24 @@ public class UserController {
         return response;
     }
 
+    @Operation(summary = "nPoint Percent 조회", description = "사용자의 nPoint가 상위 몇 %인지 조회합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "유저 nPoint Percent 조회 성공",
+            content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+        @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
+            content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "500", description = "서버 오류입니다.",
+            content = @Content(schema = @Schema()))
+    })
+    @GetMapping("/{userId}/npoint-percent")
+    public ResponseEntity<ResponseDto> getNPointPercent(
+        @PathVariable Long userId
+    ) {
+
+        ResponseEntity<ResponseDto> response = userService.getNPointPercent(userId);
+
+        return response;
+    }
+
+
 }
