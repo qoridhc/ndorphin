@@ -219,11 +219,11 @@ public class BoardServiceImpl implements BoardService {
 
         return boards.stream()
             .map(board -> {
-                Long writer = board.getUser().getUserId();
+                Long writerId = board.getUser().getUserId();
                 Long boardId = board.getId();
 
                 boolean hasParticipated = hasUserParticipated(boardId, userId);
-                if (writer == userId) {
+                if (writerId == userId) {
                     hasParticipated = true;
                 }
 
