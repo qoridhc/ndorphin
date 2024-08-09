@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router";
 import CommentSettingsMenu from "../../components/if/CommentSettingMenu";
@@ -94,10 +94,16 @@ const IfDetail = () => {
   }, []);
 
   useEffect(() => {
-    if (updateBoardSubjectRef.current) {
+    if (updateBoardSubjectRef.current && updateBoardContentRef.current) {
       updateBoardSubjectRef.current.focus();
+      console.log("제목 : ", boardSubjectTextCount);
+      console.log("내용 : ", boardContentTextCount);
+      setBoardSubjectTextCount(updateBoardSubjectRef.current.value.length);
+      setBoardContentTextCount(updateBoardContentRef.current.value.length);
     }
+  }, [isUpdate]);
 
+  useEffect(() => {
     if (updateCommentTextareaRef.current) {
       const textarea = updateCommentTextareaRef.current;
       textarea.focus();
@@ -107,7 +113,7 @@ const IfDetail = () => {
 
       setUpdateCommentCount(textarea.value.length);
     }
-  }, [isUpdate, isCommentUpdate]);
+  }, [isCommentUpdate]);
 
   useEffect(() => {
     if (params.boardId !== undefined) {
@@ -205,7 +211,7 @@ const IfDetail = () => {
   };
 
   // 의견 수정
-  const handleUpdateComment = async (commentId: number, commentContent: string) => {
+  const handleUpdateComment = async (commentId: number) => {
     if (params.boardId !== undefined && updateCommentTextareaRef.current) {
       const data = {
         content: updateCommentTextareaRef.current.value,
@@ -242,20 +248,21 @@ const IfDetail = () => {
 
     formData.append(
       "request",
-      new Blob(
-        [
-          JSON.stringify({
-            subject: updateBoardSubject,
-            content: updateBoardContent,
-            boardType: "OPINION_BOARD",
-          }),
-        ],
-        { type: "application/json" }
-      )
+      JSON.stringify({
+        subject: updateBoardSubject,
+        content: updateBoardContent,
+        boardType: "OPINION_BOARD",
+      })
     );
+
+    if (file && ifBoardData?.fileNames) {
+      formData.append("deleteFiles", JSON.stringify(ifBoardData.fileNames));
+      console.log("삭제할 : ", ifBoardData.fileNames);
+    }
 
     if (file) {
       formData.append("files", file);
+      console.log("수정할 : ", file);
     }
 
     try {
@@ -263,6 +270,7 @@ const IfDetail = () => {
         const response = await boardApi.update(formData, params.boardId);
         if (response.status === 200) {
           readBoardData(params.boardId);
+          setIsUpdate(false);
         }
       }
     } catch (error) {
@@ -474,7 +482,7 @@ const IfDetail = () => {
                               <button
                                 className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${updateCommentCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`}
                                 disabled={updateCommentCount === 0}
-                                onClick={() => handleUpdateComment(comment.commentId, comment.content)}>
+                                onClick={() => handleUpdateComment(comment.commentId)}>
                                 수정
                               </button>
                               <button className="px-5 py-1 rounded-md text-sm text-[#565656] font-bold border-2 border-gray-300 duration-300 hover:bg-gray-300" onClick={() => setIsCommentUpdate(0)}>
