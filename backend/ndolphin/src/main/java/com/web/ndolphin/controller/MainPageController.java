@@ -55,7 +55,7 @@ public class MainPageController {
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
-    
+
     @Operation(summary = "릴레이 데이터 조회", description = "지정된 기간 동안의 릴레이 게시판 데이터를 조회합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "릴레이 데이터 조회 성공",
