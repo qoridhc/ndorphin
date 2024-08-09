@@ -27,16 +27,13 @@ interface Props {
 
 const BalanceCard = ({ balance }: Props) => {
   const navigate = useNavigate();
-  const voteGrids = ["grid-cols-2", "grid-cols-3", "grid-rows-2 grid-cols-2"];
-  const voteColors = ["border-[#E4AE3A]", "border-[#4298B4]", "border-[#88619A]", "border-[#33A474]"];
-  const voteLineClamp = ["line-clamp-2", "line-clamp-2", "line-clamp-1"];
   const goToDetail = (id: number) => {
     navigate(`/balancedetail/${id}`);
   };
 
   return (
     <div className="p-5 border-solid border-[#565656] border-[1px] rounded-lg grid gap-3 cursor-pointer duration-300 ease-out hover:-translate-y-3 hover:shadow-lg" onClick={() => goToDetail(balance.id)}>
-      <img className="aspect-[5/3] object-cover" src="/assets/relay/relayStartSample3.png" alt="" />
+      <img className="aspect-[5/3] object-cover" src={`${balance.fileUrls[0]}`} alt="" />
 
       <div className="grid gap-1">
         <div className="flex items-center">
