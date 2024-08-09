@@ -143,7 +143,6 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
 
     try {
       const response = await userApi.update(userId, formData);
-      console.log(response.data);
       if (response.status === 200) {
         userApi
           .getUserInfo('4')
