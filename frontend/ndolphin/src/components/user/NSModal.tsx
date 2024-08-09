@@ -1,5 +1,7 @@
 import React, { useState, useEffect, MouseEvent } from "react";
 import userApi from "../../api/userApi";
+import { IoMdClose } from "react-icons/io";
+
 
 interface NSModalProps {
   isOpen: boolean;
@@ -96,7 +98,7 @@ const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose, mode }) => {
         <div className="p-4 border-b flex justify-between items-center relative">
           <h2 className="text-lg font-semibold text-center flex-grow">N/S 선택 미니 설문조사</h2>
           {mode === 'profile' && (
-            <button className=" absolute top-4 right-6 text-gray-500 hover:text-gray-700" onClick={onClose}>X</button>
+            <IoMdClose className="absolute right-5" onClick={onClose} />
           )}
         </div>
         <div className="p-6 text-center">

@@ -103,7 +103,7 @@ public class FileInfoServiceImpl implements FileInfoService {
         List<FileInfo> fileInfos = new ArrayList<>();
         // 파일 정보 검색
         for (String s : fileNamesToDelete) {
-            fileInfos.add(fileInfoRepository.findByFileName(s));
+            fileInfos.add(fileInfoRepository.findByEntityIdAndFileName(entityId, s));
         }
 
         // 파일 정보 삭제

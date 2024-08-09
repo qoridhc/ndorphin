@@ -19,7 +19,9 @@ import com.web.ndolphin.dto.vote.VoteInfo;
 import com.web.ndolphin.dto.voteContent.UserVoteContent;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class BoardMapper {
 
     // 공통된 Entity -> DTO 변환 로직
@@ -130,6 +132,8 @@ public class BoardMapper {
         opinionBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
         opinionBoardDetailResponseDto.getFileNames().add(fileName);
         opinionBoardDetailResponseDto.getFileUrls().add(fileUrl);
+
+        log.info("opinionBoardDetailResponseDto = {}", opinionBoardDetailResponseDto);
 
         return opinionBoardDetailResponseDto;
     }

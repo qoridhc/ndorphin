@@ -19,7 +19,7 @@ interface BookPageCoverProps {
     reactionTypeCounts: {};
     userReactionId: null;
     userReactionType: string;
-    fileNames:any[],
+    fileUrls: any[];
   }[];
   bookId: any;
   isDeleteOpen: boolean;
@@ -29,14 +29,15 @@ interface BookPageCoverProps {
   handleDelete: () => void;
 }
 
+
 const BookPageCover = React.forwardRef<HTMLDivElement, BookPageCoverProps>(({ firstPage, bookId, handleDelete }, ref: ForwardedRef<HTMLDivElement>) => {
   const [contentFileUrl, setContentFileUrl] = useState("");
   const [subject, setSubject] = useState("");
-
-    
+  
+  
   useEffect(() => {
     if (firstPage && firstPage.length > 0) {
-      setContentFileUrl(firstPage[0].fileNames[0]);
+      setContentFileUrl(firstPage[0].fileUrls[0]);
       setSubject(firstPage[0].subject);
     }
   }, [firstPage]);

@@ -142,24 +142,49 @@ public class BoardController {
         @ApiResponse(responseCode = "500", description = "서버 오류입니다.",
             content = @Content(schema = @Schema()))
     })
+//    @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<ResponseDto> updateBoard(
+//        @Parameter(description = "수정할 게시글 ID", required = true)
+//        @PathVariable("boardId") Long boardId,
+//
+//        @Parameter(description = "수정할 게시글 정보", required = true)
+//        @RequestPart(name = "request") BoardRequestDto boardRequestDto,
+//
+//        @Parameter(description = "첨부 파일 목록", required = false)
+//        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
+//
+//        @Parameter(description = "삭제할 파일 목록 JSON", required = false)
+//        @RequestParam(name = "deleteFiles", required = false) String deleteFilesJson)
+//        throws IOException {
+//
+//        System.out.println("컨트롤러 들어옴");
+//
+//        List<String> fileNamesToDelete = null;
+//        if (deleteFilesJson != null) {
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            fileNamesToDelete = objectMapper.readValue(deleteFilesJson, new TypeReference<List<String>>() {});
+//        }
+//
+//        ResponseEntity<ResponseDto> response = boardService.updateBoard(boardId, boardRequestDto, multipartFiles, fileNamesToDelete);
+//        return response;
+//    }
     @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDto> updateBoard(
-        @Parameter(description = "수정할 게시글 ID", required = true)
-        @PathVariable("boardId") Long boardId,
-        @Parameter(description = "수정할 게시글 정보", required = true)
-        @RequestPart(name = "request") BoardRequestDto boardRequestDto,
-        @Parameter(description = "첨부 파일 목록", required = false)
-        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
-        @Parameter(description = "삭제할 파일 목록 JSON", required = false)
-        @RequestParam(name = "deleteFiles", required = false) String deleteFilesJson)
-        throws IOException {
+            @Parameter(description = "수정할 게시글 ID", required = true)
+            @PathVariable("boardId") Long boardId,
+            @Parameter(description = "수정할 게시글 정보", required = true)
+            @RequestPart(name = "request") BoardRequestDto boardRequestDto,
+            @Parameter(description = "첨부 파일 목록", required = false)
+            @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
+            @Parameter(description = "삭제할 파일 목록 JSON", required = false)
+            @RequestPart(name = "deleteFiles", required = false) List<String> deleteFiles) // 변경된 부분
+            throws IOException {
 
-        List<String> fileNamesToDelete = null;
-        if (deleteFilesJson != null) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            fileNamesToDelete = objectMapper.readValue(deleteFilesJson, new TypeReference<List<String>>() {});
-        }
+        // @RequestPart로 변경하면, deleteFilesJson 변수를 JSON 리스트로 바로 받을 수 있습니다.
+        // ObjectMapper로 변환 작업이 필요 없습니다.
+        List<String> fileNamesToDelete = deleteFiles;
 
+        // 기존 로직 유지
         ResponseEntity<ResponseDto> response = boardService.updateBoard(boardId, boardRequestDto, multipartFiles, fileNamesToDelete);
         return response;
     }
