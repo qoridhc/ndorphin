@@ -19,6 +19,7 @@ import com.web.ndolphin.dto.npoint.resopnse.NPointResponseDto;
 import com.web.ndolphin.dto.user.UserDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
 import com.web.ndolphin.dto.user.response.BestNResponseDto;
+import com.web.ndolphin.dto.user.response.UserNRankResponseDto;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.mapper.FavoriteMapper;
 import com.web.ndolphin.mapper.NPointMapper;
@@ -367,6 +368,44 @@ public class UserServiceImpl implements UserService {
             return ResponseDto.databaseError(e.getMessage());
         }
     }
+
+    @Override
+    public ResponseEntity<ResponseDto> getNPointPercent(Long userId) {
+        try {
+
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+
+            List<Long> scores = userRepository.findAll().stream()
+                .map(User::getNPoint)
+                .sorted()
+                .toList();
+
+            // 나보다 높은 사람 수 
+            long higherCount = scores.stream()
+                .filter(score -> score > user.getNPoint())
+                .count();
+
+            double percentile = (double) (higherCount + 1) / scores.size() * 100;
+
+            int userPercent = (int) percentile;
+
+            UserNRankResponseDto responseDto = new UserNRankResponseDto();
+
+            responseDto.setUserNPercent(userPercent);
+
+            ResponseDto<UserNRankResponseDto> responseBody = new ResponseDto<>(
+                ResponseCode.SUCCESS,
+                ResponseMessage.SUCCESS,
+                responseDto
+            );
+
+            return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+        } catch (Exception e) {
+            return ResponseDto.databaseError(e.getMessage());
+        }
+    }
+
 
     @Override
     public List<BestNResponseDto> getSortedUsersByNPoint(boolean flag) {
