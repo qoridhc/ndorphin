@@ -28,6 +28,7 @@ import com.web.ndolphin.dto.voteContent.UserVoteContent;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.mapper.VoteContentMapper;
 import com.web.ndolphin.repository.BoardRepository;
+import com.web.ndolphin.repository.BoardViewRepository;
 import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.FavoriteRepository;
 import com.web.ndolphin.repository.ReactionRepository;
@@ -65,6 +66,7 @@ public class BoardServiceImpl implements BoardService {
 
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
+    private final BoardViewRepository boardViewRepository;
     private final CommentRepository commentRepository;
     private final FavoriteRepository favoriteRepository;
     private final ReactionRepository reactionRepository;
@@ -213,10 +215,15 @@ public class BoardServiceImpl implements BoardService {
 
         return boards.stream()
             .map(board -> {
+                Long userId = board.getUser().getUserId();
                 Long boardId = board.getId();
-                boolean hasParticipated = hasUserParticipated(boardId, board.getUser().getUserId());
-                boolean isFavorite = favoriteRepository.existsByBoardIdAndUserId(boardId,
-                    board.getUser().getUserId());
+
+                boolean hasParticipated = hasUserParticipated(boardId, userId);
+                if (board.getUser().getUserId() == userId) {
+                    hasParticipated = true;
+                }
+
+                boolean isFavorite = favoriteRepository.existsByBoardIdAndUserId(boardId, userId);
                 String fileUrl = getFileUrl(boardId, EntityType.POST);
                 String fileName = getFileName(boardId, EntityType.POST);
                 Long commentCount = commentRepository.countCommentsByBoardId(boardId);
@@ -290,6 +297,8 @@ public class BoardServiceImpl implements BoardService {
         String fileUrl = getFileUrl(board.getId(), EntityType.POST);
         String fileName = getFileName(board.getId(), EntityType.POST);
 
+//        boardViewRepository
+
         return switch (board.getBoardType()) {
             case VOTE_BOARD -> getVoteBoardDetail(board, userId, fileUrl, fileName);
             case OPINION_BOARD -> getOpinionBoardDetail(board, userId, fileUrl, fileName);
@@ -310,6 +319,9 @@ public class BoardServiceImpl implements BoardService {
 
         UserVoteContent userVoteContent = voteRepository.findVoteByBoardIdAndUserId(
             board.getId(), userId).orElse(null);
+
+        List<Board> otherBoards = boardRepository.findTop3NotViewedByUserAndBoardType(userId,
+            BoardType.VOTE_BOARD);
 
         return BoardMapper.toVoteBoardDetailResponseDto(board, fileUrl, fileName, voteInfos,
             totalVotes, userVoteContent);
