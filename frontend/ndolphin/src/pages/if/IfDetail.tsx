@@ -206,13 +206,13 @@ const IfDetail = () => {
 
   // 의견 수정
   const handleUpdateComment = async (commentId: number, commentContent: string) => {
+    const formData = new FormData();
+
     if (params.boardId !== undefined && updateCommentTextareaRef.current) {
-      const data = {
-        content: updateCommentTextareaRef.current.value,
-      };
+      formData.append("content", updateCommentTextareaRef.current.value);
 
       try {
-        const response = await commentApi.update(params.boardId, commentId, data);
+        const response = await commentApi.update(params.boardId, commentId, formData);
         if (response.status === 200) {
           readBoardData(params.boardId);
           setIsCommentUpdate(0);

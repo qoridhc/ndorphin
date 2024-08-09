@@ -29,8 +29,8 @@ function Book({ book }: BookProps) {
   const [summary, setSummary] = useState("");
   const [showSummary, setShowSummary] = useState(false);
   const navigate = useNavigate();
-  const fullHeart = "/assets/relay/fullheart.png";
-  const emptyHeart = "/assets/relay/emptyheart.png";
+  const fullHeart = "/assets/relay/fullHeart.png";
+  const emptyHeart = "/assets/relay/emptyHeart.png";
 
   const goBookDetail = (id: number) => {
     navigate(`/relaybookdetail/${id}`);
@@ -62,7 +62,7 @@ function Book({ book }: BookProps) {
             onClick={() => {
               setIsLike(false);
             }}
-            src="/assets/relay/fullheart.png"
+            src="/assets/relay/fullHeart.png"
             className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer"
             alt="#"
           />
