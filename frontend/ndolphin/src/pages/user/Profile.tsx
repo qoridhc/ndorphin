@@ -49,10 +49,10 @@ const Profile = () => {
   const [followingsList, setFollowingsList] = useState<UserInfo[]>([]);
   const [followersList, setFollowersList] = useState<UserInfo[]>([]);
 
-  const userId = localStorage.getItem('userId')
+  const userId = String(localStorage.getItem('userId'))
 
   useEffect(() => {
-    const profileUserId = location.pathname.split('/')[2];
+    const profileUserId = String(location.pathname.split('/')[2]);
     if (profileUserId === userId) {
       setIsOwnProfile(true);
       userApi.getUserInfo(profileUserId)
@@ -93,6 +93,15 @@ const Profile = () => {
             } else {
               setProfileImage("/assets/user/profile.png");
             }
+          }
+        })
+        .then(async () => {
+          try {
+            const followingList = await userApi.getFollowing(userId)
+            const isFollowing = followingList.data.data.some((follow: any) => String(follow.followingId) === profileUserId);
+            setIsFollowing(isFollowing)
+          } catch (error) {
+            console.error('팔로잉 정보 조회 실패: ', error)
           }
         })
         .catch(error => {
@@ -161,7 +170,8 @@ const Profile = () => {
       }
     };
 
-    getfollowList(userId as string);
+    const profileUserId = location.pathname.split('/')[2];
+    getfollowList(profileUserId as string);
   }, []);
 
   // 탭 정보를 URL쿼리에 저장(뒤로가거나 새로고침해도 상태 유지 가능)
@@ -172,13 +182,12 @@ const Profile = () => {
   const buttonClass = (tabName: string) => `relative px-4 py-2 ${selectedTab === tabName ? "text-black underline underline-offset-8 decoration-[#FFDE2F] decoration-4 duration-300" : "text-gray-400"}`;
 
   const handleClick = async () => {
-    
     const followingId = location.pathname.split("/")[2];
     
     if (isFollowing) {
       // 언팔로우 요청
       try {
-        await userApi.unFollow(userId as string, followingId);
+        await userApi.unFollow(userId, followingId);
         setIsFollowing(!isFollowing);
       } catch (error) {
         console.error('언팔로우 에러: ', error)
@@ -186,7 +195,7 @@ const Profile = () => {
     } else {
       // 팔로우 요청
       try {
-        await userApi.follow(userId as string, followingId);
+        await userApi.follow(userId, followingId);
         setIsFollowing(!isFollowing);
       } catch (error) {
         console.error('팔로우 에러: ', error)
@@ -244,6 +253,35 @@ const Profile = () => {
   const closeNSModal = () => {
     setIsNSModalOpen(false);
     window.location.href = window.location.href;
+  };
+
+  const handleFollowToggle = async (followUserId: number) => {
+    try {
+      const followingList = await userApi.getFollowing(userId)
+      const isFollowing = followingList.data.data.some((follow: any) => String(follow.followingId) === String(followUserId));
+      if (isFollowing) {
+        await userApi.unFollow(userId, followUserId.toString());
+      } else {
+        await userApi.follow(userId, followUserId.toString());
+      }
+  
+      // 상태 업데이트
+      setIsFollowing(!isFollowing);
+  
+      // FollowList 모달의 리스트도 업데이트
+      const updatedFollowingsList = followingsList.map((item) => 
+        item.id === followUserId ? { ...item, isFollowing: !item.isFollowing } : item
+      );
+      const updatedFollowersList = followersList.map((item) => 
+        item.id === followUserId ? { ...item, isFollowing: !item.isFollowing } : item
+      );
+      
+      setFollowingsList(updatedFollowingsList);
+      setFollowersList(updatedFollowersList);
+  
+    } catch (error) {
+      console.error('팔로우 상태 변경 에러: ', error);
+    }
   };
 
   return (
@@ -348,7 +386,7 @@ const Profile = () => {
       <div>{renderContent()}</div>
 
       <TopButton />
-      <FollowList isOpen={isFollowModalOpen} onClose={() => setIsFollowModalOpen(false)} activeTab={activeFollowTab} setActiveTab={setActiveFollowTab} followingsList={followingsList} followersList={followersList} />
+      <FollowList isOpen={isFollowModalOpen} onClose={() => setIsFollowModalOpen(false)} activeTab={activeFollowTab} setActiveTab={setActiveFollowTab} followingsList={followingsList} followersList={followersList} onFollowToggle={handleFollowToggle} />
       {isUserInfoEditModalOpen && <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onNext={() => closeUserInfoEditModal()} setProfileImage={setProfileImage} onClose={closeUserInfoEditModal} />}
       {isNSModalOpen && <NSModal isOpen={isNSModalOpen} onClose={closeNSModal} mode={"profile"} />}
     </div>
