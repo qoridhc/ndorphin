@@ -212,6 +212,8 @@ const IfDetail = () => {
 
   // 의견 수정
   const handleUpdateComment = async (commentId: number) => {
+    const formData = new FormData();
+
     if (params.boardId !== undefined && updateCommentTextareaRef.current) {
       formData.append("content", updateCommentTextareaRef.current.value);
 
