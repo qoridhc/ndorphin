@@ -36,5 +36,7 @@ public interface UserService {
 
     ResponseEntity<ResponseDto> deleteNPoint(Long userId, NPointDeleteRequestDto dto);
 
+    ResponseEntity<ResponseDto> getNPointPercent(Long userId);
+
     List<BestNResponseDto> getSortedUsersByNPoint(boolean flag);
 }
