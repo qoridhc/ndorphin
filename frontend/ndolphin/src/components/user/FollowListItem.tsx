@@ -22,6 +22,7 @@ const FollowListItem: React.FC<FollowListItemProps> = ({ follow, onFollowToggle,
     if (myUserId) {
       setCheck(myUserId);
     }
+    console.log(follow.isFollowing);
   })
 
   const shiftProfile = () => {

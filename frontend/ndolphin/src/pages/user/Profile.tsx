@@ -160,7 +160,7 @@ const Profile = () => {
               list.map(async (item) => {
                 const userFollowerResponse = await userApi.getUserInfo(String(item.followerId));
                 const userFollowerResponseProfileImage = userFollowerResponse.data.data.profileImage;
-                const isFollowing = followingList.data.data.some((follow: any) => follow.followingId === item.followingId);
+                const isFollowing = followingList.data.data.some((follow: any) => follow.followingId === userFollowerResponse.data.data.userId);
 
                 if (userFollowerResponseProfileImage) {
                   return {
