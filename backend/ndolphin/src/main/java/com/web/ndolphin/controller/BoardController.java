@@ -142,32 +142,7 @@ public class BoardController {
         @ApiResponse(responseCode = "500", description = "서버 오류입니다.",
             content = @Content(schema = @Schema()))
     })
-//    @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<ResponseDto> updateBoard(
-//        @Parameter(description = "수정할 게시글 ID", required = true)
-//        @PathVariable("boardId") Long boardId,
-//
-//        @Parameter(description = "수정할 게시글 정보", required = true)
-//        @RequestPart(name = "request") BoardRequestDto boardRequestDto,
-//
-//        @Parameter(description = "첨부 파일 목록", required = false)
-//        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
-//
-//        @Parameter(description = "삭제할 파일 목록 JSON", required = false)
-//        @RequestParam(name = "deleteFiles", required = false) String deleteFilesJson)
-//        throws IOException {
-//
-//        System.out.println("컨트롤러 들어옴");
-//
-//        List<String> fileNamesToDelete = null;
-//        if (deleteFilesJson != null) {
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            fileNamesToDelete = objectMapper.readValue(deleteFilesJson, new TypeReference<List<String>>() {});
-//        }
-//
-//        ResponseEntity<ResponseDto> response = boardService.updateBoard(boardId, boardRequestDto, multipartFiles, fileNamesToDelete);
-//        return response;
-//    }
+
     @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDto> updateBoard(
             @Parameter(description = "수정할 게시글 ID", required = true)
