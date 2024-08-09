@@ -7,6 +7,8 @@ import lombok.Setter;
 @Getter
 public class NotificationRequestDto {
 
-  private String content;
+    private String content;
+
+    private Long writerId;
 
 }
