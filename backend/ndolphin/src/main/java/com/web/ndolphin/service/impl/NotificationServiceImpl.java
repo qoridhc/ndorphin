@@ -30,12 +30,11 @@ public class NotificationServiceImpl implements NotificationService {
     public ResponseEntity<ResponseDto> create(Long userId, NotificationRequestDto dto) {
 
         try {
-            User user = userRepository.findByUserId(userId);
-            User writer = userRepository.findByUserId(dto.getWriterId());
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
 
-            if (user == null) {
-                return ResponseDto.databaseError();
-            }
+            User writer = userRepository.findById(dto.getWriterId())
+                .orElseThrow(() -> new IllegalArgumentException("The writerId does not exist: " + dto.getWriterId()));
 
             Notification notification = NotificationMapper.toEntity(user, writer, dto);
 
@@ -43,7 +42,7 @@ public class NotificationServiceImpl implements NotificationService {
 
             return ResponseDto.success();
         } catch (Exception e) {
-            return ResponseDto.databaseError();
+            return ResponseDto.databaseError(e.getMessage());
         }
     }
 
@@ -71,6 +70,7 @@ public class NotificationServiceImpl implements NotificationService {
 
             return ResponseEntity.status(HttpStatus.OK).body(responseDto);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseDto.databaseError();
         }
     }
