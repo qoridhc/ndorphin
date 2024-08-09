@@ -16,7 +16,6 @@ const IfCardList: React.FC = () => {
         const currentUserId = Number(location.pathname.split("/")[2]);
         const filteredList = getOpinionBoardList.filter((item: any) => item.user.userId === currentUserId);
         setMyOpinionBoardList(filteredList);
-        console.log(filteredList)
       })
       .catch((error) => {
         console.error('만약에 게시글 불러오기 실패: ', error)
@@ -30,7 +29,7 @@ const IfCardList: React.FC = () => {
   return (
     <div>
       {myOpinionBoardList.length === 0 ? (
-        <div>내가 쓴 만약에가 없습니다</div>
+        <div className="mt-40 text-center text-3xl font-bold">목록이 비어있습니다</div>
       ) : (
         <div className="px-44 py-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
           {myOpinionBoardList.map((item) => (

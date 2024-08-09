@@ -15,6 +15,7 @@ interface FollowListItemProps {
 
 const FollowListItem: React.FC<FollowListItemProps> = ({ follow, onFollowToggle, onClose }) => {
   const [check, setCheck] = useState<number | null>(null);
+
   
   useEffect(() => {
     const myUserId = Number(localStorage.getItem('userId'));
@@ -24,7 +25,6 @@ const FollowListItem: React.FC<FollowListItemProps> = ({ follow, onFollowToggle,
   })
 
   const shiftProfile = () => {
-    console.log(follow)
     window.location.href = `/profile/${follow.id}`
     onClose();
   }
