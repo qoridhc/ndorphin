@@ -42,6 +42,7 @@ const RelayBookList = () => {
 
   const goToDetail = (boardId: number) => {
     navigate(`/relaybookdetail/${boardId}`);
+    console.log(boardId)
   };
 
   return (
@@ -54,14 +55,23 @@ const RelayBookList = () => {
             <div className="relative">
               <div className="pt-2">
                 <div className="relative">
-                  {isLike ? (
+                  {/* {isLike ? (
                     <img className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer" onClick={() => setIsLike(false)} src="/assets/relay/fullheart.png" alt="#" />
                   ) : (
-                    <img className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer" onClick={() => setIsLike(true)} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} src={isHovered ? fullHeart : emptyHeart} alt="#" />
-                  )}{" "}
-                  <img className="hover:cursor-pointer w-full h-[20rem] rounded-md" src={item.fileUrls[0]} alt="#" />
+                    <img
+                      className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer"
+                      onClick={() => setIsLike(true)}
+                      onMouseEnter={() => setIsHovered(true)}
+                      onMouseLeave={() => setIsHovered(false)}
+                      src={isHovered ? fullHeart : emptyHeart}
+                      alt="#"
+                    />
+                  )}{" "} */}
+                  <img className="hover:cursor-pointer w-full h-[20rem] rounded-md" src={item.fileUrls[0]} alt="#" onClick={() => goToDetail(item.id)} />
                 </div>
-                <span onClick={() => goToDetail(item.id)} className="hover:cursor-pointer font-bold text-lg">{item.subject}</span>
+                <span onClick={() => goToDetail(item.id)} className="hover:cursor-pointer font-bold text-lg">
+                  {item.subject}
+                </span>
                 <button onClick={handleAISummary} className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border-2 border-solid border-zinc-300 font-bold text-zinc-800 mt-2">
                   <img src="/assets/aiSummaryButton.png" className="w-5" alt="#" />
                   <p className="text-xs">AI 요약하기</p>
