@@ -14,6 +14,7 @@ import userApi from "../../api/userApi";
 interface Follow {
   followId: number;
   followingId: number;
+  followerId: number;
   createdAt: string;
 }
 
@@ -48,6 +49,7 @@ const Profile = () => {
   const [followers, setFollowers] = useState<number>(0);
   const [followingsList, setFollowingsList] = useState<UserInfo[]>([]);
   const [followersList, setFollowersList] = useState<UserInfo[]>([]);
+  const [myFollow, setMyFollow] = useState(false);
 
   const userId = String(localStorage.getItem('userId'))
 
@@ -99,7 +101,7 @@ const Profile = () => {
           try {
             const followingList = await userApi.getFollowing(userId)
             const isFollowing = followingList.data.data.some((follow: any) => String(follow.followingId) === profileUserId);
-            setIsFollowing(isFollowing)
+            setMyFollow(isFollowing);
           } catch (error) {
             console.error('팔로잉 정보 조회 실패: ', error)
           }
@@ -119,32 +121,58 @@ const Profile = () => {
   // 팔로우 정보 받아오기
   useEffect(() => {
     const getfollowList = async (userId: string) => {
+      const profileUserId = Number(location.pathname.split("/")[2]);
       try {
         const followingList = await userApi.getFollowing(userId);
-        const followerList = await userApi.getFollower(userId);
+        const followerList = await userApi.getFollower(profileUserId.toString());
         if (followingList.data.code === 'SU' && followerList.data.code === 'SU') {
 
           const followingListData = followingList.data.data as Follow[];
           const followerListData = followerList.data.data as Follow[];
 
-          const fetchUserInfos = async (list: Follow[]): Promise<UserInfo[]> => {
+          const fetchUserFollowingInfos = async (list: Follow[]): Promise<UserInfo[]> => {
             return Promise.all(
               list.map(async (item) => {
-                const userInfoResponse = await userApi.getUserInfo(item.followingId.toString());
-                const userInfoResponseProfileImage = userInfoResponse.data.data.profileImage;
+                const userFollowingResponse = await userApi.getUserInfo(String(item.followingId));
+                const userFollowingResponseProfileImage = userFollowingResponse.data.data.profileImage;
                 const isFollowing = followingList.data.data.some((follow: any) => follow.followingId === item.followingId);
 
-                if (userInfoResponseProfileImage) {
+                if (userFollowingResponseProfileImage) {
                   return {
                     id: item.followingId,
-                    nickName: userInfoResponse.data.data.nickName,
-                    profileImage: userInfoResponse.data.data.profileImage,
+                    nickName: userFollowingResponse.data.data.nickName,
+                    profileImage: userFollowingResponse.data.data.profileImage,
                     isFollowing,
                   };
                 } else {
                   return {
                     id: item.followingId,
-                    nickName: userInfoResponse.data.data.nickName,
+                    nickName: userFollowingResponse.data.data.nickName,
+                    profileImage: "/assets/user/profile.png",
+                    isFollowing,
+                  };
+                };
+              })
+            );
+          };
+          const fetchUserFollowerInfos = async (list: Follow[]): Promise<UserInfo[]> => {
+            return Promise.all(
+              list.map(async (item) => {
+                const userFollowerResponse = await userApi.getUserInfo(String(item.followerId));
+                const userFollowerResponseProfileImage = userFollowerResponse.data.data.profileImage;
+                const isFollowing = followingList.data.data.some((follow: any) => follow.followingId === userFollowerResponse.data.data.userId);
+
+                if (userFollowerResponseProfileImage) {
+                  return {
+                    id: item.followerId,
+                    nickName: userFollowerResponse.data.data.nickName,
+                    profileImage: userFollowerResponse.data.data.profileImage,
+                    isFollowing,
+                  };
+                } else {
+                  return {
+                    id: item.followerId,
+                    nickName: userFollowerResponse.data.data.nickName,
                     profileImage: "/assets/user/profile.png",
                     isFollowing,
                   };
@@ -153,15 +181,14 @@ const Profile = () => {
             );
           };
 
-          const followingsInfos = await fetchUserInfos(followingListData);
-          const followersInfos = await fetchUserInfos(followerListData);
+          const followingsInfos = await fetchUserFollowingInfos(followingListData);
+          const followersInfos = await fetchUserFollowerInfos(followerListData);
 
           setFollowings(followingList.data.data.length);
           setFollowers(followerList.data.data.length);
           setFollowingsList(followingsInfos);
           setFollowersList(followersInfos);
 
-          const profileUserId = Number(location.pathname.split("/")[2]);
           const isFollow = followingList.data.data.some((follow: any) => follow.followingId === profileUserId);
           setIsFollowing(isFollow);
         }
@@ -184,11 +211,11 @@ const Profile = () => {
   const handleClick = async () => {
     const followingId = location.pathname.split("/")[2];
     
-    if (isFollowing) {
+    if (myFollow) {
       // 언팔로우 요청
       try {
         await userApi.unFollow(userId, followingId);
-        setIsFollowing(!isFollowing);
+        setMyFollow(!myFollow);
       } catch (error) {
         console.error('언팔로우 에러: ', error)
       }
@@ -196,11 +223,12 @@ const Profile = () => {
       // 팔로우 요청
       try {
         await userApi.follow(userId, followingId);
-        setIsFollowing(!isFollowing);
+        setMyFollow(!myFollow);
       } catch (error) {
         console.error('팔로우 에러: ', error)
       }
     }
+    window.location.href = window.location.href;
   };
 
   const openFollowModal = (tab: string) => {
@@ -297,10 +325,10 @@ const Profile = () => {
             {!isOwnProfile && (
               <button
                 className={`ms-10 text-xs w-auto h-auto p-2 rounded-lg border-none shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 ${
-                  isFollowing ? "bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-300" : "bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-300"
+                  myFollow ? "bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-300" : "bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-300"
                 }`}
                 onClick={handleClick}>
-                {isFollowing ? "팔로잉" : "팔로우"}
+                {myFollow ? "팔로잉" : "팔로우"}
               </button>
             )}
 
@@ -321,14 +349,14 @@ const Profile = () => {
           </h2>
           <div className="flex mt-2 items-center space-x-10">
             <div className="flex flex-col items-center">
-              <button onClick={() => openFollowModal("팔로워")}>{ followers } followers</button>
+              <button onClick={() => openFollowModal("팔로워")}>{followers} followers</button>
               <div className="flex flex-col items-center mt-2">
                 <p className="text-yellow-500 font-bold">N 포인트</p>
                 <p className="font-bold">{npoint}</p>
               </div>
             </div>
             <div className="flex flex-col items-center">
-              <button onClick={() => openFollowModal("팔로잉")}>{ followings } followings</button>
+              <button onClick={() => openFollowModal("팔로잉")}>{followings} followings</button>
               <div className="flex flex-col items-center mt-2">
                 <p className="text-yellow-500 font-bold">N 지수</p>
                 <p className="font-bold">상위 4%</p>
@@ -382,11 +410,18 @@ const Profile = () => {
       </div>
 
       {/* 콘텐츠 공간 */}
-      {/* 통신 예정, 이미지 안 뜨는게 정상 */}
-      <div>{renderContent()}</div>
+      <div className="">{renderContent()}</div>
 
       <TopButton />
-      <FollowList isOpen={isFollowModalOpen} onClose={() => setIsFollowModalOpen(false)} activeTab={activeFollowTab} setActiveTab={setActiveFollowTab} followingsList={followingsList} followersList={followersList} onFollowToggle={handleFollowToggle} />
+      <FollowList
+        isOpen={isFollowModalOpen}
+        onClose={() => setIsFollowModalOpen(false)}
+        activeTab={activeFollowTab}
+        setActiveTab={setActiveFollowTab}
+        followingsList={followingsList}
+        followersList={followersList}
+        onFollowToggle={handleFollowToggle}
+      />
       {isUserInfoEditModalOpen && <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onNext={() => closeUserInfoEditModal()} setProfileImage={setProfileImage} onClose={closeUserInfoEditModal} />}
       {isNSModalOpen && <NSModal isOpen={isNSModalOpen} onClose={closeNSModal} mode={"profile"} />}
     </div>

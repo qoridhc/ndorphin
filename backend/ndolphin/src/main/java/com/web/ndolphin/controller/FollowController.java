@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,7 +41,7 @@ public class FollowController {
     @PostMapping("/{userId}")
     public ResponseEntity<ResponseDto> follow(
         @Parameter(description = "팔로우할 사용자의 ID", required = true) @PathVariable Long userId,
-        @Parameter(description = "팔로우 요청 데이터", required = true) @RequestBody FollowRequestDto dto) {
+        @Parameter(description = "팔로우 요청 데이터", required = true) @Valid @RequestBody FollowRequestDto dto) {
 
         ResponseEntity<ResponseDto> response = followService.createFollow(userId, dto);
 
@@ -95,7 +96,7 @@ public class FollowController {
     @DeleteMapping("/{followerId}")
     public ResponseEntity<ResponseDto> deleteFollow(
         @Parameter(description = "팔로워의 ID", required = true) @PathVariable Long followerId,
-        @Parameter(description = "언팔로우할 상대방 유저 ID", required = true) @RequestBody FollowRequestDto dto
+        @Parameter(description = "언팔로우할 상대방 유저 ID", required = true) @Valid @RequestBody FollowRequestDto dto
     ) {
 
         ResponseEntity<ResponseDto> response = followService.deleteFollow(followerId, dto.getFollowingId());

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router";
 import CommentSettingsMenu from "../../components/if/CommentSettingMenu";
@@ -94,10 +94,16 @@ const IfDetail = () => {
   }, []);
 
   useEffect(() => {
-    if (updateBoardSubjectRef.current) {
+    if (updateBoardSubjectRef.current && updateBoardContentRef.current) {
       updateBoardSubjectRef.current.focus();
+      console.log("제목 : ", boardSubjectTextCount);
+      console.log("내용 : ", boardContentTextCount);
+      setBoardSubjectTextCount(updateBoardSubjectRef.current.value.length);
+      setBoardContentTextCount(updateBoardContentRef.current.value.length);
     }
+  }, [isUpdate]);
 
+  useEffect(() => {
     if (updateCommentTextareaRef.current) {
       const textarea = updateCommentTextareaRef.current;
       textarea.focus();
@@ -107,7 +113,7 @@ const IfDetail = () => {
 
       setUpdateCommentCount(textarea.value.length);
     }
-  }, [isUpdate, isCommentUpdate]);
+  }, [isCommentUpdate]);
 
   useEffect(() => {
     if (params.boardId !== undefined) {
@@ -205,9 +211,7 @@ const IfDetail = () => {
   };
 
   // 의견 수정
-  const handleUpdateComment = async (commentId: number, commentContent: string) => {
-    const formData = new FormData();
-
+  const handleUpdateComment = async (commentId: number) => {
     if (params.boardId !== undefined && updateCommentTextareaRef.current) {
       formData.append("content", updateCommentTextareaRef.current.value);
 
@@ -242,27 +246,29 @@ const IfDetail = () => {
 
     formData.append(
       "request",
-      new Blob(
-        [
-          JSON.stringify({
-            subject: updateBoardSubject,
-            content: updateBoardContent,
-            boardType: "OPINION_BOARD",
-          }),
-        ],
-        { type: "application/json" }
-      )
+      JSON.stringify({
+        subject: updateBoardSubject,
+        content: updateBoardContent,
+        boardType: "OPINION_BOARD",
+      })
     );
+
+    if (file && ifBoardData?.fileNames) {
+      formData.append("deleteFiles", JSON.stringify(ifBoardData.fileNames));
+      console.log("삭제할 : ", ifBoardData.fileNames);
+    }
 
     if (file) {
       formData.append("files", file);
+      console.log("수정할 : ", file);
     }
 
     try {
       if (params.boardId !== undefined) {
         const response = await boardApi.update(formData, params.boardId);
         if (response.status === 200) {
-          window.location.href = `/ifdetail/${params.boardId}`;
+          readBoardData(params.boardId);
+          setIsUpdate(false);
         }
       }
     } catch (error) {
@@ -284,6 +290,33 @@ const IfDetail = () => {
     setIsModalOpen(false);
   };
 
+  // 좋아요
+  const handleCreateLiked = async (commentId: number) => {
+    try {
+      if (params.boardId !== undefined) {
+        const response = await commentApi.createLike(params.boardId, commentId);
+        if (response.status === 200) {
+          readBoardData(params.boardId);
+        }
+      }
+    } catch (error) {
+      console.log("commentApi createLike : ", error);
+    }
+  };
+
+  const handleDeleteLiked = async (commentId: number) => {
+    try {
+      if (params.boardId !== undefined) {
+        const response = await commentApi.deleteLike(params.boardId, commentId);
+        if (response.status === 200) {
+          readBoardData(params.boardId);
+        }
+      }
+    } catch (error) {
+      console.log("commentApi deleteLike : ", error);
+    }
+  };
+
   return (
     <>
       {ifBoardData && recommendationList ? (
@@ -298,7 +331,7 @@ const IfDetail = () => {
               <div className="grid gap-3">
                 <div className="flex justify-between">
                   <div className="flex">
-                    <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${ifBoardData.user.profileImage}`} alt="" />
+                    <img className="w-9 h-9 mr-3 border rounded-[50%]" src={`${ifBoardData.user.profileImage}`} alt="" />
                     <div>
                       <div className="w-40 flex justify-between items-center">
                         <div className="flex items-center">
@@ -386,7 +419,7 @@ const IfDetail = () => {
                     ) : (
                       <>
                         <div className="flex">
-                          <img className="w-11 h-11 mr-3 rounded-[50%]" src={`${ifBoardData.user.profileImage}`} alt="" />
+                          <img className="w-11 h-11 mr-3 border rounded-[50%]" src={`${localStorage.getItem("profileImage")}`} alt="" />
                           <textarea className="w-full min-h-10 text-xl outline-none resize-none" placeholder="의견을 작성해 주세요" id="target" ref={textareaRef} onChange={(e) => handleCreateCommentTextareaChange(e)} />
                         </div>
                         <div className="flex justify-end">
@@ -400,7 +433,7 @@ const IfDetail = () => {
 
                   {ifBoardData.commentResponseDtos.map((comment) => (
                     <div className="p-5 border-b flex" key={comment.commentId}>
-                      <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${comment.user.profileImage}`} alt="" />
+                      <img className="w-9 h-9 mr-3 border rounded-[50%]" src={`${comment.user.profileImage}`} alt="" />
 
                       <div className="w-full grid gap-2">
                         <div className="grid grid-cols-[6fr_1fr]">
@@ -418,9 +451,18 @@ const IfDetail = () => {
                           <>
                             <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
                             <div className="flex justify-between items-center">
-                              <div className="flex">
-                                <button>{comment.likedByUser ? <img className="w-4" src="/assets/like/likeCheckedIcon.png" alt="" /> : <img className="w-4" src="/assets/like/likeIcon.png" alt="" />}</button>
-                                {comment.likeCnt === 0 ? <></> : <p className="px-1 text-sm text-[#565656] font-semibold">{comment.likeCnt}</p>}
+                              <div className="flex items-center">
+                                {comment.likedByUser ? (
+                                  <button onClick={() => handleDeleteLiked(comment.commentId)}>
+                                    <img className="w-4 py-1" src="/assets/like/likeCheckedIcon.png" alt="" />
+                                  </button>
+                                ) : (
+                                  <button onClick={() => handleCreateLiked(comment.commentId)}>
+                                    <img className="w-4 py-1" src="/assets/like/likeIcon.png" alt="" />{" "}
+                                  </button>
+                                )}
+
+                                <p className={`px-1 text-sm text-[#565656] font-semibold ${comment.likeCnt === 0 ? "hidden" : ""}`}>{comment.likeCnt}</p>
                               </div>
                             </div>
                           </>
@@ -438,7 +480,7 @@ const IfDetail = () => {
                               <button
                                 className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${updateCommentCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`}
                                 disabled={updateCommentCount === 0}
-                                onClick={() => handleUpdateComment(comment.commentId, comment.content)}>
+                                onClick={() => handleUpdateComment(comment.commentId)}>
                                 수정
                               </button>
                               <button className="px-5 py-1 rounded-md text-sm text-[#565656] font-bold border-2 border-gray-300 duration-300 hover:bg-gray-300" onClick={() => setIsCommentUpdate(0)}>

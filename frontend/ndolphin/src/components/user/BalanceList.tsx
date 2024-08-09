@@ -264,13 +264,13 @@ const BalanceList = () => {
 
   return (
     <div>
-      <div className="px-44 py-10 grid grid-cols-3 gap-5">
+      {/* <div className="px-44 py-10 grid grid-cols-3 gap-5">
         {balanceList.map((balance) => (
           <BalanceCard key={balance.id} balance={balance} />
         ))}
-      </div>
+      </div> */}
     </div>
-  )
-}
+  );
+};
 
 export default BalanceList;
