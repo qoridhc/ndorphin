@@ -331,11 +331,21 @@ public class BoardServiceImpl implements BoardService {
         UserVoteContent userVoteContent = voteRepository.findVoteByBoardIdAndUserId(
             board.getId(), userId).orElse(null);
 
-        List<Board> sideBoards = boardRepository.findTop3NotViewedByUserAndBoardType(userId,
-            BoardType.VOTE_BOARD);
+        // side에 띄울 보드 3개를 가져 옴.
+        List<Board> sideBoards = boardRepository.findTop3NotViewedByUserAndBoardType(
+            userId, BoardType.VOTE_BOARD, PageRequest.of(0, 3));
+
+        // 3개 미만 이라면 최신순으로 3개 가져옴.
+        if (sideBoards.size() < 3) {
+            sideBoards = boardRepository.findByBoardType(BoardType.VOTE_BOARD,
+                PageRequest.of(0, 3));
+        }
+
+        // BoardDto로 반환해서 가져 옴.
+        List<? extends BoardDto> sideBoardDtos = getBoardDtos(BoardType.VOTE_BOARD, sideBoards);
 
         return BoardMapper.toVoteBoardDetailResponseDto(board, fileUrl, fileName, voteInfos,
-            totalVotes, userVoteContent, sideBoards);
+            totalVotes, userVoteContent, sideBoardDtos);
     }
 
     private OpinionBoardDetailResponseDto getOpinionBoardDetail(Board board, Long userId,
@@ -346,11 +356,21 @@ public class BoardServiceImpl implements BoardService {
         List<CommentResponseDto> commentResponseDtos = commentService.getBoardDetail(board.getId());
         int commentCount = commentResponseDtos.size();
 
+        // side에 띄울 보드 3개를 가져 옴.
         List<Board> sideBoards = boardRepository.findTop3NotViewedByUserAndBoardType(userId,
-            BoardType.VOTE_BOARD);
+            BoardType.OPINION_BOARD, PageRequest.of(0, 3));
+
+        // 3개 미만 이라면 최신순으로 3개 가져옴.
+        if (sideBoards.size() < 3) {
+            sideBoards = boardRepository.findByBoardType(BoardType.OPINION_BOARD,
+                PageRequest.of(0, 3));
+        }
+
+        // BoardDto로 반환해서 가져 옴.
+        List<? extends BoardDto> sideBoardDtos = getBoardDtos(BoardType.OPINION_BOARD, sideBoards);
 
         return BoardMapper.toOpinionBoardDetailResponseDto(board, fileUrl, fileName,
-            hasParticipated, commentCount, commentResponseDtos, sideBoards);
+            hasParticipated, commentCount, commentResponseDtos, sideBoardDtos);
     }
 
     private RelayBoardDetailResponseDto getRelayBoardDetail(Board board, Long userId,
