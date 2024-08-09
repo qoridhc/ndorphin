@@ -211,11 +211,11 @@ const Profile = () => {
   const handleClick = async () => {
     const followingId = location.pathname.split("/")[2];
     
-    if (isFollowing) {
+    if (myFollow) {
       // 언팔로우 요청
       try {
         await userApi.unFollow(userId, followingId);
-        setIsFollowing(!isFollowing);
+        setMyFollow(!myFollow);
       } catch (error) {
         console.error('언팔로우 에러: ', error)
       }
@@ -223,11 +223,12 @@ const Profile = () => {
       // 팔로우 요청
       try {
         await userApi.follow(userId, followingId);
-        setIsFollowing(!isFollowing);
+        setMyFollow(!myFollow);
       } catch (error) {
         console.error('팔로우 에러: ', error)
       }
     }
+    window.location.href = window.location.href;
   };
 
   const openFollowModal = (tab: string) => {
