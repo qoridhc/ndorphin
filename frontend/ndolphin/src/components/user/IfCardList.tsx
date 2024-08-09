@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import boardApi from "../../api/boardApi";
 
@@ -8,19 +8,19 @@ const IfCardList: React.FC = () => {
   const [myOpinionBoardList, setMyOpinionBoardList] = useState<any[]>([]);
 
 
-  useState(() => {
+  useEffect(() => {
     boardApi.list("OPINION_BOARD")
       .then((response) => {
         const getOpinionBoardList = response.data.data.content;
-        
+
         const currentUserId = Number(location.pathname.split("/")[2]);
         const filteredList = getOpinionBoardList.filter((item: any) => item.user.userId === currentUserId);
         setMyOpinionBoardList(filteredList);
       })
       .catch((error) => {
-        console.error('만약에 게시글 불러오기 실패: ', error)
-      })
-  });
+        console.error("만약에 게시글 불러오기 실패: ", error);
+      });
+  }, []);
 
   const goToDetail = (boardId: number) => {
     navigate(`/ifdetail/${boardId}`);
