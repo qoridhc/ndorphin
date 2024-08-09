@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router";
+import userApi from "../../api/userApi";
 import { IoMdClose } from "react-icons/io";
 
 interface BookProps {
   book: {
     id: number;
-    userId: number;
+    user: {
+      userId: number;
+    };
     nickName: string;
     avatarUrl: string | null;
     subject: string;
@@ -24,13 +27,16 @@ interface BookProps {
 
 function Book({ book }: BookProps) {
   const [join, setJoin] = useState(false);
-  const [isLike, setIsLike] = useState(false);
+  const [favorite, setFavorite] = useState<boolean>(book.favorite);
   const [isHovered, setIsHovered] = useState(false);
   const [summary, setSummary] = useState("");
   const [showSummary, setShowSummary] = useState(false);
+  const [hasParticipated, setHasPaeticipated] = useState<boolean>(book.hasParticipated);
   const navigate = useNavigate();
   const fullHeart = "/assets/relay/fullHeart.png";
   const emptyHeart = "/assets/relay/emptyHeart.png";
+  const userId = book.user.userId;
+  const bookId = book.id;
 
   const goBookDetail = (id: number) => {
     navigate(`/relaybookdetail/${id}`);
@@ -49,18 +55,32 @@ function Book({ book }: BookProps) {
     }
   };
 
+  // 찜 목록 추가
+  const handleAddFavorite = async () => {
+    if (bookId && userId) {
+      try {
+        const response = await userApi.favorite(userId, bookId);
+        if (response.status === 200) {
+          setFavorite(true);
+          console.log("찜 목록 추가 성공", response.data);
+        }
+      } catch (error) {
+        console.error("찜 목록 추가 오류: ", error);
+      }
+    }
+  };
 
   return (
     <div className="relative">
       <div className="flex justify-end">
-        {join ? <span className="w-auto mx-1 px-3 py-1 rounded-t-lg text-xs font-bold text-zinc-900 bg-amber-300">참여</span> : <span className="w-auto mx-1 px-3 py-1 rounded-t-lg text-xs font-bold text-zinc-900 bg-zinc-300">미참여</span>}
+        {hasParticipated ? <span className="w-auto mx-1 px-3 py-1 rounded-t-lg text-xs font-bold text-zinc-900 bg-amber-300">참여</span> : <span className="w-auto mx-1 px-3 py-1 rounded-t-lg text-xs font-bold text-zinc-900 bg-zinc-300">미참여</span>}
       </div>
 
       <div className="relative">
-        {isLike ? (
+        {favorite ? (
           <img
             onClick={() => {
-              setIsLike(false);
+              setFavorite(false);
             }}
             src="/assets/relay/fullHeart.png"
             className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer"
@@ -68,9 +88,7 @@ function Book({ book }: BookProps) {
           />
         ) : (
           <img
-            onClick={() => {
-              setIsLike(true);
-            }}
+            onClick={handleAddFavorite}
             onMouseEnter={() => {
               setIsHovered(true);
             }}
@@ -97,8 +115,7 @@ function Book({ book }: BookProps) {
           onClick={() => {
             goBookDetail(book.id);
           }}
-          className="hover:cursor-pointer font-bold text-lg"
-        >
+          className="hover:cursor-pointer font-bold text-lg">
           {book.subject}
         </span>
         <button onClick={handleAISummary} className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border-2 border-solid border-zinc-300 font-bold text-zinc-800 mt-2">
@@ -117,14 +134,12 @@ function Book({ book }: BookProps) {
                        w-0 h-0 
                        border-x-[12px] border-x-transparent 
                        border-b-[12px] border-b-[#eff1f1] 
-                       z-50"
-          ></div>
+                       z-50"></div>
 
           <div
             className="absolute top-1 transform
                           z-50 bg-[#eff1f1] rounded-md w-72 p-4 
-                          max-h-64 overflow-y-auto"
-          >
+                          max-h-64 overflow-y-auto">
             <div className="mb-3 flex items-center">
               <img className="w-5 mr-1" src="/assets/relay/aiSummaryChatIcon.png" alt="" />
               <h3 className="font-bold text-xs text-zinc-600">AI로 지금까지의 이야기를 요약했어요</h3>
