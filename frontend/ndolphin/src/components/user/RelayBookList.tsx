@@ -21,6 +21,9 @@ const RelayBookList = () => {
         const currentUserId = Number(location.pathname.split("/")[2]);
         const filteredList = getRelayBoardList.filter((item: any) => item.user.userId === currentUserId);
         setMyRelayBoardList(filteredList);
+        console.log('내 릴레이', filteredList);
+        console.log('내 릴레이', filteredList.fileUrls);
+        console.log('내 릴레이', filteredList.fileUrls[0]);
       })
       .catch((error) => {
         console.error('릴레이북 게시글 불러오기 실패: ', error)
