@@ -14,6 +14,7 @@ import userApi from "../../api/userApi";
 interface Follow {
   followId: number;
   followingId: number;
+  followerId: number;
   createdAt: string;
 }
 
@@ -119,32 +120,59 @@ const Profile = () => {
   // 팔로우 정보 받아오기
   useEffect(() => {
     const getfollowList = async (userId: string) => {
+      const profileUserId = Number(location.pathname.split("/")[2]);
       try {
         const followingList = await userApi.getFollowing(userId);
-        const followerList = await userApi.getFollower(userId);
+        const followerList = await userApi.getFollower(profileUserId.toString());
         if (followingList.data.code === 'SU' && followerList.data.code === 'SU') {
 
           const followingListData = followingList.data.data as Follow[];
           const followerListData = followerList.data.data as Follow[];
 
-          const fetchUserInfos = async (list: Follow[]): Promise<UserInfo[]> => {
+          const fetchUserFollowingInfos = async (list: Follow[]): Promise<UserInfo[]> => {
             return Promise.all(
               list.map(async (item) => {
-                const userInfoResponse = await userApi.getUserInfo(item.followingId.toString());
-                const userInfoResponseProfileImage = userInfoResponse.data.data.profileImage;
+                const userFollowingResponse = await userApi.getUserInfo(String(item.followingId));
+                const userFollowingResponseProfileImage = userFollowingResponse.data.data.profileImage;
                 const isFollowing = followingList.data.data.some((follow: any) => follow.followingId === item.followingId);
 
-                if (userInfoResponseProfileImage) {
+                if (userFollowingResponseProfileImage) {
                   return {
                     id: item.followingId,
-                    nickName: userInfoResponse.data.data.nickName,
-                    profileImage: userInfoResponse.data.data.profileImage,
+                    nickName: userFollowingResponse.data.data.nickName,
+                    profileImage: userFollowingResponse.data.data.profileImage,
                     isFollowing,
                   };
                 } else {
                   return {
                     id: item.followingId,
-                    nickName: userInfoResponse.data.data.nickName,
+                    nickName: userFollowingResponse.data.data.nickName,
+                    profileImage: "/assets/user/profile.png",
+                    isFollowing,
+                  };
+                };
+              })
+            );
+          };
+          const fetchUserFollowerInfos = async (list: Follow[]): Promise<UserInfo[]> => {
+            return Promise.all(
+              list.map(async (item) => {
+                console.log(item)
+                const userFollowerResponse = await userApi.getUserInfo(String(item.followerId));
+                const userFollowerResponseProfileImage = userFollowerResponse.data.data.profileImage;
+                const isFollowing = followingList.data.data.some((follow: any) => follow.followingId === item.followingId);
+
+                if (userFollowerResponseProfileImage) {
+                  return {
+                    id: item.followerId,
+                    nickName: userFollowerResponse.data.data.nickName,
+                    profileImage: userFollowerResponse.data.data.profileImage,
+                    isFollowing,
+                  };
+                } else {
+                  return {
+                    id: item.followerId,
+                    nickName: userFollowerResponse.data.data.nickName,
                     profileImage: "/assets/user/profile.png",
                     isFollowing,
                   };
@@ -153,15 +181,14 @@ const Profile = () => {
             );
           };
 
-          const followingsInfos = await fetchUserInfos(followingListData);
-          const followersInfos = await fetchUserInfos(followerListData);
+          const followingsInfos = await fetchUserFollowingInfos(followingListData);
+          const followersInfos = await fetchUserFollowerInfos(followerListData);
 
           setFollowings(followingList.data.data.length);
           setFollowers(followerList.data.data.length);
           setFollowingsList(followingsInfos);
           setFollowersList(followersInfos);
 
-          const profileUserId = Number(location.pathname.split("/")[2]);
           const isFollow = followingList.data.data.some((follow: any) => follow.followingId === profileUserId);
           setIsFollowing(isFollow);
         }
