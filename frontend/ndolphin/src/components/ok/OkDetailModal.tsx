@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaRegComment } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
-import SettingsMenu from "../common/SettingMenu";
+import SettingsMenu from "../if/CommentSettingMenu";
 
 interface Props {
   content: {
@@ -127,7 +127,7 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
                         <p className="text-sm font-semibold">{comment.user}</p>
                         <p className="text-xs text-[#565656]">3일 전</p>
                       </div>
-                      <SettingsMenu />
+                      {/* <SettingsMenu /> */}
                     </div>
 
                     <p className="text-[#565656] font-medium text-justify">{comment.content}</p>

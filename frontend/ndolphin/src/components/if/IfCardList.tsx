@@ -1,141 +1,77 @@
-import React from "react";
-import Filter from "../common/Filter";
+import React, { useEffect, useState } from "react";
 import Paging from "../common/Paging";
+import boardApi from "../../api/boardApi";
 import OpinionCard from "./OpinionCard";
 
-const IfCardList = () => {
-  const opinionList = [
-    {
-      id: 1,
-      profileImgUrl: "profile5",
-      user: "코에촉촉",
-      badget: "S",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      comment: "티라노가 나 가지고 놀면 ㅠ? 6수 가자",
-    },
-    {
-      id: 2,
-      profileImgUrl: "profile3",
-      user: "코에촉촉",
-      badget: "N",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타났는데 도망은 못가고 잡아먹지도 않는다 숨을 것이냐 싸울 것이냐? 어떻게 할 것이냐",
-      joinCount: 0,
-      comment: null,
-    },
-    {
-      id: 3,
-      profileImgUrl: "profile2",
-      user: "코에촉촉",
-      badget: "S",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      comment: "티라노가 나 가지고 놀면 ㅠ? 6수 가자",
-    },
-    {
-      id: 4,
-      profileImgUrl: "profile4",
-      user: "코에촉촉",
-      badget: "N",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      comment: "티라노가 나 가지고 놀면 ㅠ? 6수 가자",
-    },
-    {
-      id: 5,
-      profileImgUrl: "profile5",
-      user: "코에촉촉",
-      badget: "N",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      comment: "티라노가 나 가지고 놀면 ㅠ? 6수 가자",
-    },
-    {
-      id: 6,
-      profileImgUrl: "profile3",
-      user: "코에촉촉",
-      badget: "S",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 0,
-      comment: null,
-    },
-    {
-      id: 7,
-      profileImgUrl: "profile1",
-      user: "코에촉촉",
-      badget: "N",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      comment: "티라노가 나 가지고 놀면 ㅠ? 6수 가자",
-    },
-    {
-      id: 8,
-      profileImgUrl: "profile2",
-      user: "코에촉촉",
-      badget: "S",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 0,
-      comment: null,
-    },
-    {
-      id: 9,
-      profileImgUrl: "profile3",
-      user: "코에촉촉",
-      badget: "N",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      comment: "티라노가 나 가지고 놀면 ㅠ? 6수 가자",
-    },
-    {
-      id: 10,
-      profileImgUrl: "profile4",
-      user: "코에촉촉",
-      badget: "S",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      comment: "티라노가 나 가지고 놀면 ㅠ? 6수 가자",
-    },
-    {
-      id: 11,
-      profileImgUrl: "profile5",
-      user: "코에촉촉",
-      badget: "S",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      comment: "티라노가 나 가지고 놀면 ㅠ? 6수 가자",
-    },
-    {
-      id: 12,
-      profileImgUrl: "profile2",
-      user: "코에촉촉",
-      badget: "N",
-      date: "2024-07-30 01:22",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 0,
-      comment: null,
-    },
-  ];
+interface If {
+  id: number;
+  user: {
+    userId: number;
+    profileImage: string | null;
+    mbti: string | null;
+    nickName: string;
+  };
+  content: string;
+  subject: string;
+  fileNames: string[];
+  fileUrls: string[];
+  hit: number;
+  createdAt: string;
+  updatedAt: string | null;
+  avatarUrl: string | null;
+  bestComment: string | null;
+  commentCount: number;
+}
+
+interface Props {
+  searchKeyword: string;
+  searchFilter1: string;
+  searchFilter2: string;
+  isSearch: boolean;
+  setIsSearch: (state: boolean) => void;
+}
+
+const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, setIsSearch }: Props) => {
+  const [ifBoardList, setIfBoardList] = useState<If[] | null>(null);
+
+  const getIfBoardList = async () => {
+    try {
+      const response = await boardApi.list("OPINION_BOARD");
+      setIfBoardList(response.data.data.content);
+    } catch (error) {
+      console.error("boardApi list : ", error);
+    }
+  };
+
+  const getSearchIfBoardList = async () => {
+    try {
+      const response = await boardApi.search("OPINION_BOARD", searchKeyword, searchFilter1, searchFilter2);
+      setIfBoardList(response.data.data.content);
+    } catch (error) {
+      console.log("boardApi search : ", error);
+    }
+  };
+
+  useEffect(() => {
+    if (searchKeyword || searchFilter2 === "popularity") {
+      getSearchIfBoardList();
+      setIsSearch(false);
+    } else {
+      getIfBoardList();
+    }
+  }, [isSearch, searchFilter2]);
 
   return (
     <div>
-      <Filter />
-
-      <div className="px-44 py-10 grid grid-cols-4 gap-5">
-        {opinionList.map((opinion) => (
-          <OpinionCard key={opinion.id} opinion={opinion} />
-        ))}
-      </div>
+      {ifBoardList ? (
+        <div className="px-44 py-10 grid grid-cols-4 gap-5">
+          {ifBoardList.map((ifBoard) => (
+            <OpinionCard key={ifBoard.id} ifBoard={ifBoard} />
+          ))}
+        </div>
+      ) : (
+        <></>
+      )}
 
       <Paging />
     </div>

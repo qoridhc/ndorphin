@@ -13,7 +13,6 @@ import com.web.ndolphin.mapper.FollowMapper;
 import com.web.ndolphin.repository.FollowRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.FollowService;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,12 +33,11 @@ public class FollowServiceImpl implements FollowService {
         try {
             Follow follow = new Follow();
 
-            User followBy = userRepository.findByUserId(userId);
-            User followTo = userRepository.findByUserId(dto.getFollowingId());
+            User followBy = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
 
-            if (followBy == null || followTo == null) {
-                return ResponseDto.databaseError();
-            }
+            User followTo = userRepository.findById(dto.getFollowingId())
+                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
 
             Follow followEntity = FollowMapper.toEntity(followBy, followTo);
 
@@ -68,8 +66,7 @@ public class FollowServiceImpl implements FollowService {
         try {
             List<Follow> followers = followRepository.findAllByFollowing_UserId(userId);
 
-            List<FollowerReponseDto> followerDtoList = FollowMapper.toFollwerResponseDtoList(
-                followers);
+            List<FollowerReponseDto> followerDtoList = FollowMapper.toFollwerResponseDtoList(followers);
 
             ResponseDto<List<FollowerReponseDto>> responseDto = new ResponseDto<>(
                 ResponseCode.SUCCESS,
@@ -89,8 +86,7 @@ public class FollowServiceImpl implements FollowService {
         try {
             List<Follow> followings = followRepository.findAllByFollower_UserId(userId);
 
-            List<FollowingResponseDto> followDtoList = FollowMapper.toFollwingResponseDtoList(
-                followings);
+            List<FollowingResponseDto> followDtoList = FollowMapper.toFollwingResponseDtoList(followings);
 
             ResponseDto<List<FollowingResponseDto>> responseDto = new ResponseDto<>(
                 ResponseCode.SUCCESS,
@@ -105,20 +101,24 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public ResponseEntity<ResponseDto> deleteFollow(Long boardId) {
+    public ResponseEntity<ResponseDto> deleteFollow(Long followerId, Long followingId) {
 
         try {
-            boolean existFollowId = followRepository.existsById(boardId);
 
-            // 엔티티가 존재하지 않으면 예외를 던짐
-            if (!existFollowId) {
-                throw new EntityNotFoundException("The followId does not exist: " + boardId);
-            }
+            User followBy = userRepository.findById(followerId)
+                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + followerId));
 
-            followRepository.deleteById(boardId);
+            User followTo = userRepository.findById(followingId)
+                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + followingId));
+
+            Follow follow = followRepository.findByFollowerIdAndFollowingId(followerId, followingId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                    String.format("Follow Relation does not exist: %d -> %d", followerId, followingId)));
+
+            followRepository.delete(follow);
 
             return ResponseDto.success();
-        } catch (EntityNotFoundException e) {
+        } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage());
         }
     }

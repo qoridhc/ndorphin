@@ -13,5 +13,6 @@ public class BoardRequestDto {
     private String content;
     private BoardType boardType;
     private List<String> voteContents;
+    private String dalleUrl;
     private int maxPage;
 }

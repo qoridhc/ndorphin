@@ -5,24 +5,31 @@ import AlreadyWrittenPage from "../relayBookCRUD/AlreadyWrittenPage";
 import AiImagePromptModal from "../AiImagePromptModal";
 
 interface Page {
-  id: number;
-  userId: number;
-  user: string;
+  commentId: number;
+  nickName: string;
   content: string;
-  pageImage: string;
+  likeCnt: number;
+  createdAt: string | null;
+  updatedAt: string | null;
+  avatarUrl: string | null;
+  contentFileUrl: string | null;
+  likedByUser: boolean;
 }
 
 interface AddPageProps {
-  PageList: Page[];
+  bookId: string;
+  pages: Page[];
   handleAiImage: any;
   image: string | null;
   setImage: any;
+  file: File | null;
+  setFile: (file: File) => void;
 }
 
-const AddPage = ({ PageList, handleAiImage, image, setImage }: AddPageProps) => {
+const AddPage = ({ bookId, pages, handleAiImage, image, setImage, file, setFile }: AddPageProps) => {
   const [isPageAdd, setPageAdd] = useState(false);
   const userName = "코에촉";
-  const userHasWritten = PageList.some((page) => page.user === userName);
+  const userHasWritten = pages.some((page) => page.nickName === userName);
 
   return (
     <>
@@ -47,7 +54,7 @@ const AddPage = ({ PageList, handleAiImage, image, setImage }: AddPageProps) => 
       ) : (
         // 페이지 추가 버튼 클릭 후 form으로 전환
         <div>
-          <AddPageForm setPageAdd={setPageAdd} handleAiImage={handleAiImage} image={image} setImage={setImage} />
+          <AddPageForm bookId={bookId} setPageAdd={setPageAdd} handleAiImage={handleAiImage} image={image} setImage={setImage} file={file} setFile={setFile} />
         </div>
       )}
     </>

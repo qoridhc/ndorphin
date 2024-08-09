@@ -94,9 +94,14 @@ const OkList = () => {
 
   return (
     <div>
-      <div className="w-full py-10 bg-yellow-100 flex flex-col justify-around items-center">
-        <p className="py-2 text-center text-3xl font-bold">괜찮아 게시판</p>
-        <p className="py-2 text-center">만약의 걱정으로 고생하는 사람들이 위로 받는 공간</p>
+      <div className="flex flex-col justify-center">
+        <div className="w-full px-44 py-6 flex-col items-center">
+          <div className="py-5 flex items-end">
+            <p className="text-2xl font-bold">괜찮아</p>
+            <p className="pl-3 text-md">‘만약에~’로 시작된 걱정으로 고민하는 사람들이 위로받는 공간</p>
+          </div>
+          <hr className="w-full" />
+        </div>
       </div>
 
       <div className="px-44">

@@ -6,6 +6,26 @@ interface NicknameCheckResponse {
   isDuplicate: boolean;
 }
 
+interface ApiResponse<T> {
+  code: string;
+  data: T;
+  message: string;
+}
+
+interface UserInfoResponse {
+  createdAt: string;
+  email: string;
+  mbti: string;
+  nickName: string;
+  nickNameUpdatedAt: string;
+  npoint: number;
+  profileImage: string;
+  role: string;
+  type: string;
+  updatedAt: string;
+  userId: number;
+}
+
 const userApi = {
   login: (loginType: string) => {
     const oauthUrl = `${baseURL}/api/v1/auth/oauth2/${loginType}`;
@@ -18,15 +38,46 @@ const userApi = {
     return newWindow;
   },
 
-  checkNickname: (nickname: string) =>
-    request.get<NicknameCheckResponse>(`/api/v1/users/check-nickname`, { params: { nickname } }),
+  checkNickname: async (nickName: string) => { return request.get<NicknameCheckResponse>(`${baseURL}/api/v1/users/nickname-check`, { params: { nickName } }) },
 
-  update: (userId: string, formData: FormData) =>
-    request.put(`/api/v1/users/${userId}`, formData, {
+  update: (userId: string, formData: FormData) => {
+    return request.put(`/api/v1/users/${userId}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }),
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  },
+    
+
+  getUserInfo: (userId: string) =>
+    request.get<ApiResponse<UserInfoResponse>>(`/api/v1/users/${userId}`),
+
+
+  follow: (userId: string, followUserId: string) => {
+    return request.post(
+      `/api/v1/follows/${userId}`,
+      { followingId: followUserId },
+      { headers: { 'Content-Type': 'application/json'} }
+    )
+  },
+
+  unFollow: (userId: string, followUserId: string) => {
+    return request.delete(
+      `/api/v1/follows/${userId}`,
+      {
+        data: { followingId: followUserId },
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
+  },
+
+  getFollowing: (userId: string) => {
+    return request.get(`/api/v1/follows/followings/${userId}`)
+  },
+
+  getFollower: (userId: string) => {
+    return request.get(`/api/v1/follows/followers/${userId}`)
+  },
 }
 
 export default userApi;

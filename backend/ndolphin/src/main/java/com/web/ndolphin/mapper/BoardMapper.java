@@ -19,15 +19,16 @@ import com.web.ndolphin.dto.vote.VoteInfo;
 import com.web.ndolphin.dto.voteContent.UserVoteContent;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class BoardMapper {
 
     // 공통된 Entity -> DTO 변환 로직
     private static void mapCommonFields(Board board, BoardDto dto) {
 
+        dto.setUser(UserMapper.toDto(board.getUser()));
         dto.setId(board.getId());
-        dto.setUserId(board.getUser().getUserId());
-        dto.setNickName(board.getUser().getNickName());
         dto.setSubject(board.getSubject());
         dto.setContent(board.getContent());
         dto.setHit(board.getHit());
@@ -77,28 +78,27 @@ public class BoardMapper {
     }
 
     public static VoteBoardResponseDto toVoteBoardResponseDto(Board board,
-        List<String> voteContents, long totalVoteCnt, String avatarUrl) {
+        List<String> voteContents, long totalVoteCnt) {
 
         VoteBoardResponseDto voteBoardResponseDto = new VoteBoardResponseDto();
 
         mapCommonFields(board, voteBoardResponseDto);
         voteBoardResponseDto.setVoteContents(voteContents);
         voteBoardResponseDto.setTotalVoteCnt(totalVoteCnt);
-        voteBoardResponseDto.setAvatarUrl(avatarUrl);
 
         return voteBoardResponseDto;
     }
 
     public static VoteBoardDetailResponseDto toVoteBoardDetailResponseDto(Board board,
-        String avatarUrl, String contentFileUrl, List<VoteInfo> voteInfos,
+        String fileUrl, String fileName, List<VoteInfo> voteInfos,
         UserVoteContent userVoteContent) {
 
         VoteBoardDetailResponseDto voteBoardDetailResponseDto = new VoteBoardDetailResponseDto();
 
         mapCommonFields(board, voteBoardDetailResponseDto);
         voteBoardDetailResponseDto.setVoteInfos(voteInfos);
-        voteBoardDetailResponseDto.setAvatarUrl(avatarUrl);
-        voteBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
+        voteBoardDetailResponseDto.getFileUrls().add(fileUrl);
+        voteBoardDetailResponseDto.getFileNames().add(fileName);
 
         if (userVoteContent != null) {
             voteBoardDetailResponseDto.setUserVoteId(userVoteContent.getVoteId());
@@ -109,50 +109,56 @@ public class BoardMapper {
     }
 
     public static OpinionBoardResponseDto toOpinionBoardResponseDto(Board board,
-        String bestComment, Long commentCount, String avatarUrl) {
+        String bestComment, Long commentCount) {
 
         OpinionBoardResponseDto opinionBoardResponseDto = new OpinionBoardResponseDto();
 
         mapCommonFields(board, opinionBoardResponseDto);
         opinionBoardResponseDto.setBestComment(bestComment);
         opinionBoardResponseDto.setCommentCount(commentCount);
-        opinionBoardResponseDto.setAvatarUrl(avatarUrl);
 
         return opinionBoardResponseDto;
     }
 
     public static OpinionBoardDetailResponseDto toOpinionBoardDetailResponseDto(Board board,
-        String avatarUrl, String contentFileUrl, boolean hasParticipated, int commentCount,
+        String fileUrl, String fileName, boolean hasParticipated, int commentCount,
         List<CommentResponseDto> commentResponseDtos) {
 
         OpinionBoardDetailResponseDto opinionBoardDetailResponseDto = new OpinionBoardDetailResponseDto();
 
         mapCommonFields(board, opinionBoardDetailResponseDto);
-        opinionBoardDetailResponseDto.setAvatarUrl(avatarUrl);
-        opinionBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
         opinionBoardDetailResponseDto.setHasParticipated(hasParticipated);
         opinionBoardDetailResponseDto.setCommentCount(commentCount);
         opinionBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
+        opinionBoardDetailResponseDto.getFileNames().add(fileName);
+        opinionBoardDetailResponseDto.getFileUrls().add(fileUrl);
+
+        log.info("opinionBoardDetailResponseDto = {}", opinionBoardDetailResponseDto);
 
         return opinionBoardDetailResponseDto;
     }
 
     public static RelayBoardResponseDto toRelayBoardResponseDto(Board board,
-        boolean hasParticipated, boolean isFavorite, String thumbNailUrl) {
+        boolean hasParticipated, boolean isFavorite, String fileUrl, String fileName,
+        Long commentCount, boolean isDone) {
 
         RelayBoardResponseDto relayBoardResponseDto = new RelayBoardResponseDto();
 
         mapCommonFields(board, relayBoardResponseDto);
+        relayBoardResponseDto.setSummary(board.getSummary());
         relayBoardResponseDto.setHasParticipated(hasParticipated);
         relayBoardResponseDto.setFavorite(isFavorite);
-        relayBoardResponseDto.setThumbNailUrl(thumbNailUrl);
         relayBoardResponseDto.setMaxPage(board.getMaxPage());
+        relayBoardResponseDto.setCommentCount(commentCount);
+        relayBoardResponseDto.setDone(isDone);
+        relayBoardResponseDto.getFileNames().add(fileName);
+        relayBoardResponseDto.getFileUrls().add(fileUrl);
 
         return relayBoardResponseDto;
     }
 
     public static RelayBoardDetailResponseDto toRelayBoardDetailResponseDto(Board board,
-        boolean hasParticipated, String contentFileUrl,
+        boolean hasParticipated, String fileUrl, String fileName,
         List<CommentResponseDto> commentResponseDtos,
         Map<ReactionType, Long> reactionTypeCounts, Reaction reaction) {
 
@@ -161,9 +167,10 @@ public class BoardMapper {
         mapCommonFields(board, relayBoardDetailResponseDto);
         relayBoardDetailResponseDto.setMaxPage(board.getMaxPage());
         relayBoardDetailResponseDto.setHasParticipated(hasParticipated);
-        relayBoardDetailResponseDto.setContentFileUrl(contentFileUrl);
         relayBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
         relayBoardDetailResponseDto.setReactionTypeCounts(reactionTypeCounts);
+        relayBoardDetailResponseDto.getFileUrls().add(fileUrl);
+        relayBoardDetailResponseDto.getFileNames().add(fileName);
 
         // Reaction이 null인지 확인하고 적절한 기본값 설정
         if (reaction != null) {

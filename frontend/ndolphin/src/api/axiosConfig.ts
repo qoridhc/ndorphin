@@ -12,11 +12,16 @@ export const request = axios.create({
 
 // 요청 인터셉터 설정
 request.interceptors.request.use(
-  config => {
+  async config => {
     // 요청 전에 추가 작업 수행 (예: 토큰 추가)
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    try {
+      // const token = process.env.REACT_APP_ACCESS_TOKEN;
+      const token = await localStorage.getItem('accessToken');  // 비동기 함수로 변경
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch (error) {
+      console.error("Failed to retrieve the token from localStorage:", error);
     }
     return config;
   },

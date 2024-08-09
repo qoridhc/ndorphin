@@ -1,15 +1,31 @@
 import { Navigate, useNavigate } from "react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface RelayBookDropDownProps {
-  BookStart: any;
+  firstPage: {
+    id: number;
+    user: {};
+    subject: string;
+    content: string;
+    hit: number;
+    boardType: string;
+    createdAt: string;
+    updatedAt: string;
+    contentFileUrl: string;
+    hasParticipated: boolean;
+    maxPage: number;
+    commentResponseDtos: [];
+    reactionTypeCounts: {};
+    userReactionId: null;
+    userReactionType: string;
+  }[];
   bookId: any;
   handleDelete: () => void;
 }
 
-
-const RelayBookDropDown: React.FC<RelayBookDropDownProps> = ({ BookStart, bookId, handleDelete }) => {
+const RelayBookDropDown: React.FC<RelayBookDropDownProps> = ({ firstPage, handleDelete, bookId }) => {
   const navigate = useNavigate();
+  const [currentBookId, setCurrentBookId] = useState(0)
 
   return (
     <>
@@ -20,7 +36,7 @@ const RelayBookDropDown: React.FC<RelayBookDropDownProps> = ({ BookStart, bookId
         <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 m-3 shadow">
           <li
             onClick={() => {
-              navigate("/relaybookupdate/1", { state: {BookStart} });
+              navigate(`/relaybookupdate/${bookId}`, { state: { firstPage } });
             }}>
             <a className="px-2 py-1">
               <img className="ml-2" src="/assets/updateIcon.png" alt="" />

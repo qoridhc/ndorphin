@@ -4,7 +4,6 @@ import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointDeleteRequestDto;
 import com.web.ndolphin.dto.npoint.request.NPointRequestDto;
-import com.web.ndolphin.dto.user.request.CheckNickNameRequestDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
 import com.web.ndolphin.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,7 +23,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "사용자 컨트롤러", description = "사용자 API입니다.")
 @RestController
@@ -32,16 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
-
-    @Operation(summary = "Jenkins 테스트", description = "Jenkins 서버 테스트를 위한 API입니다.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "성공적으로 응답했습니다.",
-            content = @Content(schema = @Schema(implementation = ResponseDto.class)))
-    })
-    @GetMapping("/jenkins-test")
-    public ResponseEntity<ResponseDto> test() {
-        return ResponseDto.success();
-    }
 
     // ====== User CRUD ======
     @Operation(summary = "사용자 조회", description = "ID로 사용자를 조회합니다.")
@@ -92,12 +85,31 @@ public class UserController {
     @PutMapping("/{userId}")
     public ResponseEntity<ResponseDto> updateUser(
         @Parameter(description = "수정할 사용자의 ID", required = true) @PathVariable("userId") Long userId,
-        @Parameter(description = "수정할 사용자 정보", required = true) @RequestBody UserUpdateRequestDto updateDto) {
+        @Parameter(description = "수정할 사용자 정보", required = true) @RequestPart(name = "request") @Valid UserUpdateRequestDto updateDto,
+        @Parameter(description = "사용자 프로필 이미지 (선택 사항)") @RequestPart(name = "file", required = false) MultipartFile profileImage
+    ) {
 
-        ResponseEntity<ResponseDto> response = userService.updateUser(userId, updateDto);
+        ResponseEntity<ResponseDto> response = userService.updateUser(userId, updateDto, profileImage);
 
         return response;
     }
+
+    @Operation(summary = "사용자 프로필 이미지 삭제", description = "ID로 사용자의 프로필 이미지를 삭제합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "프로필 이미지 삭제 성공",
+            content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+        @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
+            content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "500", description = "서버 오류",
+            content = @Content(schema = @Schema()))
+    })
+    @DeleteMapping("/image/{userId}")
+    public ResponseEntity<ResponseDto> deleteProfile(
+        @Parameter(description = "프로필 이미지를 삭제할 사용자의 ID", required = true) @PathVariable("userId") Long userId) {
+        ResponseEntity<ResponseDto> response = userService.deleteProfile(userId);
+        return response;
+    }
+
 
     @GetMapping("/nickname-check")
     @Operation(summary = "닉네임 중복 확인",
@@ -107,10 +119,12 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     public ResponseEntity<ResponseDto> checkNickName(
-        @Parameter(description = "닉네임 중복 체크 DTO", required = true)
-        @RequestBody CheckNickNameRequestDto dto) {
+        @Parameter(description = "확인할 닉네임", required = true)
+        @Valid @RequestParam("nickName") String nickName
+    ) {
 
-        ResponseEntity<ResponseDto> response = userService.checkNickName(dto.getNickName());
+        ResponseEntity<ResponseDto> response = userService.checkNickName(nickName);
+
         return response;
     }
 
@@ -124,6 +138,7 @@ public class UserController {
         @ApiResponse(responseCode = "500", description = "서버 오류",
             content = @Content(schema = @Schema()))
     })
+
     @GetMapping("/{userId}/favorites")
     public ResponseEntity<ResponseDto> getFavoritesByUserId(
         @Parameter(description = "조회할 사용자의 ID", required = true) @PathVariable Long userId) {
@@ -183,7 +198,7 @@ public class UserController {
     @PostMapping("/{userId}/npoint")
     public ResponseEntity<ResponseDto> addNPoint(
         @Parameter(description = "추가할 사용자의 ID", required = true) @PathVariable Long userId,
-        @Parameter(description = "추가할 nPoint 정보", required = true) @RequestBody NPointRequestDto nPointRequestDto) {
+        @Parameter(description = "추가할 nPoint 정보", required = true) @Valid @RequestBody NPointRequestDto nPointRequestDto) {
 
         ResponseEntity<ResponseDto> response = userService.addNPoint(userId, nPointRequestDto);
 
@@ -202,7 +217,7 @@ public class UserController {
     @DeleteMapping("/{userId}/npoint")
     public ResponseEntity<ResponseDto> deleteNPoint(
         @Parameter(description = "삭제할 사용자의 ID", required = true) @PathVariable Long userId,
-        @Parameter(description = "삭제할 nPoint 정보", required = true) @RequestBody NPointDeleteRequestDto nPointDeleteRequestDto) {
+        @Parameter(description = "삭제할 nPoint 정보", required = true) @Valid @RequestBody NPointDeleteRequestDto nPointDeleteRequestDto) {
 
         ResponseEntity<ResponseDto> response = userService.deleteNPoint(userId, nPointDeleteRequestDto);
 

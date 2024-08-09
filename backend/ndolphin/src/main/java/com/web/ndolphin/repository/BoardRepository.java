@@ -3,6 +3,8 @@ package com.web.ndolphin.repository;
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.BoardType;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +21,6 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
         "WHERE b.boardType = :boardType " +
         "GROUP BY b, vc.content")
     List<Object[]> findBoardsWithVoteContentSummaries(@Param("boardType") String boardType);
+
+    Page<Board> findByTypeAndFilters(BoardType boardType, String filter1, String filter2, String search, Pageable pageable);
 }

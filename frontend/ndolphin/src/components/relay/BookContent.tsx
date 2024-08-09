@@ -4,7 +4,7 @@ import "../../css/Notes.css"
 function BookContent() {
   return (
     <>
-      <input className="w-4/5 my-4 p-1 rounded-lg focus:outline-none bg-yellow-200 text-left" type="text" placeholder="제목을 입력해 주세요 (최대 30자)" />
+      {/* <input className="w-4/5 my-4 p-1 rounded-lg focus:outline-none bg-yellow-200 text-left" type="text" placeholder="제목을 입력해 주세요 (최대 30자)" />
 
       <div className="w-4/5 border border-zinc-950">
         <p className="m-3 text-xl font-bold">본문</p>
@@ -20,7 +20,7 @@ function BookContent() {
             <EndPage />
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

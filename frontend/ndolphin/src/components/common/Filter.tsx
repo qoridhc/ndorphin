@@ -1,31 +1,36 @@
 import { useState } from "react";
 
-function Filter() {
-  const [tabs, setTabs] = useState(0);
+interface Props {
+  setSearchFilter2: (filter2: string) => void;
+}
+
+function Filter({ setSearchFilter2 }: Props) {
+  const [tabs, setTabs] = useState("recent");
   const textStyle = "font-bold";
 
+  const handleTabs = (tab: string) => {
+    setTabs(tab);
+    setSearchFilter2(tab);
+  };
+
   return (
-    <div className="flex px-44">
-      <div className="w-56 flex justify-between">
-        <div>
-          <input type="checkbox" id="my" className="mr-2"></input>
-          <label className="hover:cursor-pointer" htmlFor="my">내 글 보기</label>
-        </div>
-        <p className="">|</p>
+    <div className="flex items-center justify-start">
+      <div className="flex items-center mr-3 w-28 justify-between">
         <div>
           <button
-            className={`${tabs === 0 ? textStyle : "text-gray-400"}`}
+            className={`${tabs === "popularity" ? textStyle : "text-gray-400"}`}
             onClick={() => {
-              setTabs(0);
+              handleTabs("popularity");
             }}>
             인기순
           </button>
         </div>
+        <div>|</div>
         <div>
           <button
-            className={`${tabs === 1 ? textStyle : "text-gray-400"}`}
+            className={`${tabs === "recent" ? textStyle : "text-gray-400"}`}
             onClick={() => {
-              setTabs(1);
+              handleTabs("recent");
             }}>
             최신순
           </button>

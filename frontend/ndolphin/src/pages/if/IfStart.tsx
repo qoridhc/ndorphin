@@ -4,7 +4,7 @@ import { FaPlus } from "react-icons/fa6";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import InsertionImage from "../../components/common/InsertionImage";
 import { useNavigate } from "react-router";
-import ifApi from "../../api/ifApi";
+import boardApi from "../../api/boardApi";
 import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
 
 const IfStart = () => {
@@ -13,8 +13,9 @@ const IfStart = () => {
   const [content, setContent] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [aiImage, setAiImage] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>();
+  const [file, setFile] = useState<File | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dalleUrl, setDalleUrl] = useState<string | null>(null);
 
   const boxClass = "h-full mb-3 border border-[#9E9E9E]";
   const boxContentClass = "p-5";
@@ -61,10 +62,9 @@ const IfStart = () => {
     }
 
     try {
-      const response = await ifApi.create(formData);
+      const response = await boardApi.create(formData);
       if (response.status === 200) {
-        navigate("/ifdetail/1");
-        console.log(response);
+        navigate(`/ifdetail/${response.data.data.id}`);
       }
     } catch (error) {
       console.error("ifApi create : ", error);
@@ -113,7 +113,7 @@ const IfStart = () => {
         </button>
       </div>
 
-      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
+      <BookCoverAiPromptModal setFile={setFile} isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
     </div>
   );
 };

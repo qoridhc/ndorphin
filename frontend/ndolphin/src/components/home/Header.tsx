@@ -8,11 +8,14 @@ import userApi from "../../api/userApi";
 
 const Header = () => {
   const navigate = useNavigate();
+  const [selectedMenu, setSelectedMenu] = useState<string>("");
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserInfoEditModalOpen, setIsUserInfoEditModalOpen] = useState(false);
   const [isNSModalOpen, setIsNSModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userNickName, setuserNickName] = useState<string | null>(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [isNew, setIsNew] = useState(true);
   const [showAlarmDropdown, setShowAlarmDropdown] = useState(false);
@@ -29,12 +32,26 @@ const Header = () => {
   ]);
 
   useEffect(() => {
+    const storedMenu = sessionStorage.getItem("selectedMenu");
+    if (storedMenu) {
+      setSelectedMenu(storedMenu);
+    }
+
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
       setIsLoggedIn(true);
     }
     const storedProfileImage = localStorage.getItem("profileImage");
-    setProfileImage(storedProfileImage);
+    const storedEmail = localStorage.getItem("email");
+    const storedNickName = localStorage.getItem("nickName");
+
+    if (storedProfileImage === 'null') {
+      setProfileImage("/assets/user/profile.png")
+    } else {
+      setProfileImage(storedProfileImage);
+    }
+    setUserEmail(storedEmail);
+    setuserNickName(storedNickName);
   }, []);
 
   const openLoginModal = () => setIsLoginModalOpen(true);
@@ -47,8 +64,30 @@ const Header = () => {
     localStorage.setItem("userId", userId);
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
-    setIsLoggedIn(true);
-    closeLoginModal();
+
+    // 로그인 성공 시 유저 정보 조회하여 로컬 스토리지에 저장 로직 추가
+    userApi
+      .getUserInfo(userId)
+      .then((res) => {
+        localStorage.setItem("email", res.data.data.email);
+        localStorage.setItem("mbti", res.data.data.mbti);
+        localStorage.setItem("nickName", res.data.data.nickName);
+        localStorage.setItem("npoint", res.data.data.npoint.toString());
+        localStorage.setItem("profileImage", res.data.data.profileImage);
+
+        setProfileImage(res.data.data.profileImage);
+      })
+      .then(() => {
+        setIsLoggedIn(true);
+        closeLoginModal();
+      })
+      .then(() => {
+        window.location.href = window.location.href;
+      })
+      .catch((err) => {
+        console.error("유저 정보 에러", err);
+      });
+
 
     if (isNewUser) {
       setIsUserInfoEditModalOpen(true);
@@ -64,16 +103,17 @@ const Header = () => {
     closeNSModal();
     setIsLoggedIn(true);
     localStorage.setItem("isLoggedIn", "true");
+
+    window.location.href = window.location.href
   };
 
   const handleLogout = () => {
-    localStorage.clear()
+    localStorage.clear();
 
     setIsLoggedIn(false);
     setProfileImage(null);
     setShowProfileDropdown(false);
     navigate("/");
-
   };
 
   const handleProfileDropdownClick = (event: React.MouseEvent) => {
@@ -109,6 +149,18 @@ const Header = () => {
     setNotifications([]);
   };
 
+  const handleMenuClick = (menu: string) => {
+    setSelectedMenu(menu);
+    sessionStorage.setItem("selectedMenu", menu); // 로컬 스토리지에 선택된 메뉴 저장
+    window.location.href = `/${menu}`;
+  };
+
+  const handleHomeClick = () => {
+    setSelectedMenu("home");
+    localStorage.setItem("selectedMenu", "home");
+    window.location.href = "/";
+  };
+
   useEffect(() => {
     if (showProfileDropdown || showAlarmDropdown) {
       document.addEventListener("click", handleOutsideClick);
@@ -135,53 +187,24 @@ const Header = () => {
             src="/assets/logo.PNG"
             alt="Logo"
             onClick={() => {
-              navigate("/");
+              handleHomeClick();
             }}
           />
 
           <div className="px-2 flex items-center text-[#6C6C6C] font-semibold">
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/relaybooklist");
-              }}>
-              릴레이북
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/iflist");
-              }}>
-              만약에
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/balancelist");
-              }}>
-              밸런스게임
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/oklist");
-              }}>
-              괜찮아
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/bye");
-              }}>
-              작별인사
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/notice");
-              }}>
-              공지사항
-            </button>
+            {["relaybooklist", "iflist", "balancelist", "oklist", "bye", "notice"].map((menu) => (
+              <button
+                key={menu}
+                className={`px-3 hover:pb-3 decoration-[#FFDE2F] decoration-4 duration-300 underline-offset-8 ${selectedMenu === menu ? "underline text-black" : "hover:underline hover:text-black"}`}
+                onClick={() => handleMenuClick(menu)}>
+                {menu === "relaybooklist" && "릴레이북"}
+                {menu === "iflist" && "만약에"}
+                {menu === "balancelist" && "밸런스게임"}
+                {menu === "oklist" && "괜찮아"}
+                {menu === "bye" && "작별인사"}
+                {menu === "notice" && "공지사항"}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -234,20 +257,17 @@ const Header = () => {
               {showProfileDropdown && (
                 <div className="absolute right-0 mt-2 w-72 py-1 bg-white rounded-lg shadow-lg z-50" onClick={(e) => e.stopPropagation()}>
                   <div className="p-4 flex items-center">
-                    <img className="w-15 h-15 rounded-full" src={profileImage || "/assets/user/profile.png"} alt="Profile" />
+                    <img className="w-12 h-12 rounded-full" src={profileImage || "/assets/user/profile.png"} alt="Profile" />
                     <div className="ml-3">
-                      <div className="font-semibold">닉네임</div>
-                      <div className="text-sm text-gray-500">test@test.com</div>
+                      <div className="font-semibold">{userNickName}</div>
+                      <div className="text-sm text-gray-500">{userEmail}</div>
                     </div>
                   </div>
                   <hr />
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate("/profile"))}>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => window.location.href = (`/profile/${localStorage.getItem('userId')}`))}>
                     프로필
                   </button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(openUserInfoEditModalOpen)}>
-                    계정 관리
-                  </button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate("/wishlist"))}>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => window.location.href = ("/wishlist"))}>
                     찜 목록
                   </button>
                   <hr />
@@ -267,7 +287,7 @@ const Header = () => {
 
       <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} onLoginSuccess={handleLoginSuccess} />
       <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onNext={handleNext} setProfileImage={updateProfileImage} />
-      <NSModal isOpen={isNSModalOpen} onClose={handleFinish} />
+      <NSModal isOpen={isNSModalOpen} onClose={handleFinish} mode={'survey'} />
     </>
   );
 };

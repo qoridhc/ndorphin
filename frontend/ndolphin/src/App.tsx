@@ -28,14 +28,14 @@ function App() {
           <Route path="/" element={<Home />}></Route>
           <Route path="/relaybooklist" element={<RelayBookList />}></Route>
           <Route path="/relaybookstart" element={<RelayBookStart />}></Route>
-          <Route path="/relaybookupdate/:id" element={<RelayBookUpdate />}></Route>
+          <Route path="/relaybookupdate/:bookId" element={<RelayBookUpdate />}></Route>
           <Route path="/relaybookdetail/:bookId" element={<RelayBookDetail />}></Route>
           <Route path="/iflist" element={<IfList />}></Route>
           <Route path="/ifstart" element={<IfStart />}></Route>
           <Route path="/ifdetail/:boardId" element={<IfDetail />}></Route>
           <Route path="/balancelist" element={<BalanceList />}></Route>
           <Route path="/balancedetail/:id" element={<BalanceDetail />}></Route>
-          <Route path="/profile" element={<Profile />}></Route>
+          <Route path="/profile/:userId" element={<Profile />}></Route>
           <Route path="/oklist" element={<OkList />}></Route>
           <Route path="/okdetail/:id" element={<OkDetail />}></Route>
           <Route path="/bye" element={<ByeList />}></Route>

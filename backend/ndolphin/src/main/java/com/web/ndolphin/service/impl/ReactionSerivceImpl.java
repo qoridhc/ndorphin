@@ -15,7 +15,6 @@ import com.web.ndolphin.repository.ReactionRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.ReactionService;
 import com.web.ndolphin.service.interfaces.TokenService;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +46,6 @@ public class ReactionSerivceImpl implements ReactionService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
 
             Reaction reaction = ReactionMapper.toEntity(reactionRequestDto, user, board);
-            reaction.setCreatedAt(LocalDateTime.now());
             reactionRepository.save(reaction);
 
             ReactionResponseDto reactionResponseDto = ReactionMapper.toDto(reaction);

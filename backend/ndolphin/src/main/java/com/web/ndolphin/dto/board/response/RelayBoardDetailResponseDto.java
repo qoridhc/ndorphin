@@ -11,11 +11,11 @@ import lombok.Setter;
 @Setter
 public class RelayBoardDetailResponseDto extends BoardDto {
 
-    private String contentFileUrl;
     private boolean hasParticipated;
     private int maxPage;
     private List<CommentResponseDto> commentResponseDtos;
     private Map<ReactionType, Long> reactionTypeCounts;
+    private Long reactionCount;
     private Long userReactionId;
     private ReactionType userReactionType;
 }

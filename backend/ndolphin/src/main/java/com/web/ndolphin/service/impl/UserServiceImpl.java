@@ -3,6 +3,7 @@ package com.web.ndolphin.service.impl;
 import com.web.ndolphin.common.ResponseCode;
 import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.domain.Board;
+import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.Favorite;
 import com.web.ndolphin.domain.NPoint;
 import com.web.ndolphin.domain.PointRule;
@@ -30,12 +31,12 @@ import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.UserService;
-import com.web.ndolphin.util.LogUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -44,6 +45,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -59,8 +61,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void signIn(HttpServletRequest request, HttpServletResponse response, Long userId) {
-
-        LogUtil.info("signIn 실행");
 
         User user = null;
 
@@ -122,6 +122,9 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<ResponseDto> deleteUser(Long userId) {
 
         try {
+
+            boolean existUser = userRepository.existsById(userId);
+
             int deleteCnt = userRepository.deleteUserByUserId(userId);
 
             // 삭제 실패
@@ -138,18 +141,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto) {
+    public ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto,
+        MultipartFile profileImage) {
 
         try {
             User existingUser = userRepository.findByUserId(userId);
-
-            if (dto.getEmail() != null) {
-                existingUser.setEmail(dto.getEmail());
-            }
-
-            if (dto.getProfileImage() != null) {
-                existingUser.setProfileImage(dto.getProfileImage());
-            }
 
             if (dto.getNickName() != null) {
                 existingUser.setNickName(dto.getNickName());
@@ -168,7 +164,25 @@ public class UserServiceImpl implements UserService {
                 existingUser.setRole(dto.getRole());
             }
 
-            existingUser.setUpdatedAt(LocalDateTime.now());
+            // 프로필 이미지가 존재하는 경우 처리
+            if (profileImage != null && !profileImage.isEmpty()) {
+                // 이미지 파일 처리 로직 (예: 저장, 변환 등)
+                List<MultipartFile> multipartFiles = new ArrayList<>();
+                multipartFiles.add(profileImage);
+
+                fileInfoService.deleteAndDeleteFiles(existingUser.getUserId(), EntityType.USER);
+
+                fileInfoService.uploadAndSaveFiles(
+                    existingUser.getUserId(),
+                    EntityType.USER,
+                    multipartFiles
+                );
+
+                String fileUrl = fileInfoService.getFileUrl(existingUser.getUserId(),
+                    EntityType.USER);
+
+                existingUser.setProfileImage(fileUrl);
+            }
 
             userRepository.save(existingUser);
 
@@ -181,6 +195,31 @@ public class UserServiceImpl implements UserService {
             );
 
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+        } catch (IllegalArgumentException e) {
+            return ResponseDto.databaseError(e.getMessage());
+        } catch (Exception e) {
+            return ResponseDto.databaseError();
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDto> deleteProfile(Long userId) {
+
+        try {
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+
+            if (user.getProfileImage() == null) {
+                throw new IllegalArgumentException("The Profile is not exist");
+            }
+
+            fileInfoService.deleteAndDeleteFiles(user.getUserId(), EntityType.USER);
+
+            user.setProfileImage(null);
+
+            userRepository.save(user);
+
+            return ResponseDto.success();
         } catch (IllegalArgumentException e) {
             return ResponseDto.databaseError(e.getMessage());
         } catch (Exception e) {
@@ -337,7 +376,8 @@ public class UserServiceImpl implements UserService {
             : userRepository.findTopUsersByNPoint(1);
 
         return IntStream.range(0, users.size())
-            .mapToObj(i -> new BestNResponseDto((long) (i + 1), users.get(i).getNickName(), users.get(i).getNPoint()))
+            .mapToObj(i -> new BestNResponseDto((long) (i + 1), users.get(i).getNickName(),
+                users.get(i).getNPoint()))
             .collect(Collectors.toList());
     }
 }

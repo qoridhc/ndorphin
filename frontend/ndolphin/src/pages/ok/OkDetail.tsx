@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import OkDetailModal from "../../components/ok/OkDetailModal";
 import { FaArrowLeftLong, FaRegComment } from "react-icons/fa6";
-import SettingsMenu from "../../components/common/SettingMenu";
+import SettingsMenu from "../../components/if/CommentSettingMenu";
 import { useNavigate } from "react-router";
 
 const OkDetail = () => {
@@ -296,7 +296,7 @@ const OkDetail = () => {
                     <p className="font-bold">{comment.user}</p>
                     <p className="text-xs text-[#565656]">3일 전</p>
                   </div>
-                  <SettingsMenu />
+                  {/* <SettingsMenu /> */}
                 </div>
 
                 <p className="text-[#565656] font-medium text-justify">{comment.content}</p>

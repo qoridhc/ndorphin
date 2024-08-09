@@ -5,9 +5,20 @@ import { IoMdClose } from "react-icons/io";
 interface BookProps {
   book: {
     id: number;
-    bookImgUrl: string;
-    user: string;
-    title: string;
+    userId: number;
+    nickName: string;
+    avatarUrl: string | null;
+    subject: string;
+    content: string;
+    hit: number;
+    boardType: string;
+    createdAt: string;
+    updatedAt: string | null;
+    summary: null;
+    thumbNailUrl: string;
+    hasParticipated: false;
+    favorite: false;
+    fileUrls: any[];
   };
 }
 
@@ -37,6 +48,7 @@ function Book({ book }: BookProps) {
       setShowSummary(true);
     }
   };
+
 
   return (
     <div className="relative">
@@ -74,7 +86,7 @@ function Book({ book }: BookProps) {
           onClick={() => {
             goBookDetail(book.id);
           }}
-          src={book.bookImgUrl}
+          src={book.fileUrls[0]}
           className="hover:cursor-pointer w-full h-[20rem] rounded-md"
           alt="#"
         />
@@ -87,7 +99,7 @@ function Book({ book }: BookProps) {
           }}
           className="hover:cursor-pointer font-bold text-lg"
         >
-          {book.title}
+          {book.subject}
         </span>
         <button onClick={handleAISummary} className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border-2 border-solid border-zinc-300 font-bold text-zinc-800 mt-2">
           <img src="/assets/aiSummaryButton.png" className="w-5" alt="#" />

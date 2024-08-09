@@ -10,6 +10,9 @@ public interface NotificationService {
 
     ResponseEntity<ResponseDto> selectAllByUserId(Long userId);
 
-    ResponseEntity<ResponseDto> delete(Long notificationId);
+    ResponseEntity<ResponseDto> deleteAllByUserId(Long userId);
+
+    ResponseEntity<ResponseDto> checkUnReadNotifications(Long notificationId);
+
 
 }
