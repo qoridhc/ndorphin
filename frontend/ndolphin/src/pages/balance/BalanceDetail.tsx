@@ -11,6 +11,7 @@ interface BalanceBoard {
     voteContentId: number;
     voteCount: number;
   }[];
+  totalVotes: number;
   content: string;
   fileNames: string[];
   fileUrls: string[];
@@ -51,7 +52,7 @@ interface Balance {
 const BalanceDetail = () => {
   const navigate = useNavigate();
   const params = useParams();
-  const voteColors = ["border-[#E4AE3A]", "border-[#4298B4]", "border-[#88619A]", "border-[#33A474]"];
+  const voteColors = ["[#E4AE3A]", "[#4298B4]", "[#88619A]", "[#33A474]"];
 
   const [balanceBoardData, setBalanceBoardData] = useState<BalanceBoard | null>(null);
   const [recommendationList, setRecommendationList] = useState<Balance[] | null>(null);
@@ -70,7 +71,6 @@ const BalanceDetail = () => {
       const response = await boardApi.read(boardId);
       if (response.status === 200) {
         setBalanceBoardData(response.data.data);
-        // console.log(response.data.data);
         // setUpdateBoardSubject(response.data.data.subject);
         // setUpdateBoardContent(response.data.data.content);
         // setImage(response.data.data.fileUrls[0]);
@@ -129,12 +129,19 @@ const BalanceDetail = () => {
               <div className="pt-3 grid gap-2">
                 <div className="flex justify-end items-center">
                   <img src="/assets/if/hotCommentIcon.png" alt="" />
-                  <p className="text-sm text-[#F07676] font-semibold text-right">투표수 {balanceBoardData.hit}회</p>
+                  <p className="text-sm text-[#F07676] font-semibold text-right">투표수 {balanceBoardData.totalVotes}회</p>
                 </div>
-                {balanceBoardData.voteInfos.map((vote) => (
-                  <div className={`px-5 py-2 border-solid border-2 ${voteColors[vote.voteContentId - 1]} rounded-[30px] flex justify-center items-center`} key={vote.voteContentId}>
-                    <p className="font-semibold text-[#565656]">{vote.voteContent}</p>
-                  </div>
+                {balanceBoardData.voteInfos.map((vote, index) => (
+                  <button
+                    className={`border-solid border-2 rounded-[30px] flex justify-center items-center transition-colors duration-150 ease-in-out 
+                      ${index === 0 ? "border-[#E4AE3A] hover:bg-[#E4AE3A] hover:opacity-75" : ""}
+                      ${index === 1 ? "border-[#4298B4] hover:bg-[#4298B4] hover:opacity-75" : ""}
+                      ${index === 2 ? "border-[#88619A] hover:bg-[#88619A] hover:opacity-75" : ""}
+                      ${index === 3 ? "border-[#33A474] hover:bg-[#33A474] hover:opacity-75" : ""}
+                    `}
+                    key={vote.voteContentId}>
+                    <p className="w-full px-5 py-2 font-semibold text-[#565656] hover:text-white">{vote.voteContent}</p>
+                  </button>
                 ))}
               </div>
 
