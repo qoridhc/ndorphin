@@ -22,5 +22,15 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
         "GROUP BY b, vc.content")
     List<Object[]> findBoardsWithVoteContentSummaries(@Param("boardType") String boardType);
 
-    Page<Board> findByTypeAndFilters(BoardType boardType, String filter1, String filter2, String search, Pageable pageable);
+    Page<Board> findByTypeAndFilters(BoardType boardType, String filter1, String filter2,
+        String search, Pageable pageable);
+
+    @Query(value = "SELECT b.* FROM boards b " +
+        "LEFT JOIN board_views bv ON b.id = bv.board_id AND bv.user_id = :userId " +
+        "WHERE bv.board_id IS NULL " +
+        "AND b.board_type = :boardType " +
+        "ORDER BY b.created_at DESC LIMIT 3",
+        nativeQuery = true)
+    List<Board> findTop3NotViewedByUserAndBoardType(@Param("userId") Long userId,
+        @Param("boardType") BoardType boardType);
 }

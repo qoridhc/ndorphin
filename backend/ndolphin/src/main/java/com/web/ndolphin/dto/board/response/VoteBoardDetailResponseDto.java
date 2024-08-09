@@ -1,5 +1,6 @@
 package com.web.ndolphin.dto.board.response;
 
+import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.dto.vote.VoteInfo;
 import java.util.List;
 import lombok.Getter;
@@ -13,4 +14,5 @@ public class VoteBoardDetailResponseDto extends BoardDto {
     private List<VoteInfo> voteInfos;
     private Long userVoteId;
     private Long userVoteContentId;
+    private List<Board> sideBoards;
 }
