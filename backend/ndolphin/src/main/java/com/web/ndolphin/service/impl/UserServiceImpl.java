@@ -10,7 +10,7 @@ import com.web.ndolphin.domain.PointRule;
 import com.web.ndolphin.domain.Token;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
-import com.web.ndolphin.dto.board.response.BoardDto;
+import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.favorite.FavoriteResponseDto;
 import com.web.ndolphin.dto.npoint.request.NPointDeleteRequestDto;
@@ -25,6 +25,7 @@ import com.web.ndolphin.mapper.FavoriteMapper;
 import com.web.ndolphin.mapper.NPointMapper;
 import com.web.ndolphin.mapper.UserMapper;
 import com.web.ndolphin.repository.BoardRepository;
+import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.FavoriteRepository;
 import com.web.ndolphin.repository.NPointRepository;
 import com.web.ndolphin.repository.PointRuleRepository;
@@ -58,6 +59,7 @@ public class UserServiceImpl implements UserService {
     private final TokenRepository tokenRepository;
     private final NPointRepository nPointRepository;
     private final PointRuleRepository pointRuleRepository;
+    private final CommentRepository commentRepository;
     private final FileInfoService fileInfoService;
 
     @Override
@@ -208,7 +210,8 @@ public class UserServiceImpl implements UserService {
 
         try {
             User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+                .orElseThrow(
+                    () -> new IllegalArgumentException("The userId does not exist: " + userId));
 
             if (user.getProfileImage() == null) {
                 throw new IllegalArgumentException("The Profile is not exist");
@@ -232,11 +235,27 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<ResponseDto> getFavorites(Long userId) {
 
         List<Favorite> favorites = favoriteRepository.findByUserId(userId);
-        List<BoardDto> boardDtos = favorites.stream()
-            .map(favorite -> BoardMapper.toBoardDto(favorite.getBoard()))
+
+        List<RelayBoardResponseDto> relayBoardResponseDtos = favorites.stream()
+            .map(favorite -> {
+                    Board board = favorite.getBoard();
+                    Long boardId = board.getId();
+
+                    boolean hasParticipated = true;
+                    boolean isFavorite = true;
+                    String fileUrl = getFileUrl(boardId, EntityType.POST);
+                    String fileName = getFileName(boardId, EntityType.POST);
+
+                    Long commentCount = commentRepository.countCommentsByBoardId(boardId);
+                    boolean isDone = (commentCount + 1) == board.getMaxPage();
+
+                    return BoardMapper.toRelayBoardResponseDto(board, hasParticipated, isFavorite,
+                        fileUrl, fileName, commentCount, isDone);
+                }
+            )
             .toList();
 
-        FavoriteResponseDto favoriteResponseDto = FavoriteMapper.toDto(boardDtos);
+        FavoriteResponseDto favoriteResponseDto = FavoriteMapper.toDto(relayBoardResponseDtos);
 
         ResponseDto<FavoriteResponseDto> responseDto = new ResponseDto<>(
             ResponseCode.SUCCESS,
@@ -374,7 +393,8 @@ public class UserServiceImpl implements UserService {
         try {
 
             User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+                .orElseThrow(
+                    () -> new IllegalArgumentException("The userId does not exist: " + userId));
 
             List<Long> scores = userRepository.findAll().stream()
                 .map(User::getNPoint)
@@ -406,7 +426,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
     @Override
     public List<BestNResponseDto> getSortedUsersByNPoint(boolean flag) {
 
@@ -418,5 +437,13 @@ public class UserServiceImpl implements UserService {
             .mapToObj(i -> new BestNResponseDto((long) (i + 1), users.get(i).getNickName(),
                 users.get(i).getNPoint()))
             .collect(Collectors.toList());
+    }
+
+    private String getFileUrl(Long entityId, EntityType entityType) {
+        return fileInfoService.getFileUrl(entityId, entityType);
+    }
+
+    private String getFileName(Long entityId, EntityType entityType) {
+        return fileInfoService.getFileName(entityId, entityType);
     }
 }
