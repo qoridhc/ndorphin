@@ -11,7 +11,6 @@ interface UserInfoProps {
 }
 
 const UserInfo: React.FC<UserInfoProps> = ({ index, firstPage, user, userImage, badget, setPageUpdate, handleDelete }) => {
-  console.log(badget);
   return (
     <>
       <div className="px-14 py-2" key={user}>

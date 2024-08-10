@@ -3,6 +3,7 @@ import '../../css/Paging.css'
 import { useState } from "react";
 import Pagination from "react-js-pagination";
 
+
 const Paging: React.FC = () => {
   const [page, setPage] = useState<number>(1)
 

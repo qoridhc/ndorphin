@@ -67,7 +67,7 @@ const RelayBookUpdate: React.FC = () => {
   }, [bookId]);
 
   // axios PUT
-  const handleRelayBookUpdate = async (subject: string, content: string) => {
+  const handleRelayBookUpdate = async (subject: string, content: string, maxPage: number) => {
     const formData = new FormData();
 
     if (currentFileName !== null && isChanged && file) {
@@ -89,6 +89,7 @@ const RelayBookUpdate: React.FC = () => {
             subject: subject,
             content: content,
             boardType: "RELAY_BOARD",
+            maxPage: maxPage,
           }),
         ],
         { type: "application/json" }
