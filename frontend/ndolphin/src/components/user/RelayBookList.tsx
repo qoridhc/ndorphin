@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import boardApi from "../../api/boardApi";
+import userApi from "../../api/userApi";
 
 const RelayBookList = () => {
   const location = useLocation();
@@ -8,8 +9,8 @@ const RelayBookList = () => {
   const [myRelayBoardList, setMyRelayBoardList] = useState<any[]>([]);
   const [showSummary, setShowSummary] = useState(false);
   const [summary, setSummary] = useState("");
-  const [isLike, setIsLike] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+  const [likeStatus, setLikeStatus] = useState<{ [key: number]: boolean }>({});
+  const [isHovered, setIsHovered] = useState<number | null>(null);
   const fullHeart = "/assets/relay/fullheart.png";
   const emptyHeart = "/assets/relay/emptyheart.png";
   
@@ -27,6 +28,25 @@ const RelayBookList = () => {
       })
   }, []);
 
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+
+    userApi.getFavorites(userId as string)
+      .then((response) => {
+        const favoriteBoardIs = response.data.data.boardDtos.map((item: any) => item.id);
+        setLikeStatus((prevStatus) => {
+          const newStatus: { [key: number]: boolean } = {};
+          myRelayBoardList.forEach((board) => {
+            newStatus[board.id] = favoriteBoardIs.includes(board.id);
+          });
+          return newStatus;
+        });
+      })
+      .catch((error) => {
+        console.error('좋아요 상태 불러오기 실패: ', error);
+      })
+  }, [myRelayBoardList]);
+
   const handleAISummary = () => {
     if (showSummary) {
       setShowSummary(false);
@@ -40,9 +60,37 @@ const RelayBookList = () => {
     }
   };
 
+  const handleLikeToggle = (id: number) => {
+    const userId = localStorage.getItem('userId');
+    
+    if (!likeStatus[id]) {
+      userApi
+        .addFavorites(userId as string, String(id))
+        .then(() =>
+          setLikeStatus((prevStatus) => ({
+            ...prevStatus,
+            [id]: true,
+          }))
+        )
+        .catch((err) => {
+          console.error("즐겨찾기 추가 실패: ", err);
+        });
+    } else {
+      userApi.deleteFavorites(userId as string, String(id))
+        .then(() => 
+          setLikeStatus((prevStatus) => ({
+            ...prevStatus,
+            [id]: false,
+          }))
+        )
+        .catch((err) => {
+          console.error("즐겨찾기 삭제 실패: ", err);
+        })
+    }
+  };
+
   const goToDetail = (boardId: number) => {
     navigate(`/relaybookdetail/${boardId}`);
-    console.log(boardId)
   };
 
   return (
@@ -55,18 +103,7 @@ const RelayBookList = () => {
             <div className="relative" key={item.id}>
               <div className="pt-2">
                 <div className="relative">
-                  {/* {isLike ? (
-                    <img className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer" onClick={() => setIsLike(false)} src="/assets/relay/fullheart.png" alt="#" />
-                  ) : (
-                    <img
-                      className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer"
-                      onClick={() => setIsLike(true)}
-                      onMouseEnter={() => setIsHovered(true)}
-                      onMouseLeave={() => setIsHovered(false)}
-                      src={isHovered ? fullHeart : emptyHeart}
-                      alt="#"
-                    />
-                  )}{" "} */}
+                  <img className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer" src={likeStatus[item.id] ? fullHeart : isHovered === item.id ? fullHeart : emptyHeart} alt="#" onClick={() => handleLikeToggle(item.id)} onMouseEnter={() => setIsHovered(item.id)} onMouseLeave={() => setIsHovered(null)} />
                   <img className="hover:cursor-pointer w-full h-[20rem] rounded-md" src={item.fileUrls[0]} alt="#" onClick={() => goToDetail(item.id)} />
                 </div>
                 <span onClick={() => goToDetail(item.id)} className="hover:cursor-pointer font-bold text-lg">
