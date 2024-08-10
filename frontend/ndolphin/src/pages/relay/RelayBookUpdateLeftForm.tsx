@@ -7,7 +7,7 @@ import "../../css/InputPlaceHolder.css";
 
 interface RelayBookUpdateLeftFormProps {
   bookId: string | undefined;
-  handleRelayBookUpdate: (subjectValue: string, contentValue: string) => void;
+  handleRelayBookUpdate: (subjectValue: string, contentValue: string, endPageValue: number) => void;
   subject: any;
   content: any;
   currentEndPage: number | null;
@@ -18,21 +18,19 @@ const RelayBookUpdateLeftForm = ({ bookId, handleRelayBookUpdate, subject, conte
   const navigate = useNavigate();
   const [subjectValue, setSubjectValue] = useState(subject.current);
   const [contentValue, setContentValue] = useState(content.current);
-  const [endPageValue, setEndPageValue] = useState<number>();
+  const [endPageValue, setEndPageValue] = useState<number>(0);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [subjectValue]);
 
   useEffect(() => {
     setSubjectValue(subject.current);
     setContentValue(content.current);
   }, [subject.current, content.current]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 200);
-  }, []);
 
   const onChangeSubject = (e: React.ChangeEvent<HTMLInputElement>) => {
     // 실절적으로 보낼 값
@@ -68,7 +66,8 @@ const RelayBookUpdateLeftForm = ({ bookId, handleRelayBookUpdate, subject, conte
                 onChange={onChangeContent}
                 className="notes w-full h-[283px] resize-none focus:outline-none placeholder:text-zinc-400"
                 placeholder="이야기가 시작될 '만약에~' 내용을 입력해 주세요 (최소 글자수 100자 이상)"
-                value={contentValue}></textarea>
+                value={contentValue}
+              ></textarea>
             </div>
 
             {/* 종료 장수 선택 form */}
@@ -85,16 +84,18 @@ const RelayBookUpdateLeftForm = ({ bookId, handleRelayBookUpdate, subject, conte
           <div className="absolute z-[99] flex justify-start w-full px-8 my-2 top-0 -left-2">
             <button
               onClick={() => {
-                handleRelayBookUpdate(subjectValue, contentValue);
+                handleRelayBookUpdate(subjectValue, contentValue, endPageValue);
               }}
-              className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
+              className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200"
+            >
               수정
             </button>
             <button
               onClick={() => {
                 navigate(`/relaybookdetail/${bookId}`);
               }}
-              className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200">
+              className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200"
+            >
               취소
             </button>
           </div>
