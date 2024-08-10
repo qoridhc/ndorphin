@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import boardApi from "../../api/boardApi";
 import Book from "./Book";
-import Paging from "../common/Paging";
+import RelayPaging from "./RelayPaging";
 import { tab } from "@testing-library/user-event/dist/tab";
 
 interface BookListProps {
@@ -94,7 +94,10 @@ const BookList = ({ tabs, bookList, setBookList, searchKeyword, searchFilter1, s
   const getRelayBoardList = async () => {
     try {
       const response = await boardApi.list("RELAY_BOARD");
-      setBookList(response.data.data.content);
+      bookList = response.data.data.content;
+
+      setBookList(bookList);
+
     } catch (error) {
       console.error("boardApi list : ", error);
     }
@@ -123,12 +126,12 @@ const BookList = ({ tabs, bookList, setBookList, searchKeyword, searchFilter1, s
       {tabs === 0 ? (
         <>
           <div className="px-44 py-10 grid grid-cols-2 lg:grid-cols-4 gap-x-14 gap-y-20">{bookList.map((book) => book.done === false && <Book key={book.id} book={book} />)}</div>
-          <Paging />
+          <RelayPaging />
         </>
       ) : (
         <>
           <div className="px-44 py-10 grid grid-cols-2 lg:grid-cols-4 gap-x-14 gap-y-20">{bookList.map((book) => book.done === true && <Book key={book.id} book={book} />)}</div>
-          <Paging />
+          <RelayPaging/>
         </>
       )}
     </div>

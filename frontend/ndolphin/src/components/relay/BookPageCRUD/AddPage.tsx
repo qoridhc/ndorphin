@@ -29,10 +29,11 @@ interface AddPageProps {
 
 const AddPage = ({ bookId, pages, handleAiImage, image, setImage, file, setFile, hasParticipated }: AddPageProps) => {
   const [isPageAdd, setPageAdd] = useState(false);
+  const testParticipated = false;
 
   return (
     <>
-      {hasParticipated ? (
+      {testParticipated ? (
         <AlreadyWrittenPage />
       ) : isPageAdd === false ? (
         <div className="h-[90%] flex flex-col justify-center items-center gap-2">
@@ -42,7 +43,8 @@ const AddPage = ({ bookId, pages, handleAiImage, image, setImage, file, setFile,
               onClick={() => {
                 setPageAdd(true);
               }}
-              className="w-[30%]">
+              className="w-[30%]"
+            >
               <img src="/assets/addPageButton.png" alt="#" />
             </button>
             <p className="text-outline text-2xl font-bold drop-shadow-md text-[#F4D325]">버튼을 눌러 페이지 추가</p>
