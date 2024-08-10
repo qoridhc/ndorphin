@@ -128,39 +128,74 @@ public class BoardServiceImpl implements BoardService {
             .forEach(voteContentRepository::save);
     }
 
+//    @Override
+//    public ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(BoardType boardType,
+//        String filter1, String filter2, String search, Pageable pageable) {
+//        // Pageable을 사용하여 페이징된 게시글 목록을 가져옵니다.
+//        Page<Board> boardsPage = boardRepository.findByTypeAndFilters(boardType, filter1, filter2,
+//            search, pageable);
+//
+//        // Page<Board>를 List<Board>로 변환하여 기존의 메서드를 재사용
+//        List<Board> boards = boardsPage.getContent();
+//
+//        // getBoardDtos 메서드 호출
+//        List<? extends BoardDto> boardDtos = getBoardDtos(boardType, boards);
+//
+//        // List<? extends BoardDto>를 List<BoardDto>로 캐스팅
+//        List<BoardDto> castedBoardDtos = boardDtos.stream()
+//            .map(boardDto -> (BoardDto) boardDto)
+//            .collect(Collectors.toList());
+//
+//        // Page<BoardDto>로 변환
+//        Page<BoardDto> boardDtosPage = new PageImpl<>(castedBoardDtos, pageable,
+//            boardsPage.getTotalElements());
+//
+//        ResponseDto<Page<BoardDto>> responseBody = new ResponseDto<>(ResponseCode.SUCCESS,
+//            ResponseMessage.SUCCESS, boardDtosPage);
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+//    }
+
     @Override
-    public ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(BoardType boardType,
-        String filter1, String filter2, String search, Pageable pageable) {
+    public ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(BoardType boardType, String filter1, String filter2, String search, Pageable pageable, Boolean isDone) {
         // Pageable을 사용하여 페이징된 게시글 목록을 가져옵니다.
-        Page<Board> boardsPage = boardRepository.findByTypeAndFilters(boardType, filter1, filter2,
-            search, pageable);
+        Page<Board> boardsPage = boardRepository.findByTypeAndFilters(boardType, filter1, filter2, search, pageable);
 
         // Page<Board>를 List<Board>로 변환하여 기존의 메서드를 재사용
         List<Board> boards = boardsPage.getContent();
 
-        // getBoardDtos 메서드 호출
-        List<? extends BoardDto> boardDtos = getBoardDtos(boardType, boards);
+        // getBoardDtos 메서드 호출 (RelayBoard의 경우 isDone 필터 추가)
+        List<? extends BoardDto> boardDtos = getBoardDtos(boardType, boards, isDone);
 
         // List<? extends BoardDto>를 List<BoardDto>로 캐스팅
         List<BoardDto> castedBoardDtos = boardDtos.stream()
-            .map(boardDto -> (BoardDto) boardDto)
-            .collect(Collectors.toList());
+                .map(boardDto -> (BoardDto) boardDto)
+                .collect(Collectors.toList());
 
         // Page<BoardDto>로 변환
-        Page<BoardDto> boardDtosPage = new PageImpl<>(castedBoardDtos, pageable,
-            boardsPage.getTotalElements());
+        Page<BoardDto> boardDtosPage = new PageImpl<>(castedBoardDtos, pageable, boardsPage.getTotalElements());
 
-        ResponseDto<Page<BoardDto>> responseBody = new ResponseDto<>(ResponseCode.SUCCESS,
-            ResponseMessage.SUCCESS, boardDtosPage);
+        ResponseDto<Page<BoardDto>> responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardDtosPage);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    private List<? extends BoardDto> getBoardDtos(BoardType boardType, List<Board> boards) {
+//    private List<? extends BoardDto> getBoardDtos(BoardType boardType, List<Board> boards) {
+//        return switch (boardType) {
+//            case VOTE_BOARD -> getVoteBoardResponseDtos(boards);
+//            case OPINION_BOARD -> getOpinionBoardResponseDtos(boards);
+//            case RELAY_BOARD -> getRelayBoardResponseDtos(boards);
+//            case OK_BOARD -> getOkBoardResponseDtos(boards);
+//            case BYE_BOARD, ANNOUNCEMENT_BOARD -> getByeBoardResponseDtos(boards);
+//            default -> throw new IllegalArgumentException("Unsupported board type");
+//        };
+//    }
+
+    private List<? extends BoardDto> getBoardDtos(BoardType boardType, List<Board> boards, Boolean isDone) {
         return switch (boardType) {
             case VOTE_BOARD -> getVoteBoardResponseDtos(boards);
             case OPINION_BOARD -> getOpinionBoardResponseDtos(boards);
-            case RELAY_BOARD -> getRelayBoardResponseDtos(boards);
+            case RELAY_BOARD -> getRelayBoardResponseDtos(boards, isDone);
             case OK_BOARD -> getOkBoardResponseDtos(boards);
             case BYE_BOARD, ANNOUNCEMENT_BOARD -> getByeBoardResponseDtos(boards);
             default -> throw new IllegalArgumentException("Unsupported board type");
@@ -213,30 +248,62 @@ public class BoardServiceImpl implements BoardService {
             .collect(toList());
     }
 
-    private List<RelayBoardResponseDto> getRelayBoardResponseDtos(List<Board> boards) {
+//    private List<RelayBoardResponseDto> getRelayBoardResponseDtos(List<Board> boards) {
+//
+//        Long userId = tokenService.getUserIdFromToken();
+//
+//        return boards.stream()
+//            .map(board -> {
+//                Long writerId = board.getUser().getUserId();
+//                Long boardId = board.getId();
+//
+//                boolean hasParticipated = hasUserParticipated(boardId, userId);
+//                if (writerId == userId) {
+//                    hasParticipated = true;
+//                }
+//
+//                boolean isFavorite = favoriteRepository.existsByBoardIdAndUserId(boardId, userId);
+//                String fileUrl = getFileUrl(boardId, EntityType.POST);
+//                String fileName = getFileName(boardId, EntityType.POST);
+//                Long commentCount = commentRepository.countCommentsByBoardId(boardId);
+//                boolean isDone = (commentCount + 1) == board.getMaxPage();
+//
+//                return BoardMapper.toRelayBoardResponseDto(board, hasParticipated, isFavorite,
+//                    fileUrl, fileName, commentCount, isDone);
+//            })
+//            .collect(toList());
+//    }
+
+    private List<RelayBoardResponseDto> getRelayBoardResponseDtos(List<Board> boards, Boolean isDone) {
+
+        log.info("Filtering with isDone: {}", isDone);  // 로그 출력
 
         Long userId = tokenService.getUserIdFromToken();
 
         return boards.stream()
-            .map(board -> {
-                Long writerId = board.getUser().getUserId();
-                Long boardId = board.getId();
+                .filter(board -> {
+                    Long commentCount = commentRepository.countCommentsByBoardId(board.getId());
+                    boolean isDoneFlag = (commentCount + 1) == board.getMaxPage();
+                    return isDone == null || isDoneFlag == isDone;
+                })
+                .map(board -> {
+                    Long writerId = board.getUser().getUserId();
+                    Long boardId = board.getId();
 
-                boolean hasParticipated = hasUserParticipated(boardId, userId);
-                if (writerId == userId) {
-                    hasParticipated = true;
-                }
+                    boolean hasParticipated = hasUserParticipated(boardId, userId);
+                    if (writerId == userId) {
+                        hasParticipated = true;
+                    }
 
-                boolean isFavorite = favoriteRepository.existsByBoardIdAndUserId(boardId, userId);
-                String fileUrl = getFileUrl(boardId, EntityType.POST);
-                String fileName = getFileName(boardId, EntityType.POST);
-                Long commentCount = commentRepository.countCommentsByBoardId(boardId);
-                boolean isDone = (commentCount + 1) == board.getMaxPage();
+                    boolean isFavorite = favoriteRepository.existsByBoardIdAndUserId(boardId, userId);
+                    String fileUrl = getFileUrl(boardId, EntityType.POST);
+                    String fileName = getFileName(boardId, EntityType.POST);
+                    Long commentCount = commentRepository.countCommentsByBoardId(boardId);
+                    boolean isDoneFlag = (commentCount + 1) == board.getMaxPage();
 
-                return BoardMapper.toRelayBoardResponseDto(board, hasParticipated, isFavorite,
-                    fileUrl, fileName, commentCount, isDone);
-            })
-            .collect(toList());
+                    return BoardMapper.toRelayBoardResponseDto(board, hasParticipated, isFavorite, fileUrl, fileName, commentCount, isDoneFlag);
+                })
+                .collect(Collectors.toList());
     }
 
     private List<OkBoardDto> getOkBoardResponseDtos(List<Board> boards) {
@@ -344,7 +411,7 @@ public class BoardServiceImpl implements BoardService {
         }
 
         // BoardDto로 반환해서 가져 옴.
-        List<? extends BoardDto> sideBoardDtos = getBoardDtos(BoardType.VOTE_BOARD, sideBoards);
+        List<? extends BoardDto> sideBoardDtos = getBoardDtos(BoardType.VOTE_BOARD, sideBoards, false);
 
         return BoardMapper.toVoteBoardDetailResponseDto(board, fileUrl, fileName, voteInfos,
             totalVotes, userVoteContent, sideBoardDtos);
@@ -373,7 +440,7 @@ public class BoardServiceImpl implements BoardService {
         }
 
         // BoardDto로 반환해서 가져 옴.
-        List<? extends BoardDto> sideBoardDtos = getBoardDtos(BoardType.OPINION_BOARD, sideBoards);
+        List<? extends BoardDto> sideBoardDtos = getBoardDtos(BoardType.OPINION_BOARD, sideBoards, false);
 
         return BoardMapper.toOpinionBoardDetailResponseDto(board, fileUrl, fileName,
             hasParticipated, commentCount, commentResponseDtos, sideBoardDtos);
