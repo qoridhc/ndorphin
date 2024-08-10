@@ -16,6 +16,7 @@ const WishList = () => {
     userApi.getFavorites(userId as string)
       .then((res) => {
         const getWishList = res.data.data.boardDtos;
+        console.log(getWishList)
         setWishList(getWishList);
       })
       .catch((err) => {
@@ -41,7 +42,7 @@ const WishList = () => {
       .catch((error) => {
         console.error("좋아요 상태 불러오기 실패: ", error);
       });
-  }, []);
+  }, [WishList]);
 
   const handleLikeToggle = (id: number) => {
     const userId = localStorage.getItem("userId");
@@ -80,7 +81,7 @@ const WishList = () => {
   return (
     <div>
       <div className="container mx-auto flex flex-col items-center">
-        <div className="w-full border-b border-black flex flex-col items-center">
+        <div className="w-full mb-4 border-b border-black flex flex-col items-center">
           <h1 className="my-12 text-center text-4xl font-semibold">내가 찜한 목록</h1>
         </div>
         {/* 찜 목록이 비어있을 때 */}
@@ -92,27 +93,38 @@ const WishList = () => {
               릴레이 북 바로가기
             </button>
           </div>
-          ) : (
-            <div className="px-40 py-10 grid grid-cols-1 xl:grid-cols-2 gap-96">
-              {WishList.map((item) => (
-                <div className="" key={item.id}>
-                  <div className="pt-2">
-                    <div className="relative">
-                      <img
-                        className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer"
-                        src={likeStatus[item.id] ? fullHeart : isHovered === item.id ? fullHeart : emptyHeart}
-                        alt="#"
-                        onClick={() => handleLikeToggle(item.id)}
-                        onMouseEnter={() => setIsHovered(item.id)}
-                        onMouseLeave={() => setIsHovered(null)}
-                      />
-                      <img className="hover:cursor-pointer w-full h-[20rem] rounded-md" src={item.fileUrls[0]} alt="#" onClick={() => goToDetail(item.id)} />
+        ) : (
+          <div className="w-full px-40 py-10">
+            {WishList.map((item) => (
+              <div className="" key={item.id}>
+                <div className="pt-2 relative">
+                  <div className="relative flex" onClick={() => goToDetail(item.id)}>
+                    <img className="hover:cursor-pointer w-[16rem] h-[20rem] rounded-md" src={item.fileUrls[0]} alt="#" />
+                    <div>
+                      <div className="ms-10 flex gap-4 items-center">
+                        <span className="hover:cursor-pointer font-bold text-lg">{item.subject}</span>
+                        {item.done ? <span className="text-gray-400">완성</span> : <span className="text-gray-400">미완성</span>}
+                      </div>
+                      <div className="">
+                        <img
+                          className="w-10 z-10 hover:cursor-pointer absolute top-0 right-3"
+                          src={likeStatus[item.id] ? fullHeart : isHovered === item.id ? fullHeart : emptyHeart}
+                          alt="#"
+                          onClick={() => handleLikeToggle(item.id)}
+                          onMouseEnter={() => setIsHovered(item.id)}
+                          onMouseLeave={() => setIsHovered(null)}
+                        />
+                      </div>
+                      <div className="ms-10 mt-4 flex items-center gap-4">
+                        <img className="w-8 h-8 rounded-full" src={item.user.profileImage} alt="최초 작성자" />
+                        <span>{item.user.nickName}</span>
+                      </div>
+                      {/* <div className="ms-10">첫번재 내용 또는 요약 내용</div> */}
                     </div>
-                    <span onClick={() => goToDetail(item.id)} className="hover:cursor-pointer font-bold text-lg">
-                      {item.subject}
-                    </span>
                   </div>
                 </div>
+                <hr className="border-t-1 border-black my-4" />
+              </div>
             ))}
           </div>
         )}
