@@ -1,11 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-function EndPage() {
+interface EndPageProps {
+  setEndPageValue: (endPage: number) => void;
+  currentEndPage: number | null;
+  setCurrentEndPage: (endPage: number) => void;
+}
+
+function EndPage({ currentEndPage, setCurrentEndPage, setEndPageValue }: EndPageProps) {
   const [endPage, setEndPage] = useState([5, 10, 20, 30]);
   const [selectedEndPage, setSelectedEndPage] = useState<number | null>(null);
 
+  useEffect(() => {
+    setSelectedEndPage(currentEndPage)
+  }, [currentEndPage])
+  
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedEndPage(Number(e.target.value));
+    const selectedValue = Number(e.target.value);
+    setSelectedEndPage(selectedValue);
+    setEndPageValue(selectedValue);
+    setCurrentEndPage(selectedValue)
   };
 
   return (

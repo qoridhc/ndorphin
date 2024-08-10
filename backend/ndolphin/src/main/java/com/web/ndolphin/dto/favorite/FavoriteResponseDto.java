@@ -1,6 +1,6 @@
 package com.web.ndolphin.dto.favorite;
 
-import com.web.ndolphin.dto.board.response.BoardDto;
+import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
 import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +13,5 @@ import lombok.ToString;
 @RequiredArgsConstructor
 public class FavoriteResponseDto {
 
-    private final List<BoardDto> BoardDtos;
-
+    private final List<RelayBoardResponseDto> BoardDtos;
 }

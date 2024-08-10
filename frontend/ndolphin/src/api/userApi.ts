@@ -29,29 +29,60 @@ interface UserInfoResponse {
 const userApi = {
   login: (loginType: string) => {
     const oauthUrl = `${baseURL}/api/v1/auth/oauth2/${loginType}`;
-    const newWindow = window.open(
-      oauthUrl, 
-      'Login', 
-      'width=500,height=600'
-    );
+    const newWindow = window.open(oauthUrl, "Login", "width=500,height=600");
 
     return newWindow;
   },
 
-  checkNickname: async (nickName: string) => { return request.get<NicknameCheckResponse>(`${baseURL}/api/v1/users/nickname-check`, { params: { nickName } }) },
+  checkNickname: async (nickName: string) => {
+    return request.get<NicknameCheckResponse>(`${baseURL}/api/v1/users/nickname-check`, { params: { nickName } });
+  },
 
   update: (userId: string, formData: FormData) => {
     return request.put(`/api/v1/users/${userId}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
+        "Content-Type": "multipart/form-data",
+      },
+    });
   },
-    
 
-  getUserInfo: (userId: string) =>
-    request.get<ApiResponse<UserInfoResponse>>(`${baseURL}/api/v1/users/${userId}`),
+  getUserInfo: (userId: string) => request.get<ApiResponse<UserInfoResponse>>(`/api/v1/users/${userId}`),
 
-}
+  follow: (userId: string, followUserId: string) => {
+    return request.post(`/api/v1/follows/${userId}`, { followingId: followUserId }, { headers: { "Content-Type": "application/json" } });
+  },
+
+  unFollow: (userId: string, followUserId: string) => {
+    return request.delete(`/api/v1/follows/${userId}`, {
+      data: { followingId: followUserId },
+      headers: { "Content-Type": "application/json" },
+    });
+  },
+
+  getFollowing: (userId: string) => {
+    return request.get(`/api/v1/follows/followings/${userId}`);
+  },
+
+  getFollower: (userId: string) => {
+    return request.get(`/api/v1/follows/followers/${userId}`);
+  },
+
+  favorite: (userId: number, boardId: number) => {
+    return request.post(
+      `api/v1/users/${userId}/favorites`,
+      {
+        userId: userId,
+        boardId: boardId,
+      },
+      { headers: { "Content-Type": "application/json" } }
+    );
+  },
+
+  unfavorite: (userId: number, boardId: number) => {
+    return request.delete(
+      `api/v1/users/${userId}/favorites/${boardId}`
+    );
+  },
+};
 
 export default userApi;

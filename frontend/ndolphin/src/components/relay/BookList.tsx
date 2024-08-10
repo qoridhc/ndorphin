@@ -1,11 +1,21 @@
+import { useState, useEffect } from "react";
+import boardApi from "../../api/boardApi";
 import Book from "./Book";
-import Paging from "../common/Paging";
+import RelayPaging from "./RelayPaging";
+import { tab } from "@testing-library/user-event/dist/tab";
 
 interface BookListProps {
+  tabs: number;
   bookList: any[];
+  setBookList: (bookList: any[]) => void;
+  searchKeyword: string;
+  searchFilter1: string;
+  searchFilter2: string;
+  isSearch: boolean;
+  setIsSearch: (state: boolean) => void;
 }
 
-const BookList = ({bookList}: BookListProps) => {
+const BookList = ({ tabs, bookList, setBookList, searchKeyword, searchFilter1, searchFilter2, isSearch, setIsSearch }: BookListProps) => {
   // const bookList = [
   //   {
   //     id: 1,
@@ -81,18 +91,51 @@ const BookList = ({bookList}: BookListProps) => {
   //   },
   // ];
 
+  const getRelayBoardList = async () => {
+    try {
+      const response = await boardApi.list("RELAY_BOARD");
+      bookList = response.data.data.content;
+
+      setBookList(bookList);
+
+    } catch (error) {
+      console.error("boardApi list : ", error);
+    }
+  };
+
+  const getSearchRelayBoardList = async () => {
+    try {
+      const response = await boardApi.search("RELAY_BOARD", searchKeyword, searchFilter1, searchFilter2);
+      setBookList(response.data.data.content);
+    } catch (error) {
+      console.log("boardApi search : ", error);
+    }
+  };
+
+  useEffect(() => {
+    if (searchKeyword || searchFilter2 === "popularity") {
+      getSearchRelayBoardList();
+      setIsSearch(false);
+    } else {
+      getRelayBoardList();
+    }
+  }, [isSearch, searchFilter2]);
+
   return (
     <div>
-      <div className="px-44 py-10 grid grid-cols-2 lg:grid-cols-4 gap-x-14 gap-y-20">
-        {
-          bookList.map((book) => (
-            <Book key={book.id} book={book} />
-          ))
-        }
-      </div>
-      <Paging />
+      {tabs === 0 ? (
+        <>
+          <div className="px-44 py-10 grid grid-cols-2 lg:grid-cols-4 gap-x-14 gap-y-20">{bookList.map((book) => book.done === false && <Book key={book.id} book={book} />)}</div>
+          <RelayPaging />
+        </>
+      ) : (
+        <>
+          <div className="px-44 py-10 grid grid-cols-2 lg:grid-cols-4 gap-x-14 gap-y-20">{bookList.map((book) => book.done === true && <Book key={book.id} book={book} />)}</div>
+          <RelayPaging/>
+        </>
+      )}
     </div>
   );
-}
+};
 
 export default BookList;

@@ -1,20 +1,31 @@
 import React, { useRef, ChangeEvent, memo, useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import EndPage from "../../components/relay/EndPage";
 import "../../css/RelayBook.css";
 import "../../css/Notes.css";
 import "../../css/InputPlaceHolder.css";
 
 interface RelayBookUpdateLeftFormProps {
-  handleSubjectChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleContentChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
-  handleRelayBookUpdate: (subjectValue: string, contentValue: string) => void;
+  bookId: string | undefined;
+  handleRelayBookUpdate: (subjectValue: string, contentValue: string, endPageValue: number) => void;
   subject: any;
   content: any;
+  currentEndPage: number | null;
+  setCurrentEndPage: (endPage: number) => void;
 }
 
-const RelayBookUpdateLeftForm = ({ handleSubjectChange, handleContentChange, handleRelayBookUpdate, subject, content }: RelayBookUpdateLeftFormProps) => {
+const RelayBookUpdateLeftForm = ({ bookId, handleRelayBookUpdate, subject, content, currentEndPage, setCurrentEndPage }: RelayBookUpdateLeftFormProps) => {
+  const navigate = useNavigate();
   const [subjectValue, setSubjectValue] = useState(subject.current);
   const [contentValue, setContentValue] = useState(content.current);
+  const [endPageValue, setEndPageValue] = useState<number>(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [subjectValue]);
 
   useEffect(() => {
     setSubjectValue(subject.current);
@@ -43,7 +54,7 @@ const RelayBookUpdateLeftForm = ({ handleSubjectChange, handleContentChange, han
             <div className="w-[95%]">
               <div className="flex flex-col items-center">
                 <hr className="w-full border-zinc-950" />
-                <input onChange={onChangeSubject} className="w-full my-3 p-1 rounded-lg focus:outline-none bg-yellow-200 text-left" type="text" placeholder="제목을 입력해 주세요 (최대 30자)" value={subjectValue} />
+                <input ref={inputRef} onChange={onChangeSubject} className="w-full my-3 p-1 rounded-lg focus:outline-none bg-yellow-200 text-left" type="text" placeholder="제목을 입력해 주세요 (최대 30자)" value={subjectValue} />
               </div>
             </div>
 
@@ -65,16 +76,28 @@ const RelayBookUpdateLeftForm = ({ handleSubjectChange, handleContentChange, han
               <hr className="mx-3 border-zinc-900" />
               <div className="p-4 flex justify-center">
                 <div className="w-4/5 flex justify-between">
-                  <EndPage />
+                  <EndPage currentEndPage={currentEndPage} setCurrentEndPage={setCurrentEndPage} setEndPageValue={setEndPageValue} />
                 </div>
               </div>
             </div>
           </div>
           <div className="absolute z-[99] flex justify-start w-full px-8 my-2 top-0 -left-2">
-            <button onClick={() => { handleRelayBookUpdate(subjectValue, contentValue) }} className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
+            <button
+              onClick={() => {
+                handleRelayBookUpdate(subjectValue, contentValue, endPageValue);
+              }}
+              className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200"
+            >
               수정
             </button>
-            <button className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200">취소</button>
+            <button
+              onClick={() => {
+                navigate(`/relaybookdetail/${bookId}`);
+              }}
+              className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200"
+            >
+              취소
+            </button>
           </div>
         </div>
       }

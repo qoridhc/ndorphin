@@ -9,17 +9,25 @@ const commentApi = {
     })
   },
 
-  update: (boardId: string, commentId: number, data: { content: string }) => {
-    return request.put(`/api/v1/boards/${boardId}/comments/${commentId}`, data, {
+  update: (boardId: string, commentId: number, formData: FormData) => {
+    return request.put(`/api/v1/boards/${boardId}/comments/${commentId}`, formData, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'multipart/form-data'
       }
     })
   },
   
   delete: (boardId: string, commentId: number) => {
     return request.delete(`/api/v1/boards/${boardId}/comments/${commentId}`);
-  }
+  },
+
+  createLike: (boardId: string, commentId: number) => {
+    return request.post(`/api/v1/boards/${boardId}/comments/${commentId}/like`);
+  },
+
+  deleteLike: (boardId: string, commentId: number) => {
+    return request.delete(`/api/v1/boards/${boardId}/comments/${commentId}/like`);
+  },
 }
 
 export default commentApi;

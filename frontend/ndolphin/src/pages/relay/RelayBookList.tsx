@@ -8,7 +8,12 @@ import Filter from "../../components/common/Filter";
 function Relaybooklist() {
   const navigate = useNavigate();
   const [tabs, setTabs] = useState<number>(0);
-  const [bookList, setbookList] = useState([]);
+  const [hasParticipated, setHasPaeticipated] = useState<boolean>(false);
+  const [bookList, setbookList] = useState<any[]>([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchFilter1, setSearchFilter1] = useState("");
+  const [searchFilter2, setSearchFilter2] = useState("");
+  const [isSearch, setIsSearch] = useState(false);
   const underline = "underline underline-offset-[10px] decoration-4 decoration-yellow-300";
 
   // useEffect -> 렌더링이 다 되고나서 실행 (html부터 다 그려준 뒤 실행)
@@ -17,7 +22,7 @@ function Relaybooklist() {
       try {
         const response = await boardApi.list("RELAY_BOARD");
         if (response.status === 200) {
-          const bookList = response.data.data;
+          const bookList = response.data.data.content;
           console.log("릴레이북 목록 불러오기 성공", response.data);
           setbookList(bookList);
         }
@@ -41,7 +46,7 @@ function Relaybooklist() {
           <hr className="w-full" />
 
           <div className="py-6 pb-10 flex flex-col">
-            {/* <SearchBar /> */}
+            <SearchBar setSearchKeyword={setSearchKeyword} setSearchFilter1={setSearchFilter1} setIsSearch={setIsSearch} />
           </div>
           <div className="w-full flex justify-end items-center">
             <div className="flex justify-center mr-[16rem]">
@@ -70,11 +75,11 @@ function Relaybooklist() {
               </button>
             </div>
           </div>
-          {/* <Filter /> */}
+          <Filter setSearchFilter2={setSearchFilter2} />
         </div>
       </div>
 
-      <BookList bookList={bookList} />
+      <BookList tabs={tabs} setBookList={setbookList} bookList={bookList} searchKeyword={searchKeyword} searchFilter1={searchFilter1} searchFilter2={searchFilter2} isSearch={isSearch} setIsSearch={setIsSearch} />
     </div>
   );
 }

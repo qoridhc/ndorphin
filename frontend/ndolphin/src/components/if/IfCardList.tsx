@@ -4,16 +4,23 @@ import boardApi from "../../api/boardApi";
 import OpinionCard from "./OpinionCard";
 
 interface If {
+  id: number;
+  user: {
+    userId: number;
+    profileImage: string | null;
+    mbti: string | null;
+    nickName: string;
+  };
+  content: string;
+  subject: string;
+  fileNames: string[];
+  fileUrls: string[];
+  hit: number;
+  createdAt: string;
+  updatedAt: string | null;
   avatarUrl: string | null;
   bestComment: string | null;
   commentCount: number;
-  content: string;
-  createdAt: string;
-  hit: number;
-  id: number;
-  nickName: string;
-  subject: string;
-  badget: "N";
 }
 
 interface Props {
@@ -30,7 +37,7 @@ const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, set
   const getIfBoardList = async () => {
     try {
       const response = await boardApi.list("OPINION_BOARD");
-      setIfBoardList(response.data.data);
+      setIfBoardList(response.data.data.content);
     } catch (error) {
       console.error("boardApi list : ", error);
     }
@@ -39,7 +46,7 @@ const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, set
   const getSearchIfBoardList = async () => {
     try {
       const response = await boardApi.search("OPINION_BOARD", searchKeyword, searchFilter1, searchFilter2);
-      setIfBoardList(response.data.data);
+      setIfBoardList(response.data.data.content);
     } catch (error) {
       console.log("boardApi search : ", error);
     }

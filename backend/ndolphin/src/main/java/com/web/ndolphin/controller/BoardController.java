@@ -2,9 +2,12 @@ package com.web.ndolphin.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.web.ndolphin.common.ResponseCode;
+import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.board.request.BoardRequestDto;
+import com.web.ndolphin.dto.board.response.BoardDto;
 import com.web.ndolphin.dto.reaction.request.ReactionRequestDto;
 import com.web.ndolphin.service.interfaces.BoardService;
 import com.web.ndolphin.service.interfaces.ReactionService;
@@ -18,6 +21,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -62,29 +69,49 @@ public class BoardController {
         return response;
     }
 
-    @Operation(summary = "게시글 목록 조회", description = "게시판 유형 및 필터에 따른 게시글 목록을 조회합니다.")
+
+    @Operation(
+        summary = "게시글 목록 조회",
+        description = "게시판 유형 및 필터에 따른 게시글 목록을 조회합니다."
+    )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "게시글 목록이 성공적으로 조회되었습니다.",
-            content = @Content(schema = @Schema(implementation = ResponseDto.class))),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.",
-            content = @Content(schema = @Schema())),
-        @ApiResponse(responseCode = "500", description = "서버 오류입니다.",
-            content = @Content(schema = @Schema()))
+        @ApiResponse(
+            responseCode = "200",
+            description = "게시글 목록이 성공적으로 조회되었습니다.",
+            content = @Content(schema = @Schema(implementation = ResponseDto.class))
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "잘못된 요청입니다.",
+            content = @Content(schema = @Schema())
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "서버 오류입니다.",
+            content = @Content(schema = @Schema())
+        )
     })
-    @GetMapping()
-    public ResponseEntity<ResponseDto> getBoardsByType(
+    @GetMapping
+    public ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(
         @Parameter(description = "게시판 유형", required = true)
         @RequestParam("type") BoardType boardType,
+
         @Parameter(description = "첫 번째 필터", required = false)
         @RequestParam(value = "filter1", required = false) String filter1,
+
         @Parameter(description = "두 번째 필터", required = false, example = "recent")
         @RequestParam(value = "filter2", required = false, defaultValue = "recent") String filter2,
-        @Parameter(description = "검색어", required = false)
-        @RequestParam(value = "search", required = false) String search) {
 
-        ResponseEntity<ResponseDto> response = boardService.getBoardsByType(boardType, filter1, filter2, search);
-        return response;
+        @Parameter(description = "검색어", required = false)
+        @RequestParam(value = "search", required = false) String search,
+
+        @Parameter(description = "페이징 정보", required = false)
+        @PageableDefault(size = 12) Pageable pageable) {
+
+        ResponseEntity<ResponseDto<Page<BoardDto>>> responseEntity = boardService.getBoardsByType(boardType, filter1, filter2, search, pageable);
+        return responseEntity;
     }
+
 
     @Operation(summary = "게시글 조회", description = "특정 게시글을 조회합니다.")
     @ApiResponses(value = {
@@ -115,24 +142,24 @@ public class BoardController {
         @ApiResponse(responseCode = "500", description = "서버 오류입니다.",
             content = @Content(schema = @Schema()))
     })
+
     @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDto> updateBoard(
-        @Parameter(description = "수정할 게시글 ID", required = true)
-        @PathVariable("boardId") Long boardId,
-        @Parameter(description = "수정할 게시글 정보", required = true)
-        @RequestPart(name = "request") BoardRequestDto boardRequestDto,
-        @Parameter(description = "첨부 파일 목록", required = false)
-        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
-        @Parameter(description = "삭제할 파일 목록 JSON", required = false)
-        @RequestParam(name = "deleteFiles", required = false) String deleteFilesJson)
-        throws IOException {
+            @Parameter(description = "수정할 게시글 ID", required = true)
+            @PathVariable("boardId") Long boardId,
+            @Parameter(description = "수정할 게시글 정보", required = true)
+            @RequestPart(name = "request") BoardRequestDto boardRequestDto,
+            @Parameter(description = "첨부 파일 목록", required = false)
+            @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
+            @Parameter(description = "삭제할 파일 목록 JSON", required = false)
+            @RequestPart(name = "deleteFiles", required = false) List<String> deleteFiles) // 변경된 부분
+            throws IOException {
 
-        List<String> fileNamesToDelete = null;
-        if (deleteFilesJson != null) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            fileNamesToDelete = objectMapper.readValue(deleteFilesJson, new TypeReference<List<String>>() {});
-        }
+        // @RequestPart로 변경하면, deleteFilesJson 변수를 JSON 리스트로 바로 받을 수 있습니다.
+        // ObjectMapper로 변환 작업이 필요 없습니다.
+        List<String> fileNamesToDelete = deleteFiles;
 
+        // 기존 로직 유지
         ResponseEntity<ResponseDto> response = boardService.updateBoard(boardId, boardRequestDto, multipartFiles, fileNamesToDelete);
         return response;
     }

@@ -74,13 +74,20 @@ const Header = () => {
         localStorage.setItem("nickName", res.data.data.nickName);
         localStorage.setItem("npoint", res.data.data.npoint.toString());
         localStorage.setItem("profileImage", res.data.data.profileImage);
+
+        setProfileImage(res.data.data.profileImage);
+      })
+      .then(() => {
+        setIsLoggedIn(true);
+        closeLoginModal();
+      })
+      .then(() => {
+        window.location.href = window.location.href;
       })
       .catch((err) => {
         console.error("유저 정보 에러", err);
       });
 
-    setIsLoggedIn(true);
-    closeLoginModal();
 
     if (isNewUser) {
       setIsUserInfoEditModalOpen(true);
@@ -257,10 +264,10 @@ const Header = () => {
                     </div>
                   </div>
                   <hr />
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate(`/profile/${localStorage.getItem('userId')}`))}>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => window.location.href = (`/profile/${localStorage.getItem('userId')}`))}>
                     프로필
                   </button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate("/wishlist"))}>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => window.location.href = ("/wishlist"))}>
                     찜 목록
                   </button>
                   <hr />

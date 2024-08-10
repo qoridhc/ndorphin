@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaRegComment } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
-import SettingsMenu from "../common/SettingMenu";
+import SettingsMenu from "../if/CommentSettingMenu";
 
 interface Props {
   content: {

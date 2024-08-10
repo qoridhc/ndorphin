@@ -11,12 +11,12 @@ import DeleteModal from "../../components/relay/relayBookCRUD/BookDeleteModal";
 import AiImagePromptModal from "../../components/relay/AiImagePromptModal";
 
 interface PageEndCoverProps {
-  totalPage: number;
+  totalPage: number | null;
 }
 
 // 마지막 페이지 이후 나오는 책 커버
-const PageEndCover = React.forwardRef<HTMLDivElement, PageEndCoverProps>(({ totalPage }: PageEndCoverProps, ref: ForwardedRef<HTMLDivElement>) => {
-  return totalPage % 2 === 0 ? <div className="cover" ref={ref} data-density="hard"></div> : <></>;
+const PageEndCover = React.forwardRef<HTMLDivElement, PageEndCoverProps>(({ totalPage }, ref: ForwardedRef<HTMLDivElement>) => {
+  return totalPage && totalPage % 2 === 1 ? <div className="cover" ref={ref} data-density="hard"></div> : <></>;
 });
 
 const RelayBookDetail = () => {
@@ -24,29 +24,17 @@ const RelayBookDetail = () => {
   const { bookId } = useParams();
   const [pages, setPages] = useState<any[]>([]);
   const [page, setPage] = useState<number>(1);
-  const [totalPage, setTotalPage] = useState<number>(pages.length + 1);
+  const [pageId, setPageId] = useState<number | null>(null);
   const bookRef = useRef<typeof HTMLFlipBook>();
   const [isFinished, setIsFinished] = useState(false);
   const [inputPage, setInputPage] = useState<number | string>(page);
   const [isHoverd, setIsHoverd] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const pageElements: any[] = [];
   const [firstPage, setFirstPage] = useState<any[]>([]);
-
-  const lastPage = [
-    {
-      commentId: 1,
-      nickName: "1",
-      content: "1",
-      likeCnt: 1,
-      createdAt: "1",
-      updatedAt: "1",
-      avatarUrl: "1",
-      contentFileUrl: "1",
-      likedByUser: true,
-    },
-  ];
+  const [lastPage, setLastPage] = useState<any[]>([]);
+  const [hasParticipated, setHasParticipated] = useState<boolean>(false);
+  const [isChanged, setIsChanged] = useState<boolean>(false);
 
   // useEffect -> 렌더링이 다 되고나서 실행 (html부터 다 그려준 뒤 실행)
   useEffect(() => {
@@ -59,13 +47,15 @@ const RelayBookDetail = () => {
           if (response.status === 200 && isMounted) {
             const bookDetail = response.data.data.commentResponseDtos;
             const firstPage = response.data.data;
-            console.log("릴레이북 이야기 상세 조회 성공");
             setPages(bookDetail);
             setFirstPage([firstPage]);
+            setLastPage([firstPage]);
+            setHasParticipated(firstPage.hasParticipated);
+            setIsFinished(firstPage.done);
           }
         }
       } catch (error) {
-        console.log("릴레이북 목록 불러오기 오류: ", error);
+        console.log("릴레이북 상세 불러오기 오류: ", error);
       }
     };
 
@@ -75,11 +65,6 @@ const RelayBookDetail = () => {
       isMounted = false;
     };
   }, [bookId]);
-
-  useEffect(() => {
-    console.log("Pages updated:", pages);
-    console.log("first Pages update: ", firstPage);
-  }, [pages, firstPage]);
 
   // 페이지 넘어갈 시 page를 현재 페이지 쪽수로 업데이트
   const onFlip = useCallback((e: { data: number }) => {
@@ -125,6 +110,7 @@ const RelayBookDetail = () => {
     setDeleteAIModalOpen(true);
   };
 
+  // 삭제 모달 확인 시 axios delete
   const confirmDelete = async () => {
     setDeleteAIModalOpen(false);
 
@@ -133,14 +119,15 @@ const RelayBookDetail = () => {
         const response = await boardApi.delete(bookId);
         if (response.status === 200) {
           console.log("릴레이북 삭제 성공");
+          navigate("/relaybooklist");
         }
       }
     } catch (error) {
       console.error("릴레이북 삭제 오류: ", error);
     }
-    navigate("/relaybooklist");
   };
 
+  // 삭제 모달 취소 시 모달 닫음
   const cancelDelete = () => {
     setDeleteAIModalOpen(false);
   };
@@ -227,23 +214,13 @@ const RelayBookDetail = () => {
   const confirmAiImage = async (image: string) => {
     setIsAiModalOpen(false);
     setImage(image);
-
-    // try {
-    //   const response = await fetch(image);
-    //   const data = await response.blob();
-    //   const ext = image.split(".").pop() || "";
-    //   const filename = image.split("/").pop() || "";
-    //   const metadata = { type: `image/${ext}` };
-    //   const file = new File([data], filename, metadata);
-    //   setFile(file);
-    // } catch (error) {
-    //   console.error("Error:", error);
-    // }
+    setIsChanged(true);
   };
 
   const cancelAiImage = () => {
     setIsAiModalOpen(false);
   };
+
 
   return (
     <div className="overflow-hidden">
@@ -283,14 +260,62 @@ const RelayBookDetail = () => {
             <BookPageCover firstPage={firstPage} bookId={bookId} isDeleteOpen={isDeleteModalOpen} isAiOpen={isAiModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
 
             {/* 첫 번째 페이지 */}
-            <BookDetailPage readPage={"first"} bookId={bookId} number={page} pages={firstPage} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
+            <BookDetailPage
+              readPage={"first"}
+              hasParticipated={hasParticipated}
+              bookId={bookId}
+              pageId={pageId}
+              number={page}
+              pages={firstPage}
+              totalPage={pages.length}
+              handleAiImage={handleAiImage}
+              image={image}
+              setImage={setImage}
+              file={file}
+              setFile={setFile}
+              isFinished={isFinished}
+              setPageId={setPageId}
+              isChanged={isChanged}
+              setIsChanged={setIsChanged}></BookDetailPage>
             {/* 내부 상세 페이지 */}
-            <BookDetailPage readPage={"content"} bookId={bookId} number={page} pages={pages} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
+            <BookDetailPage
+              readPage={"content"}
+              hasParticipated={hasParticipated}
+              bookId={bookId}
+              pageId={pageId}
+              number={page}
+              pages={pages}
+              totalPage={pages.length}
+              handleAiImage={handleAiImage}
+              image={image}
+              setImage={setImage}
+              file={file}
+              setFile={setFile}
+              isFinished={isFinished}
+              setPageId={setPageId}
+              isChanged={isChanged}
+              setIsChanged={setIsChanged}></BookDetailPage>
             {/* 마지막 페이지 (이모티콘 반응 or 페이지 추가) */}
-            <BookDetailPage readPage={"last"} bookId={bookId} number={page} pages={lastPage} totalPage={pages.length} handleAiImage={handleAiImage} image={image} setImage={setImage} isFinished={isFinished}></BookDetailPage>
+            <BookDetailPage
+              readPage={"last"}
+              hasParticipated={hasParticipated}
+              bookId={bookId}
+              pageId={pageId}
+              number={page}
+              pages={lastPage}
+              totalPage={pages.length}
+              handleAiImage={handleAiImage}
+              image={image}
+              setImage={setImage}
+              file={file}
+              setFile={setFile}
+              isFinished={true}
+              setPageId={setPageId}
+              isChanged={isChanged}
+              setIsChanged={setIsChanged}></BookDetailPage>
 
             {/* 페이지가 짝수일 경우 마지막 커버 표시 */}
-            <PageEndCover totalPage={totalPage} />
+            <PageEndCover totalPage={pages.length + 2} />
           </HTMLFlipBook>
         </div>
 

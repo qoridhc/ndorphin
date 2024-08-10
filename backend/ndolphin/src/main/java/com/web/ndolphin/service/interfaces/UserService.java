@@ -30,9 +30,13 @@ public interface UserService {
 
     ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto, MultipartFile profileImage);
 
+    ResponseEntity<ResponseDto> deleteProfile(Long userId);
+
     ResponseEntity<ResponseDto> addNPoint(Long userId, NPointRequestDto dto);
 
     ResponseEntity<ResponseDto> deleteNPoint(Long userId, NPointDeleteRequestDto dto);
+
+    ResponseEntity<ResponseDto> getNPointPercent(Long userId);
 
     List<BestNResponseDto> getSortedUsersByNPoint(boolean flag);
 }

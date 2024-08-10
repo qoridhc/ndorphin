@@ -1,7 +1,7 @@
 import HTMLFlipBook from "react-pageflip";
 import React, { ForwardedRef, useMemo, useRef } from "react";
 import { useState, ChangeEvent, useEffect, useCallback } from "react";
-import { useLocation, useParams } from "react-router";
+import { useLocation, useParams, useNavigate } from "react-router";
 import boardApi from "../../api/boardApi";
 import "../../css/RelayBook.css";
 import "../../css/Notes.css";
@@ -24,13 +24,16 @@ const Page = React.forwardRef<HTMLDivElement, PageProps>((props, ref: ForwardedR
 });
 
 const RelayBookUpdate: React.FC = () => {
+  const navigate = useNavigate();
   const { bookId } = useParams();
-  const bookIdNumber = useMemo(() => (bookId ? parseInt(bookId, 10) : NaN), [bookId]);
   const subject = useRef<string>("");
   const content = useRef<string>("");
-  const [contentFileUrl, setContentFileUrl] = useState("");
-  const [image, setImage] = useState<string>(contentFileUrl);
+  const [currentFileName, setCurrentFileName] = useState<string | null>(null);
+  const [currentEndPage, setCurrentEndPage] = useState<number | null>(null);
+  // const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>(currentFileName);
   const [file, setFile] = useState<File | null>(null);
+  const [isChanged, setIsChanged] = useState<boolean>(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -42,11 +45,13 @@ const RelayBookUpdate: React.FC = () => {
           if (response.status === 200 && isMounted) {
             const book = response.data.data;
             console.log("릴레이북 이야기 상세 조회 성공");
-            const contentFileUrl = book.contentFileUrl;
+            const contentFileName = book.fileNames[0];
+            const contentFileUrl = book.fileUrls[0];
             subject.current = book.subject;
             content.current = book.content;
-            setContentFileUrl(contentFileUrl);
+            setCurrentFileName(contentFileName);
             setImage(contentFileUrl);
+            setCurrentEndPage(book.maxPage);
           }
         }
       } catch (error) {
@@ -61,19 +66,21 @@ const RelayBookUpdate: React.FC = () => {
     };
   }, [bookId]);
 
-  useEffect(() => {
-    console.log("Subject updated: ", subject.current);
-    console.log("Content updated: ", content.current);
-  }, [contentFileUrl]); // contentFileUrl이 변경될 때 로그를 찍어 최신 값을 확인
-
   // axios PUT
-  const handleRelayBookUpdate = async (subject: string, content: string) => {
+  const handleRelayBookUpdate = async (subject: string, content: string, maxPage: number) => {
     const formData = new FormData();
 
-    if (file) {
+    if (currentFileName !== null && isChanged && file) {
+      const fileName = [];
+      fileName.push(currentFileName);
+      formData.append("deleteFiles", JSON.stringify(fileName));
+      formData.append("files", file);
+      console.log(fileName);
+      console.log(file);
+    } else if (currentFileName === null && file) {
       formData.append("files", file);
     }
-
+    
     formData.append(
       "request",
       new Blob(
@@ -82,26 +89,32 @@ const RelayBookUpdate: React.FC = () => {
             subject: subject,
             content: content,
             boardType: "RELAY_BOARD",
+            maxPage: maxPage,
           }),
         ],
         { type: "application/json" }
       )
     );
-
-    try {
-      const response = await boardApi.update(formData, bookIdNumber);
-      if (response.status === 200) {
-        console.log("릴레이북 이야기 수정 성공");
+    
+    if (bookId !== undefined) {
+      try {
+        const response = await boardApi.update(formData, bookId);
+        if (response.status === 200) {
+          console.log("릴레이북 이야기 수정 성공");
+          navigate(`/relaybookdetail/${bookId}`);
+        }
+      } catch (error) {
+        console.error("릴레이북 이야기 수정 오류: ", error);
       }
-    } catch (error) {
-      console.error("릴레이북 이야기 수정 오류: ", error);
     }
   };
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+
     if (file) {
       setFile(file);
+      setIsChanged(true);
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
@@ -110,16 +123,6 @@ const RelayBookUpdate: React.FC = () => {
       reader.readAsDataURL(file);
     }
   };
-
-  const handleSubjectChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    subject.current = value;
-  }, []);
-
-  const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value;
-    content.current = value;
-  }, []);
 
   // AI 이미지 모달 관련
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -131,22 +134,12 @@ const RelayBookUpdate: React.FC = () => {
   const confirmAiImage = async (image: string) => {
     setIsModalOpen(false);
     setImage(image);
-
-    // try {
-    //   const response = await fetch(image);
-    //   const data = await response.blob();
-    //   const ext = image.split(".").pop() || "";
-    //   const filename = image.split("/").pop() || "";
-    //   const metadata = { type: `image/${ext}` };
-    //   const file = new File([data], filename, metadata);
-    //   setFile(file);
-    // } catch (error) {
-    //   console.error("Error:", error);
-    // }
+    setIsChanged(true);
   };
 
   const cancelAiImage = () => {
     setIsModalOpen(false);
+    setFile(null)
   };
 
   return (
@@ -155,7 +148,7 @@ const RelayBookUpdate: React.FC = () => {
       <div className="">
         {/* @ts-ignore */}
         <HTMLFlipBook width={480} height={580} minWidth={315} maxWidth={1000} minHeight={420} maxHeight={1350} flippingTime={600} style={{ margin: "0 auto" }} maxShadowOpacity={0.5} useMouseEvents={false}>
-          <Page key="left-form">{<RelayBookUpdateLeftForm handleSubjectChange={handleSubjectChange} handleContentChange={handleContentChange} handleRelayBookUpdate={handleRelayBookUpdate} subject={subject} content={content} />}</Page>
+          <Page key="left-form">{<RelayBookUpdateLeftForm bookId={bookId} handleRelayBookUpdate={handleRelayBookUpdate} subject={subject} content={content} currentEndPage={currentEndPage} setCurrentEndPage={setCurrentEndPage} />}</Page>
           <Page key="right-form">
             {/* 표지 이미지 form */}
             <div className="mt-11 flex flex-col items-center justify-center">
@@ -168,9 +161,7 @@ const RelayBookUpdate: React.FC = () => {
                 <p className="m-3 text-xl font-bold">표지</p>
                 <hr className="mx-3 my-2 border-zinc-900" />
                 <div className="grid grid-rows-[60%_40%]">
-                  <div className="flex justify-center items-center">
-                    <img src={image} alt="coverImage" className="w-[22rem] h-64 border rounded-md" />
-                  </div>
+                  <div className="flex justify-center items-center">{image && <img src={image} alt="coverImage" className="w-[22rem] h-64 border rounded-md" />}</div>
 
                   {/* 이미지 첨부 버튼 */}
                   <div className="pt-4 pb-6 h-full grid grid-cols-[49%_2%_49%]">
@@ -200,7 +191,7 @@ const RelayBookUpdate: React.FC = () => {
                           <p className="ml-5 text-xs">사진 첨부</p>
                         </div>
                       </label>
-                      <input className="hidden" id="image-input" type="file" accept="image/*" onChange={handleImageChange} />
+                      <input className="hidden" id="image-input" type="file" accept="image/jpeg, image/png, image/bmp" onChange={handleImageChange} />
 
                       <div className="my-5 flex flex-col items-center">
                         <span>

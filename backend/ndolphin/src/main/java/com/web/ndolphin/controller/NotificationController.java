@@ -3,7 +3,6 @@ package com.web.ndolphin.controller;
 import com.web.ndolphin.dto.ResponseDto;
 import com.web.ndolphin.dto.notification.request.NotificationRequestDto;
 import com.web.ndolphin.service.impl.NotificationServiceImpl;
-import com.web.ndolphin.util.LogUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,10 +40,8 @@ public class NotificationController {
     })
     @PostMapping("/{userId}")
     public ResponseEntity<ResponseDto> createNotification(
-        @Parameter(description = "알림을 생성할 사용자의 ID", required = true) @PathVariable Long userId,
-        @Parameter(description = "알림 생성 요청 데이터", required = true) @RequestBody NotificationRequestDto dto) {
-
-        LogUtil.info("createNotification", dto);
+        @Parameter(description = "알림을 받을 사용자의 ID", required = true) @PathVariable Long userId,
+        @Parameter(description = "알림 생성 요청 데이터", required = true) @Valid @RequestBody NotificationRequestDto dto) {
 
         ResponseEntity<ResponseDto> response = notificationService.create(userId, dto);
 
@@ -88,11 +86,11 @@ public class NotificationController {
         @ApiResponse(responseCode = "500", description = "서버 오류입니다.",
             content = @Content(schema = @Schema()))
     })
-    @DeleteMapping("/{notificationId}")
-    public ResponseEntity<ResponseDto> deleteNotification(
-        @Parameter(description = "삭제할 알림의 ID", required = true) @PathVariable Long notificationId) {
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<ResponseDto> deleteAllNotification(
+        @Parameter(description = "삭제할 알림의 ID", required = true) @PathVariable Long userId) {
 
-        ResponseEntity<ResponseDto> response = notificationService.delete(notificationId);
+        ResponseEntity<ResponseDto> response = notificationService.deleteAllByUserId(userId);
 
         return response;
     }
