@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Navigate, useNavigate } from "react-router";
 import userApi from "../../api/userApi";
 import { IoMdClose } from "react-icons/io";
@@ -37,23 +37,16 @@ function Book({ book }: BookProps) {
   const emptyHeart = "/assets/relay/emptyHeart.png";
   const userId = book.user.userId;
   const bookId = book.id;
+  const summaryRef = useRef<HTMLDivElement>(null);
 
   const goBookDetail = (id: number) => {
     navigate(`/relaybookdetail/${id}`);
   };
 
-  const handleAISummary = () => {
-    if (showSummary) {
-      setShowSummary(false);
-    } else {
-      // AI 요약 호출 로직을 여기에 추가합니다.
-      // 예를 들어, AI 요약 API를 호출하고 결과를 setSummary로 설정할 수 있습니다.
-      // book.summary && setSummary(book.summary);
-      setSummary(
-        "이것은 AI가 생성한 요약 예시입니다. 이것은은 AI가 생성한 요약 예시입니다. 이것은 AI가 생니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은다."
-      );
-      setShowSummary(true);
-    }
+  const handleAISummary = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setShowSummary((prevState) => !prevState);
   };
 
   // 찜 목록 추가
@@ -86,6 +79,24 @@ function Book({ book }: BookProps) {
     }
   };
 
+  // AI 요약하기 외부 클릭 시 모달 닫힘
+  useEffect(() => {
+    if (book.summary) {
+      setSummary(book.summary);
+    }
+
+    function handleClickOutside(event: MouseEvent) {
+      if (showSummary && summaryRef.current && !summaryRef.current.contains(event.target as Node) && !(event.target as HTMLElement).closest("button")) {
+        setShowSummary(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showSummary, book.summary]);
 
   return (
     <div className="relative">
@@ -129,7 +140,7 @@ function Book({ book }: BookProps) {
         >
           {book.subject}
         </span>
-        <button onClick={handleAISummary} className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border-2 border-solid border-zinc-300 font-bold text-zinc-800 mt-2">
+        <button type="button" onClick={handleAISummary} className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border-2 border-solid border-zinc-300 font-bold text-zinc-800 mt-2">
           <img src="/assets/aiSummaryButton.png" className="w-5" alt="#" />
           <p className="text-xs">AI 요약하기</p>
           <img src="/assets/arrow_right.png" className="w-2" alt="#" />
@@ -138,7 +149,7 @@ function Book({ book }: BookProps) {
 
       {/* AI 요약 모달 */}
       {showSummary && (
-        <div className="relative">
+        <div className="relative" ref={summaryRef}>
           {/* 말풍선 꼭지점 */}
           <div
             className="absolute -top-2 left-1/2 transform -translate-x-[4.5rem] 
