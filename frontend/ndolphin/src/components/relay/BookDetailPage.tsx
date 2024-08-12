@@ -107,6 +107,8 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(
       }
     };
 
+
+    console.log("페이지 내용", pages)
     return (
       <div>
         {/* readPage= content 일 경우 페이지 매핑 */}
