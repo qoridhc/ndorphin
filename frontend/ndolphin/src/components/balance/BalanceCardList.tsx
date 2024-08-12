@@ -38,7 +38,7 @@ const BalanceCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch
 
   const getBalanceBoardList = async () => {
     try {
-      const response = await boardApi.list("VOTE_BOARD");
+      const response = await boardApi.list("VOTE_BOARD", page-1);
       setBalanceBoardList(response.data.data.content);
 
       const totalElements = response.data.data.totalElements;
@@ -52,7 +52,7 @@ const BalanceCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch
     try {
       const response = await boardApi.search("VOTE_BOARD", searchKeyword, searchFilter1, searchFilter2, page - 1);
       setBalanceBoardList(response.data.data.content);
-
+      
       const totalElements = response.data.data.totalElements;
       setTotalElements(totalElements);
     } catch (error) {
