@@ -6,6 +6,20 @@ import NSModal from "../user/NSModal";
 import TimeDifference from "../common/TimeDifference";
 import userApi from "../../api/userApi";
 
+interface notification {
+  notificationId: number;
+  userId: number;
+  content: string;
+  createdAt: string;
+  user: {
+    userId: number;
+    profileImage: string | null;
+    nickName: string;
+    mbti: string;
+  };
+  read: boolean;
+}
+
 const Header = () => {
   const navigate = useNavigate();
   const [selectedMenu, setSelectedMenu] = useState<string>("");
@@ -22,17 +36,7 @@ const Header = () => {
     return storedIsNew ? JSON.parse(storedIsNew) : false;
   });
   const [showAlarmDropdown, setShowAlarmDropdown] = useState(false);
-  const [notifications, setNotifications] = useState([
-    { id: 1, profileImage: "/assets/profile/profile1.png", userName: "근데 말야에", text: " 님이 새로운 게시물을 등록했습니다", timestamp: new Date() },
-    { id: 2, profileImage: "/assets/profile/profile2.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 5 * 60 * 1000) },
-    { id: 3, profileImage: "/assets/profile/profile3.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 20 * 60 * 1000) },
-    { id: 4, profileImage: "/assets/profile/profile4.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 60 * 60 * 1000) },
-    { id: 5, profileImage: "/assets/profile/profile5.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000) },
-    { id: 6, profileImage: "/assets/profile/profile1.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
-    { id: 7, profileImage: "/assets/profile/profile2.png", userName: "삶은 계란", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000) },
-    { id: 8, profileImage: "/assets/profile/profile3.png", userName: "근데 말야에", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) },
-    { id: 9, profileImage: "/assets/profile/profile4.png", userName: "", text: "내가 시작한 릴레이북이 베스트에 선정되었습니다", timestamp: new Date(Date.now() - 600000000000) },
-  ]);
+  const [notifications, setNotifications] = useState<notification[]>([]);
 
   useEffect(() => {
     const storedMenu = sessionStorage.getItem("selectedMenu");
@@ -157,8 +161,9 @@ const Header = () => {
             userApi
               .readNotifications(userId as string)
               .then((response) => {
+                const notificationsData = response.data.data;
                 setNotifications(response.data.data)
-                console.log(response.data.data)
+                localStorage.setItem("notifications", JSON.stringify(notificationsData));
               })
               .catch((error) => {
               console.error('알림목록 불러오기 실패: ', error)
@@ -171,10 +176,18 @@ const Header = () => {
     }
   })
 
+  useEffect(() => {
+    const storedNotifications = localStorage.getItem('notifications');
+    if (storedNotifications) {
+      setNotifications(JSON.parse(storedNotifications));
+    }
+  }, []);
+
   const clearNotifications = () => {
     const userId = localStorage.getItem('userId');
     userApi.deleteNotifications(userId as string)
     setNotifications([]);
+    localStorage.removeItem("notifications");
   };
 
   const handleMenuClick = (menu: string) => {
@@ -254,15 +267,15 @@ const Header = () => {
                   </div>
                 </div>
                 {notifications.length > 0 ? (
-                  notifications.map((notification) => (
-                    <div className="py-2 px-6" key={notification.id}>
+                  [...notifications].reverse().map((notification) => (
+                    <div className="py-2 px-6" key={notification.notificationId}>
                       <div className="mt-2 flex items-center">
-                        <img className="w-10 h-10 mr-3 rounded-full" src={notification.profileImage} alt="프로필" />
+                        <img className="w-10 h-10 mr-3 rounded-full" src={notification.user.profileImage || "/assets/user/profile.png"} alt="프로필" />
                         <p className="text-sm">
-                          <span className="font-bold">{notification.userName}</span>
-                          {notification.text}
-                          <span className="ms-4 text-gray-400">
-                            <TimeDifference timestamp={notification.timestamp} />
+                          <span className="font-bold">{notification.user.nickName}</span>
+                          {notification.content}
+                          <span className="ms-4 text-gray-400 whitespace-nowrap">
+                            <TimeDifference timestamp={new Date(notification.createdAt)} />
                           </span>
                         </p>
                       </div>
@@ -292,10 +305,10 @@ const Header = () => {
                     </div>
                   </div>
                   <hr />
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => window.location.href = (`/profile/${localStorage.getItem('userId')}`))}>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => (window.location.href = `/profile/${localStorage.getItem("userId")}`))}>
                     프로필
                   </button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => window.location.href = ("/wishlist"))}>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => (window.location.href = "/wishlist"))}>
                     찜 목록
                   </button>
                   <hr />
@@ -315,7 +328,7 @@ const Header = () => {
 
       <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} onLoginSuccess={handleLoginSuccess} />
       <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onNext={handleNext} setProfileImage={updateProfileImage} />
-      <NSModal isOpen={isNSModalOpen} onClose={handleFinish} mode={'survey'} />
+      <NSModal isOpen={isNSModalOpen} onClose={handleFinish} mode={"survey"} />
     </>
   );
 };
