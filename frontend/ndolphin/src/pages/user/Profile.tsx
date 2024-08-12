@@ -289,7 +289,6 @@ const Profile = () => {
 
   const closeUserInfoEditModal = () => {
     setIsUserInfoEditModalOpen(false);
-    window.location.href = window.location.href;
   };
 
   const closeNSModal = () => {

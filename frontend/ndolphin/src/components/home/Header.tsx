@@ -44,14 +44,9 @@ const Header = () => {
     const storedProfileImage = localStorage.getItem("profileImage");
     const storedEmail = localStorage.getItem("email");
     const storedNickName = localStorage.getItem("nickName");
-
-    if (storedProfileImage === 'null') {
-      setProfileImage("/assets/user/profile.png")
-    } else {
-      setProfileImage(storedProfileImage);
-    }
     setUserEmail(storedEmail);
     setuserNickName(storedNickName);
+    setProfileImage(storedProfileImage === 'null' ? "/assets/user/profile.png" : storedProfileImage);
   }, []);
 
   const openLoginModal = () => setIsLoginModalOpen(true);

@@ -46,6 +46,14 @@ const userApi = {
     });
   },
 
+  deleteProfileImage: (userId: string) => {
+    return request.delete(`/api/v1/users/image/${userId}`)
+  },
+
+  deleteUser: (userId: string) => {
+    return request.delete(`/api/v1/users/${userId}`)
+  },
+
   getUserInfo: (userId: string) => request.get<ApiResponse<UserInfoResponse>>(`/api/v1/users/${userId}`),
 
   follow: (userId: string, followUserId: string) => {
