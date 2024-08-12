@@ -35,7 +35,6 @@ function Book({ book }: BookProps) {
   const navigate = useNavigate();
   const fullHeart = "/assets/relay/fullHeart.png";
   const emptyHeart = "/assets/relay/emptyHeart.png";
-  const userId = book.user.userId;
   const bookId = book.id;
   const summaryRef = useRef<HTMLDivElement>(null);
 
@@ -51,9 +50,9 @@ function Book({ book }: BookProps) {
 
   // 찜 목록 추가
   const handleAddFavorite = async () => {
-    if (bookId && userId) {
+    if (bookId) {
       try {
-        const response = await userApi.favorite(userId, bookId);
+        const response = await userApi.favorite(bookId);
         if (response.status === 200) {
           setFavorite(true);
           console.log("찜 목록 추가 성공", response.data);
@@ -66,9 +65,9 @@ function Book({ book }: BookProps) {
 
   // 찜 목록 삭제
   const handleDeleteFavorite = async () => {
-    if (bookId && userId) {
+    if (bookId) {
       try {
-        const response = await userApi.unfavorite(userId, bookId);
+        const response = await userApi.unfavorite(bookId);
         if (response.status === 200) {
           setFavorite(false);
           console.log("찜 목록 삭제 성공", response.data);
