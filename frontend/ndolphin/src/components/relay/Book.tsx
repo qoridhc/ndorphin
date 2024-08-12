@@ -125,7 +125,7 @@ function Book({ book }: BookProps) {
             goBookDetail(book.id);
           }}
           src={book.fileUrls[0]}
-          className="object-cover hover:cursor-pointer w-full h-[20rem] rounded-md"
+          className="border object-cover hover:cursor-pointer w-full h-[16rem] rounded-md"
           alt="#"
         />
       </div>
@@ -141,7 +141,7 @@ function Book({ book }: BookProps) {
         <button
           type="button"
           onClick={handleAISummary}
-          className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border-2 border-solid border-zinc-300 font-bold text-zinc-800 mt-2 transition duration-200 ease-in-out hover:bg-yellow-200 ">
+          className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800 mt-2 transition duration-200 ease-in-out hover:bg-yellow-100 ">
           <img src="/assets/aiSummaryButton.png" className="w-5" alt="#" />
           <p className="text-xs">AI 요약하기</p>
           <img src="/assets/arrow_right.png" className="w-2" alt="#" />
