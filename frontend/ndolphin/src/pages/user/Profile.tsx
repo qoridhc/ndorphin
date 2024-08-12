@@ -10,7 +10,6 @@ import BalanceList from "../../components/user/BalanceList";
 import UserInfoEditModal from "../../components/user/UserInfoEditModal";
 import NSModal from "../../components/user/NSModal";
 import userApi from "../../api/userApi";
-import { error } from "console";
 
 interface Follow {
   followId: number;
@@ -62,26 +61,26 @@ const Profile = () => {
       userApi.getUserInfo(profileUserId)
       .then(response => {
         if (response.data.code == 'SU') {
-            const userInfo = response.data.data;
-            setNickName(userInfo.nickName);
-            setMbti(userInfo.mbti);
-            setNpoint(userInfo.npoint);
-            const getProfileImage = userInfo.profileImage
-            if (getProfileImage) {
-              setProfileImage(userInfo.profileImage);
-            } else {
-              setProfileImage("/assets/user/profile.png");
-            }
-
-            localStorage.setItem('nickName', userInfo.nickName);
-            localStorage.setItem('mbti', userInfo.mbti);
-            localStorage.setItem('npoint', userInfo.npoint.toString());
-            localStorage.setItem("profileImage", getProfileImage);
+          const userInfo = response.data.data;
+          setNickName(userInfo.nickName);
+          setMbti(userInfo.mbti);
+          setNpoint(userInfo.npoint);
+          const getProfileImage = userInfo.profileImage
+          if (getProfileImage) {
+            setProfileImage(userInfo.profileImage);
+          } else {
+            setProfileImage("/assets/user/profile.png");
           }
-        })
-        .catch(error => {
-          console.error('Failed to fetch user info: ', error);
-        });
+
+          localStorage.setItem('nickName', userInfo.nickName);
+          localStorage.setItem('mbti', userInfo.mbti);
+          localStorage.setItem('npoint', userInfo.npoint.toString());
+          localStorage.setItem("profileImage", getProfileImage);
+        }
+      })
+      .catch(error => {
+        console.error('Failed to fetch user info: ', error);
+      });
     } else {
       setIsOwnProfile(false);
       userApi.getUserInfo(profileUserId)
@@ -230,6 +229,7 @@ const Profile = () => {
       // 언팔로우 요청
       try {
         await userApi.unFollow(userId, followingId);
+        setFollowers(prev => prev - 1);
         setMyFollow(!myFollow);
       } catch (error) {
         console.error('언팔로우 에러: ', error)
@@ -240,6 +240,7 @@ const Profile = () => {
         await userApi
           .follow(userId, followingId)
           .then(() => {
+            setFollowers(prev => prev + 1);
             setMyFollow(!myFollow);
           })
           .then(() => {
@@ -269,7 +270,7 @@ const Profile = () => {
         console.error('팔로우 에러: ', error)
       }
     }
-    window.location.href = window.location.href;
+    // window.location.href = window.location.href;
   };
 
   const openFollowModal = (tab: string) => {
@@ -296,14 +297,13 @@ const Profile = () => {
 
   const renderMbti = () => {
     if (!mbti) {
-      return undefined;
-    }
-    if (mbti === 'N') {
-      return "/assets/user/nbadge.png";
+      return "/assets/noBadget.png";
+    } else if (mbti === 'N') {
+      return "/assets/nBadget.png";
     } else if (mbti === 'S') {
-      return "/assets/user/sbadge.png";
+      return "/assets/sBadget.png";
     }
-    return undefined;
+    return "/assets/noBadget.png";
   };
 
   const handleEditProfileClick = () => {
@@ -329,8 +329,10 @@ const Profile = () => {
       const isFollowing = followingList.data.data.some((follow: any) => String(follow.followingId) === String(followUserId));
       if (isFollowing) {
         await userApi.unFollow(userId, followUserId.toString());
+        setFollowings(prev => prev - 1);
       } else {
         await userApi.follow(userId, followUserId.toString());
+        setFollowings(prev => prev + 1);
       }
   
       // 상태 업데이트
@@ -360,7 +362,7 @@ const Profile = () => {
         <div>
           <h2 className="text-xl font-bold flex items-center">
             {nickName}
-            {mbti && <img className="ml-2 w-8 h-8" src={renderMbti()} alt="badge" />}
+            <img className="ml-2 w-8 h-8" src={renderMbti()} alt="badge" />
             {/* 팔로우 버튼, 본인 일 땐 프로필 수정 버튼과 N/S 설문조사 버튼 */}
             {!isOwnProfile && (
               <button

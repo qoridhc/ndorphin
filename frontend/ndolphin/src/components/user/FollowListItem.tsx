@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import userApi from "../../api/userApi";
 
 interface UserInfo {
   id: number;
@@ -15,6 +16,7 @@ interface FollowListItemProps {
 
 const FollowListItem: React.FC<FollowListItemProps> = ({ follow, onFollowToggle, onClose }) => {
   const [check, setCheck] = useState<number | null>(null);
+  const [mbti, setMbti] = useState<string | null>(null);
 
   
   useEffect(() => {
@@ -22,7 +24,14 @@ const FollowListItem: React.FC<FollowListItemProps> = ({ follow, onFollowToggle,
     if (myUserId) {
       setCheck(myUserId);
     }
-    console.log(follow.isFollowing);
+
+    userApi.getUserInfo(follow.id.toString())
+      .then((response) => {
+        setMbti(response.data.data.mbti);
+      })
+      .catch((error) => {
+      console.error('팔로우 목록 유저 정보 불러오기 실패: ', error)
+    })
   })
 
   const shiftProfile = () => {
@@ -35,12 +44,24 @@ const FollowListItem: React.FC<FollowListItemProps> = ({ follow, onFollowToggle,
     await onFollowToggle(follow.id);
   };
 
+  const renderMbti = () => {
+    if (!mbti) {
+      return "/assets/noBadget.png";
+    } else if (mbti === "N") {
+      return "/assets/nBadget.png";
+    } else if (mbti === "S") {
+      return "/assets/sBadget.png";
+    }
+    return "/assets/noBadget.png";
+  };
+
   const renderButton = check !== follow.id;
 
   return (
     <div className="w-full px-8 py-2 flex items-center relative" onClick={shiftProfile}>
       <img className="w-10 h-10 rounded-full" src={follow.profileImage || "assets/user/profile.png"} alt="프로필 이미지" />
-      <span className="ms-5 me-8 font-semibold">{follow.nickName}</span>
+      <span className="ms-5 font-semibold">{follow.nickName}</span>
+      <img className="w-7 h-7 ms-1" src={renderMbti()} alt="badge" />
       {renderButton && (
         <button
           className={`ms-14 absolute right-16 text-xs w-auto h-auto p-2 border-none rounded-lg shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 ${

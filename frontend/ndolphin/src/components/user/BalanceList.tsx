@@ -26,7 +26,6 @@ const BalanceList = () => {
   };
 
   return (
-    // 밸런스 통신 완료 후 확인 필요
     <div>
       {myBalanceBoardList.length === 0 ? (
         <div className="mt-40 text-center text-3xl font-bold">목록이 비어있습니다</div>
