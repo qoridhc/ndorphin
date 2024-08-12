@@ -26,7 +26,7 @@ const BalanceList = () => {
           <button
             className="px-7 py-1 shadow-md rounded-xl font-bold bg-amber-300 text-white"
             onClick={() => {
-              navigate("/ifstart");
+              navigate("/balancestart");
             }}>
             밸런스게임 등록
           </button>
