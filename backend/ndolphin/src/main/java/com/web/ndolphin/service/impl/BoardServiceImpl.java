@@ -201,6 +201,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
 
+
 //    private List<? extends BoardDto> getBoardDtos(BoardType boardType, List<Board> boards) {
 //        return switch (boardType) {
 //            case VOTE_BOARD -> getVoteBoardResponseDtos(boards);
@@ -212,7 +213,8 @@ public class BoardServiceImpl implements BoardService {
 //        };
 //    }
 
-    private List<? extends BoardDto> getBoardDtos(BoardType boardType, List<Board> boards, Boolean isDone) {
+    private List<? extends BoardDto> getBoardDtos(BoardType boardType, List<Board> boards,
+        Boolean isDone) {
         return switch (boardType) {
             case VOTE_BOARD -> getVoteBoardResponseDtos(boards);
             case OPINION_BOARD -> getOpinionBoardResponseDtos(boards);
@@ -295,36 +297,38 @@ public class BoardServiceImpl implements BoardService {
 //            .collect(toList());
 //    }
 
-    private List<RelayBoardResponseDto> getRelayBoardResponseDtos(List<Board> boards, Boolean isDone) {
+    private List<RelayBoardResponseDto> getRelayBoardResponseDtos(List<Board> boards,
+        Boolean isDone) {
 
         log.info("Filtering with isDone: {}", isDone);  // 로그 출력
 
         Long userId = tokenService.getUserIdFromToken();
 
         return boards.stream()
-                .filter(board -> {
-                    Long commentCount = commentRepository.countCommentsByBoardId(board.getId());
-                    boolean isDoneFlag = (commentCount + 1) == board.getMaxPage();
-                    return isDone == null || isDoneFlag == isDone;
-                })
-                .map(board -> {
-                    Long writerId = board.getUser().getUserId();
-                    Long boardId = board.getId();
+            .filter(board -> {
+                Long commentCount = commentRepository.countCommentsByBoardId(board.getId());
+                boolean isDoneFlag = (commentCount + 1) == board.getMaxPage();
+                return isDone == null || isDoneFlag == isDone;
+            })
+            .map(board -> {
+                Long writerId = board.getUser().getUserId();
+                Long boardId = board.getId();
 
-                    boolean hasParticipated = hasUserParticipated(boardId, userId);
-                    if (writerId == userId) {
-                        hasParticipated = true;
-                    }
+                boolean hasParticipated = hasUserParticipated(boardId, userId);
+                if (writerId == userId) {
+                    hasParticipated = true;
+                }
 
-                    boolean isFavorite = favoriteRepository.existsByBoardIdAndUserId(boardId, userId);
-                    String fileUrl = getFileUrl(boardId, EntityType.POST);
-                    String fileName = getFileName(boardId, EntityType.POST);
-                    Long commentCount = commentRepository.countCommentsByBoardId(boardId);
-                    boolean isDoneFlag = (commentCount + 1) == board.getMaxPage();
+                boolean isFavorite = favoriteRepository.existsByBoardIdAndUserId(boardId, userId);
+                String fileUrl = getFileUrl(boardId, EntityType.POST);
+                String fileName = getFileName(boardId, EntityType.POST);
+                Long commentCount = commentRepository.countCommentsByBoardId(boardId);
+                boolean isDoneFlag = (commentCount + 1) == board.getMaxPage();
 
-                    return BoardMapper.toRelayBoardResponseDto(board, hasParticipated, isFavorite, fileUrl, fileName, commentCount, isDoneFlag);
-                })
-                .collect(Collectors.toList());
+                return BoardMapper.toRelayBoardResponseDto(board, hasParticipated, isFavorite,
+                    fileUrl, fileName, commentCount, isDoneFlag);
+            })
+            .collect(Collectors.toList());
     }
 
     private List<OkBoardDto> getOkBoardResponseDtos(List<Board> boards) {
@@ -432,7 +436,8 @@ public class BoardServiceImpl implements BoardService {
         }
 
         // BoardDto로 반환해서 가져 옴.
-        List<? extends BoardDto> sideBoardDtos = getBoardDtos(BoardType.VOTE_BOARD, sideBoards, false);
+        List<? extends BoardDto> sideBoardDtos = getBoardDtos(BoardType.VOTE_BOARD, sideBoards,
+            false);
 
         return BoardMapper.toVoteBoardDetailResponseDto(board, fileUrl, fileName, voteInfos,
             totalVotes, userVoteContent, sideBoardDtos);
@@ -461,7 +466,8 @@ public class BoardServiceImpl implements BoardService {
         }
 
         // BoardDto로 반환해서 가져 옴.
-        List<? extends BoardDto> sideBoardDtos = getBoardDtos(BoardType.OPINION_BOARD, sideBoards, false);
+        List<? extends BoardDto> sideBoardDtos = getBoardDtos(BoardType.OPINION_BOARD, sideBoards,
+            false);
 
         return BoardMapper.toOpinionBoardDetailResponseDto(board, fileUrl, fileName,
             hasParticipated, commentCount, commentResponseDtos, sideBoardDtos);
@@ -520,6 +526,7 @@ public class BoardServiceImpl implements BoardService {
         Board existingBoard = optionalBoard.get();
         existingBoard.setSubject(boardRequestDto.getSubject());
         existingBoard.setContent(boardRequestDto.getContent());
+        existingBoard.setMaxPage(boardRequestDto.getMaxPage());
 //        existingBoard.setHit(existingBoard.getHit() + 1);
         existingBoard.setUpdatedAt(LocalDateTime.now());
         boardRepository.save(existingBoard);

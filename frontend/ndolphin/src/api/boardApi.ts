@@ -9,8 +9,13 @@ const boardApi = {
     });
   },
 
-  list: (boardType: string) => {
-    return request.get(`/api/v1/boards?type=${boardType}`);
+  list: (boardType: string, page?: number) => {
+    // return request.get(`/api/v1/boards?type=${boardType}`);
+    return request.get(`/api/v1/boards?type=${boardType}&page=${page}&size=12`);
+  },
+
+  relaylist: (boardType: string, isDone?: boolean, page?: number) => {
+    return request.get(`/api/v1/boards?type=${boardType}&page=${page}&size=12&isDone=${isDone}`);
   },
 
   read: (boardId: string) => {

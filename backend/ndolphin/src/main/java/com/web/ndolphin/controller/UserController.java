@@ -89,7 +89,8 @@ public class UserController {
         @Parameter(description = "사용자 프로필 이미지 (선택 사항)") @RequestPart(name = "file", required = false) MultipartFile profileImage
     ) {
 
-        ResponseEntity<ResponseDto> response = userService.updateUser(userId, updateDto, profileImage);
+        ResponseEntity<ResponseDto> response = userService.updateUser(userId, updateDto,
+            profileImage);
 
         return response;
     }
@@ -109,7 +110,6 @@ public class UserController {
         ResponseEntity<ResponseDto> response = userService.deleteProfile(userId);
         return response;
     }
-
 
     @GetMapping("/nickname-check")
     @Operation(summary = "닉네임 중복 확인",
@@ -143,7 +143,7 @@ public class UserController {
     public ResponseEntity<ResponseDto> getFavoritesByUserId(
         @Parameter(description = "조회할 사용자의 ID", required = true) @PathVariable Long userId) {
 
-        ResponseEntity<ResponseDto> response = userService.getFavorites(userId);
+        ResponseEntity<ResponseDto> response = userService.getFavorites();
 
         return response;
     }
@@ -180,7 +180,7 @@ public class UserController {
         @Parameter(description = "삭제할 사용자의 ID", required = true) @PathVariable Long userId,
         @Parameter(description = "삭제할 보드의 ID", required = true) @PathVariable Long boardId) {
 
-        ResponseEntity<ResponseDto> response = userService.removeFavorite(userId, boardId);
+        ResponseEntity<ResponseDto> response = userService.removeFavorite(boardId);
 
         return response;
     }
@@ -219,7 +219,8 @@ public class UserController {
         @Parameter(description = "삭제할 사용자의 ID", required = true) @PathVariable Long userId,
         @Parameter(description = "삭제할 nPoint 정보", required = true) @Valid @RequestBody NPointDeleteRequestDto nPointDeleteRequestDto) {
 
-        ResponseEntity<ResponseDto> response = userService.deleteNPoint(userId, nPointDeleteRequestDto);
+        ResponseEntity<ResponseDto> response = userService.deleteNPoint(userId,
+            nPointDeleteRequestDto);
 
         return response;
     }
@@ -242,6 +243,5 @@ public class UserController {
 
         return response;
     }
-
 
 }

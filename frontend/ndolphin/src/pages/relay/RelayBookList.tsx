@@ -8,7 +8,7 @@ import Filter from "../../components/common/Filter";
 function Relaybooklist() {
   const navigate = useNavigate();
   const [tabs, setTabs] = useState<number>(0);
-  const [hasParticipated, setHasPaeticipated] = useState<boolean>(false);
+  const [hasParticipated, setHasParticipated] = useState<boolean>(false);
   const [bookList, setbookList] = useState<any[]>([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchFilter1, setSearchFilter1] = useState("");
@@ -16,24 +16,24 @@ function Relaybooklist() {
   const [isSearch, setIsSearch] = useState(false);
   const underline = "underline underline-offset-[10px] decoration-4 decoration-yellow-300";
 
-  // useEffect -> 렌더링이 다 되고나서 실행 (html부터 다 그려준 뒤 실행)
-  useEffect(() => {
-    const getRelayList = async () => {
-      try {
-        const response = await boardApi.list("RELAY_BOARD");
-        if (response.status === 200) {
-          const bookList = response.data.data.content;
-          console.log("릴레이북 목록 불러오기 성공", response.data);
-          setbookList(bookList);
-        }
-      } catch (error) {
-        console.log("릴레이북 목록 불러오기 오류: ", error);
-      }
-    };
+  // // useEffect -> 렌더링이 다 되고나서 실행 (html부터 다 그려준 뒤 실행)
+  // useEffect(() => {
+  //   const getRelayList = async () => {
+  //     try {
+  //       const response = await boardApi.list("RELAY_BOARD");
+  //       if (response.status === 200) {
+  //         const bookList = response.data.data.content;
+  //         console.log("릴레이북 목록 불러오기 성공", response.data);
+  //         setbookList(bookList);
+  //       }
+  //     } catch (error) {
+  //       console.log("릴레이북 목록 불러오기 오류: ", error);
+  //     }
+  //   };
 
-    getRelayList();
-  }, []); // 디펜던시 작성 시 변수가 변할 때만 실행됨
-  // 빈 배열로 적으면 mount 시에만 실행됨 (1회만)
+  //   getRelayList();
+  // }, []); // 디펜던시 작성 시 변수가 변할 때만 실행됨
+  // // 빈 배열로 적으면 mount 시에만 실행됨 (1회만)
 
   return (
     <div>
