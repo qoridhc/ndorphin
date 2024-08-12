@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
+import boardApi from "../../api/boardApi";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { IoMdClose } from "react-icons/io";
@@ -9,10 +10,12 @@ interface Props {
 
 const OkStartModal = ({ setIsCreateModal }: Props) => {
   const [imageList, setImageList] = useState<string[]>([]);
+  const [fileList, setFileList] = useState<File[]>([]);
   const [rowCount, setRowCount] = useState(0);
   const [textCount, setTextCount] = useState(0);
   const [slideState, setSlideState] = useState(0); // 0 : 앞, 1 : 뒤
   const [currentSlideList, setCurrentSlideList] = useState<string[]>([]);
+  const [content, setContent] = useState("");
 
   const handleClose = () => {
     setIsCreateModal(false);
@@ -22,11 +25,13 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
     const files = event.target.files;
     if (files) {
       const newImageList: string[] = [];
+      const newFileList: File[] = [];
       Array.from(files).forEach((file) => {
         const reader = new FileReader();
         reader.onloadend = () => {
           const result = reader.result as string;
           newImageList.push(result);
+          newFileList.push(file);
           if (newImageList.length === files.length) {
             setImageList((prev) => {
               const updatedList = [...prev, ...newImageList].slice(0, 4);
@@ -39,6 +44,8 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
               }
               return updatedList;
             });
+
+            setFileList((prev) => [...prev, ...newFileList].slice(0, 4));
           }
         };
         reader.readAsDataURL(file);
@@ -51,6 +58,8 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
     setTextCount(text);
     const rows = event.target.value.split(/\r\n|\r|\n/).length;
     setRowCount(rows);
+    const content = event.target.value;
+    setContent(content);
   };
 
   const handlePrev = () => {
@@ -75,6 +84,40 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
       }
       return newImageList;
     });
+
+    setFileList((prev) => prev.filter((_, i) => i !== actualIndex));
+  };
+
+  const handleOkConfirm = async () => {
+    const formData = new FormData();
+
+    fileList.forEach((file) => {
+      formData.append("files", file);
+    });
+
+    formData.append(
+      "request",
+      new Blob(
+        [
+          JSON.stringify({
+            content: content,
+            boardType: "OK_BOARD",
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
+
+    try {
+      const response = await boardApi.create(formData);
+      if (response.status === 200 && response.data) {
+        console.log("괜찮아 작성 성공");
+        // const id = response.data.data.id;
+        // navigate(`/relaybookdetail/${id}`);
+      }
+    } catch (error) {
+      console.error("괜찮아 작성 실패: ", error);
+    }
   };
 
   useEffect(() => {
@@ -136,7 +179,7 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
             <input className="hidden" id="image-input" type="file" accept="image/*" onChange={(e) => handleImageChange(e)} disabled={imageList.length === 4} multiple />
           </div>
 
-          <button className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0}>
+          <button onClick={handleOkConfirm} className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0}>
             완료
           </button>
         </div>
