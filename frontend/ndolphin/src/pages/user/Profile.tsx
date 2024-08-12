@@ -10,6 +10,7 @@ import BalanceList from "../../components/user/BalanceList";
 import UserInfoEditModal from "../../components/user/UserInfoEditModal";
 import NSModal from "../../components/user/NSModal";
 import userApi from "../../api/userApi";
+import { error } from "console";
 
 interface Follow {
   followId: number;
@@ -236,8 +237,34 @@ const Profile = () => {
     } else {
       // 팔로우 요청
       try {
-        await userApi.follow(userId, followingId);
-        setMyFollow(!myFollow);
+        await userApi
+          .follow(userId, followingId)
+          .then(() => {
+            setMyFollow(!myFollow);
+          })
+          .then(() => {
+            const writerId = Number(userId)
+            userApi
+              .getUserInfo(userId)
+              .then((response) => {
+                const responseUserData = response.data.data.nickName;
+                const content = `${responseUserData}님이 회원님을 팔로우하기 시작했습니다`
+                userApi
+                  .postNotifications(followingId, content, writerId)
+                  .then(() => {
+                    console.log("알림 보내기 성공");
+                  })
+                  .catch((error) => {
+                    console.error("알림 보내기 실패: ", error);
+                  });
+              })
+              .catch((error) => {
+              console.error('팔로우 알림 중 유저 정보 받아오기 실패: ', error)
+            })
+          })
+          .catch((error) => {
+            console.error('알림 실패: ', error)
+          })
       } catch (error) {
         console.error('팔로우 에러: ', error)
       }
