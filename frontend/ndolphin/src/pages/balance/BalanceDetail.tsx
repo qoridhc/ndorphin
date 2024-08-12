@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { FaArrowLeftLong } from "react-icons/fa6";
-import { useLocation, useNavigate, useParams } from "react-router";
-import SettingMenu from "../../components/if/CommentSettingMenu";
+import React, { useEffect, useState, useRef } from "react";
+import { FaArrowLeftLong, FaRegCircleCheck } from "react-icons/fa6";
+import { useNavigate, useParams } from "react-router";
 import BalanceCard from "../../components/balance/BalanceCard";
 import boardApi from "../../api/boardApi";
 import voteApi from "../../api/voteApi";
@@ -57,13 +56,15 @@ const BalanceDetail = () => {
 
   const [balanceBoardData, setBalanceBoardData] = useState<BalanceBoard | null>(null);
   const [recommendationList, setRecommendationList] = useState<Balance[] | null>(null);
+  const progressRefs = useRef<(HTMLDivElement | null)[]>([]); // Progress bar 참조 배열
+
+  const [maxVote, setMaxVote] = useState<number | null>(null);
 
   useEffect(() => {
     if (params.boardId !== undefined) {
       readBoardData(params.boardId);
       getRecommendationList();
     }
-    // setIsUpdate(false);
   }, [params.boardId]);
 
   // 데이터 조회
@@ -72,13 +73,11 @@ const BalanceDetail = () => {
       const response = await boardApi.read(boardId);
       if (response.status === 200) {
         setBalanceBoardData(response.data.data);
-        console.log(response.data.data);
-        // setUpdateBoardSubject(response.data.data.subject);
-        // setUpdateBoardContent(response.data.data.content);
-        // setImage(response.data.data.fileUrls[0]);
 
-        // setBoardSubjectTextCount(updateBoardSubject.length);
-        // setBoardContentTextCount(updateBoardContent.length);
+        // 애니메이션을 설정할 때 setTimeout을 사용하여 렌더링이 완료된 후 애니메이션 시작
+        setTimeout(() => {
+          animateProgress(response.data.data.voteInfos, response.data.data.totalVotes);
+        }, 100);
       }
     } catch (error) {
       console.error("boardApi read : ", error);
@@ -106,12 +105,65 @@ const BalanceDetail = () => {
       try {
         const response = await voteApi.create(params.boardId, data);
         if (response.status === 200) {
-          readBoardData(params.boardId);
+          readBoardData(params.boardId); // 새로고침
         }
       } catch (error) {
         console.log("voteApi create : ", error);
       }
     }
+  };
+
+  const handleVoteUpdate = async (voteContentId: number) => {};
+
+  const handleVoteDelete = async () => {
+    if (params.boardId !== undefined && balanceBoardData?.userVoteId) {
+      try {
+        const response = await voteApi.delete(params.boardId, balanceBoardData?.userVoteId);
+        if (response.status === 200) {
+          readBoardData(params.boardId); // 새로고침
+        }
+      } catch (error) {
+        console.log("voteApi delete : ", error);
+      }
+    }
+  };
+
+  // Progress 바 애니메이션
+  const animateProgress = (voteInfos: BalanceBoard["voteInfos"], totalVotes: number) => {
+    // 가장 많은 투표수를 가진 항목을 찾기
+    setMaxVote(Math.max(...voteInfos.map((vote) => vote.voteCount)));
+
+    const updateProgressBar = (bar: HTMLDivElement, targetPercentage: number) => {
+      let currentPercentage = 0;
+
+      const animate = () => {
+        currentPercentage += 1;
+        bar.style.width = `${currentPercentage}%`;
+
+        if (currentPercentage < targetPercentage) {
+          requestAnimationFrame(animate);
+        }
+      };
+
+      animate();
+    };
+
+    voteInfos.forEach((vote, index) => {
+      const targetPercentage = (vote.voteCount / totalVotes) * 100;
+
+      const bar = progressRefs.current[index];
+      if (bar) {
+        bar.style.visibility = "visible";
+        bar.style.width = "0%";
+        bar.style.transition = "none";
+
+        // 가장 많은 투표수를 가진 항목에 노란색, 나머지는 회색 배경 적용
+        bar.style.backgroundColor = vote.voteCount === maxVote ? "#fcd34d" : "#B8B8B8";
+
+        // 애니메이션 시작
+        updateProgressBar(bar, targetPercentage);
+      }
+    });
   };
 
   return (
@@ -154,12 +206,23 @@ const BalanceDetail = () => {
                 {balanceBoardData.userVoteContentId ? (
                   <>
                     {balanceBoardData.voteInfos.map((vote, index) => (
-                      <button className={`h-12 relative flex justify-between items-center transition-colors duration-150 ease-in-out hover:bg-opacity-50`} key={vote.voteContentId} onClick={() => handleVoteCreate(vote.voteContentId)}>
-                        {balanceBoardData.totalVotes !== undefined ? <progress className="h-full absolute progress progress-warning opacity-50" value={`${vote.voteCount}`} max={`${balanceBoardData.totalVotes}`}></progress> : <></>}
+                      <button
+                        className={`h-12 relative flex justify-between items-center`}
+                        key={vote.voteContentId}
+                        onClick={() => {
+                          balanceBoardData.userVoteContentId === vote.voteContentId ? handleVoteDelete() : handleVoteUpdate(vote.voteContentId);
+                        }}>
+                        <div className="h-full w-full absolute bg-gray-200 rounded-lg overflow-hidden">
+                          <div
+                            className="h-full opacity-75 transition-none"
+                            ref={(el) => (progressRefs.current[index] = el)} // Progress bar 참조 설정
+                          ></div>
+                        </div>
 
-                        <div className="px-5 font-bold text-[#565656] relative z-10 flex">
-                          <p className="w-14 text-left">{(vote.voteCount / balanceBoardData.totalVotes) * 100}%</p>
+                        <div className={`px-5 relative z-10 flex items-center ${vote.voteCount === maxVote ? "font-bold" : "text-[#565656] font-medium"}`}>
+                          <p className="w-14 text-left">{((vote.voteCount / balanceBoardData.totalVotes) * 100).toFixed(0)}%</p>
                           <p>{vote.voteContent}</p>
+                          {balanceBoardData.userVoteContentId === vote.voteContentId ? <FaRegCircleCheck className="mx-2" /> : <></>}
                         </div>
                       </button>
                     ))}
@@ -168,7 +231,7 @@ const BalanceDetail = () => {
                   <>
                     {balanceBoardData.voteInfos.map((vote, index) => (
                       <button
-                        className={`border-solid border-2 rounded-[30px] flex justify-center items-center transition-colors duration-150 ease-in-out hover:bg-opacity-15 border-${voteColors[index]} hover:bg-${voteColors[index]}`}
+                        className={`h-12 border-solid border-2 rounded-[30px] flex justify-center items-center transition-colors duration-150 ease-in-out hover:bg-opacity-15 border-${voteColors[index]} hover:bg-${voteColors[index]}`}
                         key={vote.voteContentId}
                         onClick={() => handleVoteCreate(vote.voteContentId)}>
                         <p className={`w-full px-5 py-2 font-bold text-${voteColors[index]}`}>{vote.voteContent}</p>

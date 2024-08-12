@@ -7,6 +7,10 @@ const voteApi = {
         'Content-Type': 'application/json'
       }
     })
+  },
+
+  delete: (boardId: string, voteId: number) => {
+    return request.delete(`/api/v1/boards/${boardId}/votes/${voteId}`)
   }
 }
 
