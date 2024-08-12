@@ -33,8 +33,8 @@ const boardApi = {
     return request.delete(`/api/v1/boards/${boardId}`);
   },
 
-  search: (boardType: string, keyword: string, filter1: string, filter2: string) => {
-    return request.get(`/api/v1/boards?type=${boardType}&filter1=${filter1}&filter2=${filter2}&search=${keyword}`);
+  search: (boardType: string, keyword: string, filter1: string, filter2: string, page?:number, isDone?: boolean) => {
+    return request.get(`/api/v1/boards?type=${boardType}&filter1=${filter1}&filter2=${filter2}&search=${keyword}&page=${page}&isDone=${isDone}`);
   },
 
   reaction: (boardId: string, reactionType: string) => {

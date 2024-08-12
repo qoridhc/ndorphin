@@ -33,11 +33,16 @@ interface Props {
 
 const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, setIsSearch }: Props) => {
   const [ifBoardList, setIfBoardList] = useState<If[] | null>(null);
+  const [page, setPage] = useState<number>(1);
+  const [totalElements, setTotalElements] = useState<number>(0);
 
   const getIfBoardList = async () => {
     try {
-      const response = await boardApi.list("OPINION_BOARD");
+      const response = await boardApi.list("OPINION_BOARD", page - 1);
       setIfBoardList(response.data.data.content);
+
+      const totalElements = response.data.data.totalElements;
+      setTotalElements(totalElements);
     } catch (error) {
       console.error("boardApi list : ", error);
     }
@@ -45,8 +50,11 @@ const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, set
 
   const getSearchIfBoardList = async () => {
     try {
-      const response = await boardApi.search("OPINION_BOARD", searchKeyword, searchFilter1, searchFilter2);
+      const response = await boardApi.search("OPINION_BOARD", searchKeyword, searchFilter1, searchFilter2, page - 1);
       setIfBoardList(response.data.data.content);
+
+      const totalElements = response.data.data.totalElements;
+      setTotalElements(totalElements);
     } catch (error) {
       console.log("boardApi search : ", error);
     }
@@ -59,7 +67,7 @@ const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, set
     } else {
       getIfBoardList();
     }
-  }, [isSearch, searchFilter2]);
+  }, [isSearch, searchFilter2, page]);
 
   return (
     <div>
@@ -73,7 +81,7 @@ const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, set
         <></>
       )}
 
-      <Paging />
+      <Paging page={page} setPage={setPage} getBoardList={getIfBoardList} totalElements={totalElements} />
     </div>
   );
 };
