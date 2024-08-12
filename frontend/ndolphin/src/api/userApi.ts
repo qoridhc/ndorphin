@@ -79,7 +79,7 @@ const userApi = {
 
   unfavorite: (boardId: number) => {
     return request.delete(
-      `api/v1/users/favorites/${boardId}`
+      `api/v1/users/1/favorites/${boardId}`
     );
   },
 

@@ -80,40 +80,17 @@ const BookDetailDone = ({ bookId }: BookDetailDoneProps) => {
   };
 
   const clickImoge = (reactionType: string): void => {
+    // user의 현재 이모티콘과 누른 이모티콘이 같을 시 삭제
     if (userReactionType == reactionType) {
       handleDeleteImoge();
-    } else {
+      // user가 아직 이모티콘을 누르지 않았을 시 추가
+    } else if (userReactionId === null) {
+      handleAddImoge(reactionType);
+      // user가 지금 누른 이모티콘과 다른 이모티콘을 누를 경우 삭제 후 추가
+    } else if (userReactionId !== null && (userReactionType !== reactionType)) {
+      handleDeleteImoge();
       handleAddImoge(reactionType);
     }
-    let copy = [...reactionTypeCounts];
-    // let imogeUserListCopy = [...imogeUserList];
-    let clickedCopy = [...clicked];
-
-    // handleDeleteImoge();
-
-    // const userExists = imogeUserList.find((imogeUser) => imogeUser.user === user);
-    // if (userExists != undefined) {
-    //   const imogeId = userExists.imogeId;
-    //   const userIndex = imogeUserList.findIndex((imogeUser) => imogeUser.user === user);
-    //   if (id === imogeId) {
-    //     copy[id] -= 1;
-    //     imogeUserListCopy.splice(userIndex, 1);
-    //     clickedCopy[id] = false;
-    //   } else if (id != imogeId) {
-    //     copy[imogeId] -= 1;
-    //     copy[id] += 1;
-    //     clickedCopy[imogeId] = false;
-    //     clickedCopy[id] = true;
-    //     imogeUserListCopy[userIndex] = { ...imogeUserListCopy[userIndex], imogeId: id };
-    //   }
-    // } else {
-    //   copy[id] += 1;
-    //   clickedCopy[id] = true;
-    //   imogeUserListCopy.push({ user: user, imogeId: id });
-    // }
-    // setClicked(clickedCopy);
-    // setImogeUserList(imogeUserListCopy);
-    // setImogeList(copy);
   };
 
   return (
@@ -134,7 +111,7 @@ const BookDetailDone = ({ bookId }: BookDetailDoneProps) => {
             <button onClick={() => clickImoge("FUN")} className="w-10 pb-2">
               <img className="" src="/assets/relay/funImoge.png" alt="재밌어요" />
             </button>
-            {clicked[0] ? (
+            {userReactionType === "FUN" ? (
               <div className="w-full flex flex-col">
                 <p className="text-xs text-blue-600">재밌어요</p>
                 <span className="text-blue-600">{reactionTypeCounts[0]}</span>
@@ -150,7 +127,7 @@ const BookDetailDone = ({ bookId }: BookDetailDoneProps) => {
             <button onClick={() => clickImoge("THINK")} className="w-10 pb-2">
               <img src="/assets/relay/thinkingImoge.png" alt="생각하게돼요" />
             </button>
-            {clicked[1] ? (
+            {userReactionType === "THINK" ? (
               <div className="w-full flex flex-col">
                 <p className="text-xs text-blue-600">생각하게 돼요</p>
                 <span className="text-blue-600">{reactionTypeCounts[1]}</span>
@@ -166,7 +143,7 @@ const BookDetailDone = ({ bookId }: BookDetailDoneProps) => {
             <button onClick={() => clickImoge("SURPRISE")} className="w-10 pb-2">
               <img src="/assets/relay/wowImoge.png" alt="놀라워요" />
             </button>
-            {clicked[2] ? (
+            {userReactionType === "SURPRISE" ? (
               <div className="w-full flex flex-col">
                 <p className="text-xs text-blue-600">놀라워요</p>
                 <span className="text-blue-600">{reactionTypeCounts[2]}</span>
@@ -182,7 +159,7 @@ const BookDetailDone = ({ bookId }: BookDetailDoneProps) => {
             <button onClick={() => clickImoge("SAD")} className="w-10 pb-2">
               <img src="/assets/relay/sadImoge.png" alt="슬퍼요" />
             </button>
-            {clicked[3] ? (
+            {userReactionType === "SAD" ? (
               <div className="w-full flex flex-col">
                 <p className="text-xs text-blue-600">슬퍼요</p>
                 <span className="text-blue-600">{reactionTypeCounts[3]}</span>
