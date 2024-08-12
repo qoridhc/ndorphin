@@ -48,7 +48,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -454,40 +453,26 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public ResponseEntity<ResponseDto> updateBoard(Long boardId, BoardRequestDto boardRequestDto,
-        List<MultipartFile> multipartFiles, List<String> fileNamesToDelete) {
+        List<MultipartFile> multipartFiles, List<String> fileNamesToDelete) throws IOException {
 
         // 게시글 처리
-        Optional<Board> optionalBoard = boardRepository.findById(boardId);
-        if (optionalBoard.isEmpty()) {
-            return ResponseDto.databaseError();
+        Board board = boardRepository.findById(boardId)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid Board ID"));
+
+        board.setSubject(boardRequestDto.getSubject());
+        board.setContent(boardRequestDto.getContent());
+        board.setMaxPage(boardRequestDto.getMaxPage());
+        board.setUpdatedAt(LocalDateTime.now());
+
+        if (boardRequestDto.getBoardType() == BoardType.VOTE_BOARD) {
+            setVoteContents(boardRequestDto, board);
         }
 
-        Board existingBoard = optionalBoard.get();
-        existingBoard.setSubject(boardRequestDto.getSubject());
-        existingBoard.setContent(boardRequestDto.getContent());
-        existingBoard.setMaxPage(boardRequestDto.getMaxPage());
-        existingBoard.setUpdatedAt(LocalDateTime.now());
-        boardRepository.save(existingBoard);
+        boardRepository.save(board);
 
-        // 2. 파일들 삭제
-        // TODO:
-        if (fileNamesToDelete != null && !fileNamesToDelete.isEmpty()) {
-            try {
-                fileInfoService.deleteAndDeleteFiles(boardId, EntityType.POST, fileNamesToDelete);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        fileInfoService.deleteFiles(boardId, EntityType.POST, fileNamesToDelete);
+        fileInfoService.uploadFiles(boardId, EntityType.POST, multipartFiles);
 
-        // 3. 새 파일들 추가
-        // TODO:
-        if (multipartFiles != null && !multipartFiles.isEmpty()) {
-            try {
-                fileInfoService.uploadAndSaveFiles(boardId, EntityType.POST, multipartFiles);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
         return ResponseDto.success();
     }
 
