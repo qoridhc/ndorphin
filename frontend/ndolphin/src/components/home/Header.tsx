@@ -17,7 +17,10 @@ const Header = () => {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userNickName, setuserNickName] = useState<string | null>(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [isNew, setIsNew] = useState(false);
+  const [isNew, setIsNew] = useState(() => {
+    const storedIsNew = localStorage.getItem('isNew');
+    return storedIsNew ? JSON.parse(storedIsNew) : false;
+  });
   const [showAlarmDropdown, setShowAlarmDropdown] = useState(false);
   const [notifications, setNotifications] = useState([
     { id: 1, profileImage: "/assets/profile/profile1.png", userName: "근데 말야에", text: " 님이 새로운 게시물을 등록했습니다", timestamp: new Date() },
@@ -134,6 +137,7 @@ const Header = () => {
     setShowAlarmDropdown(!showAlarmDropdown);
     if (isNew) {
       setIsNew(false);
+      localStorage.setItem('isNew', JSON.stringify(false));
     }
     if (showProfileDropdown) {
       setShowProfileDropdown(false);
@@ -142,26 +146,29 @@ const Header = () => {
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
-    userApi
-      .checkNotifications(userId as string)
-      .then((response) => {
-        const responseNotificationsData = response.data.data.hasUnreadNotification;
-        if (responseNotificationsData) {
-          setIsNew(true);
-          userApi
-            .readNotifications(userId as string)
-            .then((response) => {
-              setNotifications(response.data.data)
-              console.log(response)
+    if (userId) {
+      userApi
+        .checkNotifications(userId as string)
+        .then((response) => {
+          const responseNotificationsData = response.data.data.hasUnreadNotification;
+          if (responseNotificationsData) {
+            setIsNew(true);
+            localStorage.setItem('isNew', JSON.stringify(true));
+            userApi
+              .readNotifications(userId as string)
+              .then((response) => {
+                setNotifications(response.data.data)
+                console.log(response.data.data)
+              })
+              .catch((error) => {
+              console.error('알림목록 불러오기 실패: ', error)
             })
-            .catch((error) => {
-            console.error('알림목록 불러오기 실패: ', error)
-          })
-        }
+          }
+        })
+        .catch((error) => {
+        console.error("새로운 알림 체크 실패: ", error)
       })
-      .catch((error) => {
-      console.error("새로운 알림 체크 실패: ", error)
-    })
+    }
   })
 
   const clearNotifications = () => {
