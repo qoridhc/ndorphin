@@ -96,7 +96,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     }
 
     @Override
-    public Page<Board> findByTypeAndFilters(BoardType boardType, String filter1, String filter2, String search, Pageable pageable) {
+    public List<Board> findByTypeAndFiltersWithoutPaging(BoardType boardType, String filter1, String filter2, String search) {
 
         Long userId = tokenService.getUserIdFromToken(); // 현재 사용자의 ID를 가져옴
 
@@ -152,17 +152,9 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
             }
         }
 
-        // 페이징 처리
-        List<Board> boards = query.offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .fetch();
-
-        // 전체 게시글 수 계산
-        long total = queryFactory.selectFrom(board)
+        return queryFactory.selectFrom(board)
             .where(builder)
-            .fetchCount();
-
-        return new PageImpl<>(boards, pageable, total);
+            .fetch();
     }
 
 

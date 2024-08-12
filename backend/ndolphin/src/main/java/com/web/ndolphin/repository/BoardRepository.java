@@ -24,8 +24,8 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
         "GROUP BY b, vc.content")
     List<Object[]> findBoardsWithVoteContentSummaries(@Param("boardType") String boardType);
 
-    Page<Board> findByTypeAndFilters(BoardType boardType, String filter1, String filter2,
-        String search, Pageable pageable);
+//    Page<Board> findByTypeAndFilters(BoardType boardType, String filter1, String filter2,
+//        String search, Pageable pageable);
 
     @Query("SELECT b FROM Board b " +
         "WHERE b.boardType = :boardType AND " +

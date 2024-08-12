@@ -158,27 +158,48 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(BoardType boardType, String filter1, String filter2, String search, Pageable pageable, Boolean isDone) {
-        // Pageable을 사용하여 페이징된 게시글 목록을 가져옵니다.
-        Page<Board> boardsPage = boardRepository.findByTypeAndFilters(boardType, filter1, filter2, search, pageable);
 
-        // Page<Board>를 List<Board>로 변환하여 기존의 메서드를 재사용
-        List<Board> boards = boardsPage.getContent();
+        // 전체 데이터를 페이징 없이 먼저 가져옵니다.
+        List<Board> allBoards = boardRepository.findByTypeAndFiltersWithoutPaging(boardType, filter1, filter2, search);
 
-        // getBoardDtos 메서드 호출 (RelayBoard의 경우 isDone 필터 추가)
-        List<? extends BoardDto> boardDtos = getBoardDtos(boardType, boards, isDone);
+        // 필터링 로직 적용 (RelayBoard의 경우 isDone 필터 추가)
+        List<Board> filteredBoards = allBoards.stream()
+            .filter(board -> {
+                Long commentCount = commentRepository.countCommentsByBoardId(board.getId());
+                boolean isDoneFlag = (commentCount + 1) == board.getMaxPage();
+                return isDone == null || isDoneFlag == isDone;
+            })
+            .collect(Collectors.toList());
+
+        // 페이징 처리
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), filteredBoards.size());
+
+        // start가 리스트의 크기보다 크거나 같으면 빈 리스트를 반환
+        if (start >= filteredBoards.size()) {
+            Page<BoardDto> emptyPage = new PageImpl<>(new ArrayList<>(), pageable, filteredBoards.size());
+            ResponseDto<Page<BoardDto>> responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, emptyPage);
+            return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+        }
+
+        List<Board> pagedBoards = filteredBoards.subList(start, end);
+
+        // getBoardDtos 메서드 호출
+        List<? extends BoardDto> boardDtos = getBoardDtos(boardType, pagedBoards, isDone);
 
         // List<? extends BoardDto>를 List<BoardDto>로 캐스팅
         List<BoardDto> castedBoardDtos = boardDtos.stream()
-                .map(boardDto -> (BoardDto) boardDto)
-                .collect(Collectors.toList());
+            .map(boardDto -> (BoardDto) boardDto)
+            .collect(Collectors.toList());
 
         // Page<BoardDto>로 변환
-        Page<BoardDto> boardDtosPage = new PageImpl<>(castedBoardDtos, pageable, boardsPage.getTotalElements());
+        Page<BoardDto> boardDtosPage = new PageImpl<>(castedBoardDtos, pageable, filteredBoards.size());
 
         ResponseDto<Page<BoardDto>> responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardDtosPage);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
+
 
 //    private List<? extends BoardDto> getBoardDtos(BoardType boardType, List<Board> boards) {
 //        return switch (boardType) {
