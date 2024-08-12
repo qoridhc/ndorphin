@@ -24,7 +24,7 @@ interface IfBoard {
   fileNames: string[];
   fileUrls: string[];
   createdAt: string;
-  updatedAt: string;
+  updatedAt: string | null;
   hasParticipated: boolean;
   hit: number;
   id: number;
@@ -333,7 +333,7 @@ const IfDetail = () => {
               <div className="grid gap-3">
                 <div className="flex justify-between">
                   <div className="flex">
-                    <img className="w-9 h-9 mr-3 border rounded-[50%]" src={`${ifBoardData.user.profileImage}`} alt="" />
+                    <img className="w-9 h-9 mr-3 border rounded-[50%]" src={`${ifBoardData.user.profileImage === null ? "/assets/user/defaultProfile.png" : ifBoardData.user.profileImage}`} alt="" />
                     <div>
                       <div className="w-40 flex justify-between items-center">
                         <div className="flex items-center">
