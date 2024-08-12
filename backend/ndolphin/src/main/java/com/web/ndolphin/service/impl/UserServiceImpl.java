@@ -32,6 +32,7 @@ import com.web.ndolphin.repository.PointRuleRepository;
 import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.FileInfoService;
+import com.web.ndolphin.service.interfaces.TokenService;
 import com.web.ndolphin.service.interfaces.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,6 +61,8 @@ public class UserServiceImpl implements UserService {
     private final NPointRepository nPointRepository;
     private final PointRuleRepository pointRuleRepository;
     private final CommentRepository commentRepository;
+
+    private final TokenService tokenService;
     private final FileInfoService fileInfoService;
 
     @Override
@@ -232,8 +235,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<ResponseDto> getFavorites(Long userId) {
+    public ResponseEntity<ResponseDto> getFavorites() {
 
+        Long userId = tokenService.getUserIdFromToken();
         List<Favorite> favorites = favoriteRepository.findByUserId(userId);
 
         List<RelayBoardResponseDto> relayBoardResponseDtos = favorites.stream()
@@ -286,7 +290,9 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<ResponseDto> addFavorite(FavoriteRequestDto favoriteRequestDto) {
 
         try {
-            User user = userRepository.findById(favoriteRequestDto.getUserId())
+            Long userId = tokenService.getUserIdFromToken();
+
+            User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
             Board board = boardRepository.findById(favoriteRequestDto.getBoardId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
@@ -304,9 +310,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<ResponseDto> removeFavorite(Long userId, Long boardId) {
+    public ResponseEntity<ResponseDto> removeFavorite(Long boardId) {
 
         try {
+            Long userId = tokenService.getUserIdFromToken();
+
             Favorite favorite = favoriteRepository.findByUserIdAndBoardId(userId, boardId)
                 .orElseThrow(() -> new IllegalArgumentException("Favorite not found"));
 
