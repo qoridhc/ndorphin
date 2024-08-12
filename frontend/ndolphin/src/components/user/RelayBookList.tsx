@@ -7,7 +7,7 @@ const RelayBookList = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [myRelayBoardList, setMyRelayBoardList] = useState<any[]>([]);
-  const [showSummary, setShowSummary] = useState(false);
+  const [showSummary, setShowSummary] = useState<number | null>(null);
   const [summary, setSummary] = useState("");
   const [likeStatus, setLikeStatus] = useState<{ [key: number]: boolean }>({});
   const [isHovered, setIsHovered] = useState<number | null>(null);
@@ -47,16 +47,16 @@ const RelayBookList = () => {
       })
   }, [myRelayBoardList]);
 
-  const handleAISummary = () => {
-    if (showSummary) {
-      setShowSummary(false);
+  const handleAISummary = (id: number) => {
+    if (showSummary === id) {
+      setShowSummary(null);
     } else {
       // AI 요약 호출 로직을 여기에 추가합니다.
       // 예를 들어, AI 요약 API를 호출하고 결과를 setSummary로 설정할 수 있습니다.
       setSummary(
         "이것은 AI가 생성한 요약 예시입니다. 이것은은 AI가 생성한 요약 예시입니다. 이것은 AI가 생니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은다."
       );
-      setShowSummary(true);
+      setShowSummary(id);
     }
   };
 
@@ -109,7 +109,7 @@ const RelayBookList = () => {
                 <span onClick={() => goToDetail(item.id)} className="hover:cursor-pointer font-bold text-lg">
                   {item.subject}
                 </span>
-                <button onClick={handleAISummary} className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border-2 border-solid border-zinc-300 font-bold text-zinc-800 mt-2">
+                <button onClick={() => handleAISummary(item.id)} className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border-2 border-solid border-zinc-300 font-bold text-zinc-800 mt-2">
                   <img src="/assets/aiSummaryButton.png" className="w-5" alt="#" />
                   <p className="text-xs">AI 요약하기</p>
                   <img src="/assets/arrow_right.png" className="w-2" alt="#" />
@@ -117,7 +117,7 @@ const RelayBookList = () => {
               </div>
 
               {/* AI 요약 모달 */}
-              {showSummary && (
+              {showSummary === item.id && (
                 <div className="relative">
                   {/* 말풍선 꼭지점 */}
                   <div className="absolute -top-2 left-1/2 transform -translate-x-[4.5rem] w-0 h-0  border-x-[12px] border-x-transparent border-b-[12px] border-b-[#eff1f1] z-50"></div>

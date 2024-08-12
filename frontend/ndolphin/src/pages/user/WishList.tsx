@@ -110,7 +110,10 @@ const WishList = () => {
                           className="w-10 z-10 hover:cursor-pointer absolute top-0 right-3"
                           src={likeStatus[item.id] ? fullHeart : isHovered === item.id ? fullHeart : emptyHeart}
                           alt="#"
-                          onClick={() => handleLikeToggle(item.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLikeToggle(item.id);
+                          }}
                           onMouseEnter={() => setIsHovered(item.id)}
                           onMouseLeave={() => setIsHovered(null)}
                         />
@@ -119,7 +122,9 @@ const WishList = () => {
                         <img className="w-8 h-8 rounded-full" src={item.user.profileImage} alt="최초 작성자" />
                         <span>{item.user.nickName}</span>
                       </div>
-                      {/* <div className="ms-10">첫번재 내용 또는 요약 내용</div> */}
+                      <div className="ms-10 mt-40 text-wrap max-w-[300px] sm:max-w-[400px] md:max-w[450px] xl:max-w-[600px] 2xl:max-w-[900px]" style={{ wordWrap: "break-word", overflowWrap: "break-word", whiteSpace: "pre-wrap" }}>
+                        {item.summary}
+                      </div>
                     </div>
                   </div>
                 </div>
