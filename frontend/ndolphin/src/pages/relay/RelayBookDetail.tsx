@@ -132,62 +132,6 @@ const RelayBookDetail = () => {
     setDeleteAIModalOpen(false);
   };
 
-  // const PageList = [
-  //   {
-  //     id: 1,
-  //     userId: 1,
-  //     user: "삶은계란",
-  //     badget: "N",
-  //     date: "2024-07-30 01:22",
-  //     content: "내용입니다안녕하세요 제가 이예림입니다 하하하 입니다1안녕 ? 공부 많이 했어? 오늘 밥 뭐먹지 다1내용입니다진짜 내일은 통신하자 알겠지? 내용입니다1내용입니다1내용입니다1내용입니다",
-  //     pageImage: "/assets/relay/relayStartSample1.png",
-  //   },
-  //   {
-  //     id: 2,
-  //     userId: 2,
-  //     user: "만약핑인데",
-  //     badget: "S",
-  //     date: "2024-12-10 21:45",
-  //     content: "내용입니다2",
-  //     pageImage: "/assets/relay/relayStartSample2.png",
-  //   },
-  //   {
-  //     id: 3,
-  //     userId: 3,
-  //     user: "별이 빛나는 밤",
-  //     badget: "S",
-  //     date: "2024-07-30 01:22",
-  //     content: "내용입니다3",
-  //     pageImage: "/assets/relay/relayStartSample3.png",
-  //   },
-  //   {
-  //     id: 4,
-  //     userId: 4,
-  //     user: "코에촉촉",
-  //     badget: "N",
-  //     date: "2024-07-30 01:22",
-  //     content: "내용입니다안녕하세요 제가 이예림입니다 하하하니다진짜 내일은 통신하자 알겠지? 내용입니다1내용입니다1내용입니다1내용입니다",
-  //     pageImage: "/assets/relay/relayStartSample4.png",
-  //   },
-  //   {
-  //     id: 5,
-  //     userId: 5,
-  //     user: "상상의 나무꾼",
-  //     badget: "N",
-  //     date: "2024-07-30 01:22",
-  //     content: "내용입니다5",
-  //     pageImage: "/assets/relay/relayStartSample5.png",
-  //   },
-  //   {
-  //     id: 6,
-  //     userId: 6,
-  //     user: "상상의 나무꾼",
-  //     badget: "S",
-  //     date: "2024-07-30 01:22",
-  //     content: "내용입니다5",
-  //     pageImage: "/assets/relay/relayStartSample6.png",
-  //   },
-  // ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
