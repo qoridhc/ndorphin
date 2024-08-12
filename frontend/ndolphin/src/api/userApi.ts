@@ -111,6 +111,22 @@ const userApi = {
     return request.get(`/api/v1/users/${userId}/npoint-percent`)
   },
 
+  checkNotifications: (userId: string) => {
+    return request.get(`/api/v1/notifications/unread/${userId}`)
+  },
+
+  readNotifications: (userId: string) => {
+    return request.get(`/api/v1/notifications/${userId}`)
+  },
+
+  // postNotifications: (userId: string) => {
+  //   return request.post()
+  // },
+
+  deleteNotifications: (userId: string) => {
+    return request.delete(`/api/v1/notifications/${userId}`)
+  },
+
 };
 
 export default userApi;
