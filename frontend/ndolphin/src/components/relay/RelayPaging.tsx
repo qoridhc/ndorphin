@@ -20,6 +20,7 @@ interface Book {
 
 const RelayPaging = ({ setBookList, tabs, searchKeyword, searchFilter1, searchFilter2, isSearch, setIsSearch }: RelayPagingProps) => {
   const [page, setPage] = useState<number>(1);
+  const [totalElements, setTotalElements] = useState<number>(0);
 
   const getRelayBoardList = async () => {
     if (tabs === 0) {
@@ -27,6 +28,9 @@ const RelayPaging = ({ setBookList, tabs, searchKeyword, searchFilter1, searchFi
         const response = await boardApi.relaylist("RELAY_BOARD", false, page - 1);
         const bookList = response.data.data.content;
         setBookList(bookList);
+
+        const totalElements = response.data.data.totalElements;
+        setTotalElements(totalElements);
         console.log("릴레이북 진행 중 목록 조회 성공", bookList);
       } catch (error) {
         console.error("릴레이북 목록 진행 중 조회 오류 발생", error);
@@ -36,6 +40,9 @@ const RelayPaging = ({ setBookList, tabs, searchKeyword, searchFilter1, searchFi
         const response = await boardApi.relaylist("RELAY_BOARD", true, page - 1);
         const bookList = response.data.data.content;
         setBookList(bookList);
+
+        const totalElements = response.data.data.totalElements;
+        setTotalElements(totalElements);
         console.log("릴레이북 완료 목록 조회 성공", bookList);
       } catch (error) {
         console.error("릴레이북 목록 완료 조회 오류 발생", error);
@@ -71,7 +78,7 @@ const RelayPaging = ({ setBookList, tabs, searchKeyword, searchFilter1, searchFi
 
   return (
     <div className="mt-24 pb-20">
-      <Pagination activePage={page} itemsCountPerPage={12} totalItemsCount={300} pageRangeDisplayed={8} prevPageText={"‹"} nextPageText={"›"} onChange={handlePageChange} />
+      <Pagination activePage={page} itemsCountPerPage={12} totalItemsCount={totalElements} pageRangeDisplayed={8} prevPageText={"‹"} nextPageText={"›"} onChange={handlePageChange} />
     </div>
   );
 };

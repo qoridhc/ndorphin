@@ -1,15 +1,14 @@
 import React, { useState, ChangeEvent } from "react";
 
 interface BookImageProps {
-  dalleUrl: string | null;
-  setDalleUrl: (dalleUrl: string | null) => void;
+
   handleAiImage: () => void;
   image: string | null;
   setImage: any;
   setFile: (file: File) => void;
 }
 
-const BookImage: React.FC<BookImageProps> = ({ dalleUrl, setDalleUrl, handleAiImage, image, setImage, setFile }) => {
+const BookImage: React.FC<BookImageProps> = ({ handleAiImage, image, setImage, setFile }) => {
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
