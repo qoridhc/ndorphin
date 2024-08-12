@@ -22,7 +22,6 @@ const BookDetailDone = ({ bookId }: BookDetailDoneProps) => {
           const response = await boardApi.read(bookId);
           if (response.status === 200 && isMounted) {
             const lastPage = response.data.data;
-            setUserReactionId(lastPage.userReactionId);
 
             const recentFun = lastPage.reactionTypeCounts.FUN;
             const recentThink = lastPage.reactionTypeCounts.THINK;
@@ -87,7 +86,7 @@ const BookDetailDone = ({ bookId }: BookDetailDoneProps) => {
     } else if (userReactionId === null) {
       handleAddImoge(reactionType);
       // user가 지금 누른 이모티콘과 다른 이모티콘을 누를 경우 삭제 후 추가
-    } else if (userReactionId !== null && (userReactionType !== reactionType)) {
+    } else if (userReactionId !== null && userReactionType !== reactionType) {
       handleDeleteImoge();
       handleAddImoge(reactionType);
     }
