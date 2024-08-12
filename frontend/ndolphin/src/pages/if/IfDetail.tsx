@@ -97,8 +97,6 @@ const IfDetail = () => {
   useEffect(() => {
     if (updateBoardSubjectRef.current && updateBoardContentRef.current) {
       updateBoardSubjectRef.current.focus();
-      console.log("제목 : ", boardSubjectTextCount);
-      console.log("내용 : ", boardContentTextCount);
       setBoardSubjectTextCount(updateBoardSubjectRef.current.value.length);
       setBoardContentTextCount(updateBoardContentRef.current.value.length);
     }
@@ -247,12 +245,10 @@ const IfDetail = () => {
 
     if (file && ifBoardData?.fileNames) {
       formData.append("deleteFiles", JSON.stringify(ifBoardData.fileNames));
-      console.log("삭제할 : ", ifBoardData.fileNames);
     }
 
     if (file) {
       formData.append("files", file);
-      console.log("수정할 : ", file);
     }
 
     try {

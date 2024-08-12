@@ -58,7 +58,6 @@ const SwiperBalance = ({ rankingType, startIndex, delay }: Props) => {
       }
       const response = await rankingApi.balancelist(period);
       setBalanceBoardList(response.data.data);
-      console.log(response);
     } catch (error) {
       console.error("rankingApi balancelist : ", error);
     }
