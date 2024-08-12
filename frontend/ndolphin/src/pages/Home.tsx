@@ -8,11 +8,11 @@ const Home = () => {
   return (
     <div>
       <BestRelay />
-      <div className="px-44 grid grid-cols-2">
+      <div className="px-44 py-14 grid grid-cols-[3fr_2fr] gap-x-10 gap-y-16">
         <BestIf />
         <BestN />
+        <BestBalance />
       </div>
-      <BestBalance />
     </div>
   );
 };
