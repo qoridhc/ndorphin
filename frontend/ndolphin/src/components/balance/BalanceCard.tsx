@@ -32,7 +32,7 @@ const BalanceCard = ({ balance }: Props) => {
   };
 
   return (
-    <div className="p-5 border-solid border-[#565656] border-[1px] rounded-lg grid gap-3 cursor-pointer duration-300 ease-out hover:-translate-y-3 hover:shadow-lg" onClick={() => goToDetail(balance.id)}>
+    <div className="w-full p-5 border-solid border-[#565656] border-[1px] rounded-lg grid gap-3 cursor-pointer" onClick={() => goToDetail(balance.id)}>
       <img className="w-full aspect-[5/3] object-cover" src={`${balance.fileUrls[0]}`} alt="" />
 
       <div className="grid gap-1">
@@ -46,12 +46,12 @@ const BalanceCard = ({ balance }: Props) => {
           </div>
         </div>
 
-        <p className="text-xl font-semibold text-justify line-clamp-2">{balance.subject}</p>
+        <p className="h-14 text-xl font-semibold text-justify line-clamp-2">{balance.subject}</p>
       </div>
 
       <div className="grid gap-1">
         <p className="text-sm text-[#565656] text-right">{balance.totalVoteCnt === 0 ? "가장 먼저 참여해 보세요!" : balance.totalVoteCnt + "명 참여"}</p>
-        <button className="w-full py-2 text-md font-medium border-2 border-amber-300 rounded-md">참여하기</button>
+        <button className="w-full py-2 text-md font-medium border-2 border-amber-300 rounded-md hover:bg-amber-300 hover:bg-opacity-75 duration-200">참여하기</button>
       </div>
     </div>
   );

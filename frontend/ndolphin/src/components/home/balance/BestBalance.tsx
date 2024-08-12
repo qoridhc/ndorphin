@@ -9,7 +9,7 @@ const BestBalance = () => {
   return (
     <div className="px-44 py-14">
       <div className="flex items-end">
-        <span className="pr-5 text-2xl font-bold underline decoration-[#FFDE2F] decoration-4 underline-offset-8">Best 만약에</span>
+        <span className="pr-5 text-2xl font-bold underline decoration-[#FFDE2F] decoration-4 underline-offset-8">Best 밸런스게임</span>
         <RankingFilter updateRankingType={setRankingType} />
       </div>
 
@@ -18,9 +18,9 @@ const BestBalance = () => {
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        <SwiperBalance startIndex={0} delay={1600} />
-        <SwiperBalance startIndex={1} delay={1650} />
-        <SwiperBalance startIndex={2} delay={1700} />
+        <SwiperBalance rankingType={rankingType} startIndex={0} delay={1500} />
+        <SwiperBalance rankingType={rankingType} startIndex={3} delay={2000} />
+        <SwiperBalance rankingType={rankingType} startIndex={4} delay={2500} />
       </div>
     </div>
   );
