@@ -17,7 +17,7 @@ const Header = () => {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userNickName, setuserNickName] = useState<string | null>(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [isNew, setIsNew] = useState(true);
+  const [isNew, setIsNew] = useState(false);
   const [showAlarmDropdown, setShowAlarmDropdown] = useState(false);
   const [notifications, setNotifications] = useState([
     { id: 1, profileImage: "/assets/profile/profile1.png", userName: "근데 말야에", text: " 님이 새로운 게시물을 등록했습니다", timestamp: new Date() },
@@ -140,7 +140,33 @@ const Header = () => {
     }
   };
 
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    userApi
+      .checkNotifications(userId as string)
+      .then((response) => {
+        const responseNotificationsData = response.data.data.hasUnreadNotification;
+        if (responseNotificationsData) {
+          setIsNew(true);
+          userApi
+            .readNotifications(userId as string)
+            .then((response) => {
+              setNotifications(response.data.data)
+              console.log(response)
+            })
+            .catch((error) => {
+            console.error('알림목록 불러오기 실패: ', error)
+          })
+        }
+      })
+      .catch((error) => {
+      console.error("새로운 알림 체크 실패: ", error)
+    })
+  })
+
   const clearNotifications = () => {
+    const userId = localStorage.getItem('userId');
+    userApi.deleteNotifications(userId as string)
     setNotifications([]);
   };
 
