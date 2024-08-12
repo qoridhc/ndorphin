@@ -4,6 +4,7 @@ import { useLocation, useNavigate, useParams } from "react-router";
 import SettingMenu from "../../components/if/CommentSettingMenu";
 import BalanceCard from "../../components/balance/BalanceCard";
 import boardApi from "../../api/boardApi";
+import voteApi from "../../api/voteApi";
 
 interface BalanceBoard {
   voteInfos: {
@@ -71,6 +72,7 @@ const BalanceDetail = () => {
       const response = await boardApi.read(boardId);
       if (response.status === 200) {
         setBalanceBoardData(response.data.data);
+        console.log(response.data.data);
         // setUpdateBoardSubject(response.data.data.subject);
         // setUpdateBoardContent(response.data.data.content);
         // setImage(response.data.data.fileUrls[0]);
@@ -79,7 +81,7 @@ const BalanceDetail = () => {
         // setBoardContentTextCount(updateBoardContent.length);
       }
     } catch (error) {
-      console.error("ifApi read : ", error);
+      console.error("boardApi read : ", error);
     }
   };
 
@@ -91,6 +93,24 @@ const BalanceDetail = () => {
       }
     } catch (error) {
       console.error("boardApi list : ", error);
+    }
+  };
+
+  // 투표
+  const handleVoteCreate = async (voteContentId: number) => {
+    if (params.boardId !== undefined) {
+      const data = {
+        voteContentId: voteContentId,
+      };
+
+      try {
+        const response = await voteApi.create(params.boardId, data);
+        if (response.status === 200) {
+          readBoardData(params.boardId);
+        }
+      } catch (error) {
+        console.log("voteApi create : ", error);
+      }
     }
   };
 
@@ -131,18 +151,31 @@ const BalanceDetail = () => {
                   <img src="/assets/if/hotCommentIcon.png" alt="" />
                   <p className="text-sm text-[#F07676] font-semibold text-right">투표수 {balanceBoardData.totalVotes}회</p>
                 </div>
-                {balanceBoardData.voteInfos.map((vote, index) => (
-                  <button
-                    className={`border-solid border-2 rounded-[30px] flex justify-center items-center transition-colors duration-150 ease-in-out 
-                      ${index === 0 ? "border-[#E4AE3A] hover:bg-[#E4AE3A] hover:opacity-75" : ""}
-                      ${index === 1 ? "border-[#4298B4] hover:bg-[#4298B4] hover:opacity-75" : ""}
-                      ${index === 2 ? "border-[#88619A] hover:bg-[#88619A] hover:opacity-75" : ""}
-                      ${index === 3 ? "border-[#33A474] hover:bg-[#33A474] hover:opacity-75" : ""}
-                    `}
-                    key={vote.voteContentId}>
-                    <p className="w-full px-5 py-2 font-semibold text-[#565656] hover:text-white">{vote.voteContent}</p>
-                  </button>
-                ))}
+                {balanceBoardData.userVoteContentId ? (
+                  <>
+                    {balanceBoardData.voteInfos.map((vote, index) => (
+                      <button className={`h-12 relative flex justify-between items-center transition-colors duration-150 ease-in-out hover:bg-opacity-50`} key={vote.voteContentId} onClick={() => handleVoteCreate(vote.voteContentId)}>
+                        {balanceBoardData.totalVotes !== undefined ? <progress className="h-full absolute progress progress-warning opacity-50" value={`${vote.voteCount}`} max={`${balanceBoardData.totalVotes}`}></progress> : <></>}
+
+                        <div className="px-5 font-bold text-[#565656] relative z-10 flex">
+                          <p className="w-14 text-left">{(vote.voteCount / balanceBoardData.totalVotes) * 100}%</p>
+                          <p>{vote.voteContent}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {balanceBoardData.voteInfos.map((vote, index) => (
+                      <button
+                        className={`border-solid border-2 rounded-[30px] flex justify-center items-center transition-colors duration-150 ease-in-out hover:bg-opacity-15 border-${voteColors[index]} hover:bg-${voteColors[index]}`}
+                        key={vote.voteContentId}
+                        onClick={() => handleVoteCreate(vote.voteContentId)}>
+                        <p className={`w-full px-5 py-2 font-bold text-${voteColors[index]}`}>{vote.voteContent}</p>
+                      </button>
+                    ))}
+                  </>
+                )}
               </div>
 
               <div className="py-5 flex justify-center">
