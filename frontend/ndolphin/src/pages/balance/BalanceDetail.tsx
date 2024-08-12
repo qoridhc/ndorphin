@@ -236,7 +236,7 @@ const BalanceDetail = () => {
                         onClick={() => {
                           balanceBoardData.userVoteContentId === vote.voteContentId ? handleVoteDelete() : handleVoteUpdate(vote.voteContentId);
                         }}>
-                        <div className="h-full w-full absolute bg-gray-200 rounded-lg overflow-hidden">
+                        <div className="h-full w-full absolute bg-gray-100 rounded-lg overflow-hidden">
                           <div
                             className="h-full opacity-75 transition-none"
                             ref={(el) => (progressRefs.current[index] = el)} // Progress bar 참조 설정
