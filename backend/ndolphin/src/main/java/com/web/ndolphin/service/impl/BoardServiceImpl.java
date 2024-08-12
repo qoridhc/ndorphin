@@ -40,6 +40,7 @@ import com.web.ndolphin.repository.VoteRepository;
 import com.web.ndolphin.service.interfaces.BoardService;
 import com.web.ndolphin.service.interfaces.CommentService;
 import com.web.ndolphin.service.interfaces.FileInfoService;
+import com.web.ndolphin.service.interfaces.OpenAIService;
 import com.web.ndolphin.service.interfaces.TokenService;
 import com.web.ndolphin.service.interfaces.VoteService;
 import jakarta.transaction.Transactional;
@@ -79,6 +80,7 @@ public class BoardServiceImpl implements BoardService {
     private final TokenService tokenService;
     private final VoteService voteService;
     private final CommentService commentService;
+    private final OpenAIService openAIService;
 
     @Override
     @Transactional
@@ -95,6 +97,13 @@ public class BoardServiceImpl implements BoardService {
 
             // 게시글 처리
             boardRepository.save(board);
+
+           if(boardRequestDto.getBoardType() == BoardType.RELAY_BOARD){
+               // AI 요약 처리
+               String summary = openAIService.summarizeText(board.getContent());
+               board.setSummary(summary);
+               boardRepository.save(board);
+           }
 
             // 파일 업로드 처리
             fileInfoService.uploadFiles(board.getId(), EntityType.POST, multipartFiles);

@@ -54,7 +54,6 @@ const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ isOpen,
         // Blob 객체를 파일로 변환합니다.
         const dallefile = new File([blob], "image.jpg", { type: "image/jpeg" });
 
-        
         if (dallefile) {
           setFile(dallefile);
           const reader = new FileReader();
@@ -77,7 +76,12 @@ const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ isOpen,
       <div className="w-2/5 flex flex-col items-center bg-white p-5 rounded-3xl shadow-lg">
         {/* 닫기 버튼 */}
         <div className="w-full flex justify-end">
-          <button onClick={onClose}>
+          <button
+            onClick={() => {
+              onClose();
+              setInputPrompt("");
+              setImageUrl("");
+            }}>
             <IoMdClose className="text-2xl" />
           </button>
         </div>
@@ -88,12 +92,12 @@ const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ isOpen,
             <img src={imageUrl || coverImage} alt="coverImage" className="w-[22rem] h-60 border rounded-md" />
           </div>
 
-          <div className="relative w-full flex justify-center">
+          <div className="relative w-full flex py-3 text-left text-sm border border-zinc-400 rounded-3xl bg-zinc-100">
             <input
               onChange={(e) => {
                 setInputPrompt((e.target as HTMLInputElement).value);
               }}
-              className="w-[95%] py-3 px-4 text-left text-sm border border-zinc-400 rounded-3xl bg-zinc-100 outline-none"
+              className="mx-6 w-[80%] bg-zinc-100 outline-none text-left"
               type="text"
               placeholder="만들고 싶은 이미지를 설명해 주세요"
               value={inputPrompt}></input>
@@ -101,8 +105,9 @@ const BookCoverAiPromptModal: React.FC<BookCoverAiPromptModalProps> = ({ isOpen,
               onClick={() => {
                 generateImage();
                 setInputPrompt("");
+                setImageUrl("");
               }}
-              className="absolute top-[0.45rem] right-8 w-8 hover:cursor-pointer"
+              className="absolute top-[0.45rem] right-7 w-8 hover:cursor-pointer"
               src="/assets/aiImageCreate.png"
               alt=""
             />

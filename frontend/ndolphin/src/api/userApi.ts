@@ -46,6 +46,14 @@ const userApi = {
     });
   },
 
+  deleteProfileImage: (userId: string) => {
+    return request.delete(`/api/v1/users/image/${userId}`)
+  },
+
+  deleteUser: (userId: string) => {
+    return request.delete(`/api/v1/users/${userId}`)
+  },
+
   getUserInfo: (userId: string) => request.get<ApiResponse<UserInfoResponse>>(`/api/v1/users/${userId}`),
 
   follow: (userId: string, followUserId: string) => {
@@ -79,7 +87,7 @@ const userApi = {
 
   unfavorite: (boardId: number) => {
     return request.delete(
-      `api/v1/users/favorites/${boardId}`
+      `api/v1/users/1/favorites/${boardId}`
     );
   },
 
@@ -101,6 +109,26 @@ const userApi = {
 
   getNpointPercent: (userId: string) => {
     return request.get(`/api/v1/users/${userId}/npoint-percent`)
+  },
+
+  checkNotifications: (userId: string) => {
+    return request.get(`/api/v1/notifications/unread/${userId}`)
+  },
+
+  readNotifications: (userId: string) => {
+    return request.get(`/api/v1/notifications/${userId}`)
+  },
+
+  postNotifications: (userId: string, content: string, writerId: number) => {
+    return request.post(
+      `api/v1/notifications/${userId}`,
+      { content: content, writerId: writerId },
+      { headers: { 'Content-Type': 'application/json' } }
+    )
+  },
+
+  deleteNotifications: (userId: string) => {
+    return request.delete(`/api/v1/notifications/${userId}`)
   },
 
 };

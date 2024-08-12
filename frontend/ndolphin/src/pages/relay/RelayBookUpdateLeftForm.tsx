@@ -12,14 +12,16 @@ interface RelayBookUpdateLeftFormProps {
   content: any;
   currentEndPage: number | null;
   setCurrentEndPage: (endPage: number) => void;
+  image: string | null;
 }
 
-const RelayBookUpdateLeftForm = ({ bookId, handleRelayBookUpdate, subject, content, currentEndPage, setCurrentEndPage }: RelayBookUpdateLeftFormProps) => {
+const RelayBookUpdateLeftForm = ({ bookId, handleRelayBookUpdate, subject, content, currentEndPage, setCurrentEndPage, image }: RelayBookUpdateLeftFormProps) => {
   const navigate = useNavigate();
   const [subjectValue, setSubjectValue] = useState(subject.current);
   const [contentValue, setContentValue] = useState(content.current);
-  const [endPageValue, setEndPageValue] = useState<number>(0);
+  const [endPageValue, setEndPageValue] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isFormValid = image && subjectValue && contentValue && endPageValue;
 
   useEffect(() => {
     if (inputRef.current) {
@@ -66,8 +68,7 @@ const RelayBookUpdateLeftForm = ({ bookId, handleRelayBookUpdate, subject, conte
                 onChange={onChangeContent}
                 className="notes w-full h-[283px] resize-none focus:outline-none placeholder:text-zinc-400"
                 placeholder="이야기가 시작될 '만약에~' 내용을 입력해 주세요 (최소 글자수 100자 이상)"
-                value={contentValue}
-              ></textarea>
+                value={contentValue}></textarea>
             </div>
 
             {/* 종료 장수 선택 form */}
@@ -84,18 +85,19 @@ const RelayBookUpdateLeftForm = ({ bookId, handleRelayBookUpdate, subject, conte
           <div className="absolute z-[99] flex justify-start w-full px-8 my-2 top-0 -left-2">
             <button
               onClick={() => {
-                handleRelayBookUpdate(subjectValue, contentValue, endPageValue);
+                if (endPageValue) {
+                  handleRelayBookUpdate(subjectValue, contentValue, endPageValue);
+                }
               }}
-              className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200"
-            >
+              disabled={!isFormValid} // 모든 값이 있을 때만 버튼 활성화
+              className={`w-16 mx-3 font-semibold border-solid border-2 rounded-md duration-200 ${isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] border-[#e0e0e0] cursor-not-allowed"}`}>
               수정
             </button>
             <button
               onClick={() => {
                 navigate(`/relaybookdetail/${bookId}`);
               }}
-              className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200"
-            >
+              className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200">
               취소
             </button>
           </div>
