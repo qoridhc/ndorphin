@@ -345,7 +345,7 @@ const IfDetail = () => {
                     </div>
                   </div>
 
-                  {isUpdate === false && `${ifBoardData.user.userId}` === userId ? <BoardSettingMenu boardType="if" boardId={ifBoardData.id} setIsUpdate={setIsUpdate} /> : <></>}
+                  {isUpdate === false && `${ifBoardData.user.userId}` === userId ? <BoardSettingMenu totalCount={ifBoardData.commentCount} boardType="if" boardId={ifBoardData.id} setIsUpdate={setIsUpdate} /> : <></>}
 
                   {isUpdate && `${ifBoardData.user.userId}` === userId ? (
                     <div>

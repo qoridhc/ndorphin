@@ -372,7 +372,7 @@ const BalanceDetail = () => {
                     </div>
                   </div>
 
-                  {isUpdate === false && `${balanceBoardData.user.userId}` === userId ? <BoardSettingMenu boardType="balance" boardId={balanceBoardData.id} setIsUpdate={setIsUpdate} /> : <></>}
+                  {isUpdate === false && `${balanceBoardData.user.userId}` === userId ? <BoardSettingMenu totalCount={balanceBoardData.totalVotes} boardType="balance" boardId={balanceBoardData.id} setIsUpdate={setIsUpdate} /> : <></>}
 
                   {isUpdate && `${balanceBoardData.user.userId}` === userId ? (
                     <div>
