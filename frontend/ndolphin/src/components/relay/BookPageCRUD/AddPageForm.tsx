@@ -16,6 +16,7 @@ interface AddPageFormProps {
 const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiImage, image, setImage, file, setFile }) => {
   const navigate = useNavigate();
   const [content, setContent] = useState("");
+  const isFormValid = image && content
 
   const handlePageAdd = async () => {
     const formData = new FormData();
@@ -77,12 +78,17 @@ const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiI
             <button
               onClick={() => {
                 setPageAdd(false);
+                setImage(null);
               }}
-              className="w-16 mx-2 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200"
-            >
+              className="w-16 mx-2 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200">
               취소
-            </button>{" "}
-            <button onClick={handlePageAdd} className="w-16 mr-11 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">등록</button>
+            </button>
+            <button
+              onClick={handlePageAdd}
+              disabled={!isFormValid}
+              className={`w-16 mr-10 font-semibold border-solid border-2 rounded-md duration-200 ${isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] border-[#e0e0e0] cursor-not-allowed"}`}>
+              등록
+            </button>
           </div>
         </div>
         <div className="w-full mb-2">
@@ -119,8 +125,7 @@ const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiI
                   onClick={() => {
                     handleAiImage();
                   }}
-                  className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800"
-                >
+                  className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
                   <img src="/assets/aiImageIcon.png" className="w-5" alt="#"></img>
                   <p className="text-xs">AI 이미지 생성</p>
                 </button>

@@ -5,7 +5,6 @@ import DeleteModal from "./relayBookCRUD/BookDeleteModal";
 interface BookPageCoverProps {
   firstPage: {
     id: number;
-    user: {};
     subject: string;
     content: string;
     hit: number;
@@ -20,6 +19,9 @@ interface BookPageCoverProps {
     userReactionId: null;
     userReactionType: string;
     fileUrls: any[];
+    user: {
+      userId: number;
+    };
   }[];
   bookId: any;
   isDeleteOpen: boolean;
@@ -29,16 +31,17 @@ interface BookPageCoverProps {
   handleDelete: () => void;
 }
 
-
 const BookPageCover = React.forwardRef<HTMLDivElement, BookPageCoverProps>(({ firstPage, bookId, handleDelete }, ref: ForwardedRef<HTMLDivElement>) => {
+  const localUserId = Number(localStorage.getItem("userId"));
+  const [userId, setUserId] = useState(0);
   const [contentFileUrl, setContentFileUrl] = useState("");
   const [subject, setSubject] = useState("");
-  
-  
+
   useEffect(() => {
     if (firstPage && firstPage.length > 0) {
       setContentFileUrl(firstPage[0].fileUrls[0]);
       setSubject(firstPage[0].subject);
+      setUserId(firstPage[0].user.userId);
     }
   }, [firstPage]);
 
@@ -47,9 +50,7 @@ const BookPageCover = React.forwardRef<HTMLDivElement, BookPageCoverProps>(({ fi
       {
         <div className="cover" ref={ref} data-density="hard">
           <div className="h-full flex flex-col justify-between">
-            <div className="pt-5 pr-5 ">
-              <DropDown bookId={bookId} handleDelete={handleDelete} firstPage={firstPage} />
-            </div>
+            <div className="pt-5 pr-5 ">{localUserId === userId && <DropDown bookId={bookId} handleDelete={handleDelete} firstPage={firstPage} />}</div>
             <div className="flex justify-center">
               <img src={contentFileUrl} width="300px" alt="로딩 중..."></img>
             </div>

@@ -100,7 +100,7 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(
           const response = await commentApi.update(bookId, pageId, formData);
           if (response.status === 200) {
             console.log("릴레이북 페이지 수정 성공");
-            // window.location.reload();
+            window.location.reload();
           }
         }
       } catch (error) {
@@ -131,7 +131,16 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(
                   />
                 ) : (
                   index !== totalPage + 1 && (
-                    <UserInfo index={index} firstPage={false} user={page.user.nickName} userImage={page.user.profileImage} badget={page.user.mbti} setPageUpdate={(value: boolean) => handlePageUpdate(index, value)} handleDelete={handleDelete} />
+                    <UserInfo
+                      index={index}
+                      firstPage={false}
+                      userId={page.user.userId}
+                      user={page.user.nickName}
+                      userImage={page.user.profileImage}
+                      badget={page.user.mbti}
+                      setPageUpdate={(value: boolean) => handlePageUpdate(index, value)}
+                      handleDelete={handleDelete}
+                    />
                   )
                 )}
                 {!pageUpdateStates[index] && (
@@ -172,17 +181,26 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(
               <div key={index} className="page" ref={ref}>
                 {isFinished ? (
                   // 완료된 이야기일 경우 이모티콘 반응
-                <BookDetailDone bookId={bookId} />
+                  <BookDetailDone bookId={bookId} />
                 ) : (
                   // 진행 중인 이야기일 경우 페이지 추가
-                  <AddPage hasParticipated={hasParticipated} bookId={bookId} pages={pages} handleAiImage={handleAiImage} image={image} setImage={setImage} file={file} setFile={setFile} />
+                  <AddPage hasParticipated={hasParticipated} bookId={bookId} page={page} handleAiImage={handleAiImage} image={image} setImage={setImage} file={file} setFile={setFile} />
                 )}
               </div>
             ))
           : // readPage == first일 경우 첫 번째 페이지 보여줌
             pages.map((page, index) => (
               <div key={index} className="page" ref={ref}>
-                <UserInfo index={index} firstPage={true} user={page.user.nickName} userImage={page.user.profileImage} badget={page.user.mbti} setPageUpdate={(value: boolean) => handlePageUpdate(index, value)} handleDelete={handleDelete} />
+                <UserInfo
+                  index={index}
+                  firstPage={true}
+                  user={page.user.nickName}
+                  userId={page.user.userId}
+                  userImage={page.user.profileImage}
+                  badget={page.user.mbti}
+                  setPageUpdate={(value: boolean) => handlePageUpdate(index, value)}
+                  handleDelete={handleDelete}
+                />
                 <div className="h-full">
                   <div className="py-3">
                     {(index + 1) % 2 === 1 ? (
