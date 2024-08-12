@@ -119,9 +119,13 @@ const userApi = {
     return request.get(`/api/v1/notifications/${userId}`)
   },
 
-  // postNotifications: (userId: string) => {
-  //   return request.post()
-  // },
+  postNotifications: (userId: string, content: string, writerId: number) => {
+    return request.post(
+      `api/v1/notifications/${userId}`,
+      { content: content, writerId: writerId },
+      { headers: { 'Content-Type': 'application/json' } }
+    )
+  },
 
   deleteNotifications: (userId: string) => {
     return request.delete(`/api/v1/notifications/${userId}`)
