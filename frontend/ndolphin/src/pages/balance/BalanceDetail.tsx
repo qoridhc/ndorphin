@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router";
 import BalanceCard from "../../components/balance/BalanceCard";
 import boardApi from "../../api/boardApi";
 import voteApi from "../../api/voteApi";
+import BoardSettingMenu from "../../components/common/BoardSettingMenu";
 
 interface BalanceBoard {
   voteInfos: {
@@ -52,13 +53,20 @@ interface Balance {
 const BalanceDetail = () => {
   const navigate = useNavigate();
   const params = useParams();
+  const [userId, setUserId] = useState("");
   const voteColors = ["[#E4AE3A]", "[#4298B4]", "[#88619A]", "[#33A474]"];
 
   const [balanceBoardData, setBalanceBoardData] = useState<BalanceBoard | null>(null);
   const [recommendationList, setRecommendationList] = useState<Balance[] | null>(null);
   const progressRefs = useRef<(HTMLDivElement | null)[]>([]); // Progress bar 참조 배열
 
+  const [isUpdate, setIsUpdate] = useState(false);
+
   const [maxVote, setMaxVote] = useState<number | null>(null);
+
+  useEffect(() => {
+    setUserId(`${localStorage.getItem("userId")}`);
+  }, []);
 
   useEffect(() => {
     if (params.boardId !== undefined) {
@@ -202,19 +210,23 @@ const BalanceDetail = () => {
           <div className="grid grid-cols-[4fr_2fr] gap-20">
             <div>
               <div className="grid gap-3">
-                <div className="flex items-center">
-                  <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${balanceBoardData.user.profileImage}`} alt="" />
-                  <div>
-                    <div className="w-40 flex justify-between items-center">
-                      <div className="flex items-center">
-                        <p className="font-bold">{balanceBoardData.user.nickName}</p>
-                        {<img className="w-5 h-5 ml-1" src={`/assets/${balanceBoardData.user.mbti === null ? "noBadget.png" : balanceBoardData.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                <div className="flex justify-between">
+                  <div className="flex">
+                    <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${balanceBoardData.user.profileImage}`} alt="" />
+                    <div>
+                      <div className="w-40 flex justify-between items-center">
+                        <div className="flex items-center">
+                          <p className="font-bold">{balanceBoardData.user.nickName}</p>
+                          {<img className="w-5 h-5 ml-1" src={`/assets/${balanceBoardData.user.mbti === null ? "noBadget.png" : balanceBoardData.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-xs text-left">{balanceBoardData.createdAt}</p>
                       </div>
                     </div>
-                    <div className="">
-                      <p className="text-xs text-left">{balanceBoardData.createdAt}</p>
-                    </div>
                   </div>
+
+                  {isUpdate === false && `${balanceBoardData.user.userId}` === userId ? <BoardSettingMenu boardType="balance" boardId={balanceBoardData.id} setIsUpdate={setIsUpdate} /> : <></>}
                 </div>
 
                 <p className="text-xl font-bold">Q : {balanceBoardData.subject}</p>

@@ -5,18 +5,23 @@ import boardApi from "../../api/boardApi";
 import { useNavigate } from "react-router";
 
 interface Props {
+  boardType: string;
   boardId: number;
   setIsUpdate: (state: boolean) => void;
 }
 
-const IfBoardSettingMenu = ({ boardId, setIsUpdate }: Props) => {
+const BoardSettingMenu = ({ boardType, boardId, setIsUpdate }: Props) => {
   const navigate = useNavigate();
 
   const handleBoardDelete = async () => {
     try {
       const response = await boardApi.delete(`${boardId}`);
       if (response.status === 200) {
-        navigate("/iflist");
+        if (boardType === "if") {
+          navigate("/iflist");
+        } else {
+          navigate("/balancelist");
+        }
       }
     } catch (error) {
       console.log("boardApi delete : ", error);
@@ -46,4 +51,4 @@ const IfBoardSettingMenu = ({ boardId, setIsUpdate }: Props) => {
   );
 };
 
-export default IfBoardSettingMenu;
+export default BoardSettingMenu;

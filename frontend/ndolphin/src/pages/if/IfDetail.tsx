@@ -5,7 +5,7 @@ import CommentSettingsMenu from "../../components/if/CommentSettingMenu";
 import OpinionCard from "../../components/if/OpinionCard";
 import boardApi from "../../api/boardApi";
 import commentApi from "../../api/commentApi";
-import IfBoardSettingMenu from "../../components/if/IfBoardSettingMenu";
+import BoardSettingMenu from "../../components/common/BoardSettingMenu";
 import InsertionImage from "../../components/common/InsertionImage";
 import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
 
@@ -345,7 +345,7 @@ const IfDetail = () => {
                     </div>
                   </div>
 
-                  {isUpdate === false && `${ifBoardData.user.userId}` === userId ? <IfBoardSettingMenu boardId={ifBoardData.id} setIsUpdate={setIsUpdate} /> : <></>}
+                  {isUpdate === false && `${ifBoardData.user.userId}` === userId ? <BoardSettingMenu boardType="if" boardId={ifBoardData.id} setIsUpdate={setIsUpdate} /> : <></>}
 
                   {isUpdate && `${ifBoardData.user.userId}` === userId ? (
                     <div>
