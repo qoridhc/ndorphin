@@ -27,31 +27,6 @@ const BestProfile = () => {
       name: "상상의 나무꾼",
       point: 12776,
     },
-    {
-      id: 1,
-      name: "삶은계란",
-      point: 142675,
-    },
-    {
-      id: 2,
-      name: "만약핑인데",
-      point: 14249,
-    },
-    {
-      id: 3,
-      name: "별이 빛나는 밤",
-      point: 13578,
-    },
-    {
-      id: 4,
-      name: "코에촉촉",
-      point: 13221,
-    },
-    {
-      id: 5,
-      name: "상상의 나무꾼",
-      point: 12776,
-    },
   ];
 
   return (
