@@ -135,14 +135,16 @@ function Book({ book }: BookProps) {
           onClick={() => {
             goBookDetail(book.id);
           }}
-          className="hover:cursor-pointer font-bold text-lg">
+          className="hover:cursor-pointer font-bold text-lg"
+        >
           {book.subject}
         </span>
         <button
           type="button"
           onClick={handleAISummary}
-          className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800 mt-2 transition duration-200 ease-in-out hover:bg-yellow-100 ">
-          <img src="/assets/aiSummaryButton.png" className="w-5" alt="#" />
+          className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800 mt-2 transition duration-200 ease-in-out hover:bg-yellow-100 "
+        >
+          <img src="/assets/relay/aiSummaryChatIcon.png" className="w-5" alt="#" />
           <p className="text-xs">AI 요약하기</p>
           <img src="/assets/arrow_right.png" className="w-2" alt="#" />
         </button>
@@ -157,12 +159,14 @@ function Book({ book }: BookProps) {
                        w-0 h-0 
                        border-x-[12px] border-x-transparent 
                        border-b-[12px] border-b-[#eff1f1] 
-                       z-50"></div>
+                       z-50"
+          ></div>
 
           <div
             className="absolute top-1 transform
                           z-50 bg-[#eff1f1] rounded-md w-72 p-4 
-                          max-h-64 overflow-y-auto">
+                          max-h-64 overflow-y-auto"
+          >
             <div className="mb-3 flex items-center">
               <img className="w-5 mr-1" src="/assets/relay/aiSummaryChatIcon.png" alt="" />
               <h3 className="font-bold text-xs text-zinc-600">AI로 지금까지의 이야기를 요약했어요</h3>
