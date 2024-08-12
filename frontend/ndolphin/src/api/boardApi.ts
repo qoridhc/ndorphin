@@ -49,7 +49,7 @@ const boardApi = {
   },
 
   reactionUpdate: (boardId: string, reactionType: string) => {
-    return request.post(
+    return request.put(
       `api/v1/boards/${boardId}/reactions`,
       {
         reactionType: reactionType,
