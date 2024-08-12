@@ -98,7 +98,7 @@ const IfStart = () => {
           <hr className={`${hrClass}`} />
           {image ? (
             <div className="py-3 flex justify-center">
-              <img className="max-w-full max-h-80 object-cover" src={image} alt="" />
+              <img className="max-w-full max-h-[400px] object-cover" src={image} alt="" />
             </div>
           ) : (
             <></>
