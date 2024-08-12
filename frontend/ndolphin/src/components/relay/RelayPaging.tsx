@@ -5,37 +5,39 @@ import boardApi from "../../api/boardApi";
 import Pagination from "react-js-pagination";
 
 interface RelayPagingProps {
+  setBookList: (bookList: any[]) => void;
+  tabs: number;
 }
 
 interface Book {
   done: boolean;
 }
 
-const RelayPaging = ({ }: RelayPagingProps) => {
-  const [bookListDone, setBookListDone] = useState<any[] | null>(null);
-  const [bookListUnderdone, setBookListUnderdone] = useState<any[] | null>(null);
+const RelayPaging = ({ setBookList, tabs }: RelayPagingProps) => {
   const [page, setPage] = useState<number>(1);
 
-  
-  
   useEffect(() => {
     const getRelayBoardList = async () => {
-      try {
-        const response = await boardApi.list("RELAY_BOARD");
-        const bookList = response.data.data.content;
-        const filteredBookListDone = bookList.filter((book: Book) => book.done === true);
-        const filteredBookListUnderdone = bookList.filter((book: Book) => book.done === false);
-
-        setBookListDone(filteredBookListDone);
-        setBookListUnderdone(filteredBookListUnderdone);
-      } catch (error) {
-        console.error("릴레이북 목록 조회 오류 발생", error);
+      if (tabs === 0) {
+        try {
+          const response = await boardApi.relaylist("RELAY_BOARD", false, page - 1);
+          const bookList = response.data.data.content;
+          setBookList(bookList);
+        } catch (error) {
+          console.error("릴레이북 목록 진행 중 조회 오류 발생", error);
+        }
+      } else {
+        try {
+          const response = await boardApi.relaylist("RELAY_BOARD", true, page - 1);
+          const bookList = response.data.data.content;
+          setBookList(bookList);
+        } catch (error) {
+          console.error("릴레이북 목록 완료 조회 오류 발생", error);
+        }
       }
-
-      getRelayBoardList();
     };
+    getRelayBoardList();
   }, [page]);
-
 
   const handlePageChange = (page: number) => {
     setPage(page);

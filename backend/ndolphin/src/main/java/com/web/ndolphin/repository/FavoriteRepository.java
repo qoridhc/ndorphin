@@ -17,7 +17,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     @Query("SELECT f FROM Favorite f JOIN FETCH f.board WHERE f.user.userId = :userId")
     List<Favorite> findByUserId(Long userId);
 
-    @Query("SELECT COUNT(c) > 0 FROM Comment c WHERE c.board.id = :boardId AND c.user.userId = :userId")
+    @Query("SELECT COUNT(f) > 0 FROM Favorite f WHERE f.board.id = :boardId AND f.user.userId = :userId")
     boolean existsByBoardIdAndUserId(@Param("boardId") Long boardId,
         @Param("userId") Long userId);
 }
