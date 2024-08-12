@@ -91,26 +91,7 @@ public class BoardController {
             content = @Content(schema = @Schema())
         )
     })
-//    @GetMapping
-//    public ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(
-//        @Parameter(description = "게시판 유형", required = true)
-//        @RequestParam("type") BoardType boardType,
-//
-//        @Parameter(description = "첫 번째 필터", required = false)
-//        @RequestParam(value = "filter1", required = false) String filter1,
-//
-//        @Parameter(description = "두 번째 필터", required = false, example = "recent")
-//        @RequestParam(value = "filter2", required = false, defaultValue = "recent") String filter2,
-//
-//        @Parameter(description = "검색어", required = false)
-//        @RequestParam(value = "search", required = false) String search,
-//
-//        @Parameter(description = "페이징 정보", required = false)
-//        @PageableDefault(size = 12) Pageable pageable) {
-//
-//        ResponseEntity<ResponseDto<Page<BoardDto>>> responseEntity = boardService.getBoardsByType(boardType, filter1, filter2, search, pageable);
-//        return responseEntity;
-//    }
+
     @GetMapping
     public ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(
             @Parameter(description = "게시판 유형", required = true)

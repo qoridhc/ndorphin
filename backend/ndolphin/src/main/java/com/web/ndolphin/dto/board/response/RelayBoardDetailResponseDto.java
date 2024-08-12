@@ -18,4 +18,5 @@ public class RelayBoardDetailResponseDto extends BoardDto {
     private Long reactionCount;
     private Long userReactionId;
     private ReactionType userReactionType;
+    private boolean isDone = false;
 }

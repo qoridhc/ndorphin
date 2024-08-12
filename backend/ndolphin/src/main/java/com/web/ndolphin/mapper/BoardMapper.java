@@ -188,6 +188,10 @@ public class BoardMapper {
             relayBoardDetailResponseDto.setUserReactionType(ReactionType.NONE); // 기본 반응 타입
         }
 
+        if(board.getMaxPage() == commentResponseDtos.size() + 1){
+            relayBoardDetailResponseDto.setDone(true);
+        }else relayBoardDetailResponseDto.setDone(false);
+
         return relayBoardDetailResponseDto;
     }
 

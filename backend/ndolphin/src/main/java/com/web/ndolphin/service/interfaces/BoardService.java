@@ -15,12 +15,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface BoardService {
 
-    ResponseEntity<ResponseDto> createBoard(BoardRequestDto boardRequestDto,
-        List<MultipartFile> multipartFiles);
+    ResponseEntity<ResponseDto> createBoard(BoardRequestDto boardRequestDto, List<MultipartFile> multipartFiles);
 
-//    ResponseEntity<ResponseDto> getBoardsByType(BoardType boardType, String filter1, String filter2, String search);
-//    ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(BoardType boardType, String filter1, String filter2, String search, Pageable pageable);
     ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(BoardType boardType, String filter1, String filter2, String search, Pageable pageable, Boolean isDone);
+
     ResponseEntity<ResponseDto> getBoardById(Long boardId);
 
     ResponseEntity<ResponseDto> updateBoard(Long boardId, BoardRequestDto boardRequestDto,

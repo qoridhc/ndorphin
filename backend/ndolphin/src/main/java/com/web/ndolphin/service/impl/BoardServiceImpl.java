@@ -128,34 +128,6 @@ public class BoardServiceImpl implements BoardService {
             .forEach(voteContentRepository::save);
     }
 
-//    @Override
-//    public ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(BoardType boardType,
-//        String filter1, String filter2, String search, Pageable pageable) {
-//        // Pageable을 사용하여 페이징된 게시글 목록을 가져옵니다.
-//        Page<Board> boardsPage = boardRepository.findByTypeAndFilters(boardType, filter1, filter2,
-//            search, pageable);
-//
-//        // Page<Board>를 List<Board>로 변환하여 기존의 메서드를 재사용
-//        List<Board> boards = boardsPage.getContent();
-//
-//        // getBoardDtos 메서드 호출
-//        List<? extends BoardDto> boardDtos = getBoardDtos(boardType, boards);
-//
-//        // List<? extends BoardDto>를 List<BoardDto>로 캐스팅
-//        List<BoardDto> castedBoardDtos = boardDtos.stream()
-//            .map(boardDto -> (BoardDto) boardDto)
-//            .collect(Collectors.toList());
-//
-//        // Page<BoardDto>로 변환
-//        Page<BoardDto> boardDtosPage = new PageImpl<>(castedBoardDtos, pageable,
-//            boardsPage.getTotalElements());
-//
-//        ResponseDto<Page<BoardDto>> responseBody = new ResponseDto<>(ResponseCode.SUCCESS,
-//            ResponseMessage.SUCCESS, boardDtosPage);
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
-//    }
-
     @Override
     public ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(BoardType boardType, String filter1, String filter2, String search, Pageable pageable, Boolean isDone) {
 
@@ -199,19 +171,6 @@ public class BoardServiceImpl implements BoardService {
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
-
-
-
-//    private List<? extends BoardDto> getBoardDtos(BoardType boardType, List<Board> boards) {
-//        return switch (boardType) {
-//            case VOTE_BOARD -> getVoteBoardResponseDtos(boards);
-//            case OPINION_BOARD -> getOpinionBoardResponseDtos(boards);
-//            case RELAY_BOARD -> getRelayBoardResponseDtos(boards);
-//            case OK_BOARD -> getOkBoardResponseDtos(boards);
-//            case BYE_BOARD, ANNOUNCEMENT_BOARD -> getByeBoardResponseDtos(boards);
-//            default -> throw new IllegalArgumentException("Unsupported board type");
-//        };
-//    }
 
     private List<? extends BoardDto> getBoardDtos(BoardType boardType, List<Board> boards,
         Boolean isDone) {
@@ -527,7 +486,6 @@ public class BoardServiceImpl implements BoardService {
         existingBoard.setSubject(boardRequestDto.getSubject());
         existingBoard.setContent(boardRequestDto.getContent());
         existingBoard.setMaxPage(boardRequestDto.getMaxPage());
-//        existingBoard.setHit(existingBoard.getHit() + 1);
         existingBoard.setUpdatedAt(LocalDateTime.now());
         boardRepository.save(existingBoard);
 
