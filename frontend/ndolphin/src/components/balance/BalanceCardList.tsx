@@ -23,7 +23,15 @@ interface Balance {
   totalVoteCnt: number;
 }
 
-const BalanceCardList = () => {
+interface Props {
+  searchKeyword: string;
+  searchFilter1: string;
+  searchFilter2: string;
+  isSearch: boolean;
+  setIsSearch: (state: boolean) => void;
+}
+
+const BalanceCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, setIsSearch }: Props) => {
   const [balanceBoardList, setBalanceBoardList] = useState<Balance[] | null>(null);
 
   const getBalanceBoardList = async () => {
@@ -35,9 +43,24 @@ const BalanceCardList = () => {
     }
   };
 
+  const getSearchIfBoardList = async () => {
+    try {
+      const response = await boardApi.search("VOTE_BOARD", searchKeyword, searchFilter1, searchFilter2);
+      setBalanceBoardList(response.data.data.content);
+      console.log(response);
+    } catch (error) {
+      console.log("boardApi search : ", error);
+    }
+  };
+
   useEffect(() => {
-    getBalanceBoardList();
-  }, []);
+    if (searchKeyword || searchFilter2 === "popularity") {
+      getSearchIfBoardList();
+      setIsSearch(false);
+    } else {
+      getBalanceBoardList();
+    }
+  }, [isSearch, searchFilter2]);
 
   return (
     <div>
