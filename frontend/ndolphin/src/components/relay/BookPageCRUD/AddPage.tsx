@@ -1,8 +1,10 @@
 import "../../../css/Text.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddPageForm from "./AddPageForm";
 import AlreadyWrittenPage from "../relayBookCRUD/AlreadyWrittenPage";
 import AiImagePromptModal from "../AiImagePromptModal";
+import userApi from "../../../api/userApi";
+import boardApi from "../../../api/boardApi";
 
 interface Page {
   commentId: number;
@@ -37,6 +39,19 @@ const AddPage = ({ bookId, page, handleAiImage, image, setImage, file, setFile, 
   const currentPages = page.commentResponseDtos.length;
   const remainingPages = maxPage - (currentPages + 1);
 
+  // 마지막장 추가 시 알림
+  const postAlarm = async () => {
+    const content = "내가 참여한 이야기가 끝났습니다";
+
+    const response = await boardApi.read(bookId);
+    userApi.postNotifications(response.data.data.user.userId.toString(), content, response.data.data.user.userId);
+
+    const participationList = page.commentResponseDtos;
+    participationList.map((item: any) => {
+      userApi.postNotifications(item.user.userId, content, item.user.userId)
+    })
+  };
+
   return (
     <>
       {testParticipated ? (
@@ -64,7 +79,7 @@ const AddPage = ({ bookId, page, handleAiImage, image, setImage, file, setFile, 
       ) : (
         // 페이지 추가 버튼 클릭 후 form으로 전환
         <div>
-          <AddPageForm bookId={bookId} setPageAdd={setPageAdd} handleAiImage={handleAiImage} image={image} setImage={setImage} file={file} setFile={setFile} />
+          <AddPageForm bookId={bookId} setPageAdd={setPageAdd} handleAiImage={handleAiImage} image={image} setImage={setImage} file={file} setFile={setFile} onLastPageAdded={remainingPages === 1 ? postAlarm : undefined} />
         </div>
       )}
     </>

@@ -11,12 +11,13 @@ interface AddPageFormProps {
   setImage: any;
   file: File | null;
   setFile: (file: File) => void;
+  onLastPageAdded?: () => void;
 }
 
-const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiImage, image, setImage, file, setFile }) => {
+const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiImage, image, setImage, file, setFile, onLastPageAdded }) => {
   const navigate = useNavigate();
   const [content, setContent] = useState("");
-  const isFormValid = image && content
+  const isFormValid = image && content;
 
   const handlePageAdd = async () => {
     const formData = new FormData();
@@ -42,6 +43,12 @@ const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiI
       if (response.status === 200 && response.data) {
         console.log("릴레이북 페이지 작성 성공");
         // navigate(`/relaybookdetail/${bookId}`);
+
+        // 마지막 페이지 추가 시 알람
+        if (onLastPageAdded) {
+          onLastPageAdded();
+        }
+        
         window.location.reload();
       }
     } catch (error) {
@@ -53,7 +60,6 @@ const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiI
     const newValue = e.target.value;
     setContent(newValue);
   };
-
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
