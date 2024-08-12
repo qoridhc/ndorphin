@@ -20,7 +20,7 @@ const BookPageDropDown: React.FC<BookPageDropDownProps> = ({ setPageUpdate, hand
             setPageUpdate(true);
           }}>
           <a className="px-2 py-1">
-            <img className="ml-2" src="/assets/updateIcon.png" alt="" />
+            <img className="ml-2 w-5" src="/assets/updateIcon.png" alt="" />
             <span className="text-center text-md">수정</span>
           </a>
         </li>
@@ -29,7 +29,7 @@ const BookPageDropDown: React.FC<BookPageDropDownProps> = ({ setPageUpdate, hand
             handleDelete()
         }}>
           <a className="px-2 py-1">
-            <img className="ml-2" src="/assets/deleteIcon.png" alt="" />
+            <img className="ml-2 w-5" src="/assets/deleteIcon.png" alt="" />
             <span className="text-center text-md">삭제</span>
           </a>
         </li>
