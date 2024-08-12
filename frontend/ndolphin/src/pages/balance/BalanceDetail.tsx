@@ -1,16 +1,16 @@
-import React, { useEffect, useState, useRef } from "react";
-import { FaArrowLeftLong, FaRegCircleCheck } from "react-icons/fa6";
+import React, { useEffect, useState, useRef, ChangeEvent } from "react";
+import { FaArrowLeftLong, FaPlus, FaRegCircleCheck } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router";
 import BalanceCard from "../../components/balance/BalanceCard";
 import boardApi from "../../api/boardApi";
 import voteApi from "../../api/voteApi";
+import BoardSettingMenu from "../../components/common/BoardSettingMenu";
+import InsertionImage from "../../components/common/InsertionImage";
+import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 interface BalanceBoard {
-  voteInfos: {
-    voteContent: string;
-    voteContentId: number;
-    voteCount: number;
-  }[];
+  voteInfos: Vote[];
   totalVotes: number;
   content: string;
   fileNames: string[];
@@ -28,6 +28,7 @@ interface BalanceBoard {
     profileImage: string | null;
     userId: number;
   };
+  sideBoardDtos: Balance[];
 }
 
 interface Balance {
@@ -49,21 +50,62 @@ interface Balance {
   totalVoteCnt: number;
 }
 
+interface Vote {
+  voteContent: string;
+  voteContentId: number;
+  voteCount: number;
+}
+
 const BalanceDetail = () => {
   const navigate = useNavigate();
   const params = useParams();
+  const [userId, setUserId] = useState("");
   const voteColors = ["[#E4AE3A]", "[#4298B4]", "[#88619A]", "[#33A474]"];
+  const [voteCategoryList, setVoteCategoryList] = useState<string[] | null>(null);
+
+  const inputClass = "w-full p-1 text-left border border-[#9E9E9E] rounded-sm outline-none";
 
   const [balanceBoardData, setBalanceBoardData] = useState<BalanceBoard | null>(null);
   const [recommendationList, setRecommendationList] = useState<Balance[] | null>(null);
   const progressRefs = useRef<(HTMLDivElement | null)[]>([]); // Progress bar 참조 배열
-
   const [maxVote, setMaxVote] = useState<number | null>(null);
+
+  const [isUpdate, setIsUpdate] = useState(false);
+
+  const [boardSubjectTextCount, setBoardSubjectTextCount] = useState(0);
+  const [boardContentTextCount, setBoardContentTextCount] = useState(0);
+
+  const [updateBoardSubject, setUpdateBoardSubject] = useState("");
+  const [updateBoardContent, setUpdateBoardContent] = useState("");
+
+  const [image, setImage] = useState<string | null>(null);
+  const [aiImage, setAiImage] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const updateBoardSubjectRef = useRef<HTMLInputElement>(null);
+  const updateBoardContentRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    setUserId(`${localStorage.getItem("userId")}`);
+  }, []);
+
+  useEffect(() => {
+    if (updateBoardSubjectRef.current && updateBoardContentRef.current) {
+      updateBoardSubjectRef.current.focus();
+      setBoardSubjectTextCount(updateBoardSubjectRef.current.value.length);
+      setBoardContentTextCount(updateBoardContentRef.current.value.length);
+
+      if (updateBoardContentRef.current) {
+        updateBoardContentRef.current.style.height = "auto";
+        updateBoardContentRef.current.style.height = updateBoardContentRef.current.scrollHeight + "px";
+      }
+    }
+  }, [isUpdate]);
 
   useEffect(() => {
     if (params.boardId !== undefined) {
       readBoardData(params.boardId);
-      getRecommendationList();
     }
   }, [params.boardId]);
 
@@ -75,11 +117,32 @@ const BalanceDetail = () => {
   }, [balanceBoardData]);
 
   useEffect(() => {
-    console.log(maxVote);
     if (balanceBoardData && maxVote !== null) {
       animateProgress(balanceBoardData.voteInfos, balanceBoardData.totalVotes);
     }
-  }, [balanceBoardData, maxVote]);
+  }, [balanceBoardData, maxVote, isUpdate]);
+
+  // 투표 항목 리스트 관리
+  const addVoteCategoryList = () => {
+    if (voteCategoryList) {
+      setVoteCategoryList([...voteCategoryList, ""]);
+    }
+  };
+
+  const deleteVoteCategoryList = (deleteId: number) => {
+    if (voteCategoryList) {
+      let tempList = voteCategoryList.filter((category, index) => index !== deleteId);
+      tempList = tempList.map((item) => item);
+      setVoteCategoryList(tempList);
+    }
+  };
+
+  const updateVoteCategoryList = (newText: string, updateId: number) => {
+    if (voteCategoryList) {
+      let tempList = voteCategoryList.map((category, index) => (index === updateId ? newText : category));
+      setVoteCategoryList(tempList);
+    }
+  };
 
   // 데이터 조회
   const readBoardData = async (boardId: string) => {
@@ -87,20 +150,20 @@ const BalanceDetail = () => {
       const response = await boardApi.read(boardId);
       if (response.status === 200) {
         setBalanceBoardData(response.data.data);
+        setRecommendationList(response.data.data.sideBoardDtos);
+        setUpdateBoardSubject(response.data.data.subject);
+        setUpdateBoardContent(response.data.data.content);
+        setImage(response.data.data.fileUrls[0]);
+
+        let tempList = response.data.data.voteInfos.map((vote: Vote) => vote.voteContent);
+
+        setVoteCategoryList(tempList);
+
+        setBoardSubjectTextCount(updateBoardSubject.length);
+        setBoardContentTextCount(updateBoardContent.length);
       }
     } catch (error) {
       console.error("boardApi read : ", error);
-    }
-  };
-
-  const getRecommendationList = async () => {
-    try {
-      const response = await boardApi.list("VOTE_BOARD");
-      if (response.status === 200) {
-        setRecommendationList(response.data.data.content);
-      }
-    } catch (error) {
-      console.error("boardApi list : ", error);
     }
   };
 
@@ -190,6 +253,86 @@ const BalanceDetail = () => {
     });
   };
 
+  // 게시글 제목 input 관리
+  const handleUpdateBoardSubjectTextareaChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setUpdateBoardSubject(event.target.value);
+
+    const textLength = event.target.value.length;
+    setBoardSubjectTextCount(textLength);
+
+    if (updateBoardSubjectRef.current) {
+      updateBoardSubjectRef.current.style.height = "auto";
+      updateBoardSubjectRef.current.style.height = updateBoardSubjectRef.current.scrollHeight + "px";
+    }
+  };
+
+  // 게시글 본문 textarea 관리
+  const handleTextareaChange = (
+    setText: React.Dispatch<React.SetStateAction<string>>,
+    event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+    setTextCount: React.Dispatch<React.SetStateAction<number>>,
+    ref: React.RefObject<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    setText(event.target.value);
+
+    const textLength = event.target.value.length;
+    setTextCount(textLength);
+
+    if (ref.current) {
+      ref.current.style.height = "auto";
+      ref.current.style.height = ref.current.scrollHeight + "px";
+    }
+  };
+
+  // 게시글 수정
+  const handleUpdateBalanceBoard = async () => {
+    const formData = new FormData();
+
+    formData.append(
+      "request",
+      JSON.stringify({
+        subject: updateBoardSubject,
+        content: updateBoardContent,
+        boardType: "VOTE_BOARD",
+        voteContents: voteCategoryList,
+      })
+    );
+
+    if (file && balanceBoardData?.fileNames) {
+      formData.append("deleteFiles", JSON.stringify(balanceBoardData.fileNames));
+    }
+
+    if (file) {
+      formData.append("files", file);
+    }
+
+    try {
+      if (params.boardId !== undefined) {
+        const response = await boardApi.update(formData, params.boardId);
+        if (response.status === 200) {
+          readBoardData(params.boardId);
+          setIsUpdate(false);
+        }
+      }
+    } catch (error) {
+      console.log("boardApi update : ", error);
+    }
+  };
+
+  // AI 이미지
+  const handleAiImage = () => {
+    setIsModalOpen(true);
+  };
+
+  const confirmAiImage = (image: string) => {
+    setIsModalOpen(false);
+    setImage(image);
+  };
+
+  const cancelAiImage = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <>
       {balanceBoardData && recommendationList ? (
@@ -202,72 +345,153 @@ const BalanceDetail = () => {
           <div className="grid grid-cols-[4fr_2fr] gap-20">
             <div>
               <div className="grid gap-3">
-                <div className="flex items-center">
-                  <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${balanceBoardData.user.profileImage}`} alt="" />
-                  <div>
-                    <div className="w-40 flex justify-between items-center">
-                      <div className="flex items-center">
-                        <p className="font-bold">{balanceBoardData.user.nickName}</p>
-                        {<img className="w-5 h-5 ml-1" src={`/assets/${balanceBoardData.user.mbti === null ? "noBadget.png" : balanceBoardData.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                <div className="flex justify-between">
+                  <div className="flex">
+                    <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${balanceBoardData.user.profileImage}`} alt="" />
+                    <div>
+                      <div className="w-40 flex justify-between items-center">
+                        <div className="flex items-center">
+                          <p className="font-bold">{balanceBoardData.user.nickName}</p>
+                          {<img className="w-5 h-5 ml-1" src={`/assets/${balanceBoardData.user.mbti === null ? "noBadget.png" : balanceBoardData.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-xs text-left">{balanceBoardData.createdAt}</p>
                       </div>
                     </div>
-                    <div className="">
-                      <p className="text-xs text-left">{balanceBoardData.createdAt}</p>
-                    </div>
                   </div>
-                </div>
 
-                <p className="text-xl font-bold">Q : {balanceBoardData.subject}</p>
-                <hr className="h-[1px] bg-[#9E9E9E]" />
-                <p className="text-[#565656] font-semibold">{balanceBoardData.content}</p>
-              </div>
+                  {isUpdate === false && `${balanceBoardData.user.userId}` === userId ? <BoardSettingMenu totalCount={balanceBoardData.totalVotes} boardType="balance" boardId={balanceBoardData.id} setIsUpdate={setIsUpdate} /> : <></>}
 
-              <div className="pt-3 grid gap-2">
-                <div className="flex justify-end items-center">
-                  <img src="/assets/if/hotCommentIcon.png" alt="" />
-                  <p className="text-sm text-[#F07676] font-semibold text-right">투표수 {balanceBoardData.totalVotes}회</p>
-                </div>
-                {balanceBoardData.userVoteContentId ? (
-                  <>
-                    {balanceBoardData.voteInfos.map((vote, index) => (
+                  {isUpdate && `${balanceBoardData.user.userId}` === userId ? (
+                    <div>
                       <button
-                        className={`h-12 relative flex justify-between items-center`}
-                        key={vote.voteContentId}
-                        onClick={() => {
-                          balanceBoardData.userVoteContentId === vote.voteContentId ? handleVoteDelete() : handleVoteUpdate(vote.voteContentId);
-                        }}>
-                        <div className="h-full w-full absolute bg-gray-100 rounded-lg overflow-hidden">
-                          <div
-                            className="h-full opacity-75 transition-none"
-                            ref={(el) => (progressRefs.current[index] = el)} // Progress bar 참조 설정
-                          ></div>
-                        </div>
-
-                        <div className={`px-5 relative z-10 flex items-center ${vote.voteCount === maxVote ? "font-bold" : "text-[#565656] font-medium"}`}>
-                          <p className="w-14 text-left">{((vote.voteCount / balanceBoardData.totalVotes) * 100).toFixed(0)}%</p>
-                          <p>{vote.voteContent}</p>
-                          {balanceBoardData.userVoteContentId === vote.voteContentId ? <FaRegCircleCheck className="mx-2" /> : <></>}
-                        </div>
+                        className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${boardSubjectTextCount === 0 || boardContentTextCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`}
+                        disabled={boardSubjectTextCount === 0 || boardContentTextCount === 0}
+                        onClick={() => handleUpdateBalanceBoard()}>
+                        수정
                       </button>
-                    ))}
+                      <button className="px-5 py-1 rounded-md text-sm text-[#565656] font-bold border-2 border-gray-300 duration-300" onClick={() => setIsUpdate(false)}>
+                        취소
+                      </button>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+
+                {isUpdate && `${balanceBoardData.user.userId}` === userId ? (
+                  <>
+                    <input
+                      className="p-1 text-left border border-[#9E9E9E] rounded-sm outline-none"
+                      type="text"
+                      placeholder="제목을 입력하세요"
+                      value={updateBoardSubject}
+                      ref={updateBoardSubjectRef}
+                      onChange={(e) => handleUpdateBoardSubjectTextareaChange(e)}
+                    />
+                    <hr className="h-[1px] bg-[#9E9E9E]" />
+                    <textarea
+                      className="p-1 border border-[#9E9E9E] rounded-sm outline-none resize-none overflow-hidden"
+                      placeholder="내용을 입력하세요"
+                      value={updateBoardContent}
+                      ref={updateBoardContentRef}
+                      onChange={(e) => handleTextareaChange(setUpdateBoardContent, e, setBoardContentTextCount, updateBoardContentRef)}
+                    />
                   </>
                 ) : (
                   <>
-                    {balanceBoardData.voteInfos.map((vote, index) => (
-                      <button
-                        className={`h-12 border-solid border-2 rounded-[30px] flex justify-center items-center transition-colors duration-150 ease-in-out hover:bg-opacity-15 border-${voteColors[index]} hover:bg-${voteColors[index]}`}
-                        key={vote.voteContentId}
-                        onClick={() => handleVoteCreate(vote.voteContentId)}>
-                        <p className={`w-full px-5 py-2 font-bold text-${voteColors[index]}`}>{vote.voteContent}</p>
-                      </button>
-                    ))}
+                    <p className="text-xl font-bold">Q : {balanceBoardData.subject}</p>
+                    <hr className="h-[1px] bg-[#9E9E9E]" />
+                    <p className="text-[#565656] font-semibold">{balanceBoardData.content}</p>
                   </>
                 )}
               </div>
 
-              <div className="py-5 flex justify-center">
+              {isUpdate && `${balanceBoardData.user.userId}` === userId ? (
+                <>
+                  <div className="py-5">
+                    <div className="flex justify-center">{image ? <img className="max-w-full max-h-[400px] object-cover" src={image} alt="" /> : <></>}</div>
+                    <InsertionImage handleAiImage={handleAiImage} setImage={setImage} setFile={setFile} />
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-2">
+                    {voteCategoryList &&
+                      voteCategoryList.map((category, index) => (
+                        <div className="grid grid-cols-[90%_10%]" key={index}>
+                          <input className={`${inputClass}`} type="text" value={category} placeholder={`항목 ${index + 1}`} onChange={(e) => updateVoteCategoryList(e.target.value, index)} />
+                          {index <= 1 ? (
+                            <button className="flex justify-center items-center" onClick={() => alert("기본 항목은 삭제할 수 없습니다.")}>
+                              <RiDeleteBin6Line className="text-xl opacity-20" />
+                            </button>
+                          ) : (
+                            <button className="flex justify-center items-center" onClick={() => deleteVoteCategoryList(index)}>
+                              <RiDeleteBin6Line className="text-xl" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    {voteCategoryList && voteCategoryList.length < 4 ? (
+                      <div className="grid grid-cols-[90%_10%]">
+                        <button className="p-1 text-xl border border-[#9E9E9E] rounded-sm flex justify-center" onClick={() => addVoteCategoryList()}>
+                          <FaPlus />
+                        </button>
+                      </div>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="pt-3 grid gap-2">
+                    <div className="flex justify-end items-center">
+                      <img src="/assets/if/hotCommentIcon.png" alt="" />
+                      <p className="text-sm text-[#F07676] font-semibold text-right">투표수 {balanceBoardData.totalVotes}회</p>
+                    </div>
+                    {balanceBoardData.userVoteContentId ? (
+                      <>
+                        {balanceBoardData.voteInfos.map((vote, index) => (
+                          <button
+                            className={`h-12 relative flex justify-between items-center`}
+                            key={vote.voteContentId}
+                            onClick={() => {
+                              balanceBoardData.userVoteContentId === vote.voteContentId ? handleVoteDelete() : handleVoteUpdate(vote.voteContentId);
+                            }}>
+                            <div className="h-full w-full absolute bg-gray-100 rounded-lg overflow-hidden">
+                              <div className="h-full opacity-75 transition-none" ref={(el) => (progressRefs.current[index] = el)}></div>
+                            </div>
+
+                            <div className={`px-5 relative z-10 flex items-center ${vote.voteCount === maxVote ? "font-bold" : "text-[#565656] font-medium"}`}>
+                              <p className="w-14 text-left">{((vote.voteCount / balanceBoardData.totalVotes) * 100).toFixed(0)}%</p>
+                              <p>{vote.voteContent}</p>
+                              {balanceBoardData.userVoteContentId === vote.voteContentId ? <FaRegCircleCheck className="mx-2" /> : <></>}
+                            </div>
+                          </button>
+                        ))}
+                      </>
+                    ) : (
+                      <>
+                        {balanceBoardData.voteInfos.map((vote, index) => (
+                          <button
+                            className={`h-12 border-solid border-2 rounded-[30px] flex justify-center items-center transition-colors duration-150 ease-in-out hover:bg-opacity-15 border-${voteColors[index]} hover:bg-${voteColors[index]}`}
+                            key={vote.voteContentId}
+                            onClick={() => handleVoteCreate(vote.voteContentId)}>
+                            <p className={`w-full px-5 py-2 font-bold text-${voteColors[index]}`}>{vote.voteContent}</p>
+                          </button>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                  <div className="py-5 flex justify-center">
+                    <img className="max-w-full max-h-[400px] object-cover" src={`${balanceBoardData.fileUrls[0]}`} alt="" />
+                  </div>
+                </>
+              )}
+
+              {/* <div className="py-5 flex justify-center">
                 <img className="w-3/4 object-cover" src={`${balanceBoardData.fileUrls[0]}`} alt="" />
-              </div>
+              </div> */}
             </div>
 
             <div className="grid grid-rows-3 gap-5">
@@ -280,6 +504,8 @@ const BalanceDetail = () => {
       ) : (
         <p>Loading...</p>
       )}
+
+      <BookCoverAiPromptModal setFile={setFile} isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
     </>
   );
 };

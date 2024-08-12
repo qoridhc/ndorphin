@@ -33,7 +33,7 @@ const BalanceCard = ({ balance }: Props) => {
 
   return (
     <div className="p-5 border-solid border-[#565656] border-[1px] rounded-lg grid gap-3 cursor-pointer duration-300 ease-out hover:-translate-y-3 hover:shadow-lg" onClick={() => goToDetail(balance.id)}>
-      <img className="aspect-[5/3] object-cover" src={`${balance.fileUrls[0]}`} alt="" />
+      <img className="w-full aspect-[5/3] object-cover" src={`${balance.fileUrls[0]}`} alt="" />
 
       <div className="grid gap-1">
         <div className="flex items-center">

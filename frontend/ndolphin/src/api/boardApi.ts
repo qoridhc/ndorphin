@@ -10,7 +10,6 @@ const boardApi = {
   },
 
   list: (boardType: string, page?: number) => {
-    // return request.get(`/api/v1/boards?type=${boardType}`);
     return request.get(`/api/v1/boards?type=${boardType}&page=${page}&size=12`);
   },
 
