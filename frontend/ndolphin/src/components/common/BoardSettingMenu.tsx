@@ -5,18 +5,24 @@ import boardApi from "../../api/boardApi";
 import { useNavigate } from "react-router";
 
 interface Props {
+  totalCount: number;
+  boardType: string;
   boardId: number;
   setIsUpdate: (state: boolean) => void;
 }
 
-const IfBoardSettingMenu = ({ boardId, setIsUpdate }: Props) => {
+const BoardSettingMenu = ({ totalCount, boardType, boardId, setIsUpdate }: Props) => {
   const navigate = useNavigate();
 
   const handleBoardDelete = async () => {
     try {
       const response = await boardApi.delete(`${boardId}`);
       if (response.status === 200) {
-        navigate("/iflist");
+        if (boardType === "if") {
+          navigate("/iflist");
+        } else {
+          navigate("/balancelist");
+        }
       }
     } catch (error) {
       console.log("boardApi delete : ", error);
@@ -29,8 +35,11 @@ const IfBoardSettingMenu = ({ boardId, setIsUpdate }: Props) => {
         <BsThreeDots className="text-xl" />
       </div>
       <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 m-3 shadow">
-        <li onClick={() => setIsUpdate(true)}>
-          <a className="px-2 py-1">
+        <li
+          onClick={() => {
+            totalCount === 0 ? setIsUpdate(true) : alert("참여자가 없을 경우에만 수정이 가능합니다.");
+          }}>
+          <a className={`px-2 py-1 ${totalCount === 0 ? "" : "opacity-50"}`}>
             <img className="ml-2" src="/assets/updateIcon.png" alt="" />
             <span className="text-center text-md">수정</span>
           </a>
@@ -46,4 +55,4 @@ const IfBoardSettingMenu = ({ boardId, setIsUpdate }: Props) => {
   );
 };
 
-export default IfBoardSettingMenu;
+export default BoardSettingMenu;
