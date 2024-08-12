@@ -8,8 +8,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface BoardRepositoryCustom {
 
-    List<Board> findByTypeAndFilters(BoardType boardType, String filter1, String filter2, String search);
-//    Page<Board> findByTypeAndFilters(BoardType boardType, String filter1, String filter2, String search, Pageable pageable);
     List<Board> findByTypeAndFiltersWithoutPaging(BoardType boardType, String filter1, String filter2, String search);
     List<Board> findRelayBoardsByPeriod(String period);
     List<Board> findVoteBoardsByPeriod(String period);

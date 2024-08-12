@@ -230,32 +230,6 @@ public class BoardServiceImpl implements BoardService {
             .collect(toList());
     }
 
-//    private List<RelayBoardResponseDto> getRelayBoardResponseDtos(List<Board> boards) {
-//
-//        Long userId = tokenService.getUserIdFromToken();
-//
-//        return boards.stream()
-//            .map(board -> {
-//                Long writerId = board.getUser().getUserId();
-//                Long boardId = board.getId();
-//
-//                boolean hasParticipated = hasUserParticipated(boardId, userId);
-//                if (writerId == userId) {
-//                    hasParticipated = true;
-//                }
-//
-//                boolean isFavorite = favoriteRepository.existsByBoardIdAndUserId(boardId, userId);
-//                String fileUrl = getFileUrl(boardId, EntityType.POST);
-//                String fileName = getFileName(boardId, EntityType.POST);
-//                Long commentCount = commentRepository.countCommentsByBoardId(boardId);
-//                boolean isDone = (commentCount + 1) == board.getMaxPage();
-//
-//                return BoardMapper.toRelayBoardResponseDto(board, hasParticipated, isFavorite,
-//                    fileUrl, fileName, commentCount, isDone);
-//            })
-//            .collect(toList());
-//    }
-
     private List<RelayBoardResponseDto> getRelayBoardResponseDtos(List<Board> boards,
         Boolean isDone) {
 

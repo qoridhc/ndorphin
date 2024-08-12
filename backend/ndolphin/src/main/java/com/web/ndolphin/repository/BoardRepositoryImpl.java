@@ -22,8 +22,9 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     private final TokenService tokenService;
 
+
     @Override
-    public List<Board> findByTypeAndFilters(BoardType boardType, String filter1, String filter2,
+    public List<Board> findByTypeAndFiltersWithoutPaging(BoardType boardType, String filter1, String filter2,
         String search) {
 
         Long userId = tokenService.getUserIdFromToken(); // 현재 사용자의 ID를 가져옴
@@ -95,67 +96,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
             .fetch();
     }
 
-    @Override
-    public List<Board> findByTypeAndFiltersWithoutPaging(BoardType boardType, String filter1, String filter2, String search) {
 
-        Long userId = tokenService.getUserIdFromToken(); // 현재 사용자의 ID를 가져옴
 
-        QBoard board = QBoard.board;
-        BooleanBuilder builder = new BooleanBuilder();
-
-        builder.and(board.boardType.eq(boardType)); // BoardType에 따른 필터 적용
-
-        search = (search == null) ? "" : search;
-
-        // 필터 1 조건 처리
-        if (filter1 != null && !filter1.isEmpty()) {
-            switch (filter1) {
-                case "subject":
-                    builder.and(board.subject.containsIgnoreCase(search)); // 제목 기준 검색
-                    break;
-                case "content":
-                    builder.and(board.content.containsIgnoreCase(search)); // 내용 기준 검색
-                    break;
-                case "author":
-                    builder.and(board.user.nickName.containsIgnoreCase(search)); // 작성자 기준 검색
-                    break;
-            }
-        } else {
-            builder.and(board.subject.containsIgnoreCase(search)
-                .or(board.content.containsIgnoreCase(search))
-                .or(board.user.nickName.containsIgnoreCase(search))); // 기본 검색 (제목, 내용, 작성자)
-        }
-
-        // 기본 정렬 적용 (최신순)
-        JPAQuery<Board> query = queryFactory.selectFrom(board)
-            .where(builder)
-            .orderBy(board.createdAt.desc());
-
-        // 필터 2 조건 처리 및 정렬
-        if (filter2 != null && !filter2.isEmpty()) {
-            switch (filter2) {
-                case "popularity":
-                    if (boardType == BoardType.RELAY_BOARD) {
-                        query.orderBy(board.reactions.size().desc()); // RELAY_BOARD는 반응 수 기준 정렬
-                    } else if (boardType == BoardType.OPINION_BOARD) {
-                        query.orderBy(board.comments.size().desc()); // OPINION_BOARD는 댓글 수 기준 정렬
-                    } else if (boardType == BoardType.VOTE_BOARD) {
-                        query.orderBy(board.voteContents.size().desc()); // VOTE_BOARD는 투표 수 기준 정렬
-                    }
-                    break;
-                case "recent":
-                    query.orderBy(board.createdAt.desc()); // 최신순 정렬
-                    break;
-                case "myPosts":
-                    builder.and(board.user.userId.eq(userId)); // 자신의 글 보기
-                    break;
-            }
-        }
-
-        return queryFactory.selectFrom(board)
-            .where(builder)
-            .fetch();
-    }
 
 
     @Override
