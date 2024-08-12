@@ -68,10 +68,18 @@ const BalanceDetail = () => {
   }, [params.boardId]);
 
   useEffect(() => {
-    if (balanceBoardData && maxVote !== 0) {
+    if (balanceBoardData) {
+      const maxVoteValue = Math.max(...balanceBoardData.voteInfos.map((vote) => vote.voteCount));
+      setMaxVote(maxVoteValue);
+    }
+  }, [balanceBoardData]);
+
+  useEffect(() => {
+    console.log(maxVote);
+    if (balanceBoardData && maxVote !== null) {
       animateProgress(balanceBoardData.voteInfos, balanceBoardData.totalVotes);
     }
-  });
+  }, [balanceBoardData, maxVote]);
 
   // 데이터 조회
   const readBoardData = async (boardId: string) => {
