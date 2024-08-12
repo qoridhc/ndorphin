@@ -11,14 +11,17 @@ function EndPage({ currentEndPage, setCurrentEndPage, setEndPageValue }: EndPage
   const [selectedEndPage, setSelectedEndPage] = useState<number | null>(null);
 
   useEffect(() => {
-    setSelectedEndPage(currentEndPage)
-  }, [currentEndPage])
-  
+    setSelectedEndPage(currentEndPage);
+    if (currentEndPage) {
+      setEndPageValue(currentEndPage);
+    }
+  }, [currentEndPage]);
+
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedValue = Number(e.target.value);
     setSelectedEndPage(selectedValue);
     setEndPageValue(selectedValue);
-    setCurrentEndPage(selectedValue)
+    setCurrentEndPage(selectedValue);
   };
 
   return (

@@ -148,7 +148,7 @@ const RelayBookUpdate: React.FC = () => {
       <div className="">
         {/* @ts-ignore */}
         <HTMLFlipBook width={480} height={580} minWidth={315} maxWidth={1000} minHeight={420} maxHeight={1350} flippingTime={600} style={{ margin: "0 auto" }} maxShadowOpacity={0.5} useMouseEvents={false}>
-          <Page key="left-form">{<RelayBookUpdateLeftForm bookId={bookId} handleRelayBookUpdate={handleRelayBookUpdate} subject={subject} content={content} currentEndPage={currentEndPage} setCurrentEndPage={setCurrentEndPage} />}</Page>
+          <Page key="left-form">{<RelayBookUpdateLeftForm bookId={bookId} handleRelayBookUpdate={handleRelayBookUpdate} subject={subject} content={content} currentEndPage={currentEndPage} setCurrentEndPage={setCurrentEndPage} image={image} />}</Page>
           <Page key="right-form">
             {/* 표지 이미지 form */}
             <div className="mt-11 flex flex-col items-center justify-center">

@@ -6,16 +6,17 @@ import "../../../css/Notes.css";
 import "../../../css/InputPlaceHolder.css";
 
 interface RelayBookLeftFormProps {
-  dalleUrl: string | null;
   handleRelayBookStart: (subject: string, content: string, endPage: number | undefined, dalleUrl?: string) => void;
+  image: string | null;
 }
 
-const RelayBookLeftForm = ({ dalleUrl, handleRelayBookStart }: RelayBookLeftFormProps) => {
+const RelayBookLeftForm = ({ handleRelayBookStart, image }: RelayBookLeftFormProps) => {
   const navigate = useNavigate();
   const [subjectValue, setSubjectValue] = useState("");
   const [contentValue, setContentValue] = useState("");
   const [endPageValue, setEndPageValue] = useState<number>();
   const [currentEndPage, setCurrentEndPage] = useState<number | null>(null);
+  const isFormValid = image && subjectValue && contentValue && endPageValue;
 
   const onChangeSubject = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -64,13 +65,10 @@ const RelayBookLeftForm = ({ dalleUrl, handleRelayBookStart }: RelayBookLeftForm
           <div className="absolute z-[99] flex justify-start w-full px-8 my-2 top-0 -left-2">
             <button
               onClick={() => {
-                if (dalleUrl) {
-                  handleRelayBookStart(subjectValue, contentValue, endPageValue, dalleUrl);
-                } else {
-                  handleRelayBookStart(subjectValue, contentValue, endPageValue);
-                }
+                handleRelayBookStart(subjectValue, contentValue, endPageValue);
               }}
-              className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
+              disabled={!isFormValid} // 모든 값이 있을 때만 버튼 활성화
+              className={`w-16 mx-3 font-semibold border-solid border-2 rounded-md duration-200 ${isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] border-[#e0e0e0] cursor-not-allowed"}`}>
               등록
             </button>
             <button

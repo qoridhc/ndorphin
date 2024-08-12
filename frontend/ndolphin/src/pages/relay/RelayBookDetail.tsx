@@ -309,7 +309,7 @@ const RelayBookDetail = () => {
               setImage={setImage}
               file={file}
               setFile={setFile}
-              isFinished={true}
+              isFinished={isFinished}
               setPageId={setPageId}
               isChanged={isChanged}
               setIsChanged={setIsChanged}></BookDetailPage>

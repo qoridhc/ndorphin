@@ -27,6 +27,7 @@ interface RelayBookPageUpdateProps {
 
 const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ page, setPageUpdate, handleAiImage, image, setImage, confirmUpdate, setPageId, setFile, setCurrentFileName, setIsChanged }) => {
   const [contentUpdate, setContentUpdate] = useState(page.content);
+  
 
   useEffect(() => {
     setCurrentFileName(page.fileName);
