@@ -31,14 +31,12 @@ const BestProfile = () => {
 
   return (
     <>
-      {userList.map((user) => (
+      {userList.map((user, index) => (
         <>
-          <div className="px-14 py-2 grid grid-cols-[10%_75%_15%] hover:scale-110 duration-200" key={user.id}>
+          <div className="px-10 py-2 grid grid-cols-[1fr_6fr_2fr] hover:scale-110 duration-200 cursor-pointer" key={index}>
+            <div className="w-14 flex items-center">{index < 3 ? <img className="w-8 h-8" src={`/assets/ranking/rank${index + 1}.png`} alt="" /> : <p className="w-8 text-center text-2xl font-bold">{index + 1}</p>}</div>
             <div className="flex items-center">
-              <p className="text-2xl font-bold">{user.id}</p>
-            </div>
-            <div className="flex items-center">
-              <img className="w-9 h-9 mr-3 rounded-[50%]" src={`/assets/profile/profile${user.id}.png`} alt="" />
+              <img className="w-9 h-9 mr-3 rounded-[50%]" src={`/assets/profile/profile${index + 1}.png`} alt="" />
               <p className="font-semibold hover:underline hover:underline-offset-2">{user.name}</p>
             </div>
             <div className="flex justify-end items-center">

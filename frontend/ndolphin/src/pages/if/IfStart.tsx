@@ -56,11 +56,7 @@ const IfStart = () => {
     if (file) {
       formData.append("files", file);
     }
-
-    if (aiImage) {
-      console.log("생성형 : ", aiImage);
-    }
-
+    
     try {
       const response = await boardApi.create(formData);
       if (response.status === 200) {
