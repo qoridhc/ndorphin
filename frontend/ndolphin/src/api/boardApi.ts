@@ -15,7 +15,7 @@ const boardApi = {
   },
 
   relaylist: (boardType: string, isDone?: boolean, page?: number) => {
-    return request.get(`/api/v1/boards?type=${boardType}&page=${page}&size=12&isDone=${isDone}`);
+    return request.get(`/api/v1/boards?type=${boardType}&filter2=recent&isDone=${isDone}&page=${page}`);
   },
 
   read: (boardId: string) => {
@@ -59,7 +59,7 @@ const boardApi = {
   },
 
   reactionDelete: (reactionId: string) => {
-    return request.post(`api/v1/boards/${reactionId}/reactions`);
+    return request.delete(`api/v1/boards/${reactionId}/reactions`);
   },
 };
 
