@@ -465,6 +465,7 @@ public class BoardServiceImpl implements BoardService {
         board.setUpdatedAt(LocalDateTime.now());
 
         if (boardRequestDto.getBoardType() == BoardType.VOTE_BOARD) {
+            board.getVoteContents().clear();
             setVoteContents(boardRequestDto, board);
         }
 
