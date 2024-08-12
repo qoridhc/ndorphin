@@ -98,12 +98,12 @@ public class BoardServiceImpl implements BoardService {
             // 게시글 처리
             boardRepository.save(board);
 
-           if(boardRequestDto.getBoardType() == BoardType.RELAY_BOARD){
-               // AI 요약 처리
-               String summary = openAIService.summarizeText(board.getContent());
-               board.setSummary(summary);
-               boardRepository.save(board);
-           }
+            if (boardRequestDto.getBoardType() == BoardType.RELAY_BOARD) {
+                // AI 요약 처리
+                String summary = openAIService.summarizeText(board.getContent());
+                board.setSummary(summary);
+                boardRepository.save(board);
+            }
 
             // 파일 업로드 처리
             fileInfoService.uploadFiles(board.getId(), EntityType.POST, multipartFiles);
@@ -206,7 +206,7 @@ public class BoardServiceImpl implements BoardService {
                 Long boardId = board.getId();
                 List<VoteInfo> voteInfos = voteService.getVoteContents(boardId);
 
-                long totalVotes = voteInfos.stream()
+                Long totalVoteCnt = voteInfos.stream()
                     .mapToLong(VoteInfo::getVoteCount)
                     .sum();
 
@@ -217,8 +217,8 @@ public class BoardServiceImpl implements BoardService {
                 String fileUrl = getFileUrl(boardId, EntityType.POST);
                 String fileName = getFileName(boardId, EntityType.POST);
 
-                return BoardMapper.toVoteBoardResponseDto(board, voteContents, totalVotes, fileUrl,
-                    fileName);
+                return BoardMapper.toVoteBoardResponseDto(board, voteContents, totalVoteCnt,
+                    fileUrl, fileName);
             })
             .collect(toList());
     }

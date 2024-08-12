@@ -92,13 +92,13 @@ public class BoardMapper {
     }
 
     public static VoteBoardDetailResponseDto toVoteBoardDetailResponseDto(Board board,
-        String fileUrl, String fileName, List<VoteInfo> voteInfos, long totalVotes,
+        String fileUrl, String fileName, List<VoteInfo> voteInfos, long totalVoteCnt,
         UserVoteContent userVoteContent, List<? extends BoardDto> sideBoardDtos) {
 
         VoteBoardDetailResponseDto voteBoardDetailResponseDto = new VoteBoardDetailResponseDto();
 
         mapCommonFields(board, voteBoardDetailResponseDto);
-        voteBoardDetailResponseDto.setTotalVotes(totalVotes);
+        voteBoardDetailResponseDto.setTotalVoteCnt(totalVoteCnt);
         voteBoardDetailResponseDto.setVoteInfos(voteInfos);
         voteBoardDetailResponseDto.setSideBoardDtos(sideBoardDtos);
         voteBoardDetailResponseDto.getFileUrls().add(fileUrl);

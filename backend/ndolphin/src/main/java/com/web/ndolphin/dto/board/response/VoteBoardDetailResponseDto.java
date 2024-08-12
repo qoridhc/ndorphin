@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class VoteBoardDetailResponseDto extends BoardDto {
 
-    private Long totalVotes;
+    private Long totalVoteCnt;
     private List<VoteInfo> voteInfos;
     private Long userVoteId;
     private Long userVoteContentId;
