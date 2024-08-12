@@ -67,17 +67,18 @@ const BalanceDetail = () => {
     }
   }, [params.boardId]);
 
+  useEffect(() => {
+    if (balanceBoardData && maxVote !== 0) {
+      animateProgress(balanceBoardData.voteInfos, balanceBoardData.totalVotes);
+    }
+  });
+
   // 데이터 조회
   const readBoardData = async (boardId: string) => {
     try {
       const response = await boardApi.read(boardId);
       if (response.status === 200) {
         setBalanceBoardData(response.data.data);
-
-        // 애니메이션을 설정할 때 setTimeout을 사용하여 렌더링이 완료된 후 애니메이션 시작
-        setTimeout(() => {
-          animateProgress(response.data.data.voteInfos, response.data.data.totalVotes);
-        }, 100);
       }
     } catch (error) {
       console.error("boardApi read : ", error);
@@ -113,14 +114,29 @@ const BalanceDetail = () => {
     }
   };
 
-  const handleVoteUpdate = async (voteContentId: number) => {};
+  const handleVoteUpdate = async (voteContentId: number) => {
+    if (params.boardId !== undefined && balanceBoardData?.userVoteId) {
+      const data = {
+        voteContentId: voteContentId,
+      };
+
+      try {
+        const response = await voteApi.update(params.boardId, balanceBoardData?.userVoteId, data);
+        if (response.status === 200) {
+          readBoardData(params.boardId);
+        }
+      } catch (error) {
+        console.log("voteApi update : ", error);
+      }
+    }
+  };
 
   const handleVoteDelete = async () => {
     if (params.boardId !== undefined && balanceBoardData?.userVoteId) {
       try {
         const response = await voteApi.delete(params.boardId, balanceBoardData?.userVoteId);
         if (response.status === 200) {
-          readBoardData(params.boardId); // 새로고침
+          readBoardData(params.boardId);
         }
       } catch (error) {
         console.log("voteApi delete : ", error);
