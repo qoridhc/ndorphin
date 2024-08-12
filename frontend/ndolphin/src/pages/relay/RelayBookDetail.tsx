@@ -51,10 +51,11 @@ const RelayBookDetail = () => {
             setFirstPage([firstPage]);
             setLastPage([firstPage]);
             setHasParticipated(firstPage.hasParticipated);
+            setIsFinished(firstPage.done);
           }
         }
       } catch (error) {
-        console.log("릴레이북 목록 불러오기 오류: ", error);
+        console.log("릴레이북 상세 불러오기 오류: ", error);
       }
     };
 
@@ -220,6 +221,7 @@ const RelayBookDetail = () => {
     setIsAiModalOpen(false);
   };
 
+
   return (
     <div className="overflow-hidden">
       <div className="relative grid grid-rows-[93%_7%]" style={{ backgroundColor: "white" }}>
@@ -307,7 +309,7 @@ const RelayBookDetail = () => {
               setImage={setImage}
               file={file}
               setFile={setFile}
-              isFinished={isFinished}
+              isFinished={true}
               setPageId={setPageId}
               isChanged={isChanged}
               setIsChanged={setIsChanged}></BookDetailPage>

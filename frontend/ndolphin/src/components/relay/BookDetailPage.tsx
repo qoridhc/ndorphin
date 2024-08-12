@@ -26,6 +26,7 @@ interface BookDetailPageProps {
   setIsChanged: (isChanged: boolean) => void;
 }
 
+
 const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(
   ({ readPage, hasParticipated, number, pages, pageId, totalPage, bookId, handleAiImage, image, file, setImage, setFile, isFinished, setPageId, setIsChanged, isChanged }, ref: ForwardedRef<HTMLDivElement>) => {
     const navigate = useNavigate();
@@ -140,13 +141,13 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(
                         <div className="p-2 grid grid-rows-[6.8fr_3.2fr]">
                           {/* 홀수쪽일 경우 그림, 글 순서 */}
                           <div className="w-full h-72 flex justify-center">{page.fileUrl && <img className="w-[78%] object-cover" src={page.fileUrl} alt="" />}</div>
-                          <p className="h-full mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
+                          <p className="h-full mx-10 relaybookpagenotes text-sm text-justify word-break: break-all">{page.content}</p>
                         </div>
                       ) : (
                         <div className="p-2 grid grid-rows-[3.2fr_6.8fr]">
                           {/* 짝수쪽일 경우 글, 그림 순서 */}
                           <p className="h-full mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
-                          <div className="w-full h-72 flex justify-center">{page.fileUrl && <img className="w-[78%] object-cover" src={page.fileUrl} alt="" />}</div>
+                          <div className="w-full h-72 flex justify-center word-break: break-all">{page.fileUrl && <img className="w-[78%] object-cover" src={page.fileUrl} alt="" />}</div>
                         </div>
                       )}
                     </div>
@@ -171,7 +172,7 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(
               <div key={index} className="page" ref={ref}>
                 {isFinished ? (
                   // 완료된 이야기일 경우 이모티콘 반응
-                  <BookDetailDone />
+                <BookDetailDone bookId={bookId} />
                 ) : (
                   // 진행 중인 이야기일 경우 페이지 추가
                   <AddPage hasParticipated={hasParticipated} bookId={bookId} pages={pages} handleAiImage={handleAiImage} image={image} setImage={setImage} file={file} setFile={setFile} />
@@ -188,13 +189,13 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(
                       <div className="p-2 grid grid-rows-[6.8fr_3.2fr]">
                         {/* 홀수쪽일 경우 그림, 글 순서 */}
                         <div className="w-full h-72 flex justify-center">{page.fileUrls[0] && <img className="w-[78%] object-cover" src={page.fileUrls[0]} alt="" />}</div>
-                        <p className="h-full mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
+                        <p className="h-full mx-10 relaybookpagenotes text-sm text-justify break-all">{page.content}</p>
                       </div>
                     ) : (
                       <div className="p-2 grid grid-rows-[3.2fr_6.8fr]">
                         {/* 짝수쪽일 경우 글, 그림 순서 */}
                         <p className="h-full mx-10 relaybookpagenotes text-sm text-justify">{page.content}</p>
-                        <div className="w-full h-72 flex justify-center">{page.fileUrls[0] && <img className="w-[78%] object-cover" src={page.fileUrls[0]} alt="" />}</div>
+                        <div className="w-full h-72 flex justify-center break-all">{page.fileUrls[0] && <img className="w-[78%] object-cover" src={page.fileUrls[0]} alt="" />}</div>
                       </div>
                     )}
                   </div>

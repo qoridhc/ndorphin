@@ -17,7 +17,7 @@ interface BookProps {
     boardType: string;
     createdAt: string;
     updatedAt: string | null;
-    summary: null;
+    summary: string | null;
     thumbNailUrl: string;
     hasParticipated: false;
     favorite: false;
@@ -48,6 +48,7 @@ function Book({ book }: BookProps) {
     } else {
       // AI 요약 호출 로직을 여기에 추가합니다.
       // 예를 들어, AI 요약 API를 호출하고 결과를 setSummary로 설정할 수 있습니다.
+      // book.summary && setSummary(book.summary);
       setSummary(
         "이것은 AI가 생성한 요약 예시입니다. 이것은은 AI가 생성한 요약 예시입니다. 이것은 AI가 생니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은다."
       );
@@ -70,6 +71,22 @@ function Book({ book }: BookProps) {
     }
   };
 
+  // 찜 목록 삭제
+  const handleDeleteFavorite = async () => {
+    if (bookId && userId) {
+      try {
+        const response = await userApi.unfavorite(userId, bookId);
+        if (response.status === 200) {
+          setFavorite(false);
+          console.log("찜 목록 삭제 성공", response.data);
+        }
+      } catch (error) {
+        console.error("찜 목록 삭제 오류: ", error);
+      }
+    }
+  };
+
+
   return (
     <div className="relative">
       <div className="flex justify-end">
@@ -78,14 +95,7 @@ function Book({ book }: BookProps) {
 
       <div className="relative">
         {favorite ? (
-          <img
-            onClick={() => {
-              setFavorite(false);
-            }}
-            src="/assets/relay/fullHeart.png"
-            className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer"
-            alt="#"
-          />
+          <img onClick={handleDeleteFavorite} src="/assets/relay/fullHeart.png" className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer" alt="#" />
         ) : (
           <img
             onClick={handleAddFavorite}
@@ -115,7 +125,8 @@ function Book({ book }: BookProps) {
           onClick={() => {
             goBookDetail(book.id);
           }}
-          className="hover:cursor-pointer font-bold text-lg">
+          className="hover:cursor-pointer font-bold text-lg"
+        >
           {book.subject}
         </span>
         <button onClick={handleAISummary} className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border-2 border-solid border-zinc-300 font-bold text-zinc-800 mt-2">
@@ -134,12 +145,14 @@ function Book({ book }: BookProps) {
                        w-0 h-0 
                        border-x-[12px] border-x-transparent 
                        border-b-[12px] border-b-[#eff1f1] 
-                       z-50"></div>
+                       z-50"
+          ></div>
 
           <div
             className="absolute top-1 transform
                           z-50 bg-[#eff1f1] rounded-md w-72 p-4 
-                          max-h-64 overflow-y-auto">
+                          max-h-64 overflow-y-auto"
+          >
             <div className="mb-3 flex items-center">
               <img className="w-5 mr-1" src="/assets/relay/aiSummaryChatIcon.png" alt="" />
               <h3 className="font-bold text-xs text-zinc-600">AI로 지금까지의 이야기를 요약했어요</h3>
