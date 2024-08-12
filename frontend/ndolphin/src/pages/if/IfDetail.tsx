@@ -35,6 +35,7 @@ interface IfBoard {
     profileImage: string | null;
     userId: number;
   };
+  sideBoardDtos: If[];
 }
 
 interface If {
@@ -118,7 +119,6 @@ const IfDetail = () => {
   useEffect(() => {
     if (params.boardId !== undefined) {
       readBoardData(params.boardId);
-      getRecommendationList();
     }
     setIsUpdate(false);
   }, [params.boardId]);
@@ -129,6 +129,7 @@ const IfDetail = () => {
       const response = await boardApi.read(boardId);
       if (response.status === 200) {
         setIfBoardData(response.data.data);
+        setRecommendationList(response.data.data.sideBoardDtos);
         setUpdateBoardSubject(response.data.data.subject);
         setUpdateBoardContent(response.data.data.content);
         setImage(response.data.data.fileUrls[0]);
@@ -138,17 +139,6 @@ const IfDetail = () => {
       }
     } catch (error) {
       console.error("ifApi read : ", error);
-    }
-  };
-
-  const getRecommendationList = async () => {
-    try {
-      const response = await boardApi.list("OPINION_BOARD");
-      if (response.status === 200) {
-        setRecommendationList(response.data.data.content);
-      }
-    } catch (error) {
-      console.error("boardApi list : ", error);
     }
   };
 
