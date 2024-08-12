@@ -18,6 +18,7 @@ import WishList from "./pages/user/WishList";
 import DalleTest from "./pages/DalleTest";
 import BalanceList from "./pages/balance/BalanceList";
 import BalanceDetail from "./pages/balance/BalanceDetail";
+import BalanceStart from "./pages/balance/BalanceStart";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <Route path="/ifstart" element={<IfStart />}></Route>
           <Route path="/ifdetail/:boardId" element={<IfDetail />}></Route>
           <Route path="/balancelist" element={<BalanceList />}></Route>
+          <Route path="/balancestart" element={<BalanceStart />}></Route>
           <Route path="/balancedetail/:boardId" element={<BalanceDetail />}></Route>
           <Route path="/profile/:userId" element={<Profile />}></Route>
           <Route path="/oklist" element={<OkList />}></Route>
