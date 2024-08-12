@@ -439,7 +439,7 @@ public class UserServiceImpl implements UserService {
 
         List<User> users = flag
             ? userRepository.findAllUsersSortedByNPoint()
-            : userRepository.findTopUsersByNPoint(1);
+            : userRepository.findTopUsersByNPoint(10);
 
         return IntStream.range(0, users.size())
             .mapToObj(i -> new BestNResponseDto((long) (i + 1), users.get(i).getNickName(),
