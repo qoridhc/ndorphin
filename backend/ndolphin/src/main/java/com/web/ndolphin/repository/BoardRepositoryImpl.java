@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.domain.QBoard;
+import com.web.ndolphin.domain.QVote;
 import com.web.ndolphin.service.interfaces.TokenService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+
+import static com.web.ndolphin.domain.QVoteContent.voteContent;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,11 +28,12 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
     @Override
     public List<Board> findByTypeAndFiltersWithoutPaging(BoardType boardType, String filter1, String filter2,
-        String search) {
+                                                         String search, Boolean isDone) {
 
         Long userId = tokenService.getUserIdFromToken(); // 현재 사용자의 ID를 가져옴
 
         QBoard board = QBoard.board;
+        QVote vote = QVote.vote;  // QVote 객체 생성
         BooleanBuilder builder = new BooleanBuilder();
 
         builder.and(board.boardType.eq(boardType)); // BoardType에 따른 필터 적용
@@ -51,8 +55,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
             }
         } else {
             builder.and(board.subject.containsIgnoreCase(search)
-                .or(board.content.containsIgnoreCase(search))
-                .or(board.user.nickName.containsIgnoreCase(search))); // 기본 검색 (제목, 내용, 작성자)
+                    .or(board.content.containsIgnoreCase(search))
+                    .or(board.user.nickName.containsIgnoreCase(search))); // 기본 검색 (제목, 내용, 작성자)
         }
 
         // 필터 2 조건 처리 및 정렬
@@ -60,42 +64,56 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
             switch (filter2) {
                 case "popularity":
                     if (boardType == BoardType.RELAY_BOARD) {
-                        return queryFactory.selectFrom(board)
-                            .where(builder)
-                            .orderBy(board.reactions.size().desc()) // RELAY_BOARD는 반응 수 기준 정렬
-                            .fetch();
-                    } else if (boardType == BoardType.OPINION_BOARD) {
-                        return queryFactory.selectFrom(board)
-                            .where(builder)
-                            .orderBy(board.comments.size().desc()) // OPINION_BOARD는 댓글 수 기준 정렬
-                            .fetch();
-                    } else if (boardType == BoardType.VOTE_BOARD) {
-                        return queryFactory.selectFrom(board)
-                            .where(builder)
-                            .orderBy(board.voteContents.size().desc()) // VOTE_BOARD는 투표 수 기준 정렬
-                            .fetch();
-                    } else {
-                        return queryFactory.selectFrom(board).where(builder)
-                            .orderBy(board.reactions.size().desc()) // RELAY_BOARD는 반응 수 기준 정렬
-                            .fetch();
+                        if (boardType == BoardType.RELAY_BOARD) {
+                            if (Boolean.TRUE.equals(isDone)) {
+                                // 완료된 RELAY_BOARD는 반응 수 기준 정렬
+                                return queryFactory.selectFrom(board)
+                                        .where(builder)
+                                        .orderBy(board.reactions.size().desc())
+                                        .fetch();
+                            } else {
+                                // 진행 중인 RELAY_BOARD는 조회수 순 정렬
+                                return queryFactory.selectFrom(board)
+                                        .where(builder)
+                                        .orderBy(board.hit.desc()) // 조회수 기준 정렬
+                                        .fetch();
+                            }
+                        } else if (boardType == BoardType.OPINION_BOARD) {
+                            return queryFactory.selectFrom(board)
+                                    .where(builder)
+                                    .orderBy(board.comments.size().desc()) // OPINION_BOARD는 댓글 수 기준 정렬
+                                    .fetch();
+                        } else if (boardType == BoardType.VOTE_BOARD) {
+                            return queryFactory.selectFrom(board)
+                                    .leftJoin(voteContent).on(board.id.eq(voteContent.board.id))
+                                    .leftJoin(vote).on(voteContent.id.eq(vote.voteContent.id))
+                                    .groupBy(board.id)
+                                    .where(builder)
+                                    .orderBy(vote.count().desc()) // 투표 수 기준 정렬
+                                    .fetch();
+                        } else {
+                            return queryFactory.selectFrom(board).where(builder)
+                                    .orderBy(board.reactions.size().desc()) // RELAY_BOARD는 반응 수 기준 정렬
+                                    .fetch();
+                        }
                     }
                 case "recent":
                     return queryFactory.selectFrom(board)
-                        .where(builder)
-                        .orderBy(board.createdAt.desc()) // 최신순 정렬
-                        .fetch();
+                            .where(builder)
+                            .orderBy(board.createdAt.desc()) // 최신순 정렬
+                            .fetch();
+
                 case "myPosts":
                     builder.and(board.user.userId.eq(userId)); // 자신의 글 보기
                     break;
+                    }
             }
+
+            // 기본 정렬 없이 조건에 맞는 게시글 리스트 반환
+            return queryFactory.selectFrom(board)
+                    .where(builder)
+                    .fetch();
         }
-
-        // 기본 정렬 없이 조건에 맞는 게시글 리스트 반환
-        return queryFactory.selectFrom(board)
-            .where(builder)
-            .fetch();
-    }
-
 
 
 

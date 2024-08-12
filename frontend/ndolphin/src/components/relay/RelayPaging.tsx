@@ -50,20 +50,35 @@ const RelayPaging = ({ setBookList, tabs, searchKeyword, searchFilter1, searchFi
     }
   };
 
-  useEffect(() => {
-    getRelayBoardList();
-  }, [page, tabs]);
+  // useEffect(() => {
+  //   getRelayBoardList();
+  // }, [page, tabs]);
 
   const handlePageChange = (page: number) => {
     setPage(page);
   };
 
   const getSearchRelayBoardList = async () => {
-    try {
-      const response = await boardApi.search("RELAY_BOARD", searchKeyword, searchFilter1, searchFilter2);
-      setBookList(response.data.data.content);
-    } catch (error) {
-      console.log("boardApi search : ", error);
+    if (tabs === 0) {
+      try {
+        const response = await boardApi.search("RELAY_BOARD", searchKeyword, searchFilter1, searchFilter2, page - 1, false);
+        setBookList(response.data.data.content);
+
+        const totalElements = response.data.data.totalElements;
+        setTotalElements(totalElements);
+      } catch (error) {
+        console.log("boardApi search : ", error);
+      }
+    } else {
+      try {
+        const response = await boardApi.search("RELAY_BOARD", searchKeyword, searchFilter1, searchFilter2, page - 1, true);
+        setBookList(response.data.data.content);
+
+        const totalElements = response.data.data.totalElements;
+        setTotalElements(totalElements);
+      } catch (error) {
+        console.log("boardApi search : ", error);
+      }
     }
   };
 
@@ -74,7 +89,7 @@ const RelayPaging = ({ setBookList, tabs, searchKeyword, searchFilter1, searchFi
     } else {
       getRelayBoardList();
     }
-  }, [isSearch, searchFilter2]);
+  }, [isSearch, searchFilter2, page, tabs]);
 
   return (
     <div className="mt-24 pb-20">

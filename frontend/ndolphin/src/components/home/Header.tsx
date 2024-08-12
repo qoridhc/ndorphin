@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import LoginModal from "../user/LoginModal";
 import UserInfoEditModal from "../user/UserInfoEditModal";
 import NSModal from "../user/NSModal";
@@ -22,6 +22,7 @@ interface notification {
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedMenu, setSelectedMenu] = useState<string>("");
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserInfoEditModalOpen, setIsUserInfoEditModalOpen] = useState(false);
@@ -37,6 +38,7 @@ const Header = () => {
   });
   const [showAlarmDropdown, setShowAlarmDropdown] = useState(false);
   const [notifications, setNotifications] = useState<notification[]>([]);
+  const [done, setDone] = useState([]);
 
   useEffect(() => {
     const storedMenu = sessionStorage.getItem("selectedMenu");
@@ -162,7 +164,7 @@ const Header = () => {
               .readNotifications(userId as string)
               .then((response) => {
                 const notificationsData = response.data.data;
-                setNotifications(response.data.data)
+                setNotifications(notificationsData);
                 localStorage.setItem("notifications", JSON.stringify(notificationsData));
               })
               .catch((error) => {
