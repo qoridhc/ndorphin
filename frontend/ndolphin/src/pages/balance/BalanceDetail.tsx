@@ -28,6 +28,7 @@ interface BalanceBoard {
     profileImage: string | null;
     userId: number;
   };
+  sideBoardDtos: Balance[];
 }
 
 interface Balance {
@@ -105,7 +106,6 @@ const BalanceDetail = () => {
   useEffect(() => {
     if (params.boardId !== undefined) {
       readBoardData(params.boardId);
-      getRecommendationList();
     }
   }, [params.boardId]);
 
@@ -141,7 +141,6 @@ const BalanceDetail = () => {
     if (voteCategoryList) {
       let tempList = voteCategoryList.map((category, index) => (index === updateId ? newText : category));
       setVoteCategoryList(tempList);
-      console.log("수정 내용 : ", tempList);
     }
   };
 
@@ -151,6 +150,7 @@ const BalanceDetail = () => {
       const response = await boardApi.read(boardId);
       if (response.status === 200) {
         setBalanceBoardData(response.data.data);
+        setRecommendationList(response.data.data.sideBoardDtos);
         setUpdateBoardSubject(response.data.data.subject);
         setUpdateBoardContent(response.data.data.content);
         setImage(response.data.data.fileUrls[0]);
@@ -164,17 +164,6 @@ const BalanceDetail = () => {
       }
     } catch (error) {
       console.error("boardApi read : ", error);
-    }
-  };
-
-  const getRecommendationList = async () => {
-    try {
-      const response = await boardApi.list("VOTE_BOARD");
-      if (response.status === 200) {
-        setRecommendationList(response.data.data.content);
-      }
-    } catch (error) {
-      console.error("boardApi list : ", error);
     }
   };
 
