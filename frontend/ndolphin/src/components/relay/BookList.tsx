@@ -103,35 +103,17 @@ const BookList = ({ tabs, bookList, setBookList, searchKeyword, searchFilter1, s
   //   }
   // };
 
-  // const getSearchRelayBoardList = async () => {
-  //   try {
-  //     const response = await boardApi.search("RELAY_BOARD", searchKeyword, searchFilter1, searchFilter2);
-  //     setBookList(response.data.data.content);
-  //   } catch (error) {
-  //     console.log("boardApi search : ", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (searchKeyword || searchFilter2 === "popularity") {
-  //     getSearchRelayBoardList();
-  //     setIsSearch(false);
-  //   } else {
-  //     getRelayBoardList();
-  //   }
-  // }, [isSearch, searchFilter2]);
-
   return (
     <div>
       {tabs === 0 ? (
         <>
           <div className="px-44 py-10 grid grid-cols-2 lg:grid-cols-4 gap-x-14 gap-y-20">{bookList.map((book) => book.done === false && <Book key={book.id} book={book} />)}</div>
-          <RelayPaging setBookList={setBookList} tabs={tabs} />
+          <RelayPaging setBookList={setBookList} tabs={tabs} searchKeyword={searchKeyword} searchFilter1={searchFilter1} searchFilter2={searchFilter2} isSearch={isSearch} setIsSearch={setIsSearch} />
         </>
       ) : (
         <>
           <div className="px-44 py-10 grid grid-cols-2 lg:grid-cols-4 gap-x-14 gap-y-20">{bookList.map((book) => book.done === true && <Book key={book.id} book={book} />)}</div>
-          <RelayPaging setBookList={setBookList} tabs={tabs} />
+          <RelayPaging setBookList={setBookList} tabs={tabs} searchKeyword={searchKeyword} searchFilter1={searchFilter1} searchFilter2={searchFilter2} isSearch={isSearch} setIsSearch={setIsSearch} />
         </>
       )}
     </div>

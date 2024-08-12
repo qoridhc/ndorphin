@@ -67,20 +67,19 @@ const userApi = {
     return request.get(`/api/v1/follows/followers/${userId}`);
   },
 
-  favorite: (userId: number, boardId: number) => {
+  favorite: (boardId: number) => {
     return request.post(
-      `api/v1/users/${userId}/favorites`,
+      `api/v1/users/1/favorites`,
       {
-        userId: userId,
         boardId: boardId,
       },
       { headers: { "Content-Type": "application/json" } }
     );
   },
 
-  unfavorite: (userId: number, boardId: number) => {
+  unfavorite: (boardId: number) => {
     return request.delete(
-      `api/v1/users/${userId}/favorites/${boardId}`
+      `api/v1/users/favorites/${boardId}`
     );
   },
 
