@@ -143,7 +143,7 @@ public class BoardServiceImpl implements BoardService {
 
         // 전체 데이터를 페이징 없이 먼저 가져옵니다.
         List<Board> allBoards = boardRepository.findByTypeAndFiltersWithoutPaging(boardType,
-            filter1, filter2, search);
+            filter1, filter2, search, isDone);
 
         // 필터링 로직 적용 (RelayBoard의 경우 isDone 필터 추가)
         List<Board> filteredBoards = allBoards.stream()
