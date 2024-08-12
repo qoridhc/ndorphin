@@ -52,6 +52,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -129,10 +130,12 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(BoardType boardType, String filter1, String filter2, String search, Pageable pageable, Boolean isDone) {
+    public ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(BoardType boardType,
+        String filter1, String filter2, String search, Pageable pageable, Boolean isDone) {
 
         // 전체 데이터를 페이징 없이 먼저 가져옵니다.
-        List<Board> allBoards = boardRepository.findByTypeAndFiltersWithoutPaging(boardType, filter1, filter2, search);
+        List<Board> allBoards = boardRepository.findByTypeAndFiltersWithoutPaging(boardType,
+            filter1, filter2, search);
 
         // 필터링 로직 적용 (RelayBoard의 경우 isDone 필터 추가)
         List<Board> filteredBoards = allBoards.stream()
@@ -149,8 +152,10 @@ public class BoardServiceImpl implements BoardService {
 
         // start가 리스트의 크기보다 크거나 같으면 빈 리스트를 반환
         if (start >= filteredBoards.size()) {
-            Page<BoardDto> emptyPage = new PageImpl<>(new ArrayList<>(), pageable, filteredBoards.size());
-            ResponseDto<Page<BoardDto>> responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, emptyPage);
+            Page<BoardDto> emptyPage = new PageImpl<>(new ArrayList<>(), pageable,
+                filteredBoards.size());
+            ResponseDto<Page<BoardDto>> responseBody = new ResponseDto<>(ResponseCode.SUCCESS,
+                ResponseMessage.SUCCESS, emptyPage);
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         }
 
@@ -165,9 +170,11 @@ public class BoardServiceImpl implements BoardService {
             .collect(Collectors.toList());
 
         // Page<BoardDto>로 변환
-        Page<BoardDto> boardDtosPage = new PageImpl<>(castedBoardDtos, pageable, filteredBoards.size());
+        Page<BoardDto> boardDtosPage = new PageImpl<>(castedBoardDtos, pageable,
+            filteredBoards.size());
 
-        ResponseDto<Page<BoardDto>> responseBody = new ResponseDto<>(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardDtosPage);
+        ResponseDto<Page<BoardDto>> responseBody = new ResponseDto<>(ResponseCode.SUCCESS,
+            ResponseMessage.SUCCESS, boardDtosPage);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
@@ -329,12 +336,11 @@ public class BoardServiceImpl implements BoardService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
-        boolean alreadyViewed = boardViewRepository.findByUserIdAndBoardId(userId, board.getId())
-            .isPresent();
-
-        if (!alreadyViewed) {
+        try {
             BoardView boardView = BoardViewMapper.toEntity(user, board);
             boardViewRepository.save(boardView);
+        } catch (DataIntegrityViolationException e) {
+            // 이미 존재하는 경우 - 아무 처리도 하지 않음
         }
 
         return switch (board.getBoardType()) {
