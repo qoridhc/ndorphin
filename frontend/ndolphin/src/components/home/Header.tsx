@@ -94,6 +94,7 @@ const Header = () => {
 
 
     if (isNewUser) {
+      console.log('isNewUser가 true이면')
       setIsUserInfoEditModalOpen(true);
     }
     localStorage.setItem("new", isNewUser.toString());
