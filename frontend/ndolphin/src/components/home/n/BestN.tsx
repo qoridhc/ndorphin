@@ -4,8 +4,6 @@ import RankingDate from "../RankingDate";
 import BestProfile from "./BestProfile";
 
 const BestN = () => {
-  const [rankingType, setRankingType] = useState("일간");
-
   return (
     <div>
       <div className="flex items-end">
@@ -13,7 +11,7 @@ const BestN = () => {
       </div>
 
       <div className="py-4">
-        <RankingDate type={rankingType} />
+        <RankingDate type={"일간"} />
       </div>
 
       <hr />
