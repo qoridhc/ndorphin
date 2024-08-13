@@ -124,7 +124,7 @@ const Header = () => {
     setProfileImage(null);
     setShowProfileDropdown(false);
     
-    window.location.href = window.location.href;
+    window.location.href = "/";
   };
 
   const handleProfileDropdownClick = (event: React.MouseEvent) => {
