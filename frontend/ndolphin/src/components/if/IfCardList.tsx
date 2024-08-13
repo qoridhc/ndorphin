@@ -50,7 +50,7 @@ const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, set
 
   const getSearchIfBoardList = async () => {
     try {
-      const response = await boardApi.search("OPINION_BOARD", searchKeyword, searchFilter1, searchFilter2, page - 1);
+      const response = await boardApi.search("OPINION_BOARD", searchKeyword, searchFilter1, searchFilter2, page - 1, false);
       setIfBoardList(response.data.data.content);
 
       const totalElements = response.data.data.totalElements;

@@ -11,7 +11,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 
 interface BalanceBoard {
   voteInfos: Vote[];
-  totalVotes: number;
+  totalVoteCnt: number;
   content: string;
   fileNames: string[];
   fileUrls: string[];
@@ -118,7 +118,7 @@ const BalanceDetail = () => {
 
   useEffect(() => {
     if (balanceBoardData && maxVote !== null) {
-      animateProgress(balanceBoardData.voteInfos, balanceBoardData.totalVotes);
+      animateProgress(balanceBoardData.voteInfos, balanceBoardData.totalVoteCnt);
     }
   }, [balanceBoardData, maxVote, isUpdate]);
 
@@ -149,6 +149,7 @@ const BalanceDetail = () => {
     try {
       const response = await boardApi.read(boardId);
       if (response.status === 200) {
+        console.log(response.data.data);
         setBalanceBoardData(response.data.data);
         setRecommendationList(response.data.data.sideBoardDtos);
         setUpdateBoardSubject(response.data.data.subject);
@@ -237,6 +238,7 @@ const BalanceDetail = () => {
 
     voteInfos.forEach((vote, index) => {
       const targetPercentage = (vote.voteCount / totalVotes) * 100;
+      console.log(index, " ", targetPercentage);
 
       const bar = progressRefs.current[index];
       if (bar) {
@@ -361,7 +363,7 @@ const BalanceDetail = () => {
                     </div>
                   </div>
 
-                  {isUpdate === false && `${balanceBoardData.user.userId}` === userId ? <BoardSettingMenu totalCount={balanceBoardData.totalVotes} boardType="balance" boardId={balanceBoardData.id} setIsUpdate={setIsUpdate} /> : <></>}
+                  {isUpdate === false && `${balanceBoardData.user.userId}` === userId ? <BoardSettingMenu totalCount={balanceBoardData.totalVoteCnt} boardType="balance" boardId={balanceBoardData.id} setIsUpdate={setIsUpdate} /> : <></>}
 
                   {isUpdate && `${balanceBoardData.user.userId}` === userId ? (
                     <div>
@@ -447,7 +449,7 @@ const BalanceDetail = () => {
                   <div className="pt-3 grid gap-2">
                     <div className="flex justify-end items-center">
                       <img src="/assets/if/hotCommentIcon.png" alt="" />
-                      <p className="text-sm text-[#F07676] font-semibold text-right">투표수 {balanceBoardData.totalVotes}회</p>
+                      <p className="text-sm text-[#F07676] font-semibold text-right">투표수 {balanceBoardData.totalVoteCnt}회</p>
                     </div>
                     {balanceBoardData.userVoteContentId ? (
                       <>
@@ -463,7 +465,7 @@ const BalanceDetail = () => {
                             </div>
 
                             <div className={`px-5 relative z-10 flex items-center ${vote.voteCount === maxVote ? "font-bold" : "text-[#565656] font-medium"}`}>
-                              <p className="w-14 text-left">{((vote.voteCount / balanceBoardData.totalVotes) * 100).toFixed(0)}%</p>
+                              <p className="w-14 text-left">{((vote.voteCount / balanceBoardData.totalVoteCnt) * 100).toFixed(0)}%</p>
                               <p>{vote.voteContent}</p>
                               {balanceBoardData.userVoteContentId === vote.voteContentId ? <FaRegCircleCheck className="mx-2" /> : <></>}
                             </div>

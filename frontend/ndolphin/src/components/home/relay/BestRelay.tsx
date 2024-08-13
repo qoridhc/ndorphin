@@ -1,15 +1,69 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoIosArrowDropleft, IoIosArrowDropright } from "react-icons/io";
 import RankingFilter from "../RankingFilter";
 import RankingDate from "../RankingDate";
 import MainRelayBook from "./MainRelayBook";
 import ServeRelayBook from "./ServeRelayBook";
+import rankingApi from "../../../api/rankingApi";
+
+interface Relay {
+  id: number;
+  hit: number;
+  content: string;
+  subject: string;
+  fileUrls: string;
+  reactionCount: number;
+  summary: string;
+  user: {
+    nickName: string;
+    profileImage: string;
+    mbti: string;
+    userId: number;
+  };
+}
 
 const BestRelay = () => {
   const [rankingType, setRankingType] = useState("일간");
   const [currentIndex, setCurrentIndex] = useState(1);
   const [mainIndex, setMainIndex] = useState(0);
-  const bookListLength = 10;
+  const [relayBoardList, setRelayBoardList] = useState<Relay[] | null>(null);
+  const [visibleBooks, setVisibleBook] = useState<Relay[] | null>(null);
+  const [bookListLength, setBookListLength] = useState(0);
+
+  useEffect(() => {
+    getRelayBoardList();
+    setMainIndex(0);
+    setCurrentIndex(1);
+  }, [rankingType]);
+
+  useEffect(() => {
+    if (relayBoardList) {
+      setVisibleBook(relayBoardList.concat(relayBoardList).slice(currentIndex, currentIndex + 2));
+      setBookListLength(relayBoardList.length);
+    }
+  }, [relayBoardList, mainIndex, currentIndex]);
+
+  const getRelayBoardList = async () => {
+    try {
+      let period = "";
+      switch (rankingType) {
+        case "일간":
+          period = "daily";
+          break;
+        case "주간":
+          period = "weekly";
+          break;
+        case "월간":
+          period = "monthly";
+          break;
+      }
+      const response = await rankingApi.relaylist(period);
+      setRelayBoardList(response.data.data);
+      console.log("베스트 릴레이 : ", response.data.data);
+    } catch (error) {
+      console.error("rankingApi relaylist : ", error);
+    }
+  };
 
   const handlePrevClick = () => {
     setCurrentIndex((prevIndex) => (prevIndex === 0 ? bookListLength - 1 : prevIndex - 1));
@@ -22,29 +76,33 @@ const BestRelay = () => {
   };
 
   return (
-    <div className="px-44 py-14 bg-[#FFFDEF]">
-      <div className="flex items-end">
+    <div className="py-14 bg-[#FFFDEF]">
+      <div className="px-44 flex items-end">
         <span className="pr-5 text-2xl font-bold underline decoration-[#FFDE2F] decoration-4 underline-offset-8">Best 릴레이북</span>
         <RankingFilter updateRankingType={setRankingType} />
       </div>
 
-      <div className="py-4">
+      <div className="px-44 py-4">
         <RankingDate type={rankingType} />
       </div>
 
-      <div className="grid grid-cols-[100px_auto_100px]">
-        <button className="flex items-center" onClick={handlePrevClick}>
+      <div className="py-5 relative flex items-center">
+        <button className="absolute left-20" onClick={handlePrevClick}>
           <IoIosArrowDropleft className="text-5xl text-[#565656]" />
         </button>
 
-        <div className="relative grid grid-cols-[50%_5%_45%]">
-          <MainRelayBook mainIndex={mainIndex} />
-          <div className="col-start-3">
-            <ServeRelayBook currentIndex={currentIndex} />
-          </div>
+        <div className="w-full h-[300px] px-44 grid grid-cols-[6fr_4fr] gap-40">
+          {relayBoardList && visibleBooks ? (
+            <>
+              <MainRelayBook mainIndex={mainIndex} relay={relayBoardList[mainIndex]} />
+              <ServeRelayBook currentIndex={currentIndex} visibleBooks={visibleBooks} />
+            </>
+          ) : (
+            <></>
+          )}
         </div>
 
-        <button className="flex justify-end items-center" onClick={handleNextClick}>
+        <button className="absolute right-20" onClick={handleNextClick}>
           <IoIosArrowDropright className="text-5xl text-[#565656]" />
         </button>
       </div>
