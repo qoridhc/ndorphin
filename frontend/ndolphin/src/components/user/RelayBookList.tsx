@@ -96,14 +96,24 @@ const RelayBookList = () => {
   return (
     <div>
       {myRelayBoardList.length === 0 ? (
-        <div className="mt-40 text-center text-3xl font-bold">목록이 비어있습니다</div>
+        <div className="mt-40 text-center text-3xl font-bold">
+          <img className="w-32 h-32 mx-auto mb-4" src="/assets/user/noContents.png" alt="#" />
+          <span>등록된 게시물이 없습니다</span>
+        </div>
       ) : (
         <div className="px-40 py-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
           {myRelayBoardList.map((item) => (
             <div className="relative" key={item.id}>
               <div className="pt-2">
                 <div className="relative">
-                  <img className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer" src={likeStatus[item.id] ? fullHeart : isHovered === item.id ? fullHeart : emptyHeart} alt="#" onClick={() => handleLikeToggle(item.id)} onMouseEnter={() => setIsHovered(item.id)} onMouseLeave={() => setIsHovered(null)} />
+                  <img
+                    className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer"
+                    src={likeStatus[item.id] ? fullHeart : isHovered === item.id ? fullHeart : emptyHeart}
+                    alt="#"
+                    onClick={() => handleLikeToggle(item.id)}
+                    onMouseEnter={() => setIsHovered(item.id)}
+                    onMouseLeave={() => setIsHovered(null)}
+                  />
                   <img className="hover:cursor-pointer w-full h-[20rem] rounded-md" src={item.fileUrls[0]} alt="#" onClick={() => goToDetail(item.id)} />
                 </div>
                 <span onClick={() => goToDetail(item.id)} className="hover:cursor-pointer font-bold text-lg">
