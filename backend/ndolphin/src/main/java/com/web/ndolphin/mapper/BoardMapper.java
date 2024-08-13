@@ -176,6 +176,7 @@ public class BoardMapper {
         relayBoardDetailResponseDto.setHasParticipated(hasParticipated);
         relayBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
         relayBoardDetailResponseDto.setReactionTypeCounts(reactionTypeCounts);
+        relayBoardDetailResponseDto.setSummary(board.getSummary());
         relayBoardDetailResponseDto.getFileUrls().add(fileUrl);
         relayBoardDetailResponseDto.getFileNames().add(fileName);
 
