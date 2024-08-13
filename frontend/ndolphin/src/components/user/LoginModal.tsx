@@ -34,6 +34,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
             const accessToken = urlParams.get("accessToken");
             const refreshToken = urlParams.get("refreshToken");
             const isNewUser = urlParams.get("isNewUser") === "true";
+            localStorage.setItem('new', String(isNewUser))
+            console.log('새로운 유저?', urlParams.get("isNewUser"));
 
             if (userId && accessToken && refreshToken) {
               onLoginSuccess(userId, accessToken, refreshToken, isNewUser);
