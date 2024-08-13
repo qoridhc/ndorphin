@@ -196,11 +196,11 @@ const Header = () => {
             console.error("새로운 알림 체크 실패: ", error)
           })
       }
-      checkNotifications();
-      const intervalId = setInterval(checkNotifications, 5000);
-      return () => {
-        clearInterval(intervalId);
-      }
+    }
+    checkNotifications();
+    const intervalId = setInterval(checkNotifications, 5000);
+    return () => {
+      clearInterval(intervalId);
     }
   }, []);
 
