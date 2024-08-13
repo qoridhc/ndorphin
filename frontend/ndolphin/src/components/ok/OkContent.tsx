@@ -3,6 +3,15 @@ import { FaRegComment } from "react-icons/fa";
 import OkDetailModal from "./OkDetailModal";
 import { useNavigate } from "react-router";
 
+interface Comment {
+  commentId: number;
+  user: {
+    profileImage: string | null;
+    nickName: string;
+  };
+  content: string;
+  createAt: string;
+}
 interface Props {
   content: {
     id: number;
@@ -15,10 +24,14 @@ interface Props {
     content: string;
     fileUrls: string[];
     commentCnt: number;
+    commentResponseDtos: Comment[];
   };
+  getOkList: () => void;
+  isAdded: boolean;
+  setIsAdded: (isAdded: boolean) => void;
 }
 
-const OkContent = ({ content }: Props) => {
+const OkContent = ({ content, getOkList, isAdded, setIsAdded }: Props) => {
   const navigate = useNavigate();
   const [selectedImageList, setSelectedImageList] = useState<string[] | null>(null);
   const [selectedImageListIndex, setSelectedImageListIndex] = useState(0);
@@ -108,7 +121,7 @@ const OkContent = ({ content }: Props) => {
         </div>
       </div>
 
-      {/* {selectedImageList && <OkDetailModal content={content} selectedImageList={selectedImageList} selectedImageListIndex={selectedImageListIndex} setSelectedImageList={setSelectedImageList} />} */}
+      {selectedImageList && <OkDetailModal content={content} selectedImageList={selectedImageList} selectedImageListIndex={selectedImageListIndex} setSelectedImageList={setSelectedImageList}/>}
     </div>
   );
 };
