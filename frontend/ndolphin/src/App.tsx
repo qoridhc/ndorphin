@@ -39,7 +39,7 @@ function App() {
           <Route path="/balancedetail/:boardId" element={<BalanceDetail />}></Route>
           <Route path="/profile/:userId" element={<Profile />}></Route>
           <Route path="/oklist" element={<OkList />}></Route>
-          <Route path="/okdetail/:id" element={<OkDetail />}></Route>
+          <Route path="/okdetail/:boardId" element={<OkDetail />}></Route>
           <Route path="/bye" element={<ByeList />}></Route>
           <Route path="/wishlist" element={<WishList />}></Route>
           <Route path="/dalle" element={<DalleTest />}></Route>
