@@ -11,8 +11,8 @@ const RelayBookList = () => {
   const [summary, setSummary] = useState("");
   const [likeStatus, setLikeStatus] = useState<{ [key: number]: boolean }>({});
   const [isHovered, setIsHovered] = useState<number | null>(null);
-  const fullHeart = "/assets/relay/fullheart.png";
-  const emptyHeart = "/assets/relay/emptyheart.png";
+  const fullHeart = "/assets/relay/fullHeart.png";
+  const emptyHeart = "/assets/relay/emptyHeart.png";
   
   useEffect(() => {
     boardApi.list("RELAY_BOARD")

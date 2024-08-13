@@ -7,8 +7,8 @@ const WishList = () => {
   const [WishList, setWishList] = useState<any[]>([]);
   const [likeStatus, setLikeStatus] = useState<{ [key: number]: boolean }>({});
   const [isHovered, setIsHovered] = useState<number | null>(null);
-  const fullHeart = "/assets/relay/fullheart.png";
-  const emptyHeart = "/assets/relay/emptyheart.png";
+  const fullHeart = "/assets/relay/fullHeart.png";
+  const emptyHeart = "/assets/relay/emptyHeart.png";
 
   const userId = localStorage.getItem('userId')
 
@@ -86,7 +86,7 @@ const WishList = () => {
         {/* 찜 목록이 비어있을 때 */}
         {WishList.length === 0 ? (
           <div className="w-full mt-32 flex flex-col items-center justify-center">
-            <img className="w-36 h-36" src="assets/user/emptyList.png" alt="Empty List" />
+            <img className="w-36 h-36" src="/assets/user/emptyList.png" alt="Empty List" />
             <p className="mt-8 text-center text-3xl">목록이 비어있어요</p>
             <button className="mt-3 hover:underline text-center text-3xl text-gray-300" onClick={() => navigate("/relaybooklist")}>
               릴레이 북 바로가기
