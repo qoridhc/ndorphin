@@ -112,12 +112,20 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem('nickName');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('profileImage');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('npoint');
+    localStorage.removeItem('email');
+    localStorage.removeItem('isNew');
+    localStorage.removeItem('mbti');
 
     setIsLoggedIn(false);
     setProfileImage(null);
     setShowProfileDropdown(false);
-    navigate("/");
+    
+    window.location.href = window.location.href;
   };
 
   const handleProfileDropdownClick = (event: React.MouseEvent) => {
@@ -170,6 +178,17 @@ const Header = () => {
               .catch((error) => {
               console.error('알림목록 불러오기 실패: ', error)
             })
+          } else {
+            userApi
+              .readNotifications(userId as string)
+              .then((response) => {
+                const notificationsData = response.data.data;
+                setNotifications(notificationsData);
+                localStorage.setItem("notifications", JSON.stringify(notificationsData));
+              })
+              .catch((error) => {
+                console.error("알림목록 불러오기 실패: ", error);
+              });
           }
         })
         .catch((error) => {
@@ -179,9 +198,12 @@ const Header = () => {
   })
 
   useEffect(() => {
-    const storedNotifications = localStorage.getItem('notifications');
-    if (storedNotifications) {
-      setNotifications(JSON.parse(storedNotifications));
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      const storedNotifications = localStorage.getItem('notifications');
+      if (storedNotifications) {
+        setNotifications(JSON.parse(storedNotifications));
+      }
     }
   }, []);
 
@@ -272,9 +294,9 @@ const Header = () => {
                   [...notifications].reverse().map((notification) => (
                     <div className="py-2 px-6" key={notification.notificationId}>
                       <div className="mt-2 flex items-center">
-                        <img className="w-10 h-10 mr-3 rounded-full" src={notification.user.profileImage || "/assets/user/profile.png"} alt="프로필" />
+                        <img className="w-10 h-10 mr-3 rounded-full cursor-pointer" src={notification.user.profileImage || "/assets/user/profile.png"} alt="프로필" />
                         <p className="text-sm">
-                          <span className="font-bold">{notification.user.nickName}</span>
+                          <span className="font-bold cursor-pointer">{notification.user.nickName}</span>
                           {notification.content}
                           <span className="ms-4 text-gray-400 whitespace-nowrap">
                             <TimeDifference timestamp={new Date(notification.createdAt)} />
