@@ -18,9 +18,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,21 +45,37 @@ public class MainPageController {
         @ApiResponse(responseCode = "500", description = "서버 오류",
             content = @Content(schema = @Schema()))
     })
+    @Transactional(readOnly = true)
     @GetMapping
     public ResponseEntity<ResponseDto> getMainPageData() {
 
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
         String fixedPeriod = "daily";
 
-        List<RelayBoardDetailResponseDto> relayBoards = boardService.getRelayBoards(fixedPeriod);
-        List<VoteBoardDetailResponseDto> voteBoards = boardService.getVoteBoards(fixedPeriod);
-        List<OpinionBoardDetailResponseDto> opinionBoards = boardService.getOpinionBoards(
-            fixedPeriod);
-        List<BestNResponseDto> bestNs = userService.getSortedUsersByNPoint(false);
+        CompletableFuture<List<RelayBoardDetailResponseDto>> relayBoardsFuture =
+            CompletableFuture.supplyAsync(() -> boardService.getRelayBoards(fixedPeriod));
+        CompletableFuture<List<VoteBoardDetailResponseDto>> voteBoardsFuture =
+            CompletableFuture.supplyAsync(() -> boardService.getVoteBoards(fixedPeriod));
+        CompletableFuture<List<OpinionBoardDetailResponseDto>> opinionBoardsFuture =
+            CompletableFuture.supplyAsync(() -> boardService.getOpinionBoards(fixedPeriod));
+        CompletableFuture<List<BestNResponseDto>> bestNsFuture =
+            CompletableFuture.supplyAsync(() -> userService.getSortedUsersByNPoint(false));
 
-        MainPageResponseDto mainPageResponse = new MainPageResponseDto(relayBoards, voteBoards,
-            opinionBoards, bestNs);
+        MainPageResponseDto mainPageResponse = CompletableFuture.allOf(
+            relayBoardsFuture, voteBoardsFuture, opinionBoardsFuture, bestNsFuture
+        ).thenApply(v -> new MainPageResponseDto(
+            relayBoardsFuture.join(), voteBoardsFuture.join(),
+            opinionBoardsFuture.join(), bestNsFuture.join()
+        )).join();
+
         ResponseDto<?> responseBody = new ResponseDto<>(ResponseCode.SUCCESS,
             ResponseMessage.SUCCESS, mainPageResponse);
+
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
+        System.out.println("코드 실행 시간 (s): " + stopWatch.getTotalTimeSeconds());
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
