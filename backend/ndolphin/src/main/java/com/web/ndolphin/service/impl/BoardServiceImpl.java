@@ -378,7 +378,7 @@ public class BoardServiceImpl implements BoardService {
 
         // 3개 미만 이라면 최신순으로 3개 가져옴.
         if (sideBoards.size() < 3) {
-            sideBoards = boardRepository.findByBoardType(BoardType.VOTE_BOARD,
+            sideBoards = boardRepository.findRandomBoardsByType(BoardType.VOTE_BOARD,
                 PageRequest.of(0, 3));
         }
 
@@ -408,7 +408,7 @@ public class BoardServiceImpl implements BoardService {
 
         // 3개 미만 이라면 최신순으로 3개 가져옴.
         if (sideBoards.size() < 3) {
-            sideBoards = boardRepository.findByBoardType(BoardType.OPINION_BOARD,
+            sideBoards = boardRepository.findRandomBoardsByType(BoardType.OPINION_BOARD,
                 PageRequest.of(0, 3));
         }
 
