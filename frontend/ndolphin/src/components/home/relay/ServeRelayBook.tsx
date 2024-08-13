@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import rankingApi from "../../../api/rankingApi";
+import React from "react";
 
 interface Props {
   currentIndex: number;
-  rankingType: string;
+  visibleBooks: Relay[];
 }
 
 interface Relay {
@@ -13,6 +12,7 @@ interface Relay {
   subject: string;
   fileUrls: string;
   reactionCount: number;
+  summary: string;
   user: {
     nickName: string;
     profileImage: string;
@@ -21,48 +21,16 @@ interface Relay {
   };
 }
 
-const ServeRelayBook = ({ currentIndex, rankingType }: Props) => {
-  const [relayBoardList, setRelayBoardList] = useState<Relay[] | null>(null);
-  const [visibleBooks, setVisibleBook] = useState<Relay[] | null>(null);
-
-  useEffect(() => {
-    getRelayBoardList();
-    if (relayBoardList) {
-      setVisibleBook(relayBoardList.concat(relayBoardList).slice(currentIndex, currentIndex + 3));
-    }
-  }, [rankingType, relayBoardList]);
-
-  const getRelayBoardList = async () => {
-    try {
-      let period = "";
-      switch (rankingType) {
-        case "일간":
-          period = "daily";
-          break;
-        case "주간":
-          period = "weekly";
-          break;
-        case "월간":
-          period = "monthly";
-          break;
-      }
-      const response = await rankingApi.relaylist(period);
-      setRelayBoardList(response.data.data);
-      console.log(response.data.data);
-    } catch (error) {
-      console.error("rankingApi relaylist : ", error);
-    }
-  };
-
+const ServeRelayBook = ({ currentIndex, visibleBooks }: Props) => {
   return (
-    <div className="grid grid-cols-3 gap-x-2 ">
+    <div className="grid grid-cols-2 gap-x-5">
       {visibleBooks &&
         visibleBooks.map((book, index) => (
-          <div key={book.id}>
-            <img className="rounded-xl" src={book.fileUrls[0]} alt="" />
+          <div key={book.id} className="flex flex-col justify-center">
+            <img className="w-full bg-white border aspect-1 object-cover" src={book.fileUrls[0]} alt="" />
             <div className="pt-1 flex font-semibold">
               <p className="pr-1">{currentIndex + index + 1}</p>
-              <p>{book.subject}</p>
+              <p className="line-clamp-1">{book.subject}</p>
             </div>
           </div>
         ))}

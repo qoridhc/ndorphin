@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "../../../css/home/MainRelayBook.css";
-import rankingApi from "../../../api/rankingApi";
 
 interface Props {
   mainIndex: number;
-  rankingType: string;
+  relay: Relay;
 }
 
 interface Relay {
@@ -15,6 +14,7 @@ interface Relay {
   subject: string;
   fileUrls: string;
   reactionCount: number;
+  summary: string;
   user: {
     nickName: string;
     profileImage: string;
@@ -23,69 +23,41 @@ interface Relay {
   };
 }
 
-const MainRelayBook = ({ mainIndex, rankingType }: Props) => {
-  const [relayBoardList, setRelayBoardList] = useState<Relay[] | null>(null);
-
-  useEffect(() => {
-    getRelayBoardList();
-  }, [rankingType]);
-
-  const getRelayBoardList = async () => {
-    try {
-      let period = "";
-      switch (rankingType) {
-        case "일간":
-          period = "daily";
-          break;
-        case "주간":
-          period = "weekly";
-          break;
-        case "월간":
-          period = "monthly";
-          break;
-      }
-      const response = await rankingApi.relaylist(period);
-      setRelayBoardList(response.data.data);
-      console.log(response.data.data);
-    } catch (error) {
-      console.error("rankingApi relaylist : ", error);
-    }
-  };
-
+const MainRelayBook = ({ mainIndex, relay }: Props) => {
   return (
-    <TransitionGroup>
-      <CSSTransition key={mainIndex} timeout={300} classNames="fade">
-        {relayBoardList ? (
-          <div className="w-[40%] absolute grid grid-cols-2">
-            <img className="w-[90%] rounded-xl shadow-[5px_5px_5px_5px_rgba(150,150,150,0.3)]" src={relayBoardList[mainIndex].fileUrls[0]} alt="" />
-            <div className="grid grid-rows-[auto_auto_auto_auto_auto]">
-              <div className="flex items-end">
-                <p className="text-6xl font-bold">{mainIndex + 1}</p>
-                <p className="text-xl font-semibold">{relayBoardList[mainIndex].subject}</p>
+    <div className="relative">
+      <TransitionGroup>
+        <CSSTransition key={mainIndex} timeout={300} classNames="fade">
+          <div className="w-full absolute grid grid-cols-[4fr_3fr] gap-10">
+            <img className="w-full bg-white border aspect-1 object-cover shadow-[5px_5px_5px_5px_rgba(150,150,150,0.3)]" src={relay.fileUrls[0]} alt="" />
+            <div className="flex flex-col justify-center">
+              <div className="mb-4">
+                <p className="text-4xl font-bold mb-2">{mainIndex + 1}위 </p>
+                <p className="text-xl font-semibold break-keep">{relay.subject}</p>
               </div>
-              <div className="flex items-center">
-                <img className="w-10 h-10 rounded-[50%]" src={`${relayBoardList[mainIndex].user.profileImage}`} alt="" />
-                <p className="pl-4 font-semibold">{relayBoardList[mainIndex].user.nickName}</p>
+
+              <div className="flex items-center mb-4">
+                <img className="w-10 h-10 rounded-full mr-4" src={`${relay.user.profileImage}`} alt="" />
+                <p className="font-semibold text-[#565656]">{relay.user.nickName}</p>
               </div>
-              <p className="text-justify">{relayBoardList[mainIndex].content}</p>
-              <hr className="h-[2px] bg-[#9E9E9E]" />
-              <div>
-                <div className="flex">
-                  <p className="font-semibold text-[#333333]">조회수</p>
-                  <p className="pl-2 text-[#565656]">{relayBoardList[mainIndex].hit} 회</p>
+
+              <p className="mb-4 text-justify line-clamp-3">{relay.summary}</p>
+
+              <div className="flex justify-between">
+                <div className="flex items-center">
+                  <p className="font-semibold text-gray-800">조회수</p>
+                  <p className="ml-2 text-gray-600">{relay.hit} 회</p>
                 </div>
-                <div className="flex">
-                  <p className="font-semibold text-[#333333]">공감수</p>
-                  <p className="pl-2 text-[#565656]">{relayBoardList[mainIndex].reactionCount} 개</p>
+                <div className="flex items-center">
+                  <p className="font-semibold text-gray-800">공감수</p>
+                  <p className="ml-2 text-gray-600">{relay.reactionCount} 개</p>
                 </div>
               </div>
             </div>
           </div>
-        ) : (
-          <></>
-        )}
-      </CSSTransition>
-    </TransitionGroup>
+        </CSSTransition>
+      </TransitionGroup>
+    </div>
   );
 };
 
