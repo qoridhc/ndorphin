@@ -3,6 +3,7 @@ import boardApi from "../../api/boardApi";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { IoMdClose } from "react-icons/io";
+import userApi from "../../api/userApi";
 
 interface Props {
   setIsCreateModal: (state: boolean) => void;
@@ -128,6 +129,17 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
     }
   }, [rowCount]);
 
+  // 괜찮아 등록 시 팔로워들에게 알림 전송
+  const postAlarm = async () => {
+    const userId = localStorage.getItem("userId");
+    const userNickName = localStorage.getItem('nickName')
+    const response = await userApi.getFollower(userId as string);
+    const content = `${userNickName} 님이 새로운 괜찮아를 등록했습니다`;
+    response.data.data.forEach((item: any) => {
+      userApi.postNotifications(item.followerId, content, Number(userId));
+    });
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="w-[40%] max-h-[90%] p-5 bg-white rounded-2xl grid gap-3">
@@ -180,7 +192,10 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
             <input className="hidden" id="image-input" type="file" accept="image/*" onChange={(e) => handleImageChange(e)} disabled={imageList.length === 4} multiple />
           </div>
 
-          <button onClick={handleOkConfirm} className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0}>
+          <button onClick={() => {
+            postAlarm();
+            handleOkConfirm();
+          }} className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0}>
             완료
           </button>
         </div>
