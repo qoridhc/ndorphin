@@ -85,9 +85,9 @@ const Header = () => {
         setIsLoggedIn(true);
         closeLoginModal();
       })
-      .then(() => {
-        window.location.href = window.location.href;
-      })
+      // .then(() => {
+      //   window.location.href = window.location.href;
+      // })
       .catch((err) => {
         console.error("유저 정보 에러", err);
       });
