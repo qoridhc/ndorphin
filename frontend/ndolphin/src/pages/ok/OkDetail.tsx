@@ -105,13 +105,13 @@ const OkDetail = () => {
 
     switch (okDetail && okDetail.fileUrls.length) {
       case 1:
-        return <img className="w-full rounded-md object-cover cursor-pointer" src={okDetail.fileUrls[0]} alt="" onClick={() => handleselectedImageList(0)} />;
+        return <img className="w-full aspect-2 border rounded-md object-cover cursor-pointer" src={okDetail.fileUrls[0]} alt="" onClick={() => handleselectedImageList(0)} />;
 
       case 2:
         return (
           <div className="grid grid-cols-2 gap-1">
             {okDetail.fileUrls.map((url, idx) => (
-              <img className={`w-full h-72 object-cover ${idx === 0 ? "rounded-tl-md rounded-bl-md" : "rounded-tr-md rounded-br-md"} cursor-pointer`} src={url} alt="" key={idx} onClick={() => handleselectedImageList(idx)} />
+              <img className={`w-full aspect-2 h-72 border object-cover ${idx === 0 ? "rounded-tl-md rounded-bl-md" : "rounded-tr-md rounded-br-md"} cursor-pointer`} src={url} alt="" key={idx} onClick={() => handleselectedImageList(idx)} />
             ))}
           </div>
         );
@@ -121,7 +121,7 @@ const OkDetail = () => {
           <div className="grid grid-rows-2 grid-cols-2 gap-1">
             {okDetail.fileUrls.map((url, idx) => (
               <img
-                className={`w-full h-${idx === 0 ? "full" : "36"} object-cover ${idx === 0 ? "row-span-2 rounded-tl-md rounded-bl-md" : idx === 1 ? "rounded-tr-md" : "rounded-br-md"} cursor-pointer`}
+                className={`w-full aspect-2 h-${idx === 0 ? "full" : "36"} border object-cover ${idx === 0 ? "row-span-2 rounded-tl-md rounded-bl-md" : idx === 1 ? "rounded-tr-md" : "rounded-br-md"} cursor-pointer`}
                 src={url}
                 alt=""
                 key={idx}
@@ -136,7 +136,7 @@ const OkDetail = () => {
           <div className="grid grid-cols-2 gap-1">
             {okDetail.fileUrls.map((url, idx) => (
               <img
-                className={`w-full h-36 object-cover ${idx === 0 ? "rounded-tl-md" : idx === 1 ? "rounded-tr-md" : idx === 2 ? "rounded-bl-md" : "rounded-br-md"} cursor-pointer`}
+                className={`w-full aspect-2 h-36 border object-cover ${idx === 0 ? "rounded-tl-md" : idx === 1 ? "rounded-tr-md" : idx === 2 ? "rounded-bl-md" : "rounded-br-md"} cursor-pointer`}
                 src={url}
                 alt=""
                 key={idx}
@@ -194,7 +194,10 @@ const OkDetail = () => {
               <div className="grid gap-3">
                 <div className="grid grid-cols-[9fr_2fr]">
                   <div>
-                    <p className="font-bold">{okDetail && okDetail.user.nickName}</p>
+                    <div className="flex items-center">
+                      <p className="font-bold">{okDetail && okDetail.user.nickName}</p>
+                      {<img className="w-5 h-5 ml-1" src={`/assets/${okDetail.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                    </div>
                     <p className="text-sm font-semibold text-[#565656]">{okDetail && okDetail.createdAt}</p>
                   </div>
 
