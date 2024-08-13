@@ -17,11 +17,12 @@ const BestBalance = () => {
         <RankingDate type={rankingType} />
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      {/* <div className="grid grid-cols-3 gap-3">
         <SwiperBalance rankingType={rankingType} startIndex={0} delay={1500} />
         <SwiperBalance rankingType={rankingType} startIndex={3} delay={2000} />
         <SwiperBalance rankingType={rankingType} startIndex={4} delay={2500} />
-      </div>
+      </div> */}
+      <SwiperBalance rankingType={rankingType} />
     </div>
   );
 };
