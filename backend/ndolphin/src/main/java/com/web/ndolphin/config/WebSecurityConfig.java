@@ -46,7 +46,7 @@ public class WebSecurityConfig {
 
                 request -> request.requestMatchers(
                         "/", "/api/v1/auth/**", "/oauth2/**", "/swagger-ui/**", "/error", "index.html",
-                        "/api/upload", "api/list", "/api/v1/main/**").permitAll() // 인증 없이 접근 허용
+                        "/api/upload", "api/list", "/api/v1/main/**", "/v3/api-docs/**").permitAll() // 인증 없이 접근 허용
 
                     .anyRequest().authenticated() // 나머지는 인증 해야 접근 가능
 //                .requestMatchers("/api/v1/user")
