@@ -18,21 +18,36 @@ const RelayBookList = () => {
   
   useEffect(() => {
     setIsLoading(true);
-    boardApi.list("RELAY_BOARD")
-      .then((response) => {
-        const getRelayBoardList = response.data.data.content;
-        
-        const currentUserId = Number(location.pathname.split("/")[2]);
-        const filteredList = getRelayBoardList.filter((item: any) => item.user.userId === currentUserId);
-        setMyRelayBoardList(filteredList);
-      })
-      .catch((error) => {
-        console.error('릴레이북 게시글 불러오기 실패: ', error)
-      })
-      .finally(() => {
-        setIsLoading(false);
-    })
-  }, []);
+    let page = 0;
+    let hasMore = true;
+    const newMyRelayBoardList: any[] = [];
+    const currentUserId = Number(location.pathname.split("/")[2]);
+
+    const fetchBoards = async () => {
+      while (hasMore) {
+        try {
+          const response = await boardApi.list("RELAY_BOARD", page);
+          const responseData = response.data.data.content;
+
+          if (responseData.length === 0) {
+            hasMore = false;
+          } else {
+            const filteredList = responseData.filter((item: any) => item.user.userId === currentUserId);
+            newMyRelayBoardList.push(...filteredList);
+            page++;
+          }
+        } catch (error) {
+          console.error('프로필 릴레이 불러오기 실패: ', error);
+          hasMore = false;
+        }
+      }
+
+      setMyRelayBoardList(newMyRelayBoardList);
+      setIsLoading(false);
+    };
+
+    fetchBoards();
+  }, [location.pathname]);
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');

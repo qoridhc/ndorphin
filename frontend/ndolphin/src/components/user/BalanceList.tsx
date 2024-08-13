@@ -11,24 +11,38 @@ const BalanceList = () => {
   
   useEffect(() => {
     setIsLoading(true);
-    boardApi.list("VOTE_BOARD")
-      .then((response) => {
-        const getBalanceBoardList = response.data.data.content;
+    let page = 0;
+    let hasMore = true;
+    const newMyBalanceList: any[] = [];
+    const currentUserId = Number(location.pathname.split("/")[2]);
 
-        const currentUserId = Number(location.pathname.split("/")[2]);
-        const filteredList = getBalanceBoardList.filter((item: any) => item.user.userId === currentUserId);
-        setMyBalanceBoardList(filteredList);
-      })
-      .catch((error) => {
-        console.error("밸런스 게시글 불러오기 실패: ", error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-    })
-  }, []);
+    const fetchBoards = async () => {
+      while (hasMore) {
+        try {
+          const response = await boardApi.list("VOTE_BOARD", page);
+          const responseData = response.data.data.content;
+
+          if (responseData.length === 0) {
+            hasMore = false;
+          } else {
+            const filteredList = responseData.filter((item: any) => item.user.userId == currentUserId);
+            newMyBalanceList.push(...filteredList);
+            page++;
+          }
+        } catch (error) {
+          console.error('프로필 밸런스 불러오기 실패: ', error);
+          hasMore = false;
+        }
+      }
+
+      setMyBalanceBoardList(newMyBalanceList);
+      setIsLoading(false);
+    };
+    fetchBoards();
+  }, [location.pathname]);
 
   const goToDetail = (boardId: number) => {
-    navigate(`/ifdetail/${boardId}`);
+    navigate(`/balancedetail/${boardId}`);
   };
 
   if (isLoading) {
@@ -38,7 +52,10 @@ const BalanceList = () => {
   return (
     <div>
       {myBalanceBoardList.length === 0 ? (
-        <div className="mt-40 text-center text-3xl font-bold">목록이 비어있습니다</div>
+        <div className="mt-40 text-center text-3xl font-bold">
+          <img className="w-32 h-32 mx-auto mb-4" src="/assets/user/noContents.png" alt="#" />
+          <span>등록된 게시물이 없습니다</span>
+        </div>
       ) : (
         <div className="px-44 py-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
           {myBalanceBoardList.map((item) => (
