@@ -10,7 +10,6 @@ const OkList = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef<IntersectionObserver | null>(null);
-  const [isAdded, setIsAdded] = useState(false);
 
   const lastElementRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -44,7 +43,7 @@ const OkList = () => {
 
   useEffect(() => {
     getOkList();
-  }, [getOkList, isAdded]);
+  }, [getOkList]);
 
   return (
     <div>
@@ -63,7 +62,7 @@ const OkList = () => {
           <div className="col-start-2">
             {OkList.map((content, index) => (
               <div key={content.id} ref={index === OkList.length - 1 ? lastElementRef : null}>
-                <OkContent content={content} getOkList={getOkList} isAdded={isAdded} setIsAdded={setIsAdded} />
+                <OkContent content={content} getOkList={getOkList}/>
               </div>
             ))}
           </div>

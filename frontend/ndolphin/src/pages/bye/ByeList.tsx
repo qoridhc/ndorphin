@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import boardApi from "../../api/boardApi";
 import MiniSearchBar from "../../components/ok/MiniSearchBar";
 import ByeContent from "./ByeContent";
 import ByeStartModal from "./ByeStartModal";
 
+interface ByeList {}
+
 const ByeList = () => {
   const [isCreateModal, setIsCreateModal] = useState(false);
+  const [ByeList, setByeList] = useState();
 
   // switch가 0일 경우 N->S, 1일 경우 S->N
   const byeContentList = [
@@ -59,6 +63,27 @@ const ByeList = () => {
       goodByeCount: 3,
     },
   ];
+
+  const getByeList = async () => {
+      try {
+        const response = await boardApi.list("BYE_BOARD");
+        const newList = response.data.data.content;
+
+        // if (newList.length === 0) {
+        //   setHasMore(false);
+        // } else {
+        //   setOkList((prevList) => [...prevList, ...newList]);
+        // }
+        console.log("작별 목록 조회", newList)
+      } catch (error) {
+        console.error("작별 목록 조회 오류 발생", error);
+      }
+  }
+  
+  useEffect(() => {
+    getByeList();
+  }, [getByeList]);
+
 
   return (
     <div>
