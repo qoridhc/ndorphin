@@ -107,7 +107,7 @@ public class BoardServiceImpl implements BoardService {
 
             // 파일 업로드 처리
             fileInfoService.uploadFiles(board.getId(), EntityType.POST, multipartFiles);
-
+            System.out.println("ERROR = error!" );
             // Dall-E 처리
             if (boardRequestDto.getDalleUrl() != null) {
                 setDalle(boardRequestDto, board);
@@ -120,6 +120,7 @@ public class BoardServiceImpl implements BoardService {
 
             return getBoardById(board.getId());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseDto.databaseError(e.getMessage());
         }
     }
@@ -307,15 +308,16 @@ public class BoardServiceImpl implements BoardService {
 
     private List<ByeBoardDto> getByeBoardResponseDtos(List<Board> boards) {
 
-        return boards.stream()
-            .map(board -> {
-                Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(board.getId());
-                Reaction userReaction = reactionRepository.findByBoardIdAndUserId(board.getId(),
-                    board.getUser().getUserId());
+        Long currentUserId = tokenService.getUserIdFromToken(); // 현재 로그인한 사용자의 ID를 가져옵니다.
 
-                return BoardMapper.toByeBoardDto(board, reactionTypeCounts, userReaction);
-            })
-            .collect(toList());
+        return boards.stream()
+                .map(board -> {
+                    Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(board.getId());
+                    Reaction userReaction = reactionRepository.findByBoardIdAndUserId(board.getId(), currentUserId);
+
+                    return BoardMapper.toByeBoardDto(board, reactionTypeCounts, userReaction);
+                })
+                .collect(toList());
     }
 
     @Override
