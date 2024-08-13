@@ -5,27 +5,42 @@ import boardApi from "../../api/boardApi";
 const IfCardList: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [myOpinionBoardList, setMyOpinionBoardList] = useState<any[]>([]);
+  const [myIfBoardList, setMyIfBoardList] = useState<any[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsLoading(true);
-    boardApi.list("OPINION_BOARD")
-      .then((response) => {
-        const getOpinionBoardList = response.data.data.content;
+    let page = 0;
+    let hasMore = true;
+    const newMyIfBoardList: any[] = [];
+    const currentUserId = Number(location.pathname.split("/")[2]);
 
-        const currentUserId = Number(location.pathname.split("/")[2]);
-        const filteredList = getOpinionBoardList.filter((item: any) => item.user.userId === currentUserId);
-        setMyOpinionBoardList(filteredList);
-      })
-      .catch((error) => {
-        console.error("만약에 게시글 불러오기 실패: ", error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-    })
-  }, []);
+    const fetchBoards = async () => {
+      while (hasMore) {
+        try {
+          const response = await boardApi.list("OPINION_BOARD", page);
+          const responseData = response.data.data.content;
+
+          if (responseData.length === 0) {
+            hasMore = false;
+          } else {
+            const filteredList = responseData.filter((item: any) => item.user.userId === currentUserId);
+            newMyIfBoardList.push(...filteredList);
+            page++;
+          }
+        } catch (error) {
+          console.error('프로필 만약에 불러오기 실패: ', error);
+          hasMore = false;
+        }
+      }
+
+      setMyIfBoardList(newMyIfBoardList);
+      setIsLoading(false);
+    };
+
+    fetchBoards();
+  }, [location.pathname]);
 
   const goToDetail = (boardId: number) => {
     navigate(`/ifdetail/${boardId}`);
@@ -37,14 +52,14 @@ const IfCardList: React.FC = () => {
 
   return (
     <div>
-      {myOpinionBoardList.length === 0 ? (
+      {myIfBoardList.length === 0 ? (
         <div className="mt-40 text-center text-3xl font-bold">
           <img className="w-32 h-32 mx-auto mb-4" src="/assets/user/noContents.png" alt="#" />
           <span>등록된 게시물이 없습니다</span>
         </div>
       ) : (
         <div className="px-44 py-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
-          {myOpinionBoardList.map((item) => (
+          {myIfBoardList.map((item) => (
             <div
               className="h-72 p-5 border-solid border-[#565656] border-[1px] rounded-lg grid grid-rows-[1fr_1fr_3fr] gap-3 cursor-pointer duration-300 ease-out hover:-translate-y-3 hover:shadow-lg"
               key={item.id}
