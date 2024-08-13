@@ -98,6 +98,10 @@ public class BoardServiceImpl implements BoardService {
             // 게시글 처리
             boardRepository.save(board);
 
+            if (board.getBoardType() == BoardType.BYE_BOARD){
+                return ResponseDto.success();
+            }
+
             if (boardRequestDto.getBoardType() == BoardType.RELAY_BOARD) {
                 // AI 요약 처리
                 String summary = openAIService.summarizeText(board.getContent());
