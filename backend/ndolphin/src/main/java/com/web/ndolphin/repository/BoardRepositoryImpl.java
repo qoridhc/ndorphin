@@ -9,7 +9,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.domain.QBoard;
+import com.web.ndolphin.domain.QComment;
+import com.web.ndolphin.domain.QReaction;
 import com.web.ndolphin.domain.QVote;
+import com.web.ndolphin.domain.QVoteContent;
 import com.web.ndolphin.service.interfaces.TokenService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -111,35 +114,26 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
             .fetch();
     }
 
-//    @Override
-//    public List<Board> findRelayBoardsByPeriod(String period) {
-//        LocalDateTime startDate = calculateStartDate(period);
-//        QBoard board = QBoard.board;
-//
-//        return queryFactory.selectFrom(board)
-//            .where(board.boardType.eq(BoardType.RELAY_BOARD)
-//                .and(board.createdAt.after(startDate)))
-//            .orderBy(board.reactions.size().desc()) // 반응 수 기준 정렬
-//            .limit(10) // 상위 10개만 조회
-//            .fetch();
-//    }
-
     @Override
     public List<Board> findRelayBoardsByPeriod(String period) {
         LocalDateTime startDate = calculateStartDate(period);
         QBoard board = QBoard.board;
+        QReaction reaction = QReaction.reaction;
 
         // maxPage - 1 을 표현하는 NumberTemplate 생성
         NumberTemplate<Integer> maxPageMinusOne = Expressions.numberTemplate(Integer.class, "{0} - 1", board.maxPage);
 
         return queryFactory.selectFrom(board)
+            .leftJoin(reaction).on(reaction.board.eq(board)) // 보드와 반응 테이블 조인
             .where(board.boardType.eq(BoardType.RELAY_BOARD)
-                .and(board.createdAt.after(startDate))
+                .and(reaction.createdAt.after(startDate)) // 반응이 지정된 기간 내에 생성된 경우 필터링
                 .and(board.comments.size().eq(maxPageMinusOne))) // comment.size()가 maxPage - 1 인 것만 필터링
-            .orderBy(board.reactions.size().desc()) // 반응 수 기준 정렬
+            .groupBy(board.id)
+            .orderBy(reaction.count().desc()) // 반응 수 기준으로 정렬
             .limit(10) // 상위 10개만 조회
             .fetch();
     }
+
 
 
 
@@ -148,27 +142,36 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     public List<Board> findVoteBoardsByPeriod(String period) {
         LocalDateTime startDate = calculateStartDate(period);
         QBoard board = QBoard.board;
+        QVoteContent voteContent = QVoteContent.voteContent;
+        QVote vote = QVote.vote;
 
         return queryFactory.selectFrom(board)
+            .leftJoin(voteContent).on(voteContent.board.eq(board)) // Board와 VoteContent 조인
+            .leftJoin(vote).on(vote.voteContent.eq(voteContent)) // VoteContent와 Vote 조인
             .where(board.boardType.eq(BoardType.VOTE_BOARD)
-                .and(board.createdAt.after(startDate)))
-            .orderBy(board.voteContents.size().desc()) // 투표 수 기준 정렬
+                .and(vote.createdAt.after(startDate))) // 투표가 지정된 기간 내에 생성된 경우 필터링
+            .groupBy(board.id)
+            .orderBy(vote.count().desc()) // 투표 수 기준으로 정렬
             .limit(10) // 상위 10개만 조회
             .fetch();
     }
+
 
     @Override
     public List<Board> findOpinionBoardsByPeriod(String period) {
         LocalDateTime startDate = calculateStartDate(period);
         QBoard board = QBoard.board;
+        QComment comment = QComment.comment; // QComment 객체 생성
 
         return queryFactory.selectFrom(board)
+            .leftJoin(comment).on(comment.board.eq(board)) // 보드와 댓글 테이블 조인
             .where(board.boardType.eq(BoardType.OPINION_BOARD)
-                .and(board.createdAt.after(startDate)))
-            .orderBy(board.comments.size().desc()) // 댓글 수 기준 정렬
-            .limit(10) // 상위 10개만 조회
+                .and(comment.createdAt.after(startDate))) // 댓글이 지정된 기간 내에 생성된 경우 필터링
+            .groupBy(board.id)
+            .orderBy(comment.count().desc()) // 댓글 수 기준으로 정렬
             .fetch();
     }
+
 
     private LocalDateTime calculateStartDate(String period) {
         switch (period.toLowerCase()) {
