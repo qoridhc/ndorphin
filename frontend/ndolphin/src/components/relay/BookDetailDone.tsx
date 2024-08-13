@@ -6,8 +6,6 @@ interface BookDetailDoneProps {
 }
 
 const BookDetailDone = ({ bookId }: BookDetailDoneProps) => {
-  const [clicked, setClicked] = useState([false, false, false, false]);
-  const user = "새촉";
   const [userImoge, setUserImoge] = useState<{ [key: string]: number }>({});
   const [userReactionId, setUserReactionId] = useState<string | null>(null);
   const [userReactionType, setUserReactionType] = useState<string | null>(null);
