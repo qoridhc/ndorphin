@@ -6,8 +6,11 @@ const BalanceList = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [myBalanceBoardList, setMyBalanceBoardList] = useState<any[]>([]);
+
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
+    setIsLoading(true);
     boardApi.list("VOTE_BOARD")
       .then((response) => {
         const getBalanceBoardList = response.data.data.content;
@@ -18,12 +21,19 @@ const BalanceList = () => {
       })
       .catch((error) => {
         console.error("밸런스 게시글 불러오기 실패: ", error);
-      });
+      })
+      .finally(() => {
+        setIsLoading(false);
+    })
   }, []);
 
   const goToDetail = (boardId: number) => {
     navigate(`/ifdetail/${boardId}`);
   };
+
+  if (isLoading) {
+    return <div className="mt-40 text-center text-3xl font-bold">로딩 중...</div>;
+  }
 
   return (
     <div>

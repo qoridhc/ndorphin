@@ -11,10 +11,13 @@ const RelayBookList = () => {
   const [summary, setSummary] = useState("");
   const [likeStatus, setLikeStatus] = useState<{ [key: number]: boolean }>({});
   const [isHovered, setIsHovered] = useState<number | null>(null);
-  const fullHeart = "/assets/relay/fullheart.png";
-  const emptyHeart = "/assets/relay/emptyheart.png";
+  const fullHeart = "/assets/relay/fullHeart.png";
+  const emptyHeart = "/assets/relay/emptyHeart.png";
+
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
+    setIsLoading(true);
     boardApi.list("RELAY_BOARD")
       .then((response) => {
         const getRelayBoardList = response.data.data.content;
@@ -26,6 +29,9 @@ const RelayBookList = () => {
       .catch((error) => {
         console.error('릴레이북 게시글 불러오기 실패: ', error)
       })
+      .finally(() => {
+        setIsLoading(false);
+    })
   }, []);
 
   useEffect(() => {
@@ -111,6 +117,10 @@ const RelayBookList = () => {
   const goToDetail = (boardId: number) => {
     navigate(`/relaybookdetail/${boardId}`);
   };
+
+  if (isLoading) {
+    return <div className="mt-40 text-center text-3xl font-bold">로딩 중...</div>;
+  }
 
   return (
     <div>
