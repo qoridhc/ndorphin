@@ -91,9 +91,9 @@ const OkList = () => {
 
   return (
     <div className="px-96">
-      {okContentList.map((content, index) => (
+      {/* {okContentList.map((content, index) => (
         <OkContent content={content} key={index} />
-      ))}
+      ))} */}
     </div>
   );
 };

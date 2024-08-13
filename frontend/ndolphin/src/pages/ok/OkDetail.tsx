@@ -308,7 +308,7 @@ const OkDetail = () => {
         </div>
       </div>
 
-      {selectedImageList && <OkDetailModal content={okContentList[1]} selectedImageList={selectedImageList} selectedImageListIndex={selectedImageListIndex} setSelectedImageList={setSelectedImageList} />}
+      {/* {selectedImageList && <OkDetailModal content={okContentList[1]} selectedImageList={selectedImageList} selectedImageListIndex={selectedImageListIndex} setSelectedImageList={setSelectedImageList} />} */}
     </div>
   );
 };
