@@ -36,9 +36,6 @@ const SwiperBalance = ({ rankingType }: Props) => {
 
   useEffect(() => {
     getBalanceBoardList();
-  }, [rankingType]);
-
-  useEffect(() => {
     if (swiperRef.current) {
       swiperRef.current.swiper.slideTo(0); // Move to the first slide
     }
@@ -66,7 +63,7 @@ const SwiperBalance = ({ rankingType }: Props) => {
   };
 
   return (
-    <div>
+    <div className="best-balance">
       {balanceBoardList ? (
         <Swiper
           slidesPerView={3}
@@ -81,7 +78,7 @@ const SwiperBalance = ({ rankingType }: Props) => {
           }}
           modules={[Autoplay, Pagination]}
           className="mySwiper"
-          ref={swiperRef} // Attach ref to Swiper
+          ref={swiperRef}
         >
           {balanceBoardList.map((balance, index) => (
             <SwiperSlide key={index}>

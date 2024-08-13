@@ -59,7 +59,6 @@ const BestRelay = () => {
       }
       const response = await rankingApi.relaylist(period);
       setRelayBoardList(response.data.data);
-      console.log("베스트 릴레이 : ", response.data.data);
     } catch (error) {
       console.error("rankingApi relaylist : ", error);
     }
