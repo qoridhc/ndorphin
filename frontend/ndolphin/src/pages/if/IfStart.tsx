@@ -71,8 +71,9 @@ const IfStart = () => {
   // 만약에 등록 시 팔로워들에게 알림 전송
   const postAlarm = async () => {
     const userId = localStorage.getItem("userId");
+    const userNickName = localStorage.getItem('nickName');
     const response = await userApi.getFollower(userId as string);
-    const content = `${userId} 님이 새로운 만약에를 등록했습니다`;
+    const content = `${userNickName} 님이 새로운 만약에를 등록했습니다`;
     response.data.data.forEach((item: any) => {
       userApi.postNotifications(item.followerId, content, Number(userId));
     });

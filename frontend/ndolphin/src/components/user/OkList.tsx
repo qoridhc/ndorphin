@@ -41,10 +41,13 @@ const OkList = () => {
           <span>등록된 게시물이 없습니다</span>
         </div>
       ) : (
-        <div className="px-96">
-          {/* {okContentList.map((content, index) => (
-            <OkContent content={content} key={index} />
-          ))} */}
+        <div className="px-96 py-10">
+          {myOKBoardList.map((item) => (
+            <div className="" key={item.id}>
+              <img className="w-10 h-10 rounded-full" src={item.user.profileImage} alt="#" />
+              <div></div>
+            </div>
+          ))}
         </div>
       )}
     </div>
