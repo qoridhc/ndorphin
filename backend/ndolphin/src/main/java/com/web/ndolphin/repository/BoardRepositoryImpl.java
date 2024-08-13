@@ -23,8 +23,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
     @Override
     public List<Board> findByTypeAndFiltersWithoutPaging(BoardType boardType, String filter1,
-        String filter2,
-        String search, Boolean isDone) {
+        String filter2, String search, Boolean isDone) {
 
         Long userId = tokenService.getUserIdFromToken(); // 현재 사용자의 ID를 가져옴
 
