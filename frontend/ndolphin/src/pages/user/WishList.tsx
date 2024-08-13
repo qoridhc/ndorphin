@@ -16,7 +16,6 @@ const WishList = () => {
     userApi.getFavorites(userId as string)
       .then((res) => {
         const getWishList = res.data.data.boardDtos;
-        console.log(getWishList)
         setWishList(getWishList);
       })
       .catch((err) => {

@@ -47,15 +47,34 @@ const RelayBookList = () => {
       })
   }, [myRelayBoardList]);
 
-  const handleAISummary = (id: number) => {
+  const handleAISummary = async (id: number) => {
     if (showSummary === id) {
       setShowSummary(null);
     } else {
-      // AI 요약 호출 로직을 여기에 추가합니다.
-      // 예를 들어, AI 요약 API를 호출하고 결과를 setSummary로 설정할 수 있습니다.
-      setSummary(
-        "이것은 AI가 생성한 요약 예시입니다. 이것은은 AI가 생성한 요약 예시입니다. 이것은 AI가 생니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은니다. 이것은 AI가 생성한 요약 예시입니다. 이것은 AI가 생성한 요약 예시입니다. 이것은다."
-      );
+      let page = 0;
+      let hasMore = true;
+      const allContent: string[] = [];
+
+      while (hasMore) {
+        try {
+          const response = await boardApi.list("RELAY_BOARD", page);
+          if (response && response.data.data.content.length > 0) {
+            allContent.push(...response.data.data.content);
+            page++;
+          } else {
+            hasMore = false;
+          }
+        } catch (error) {
+          console.error("AI 요약 찾기 중 리스트 불러오기 실패: ", error);
+          hasMore = false;
+        }
+      }
+      
+      allContent.map((item: any) => {
+        if (item.id === id) {
+          setSummary(item.summary);
+        }
+      })
       setShowSummary(id);
     }
   };
