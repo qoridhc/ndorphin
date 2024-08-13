@@ -1,8 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
+import commentApi from "../../api/commentApi";
+import boardApi from "../../api/boardApi";
 import { FaRegComment } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import SettingsMenu from "../if/CommentSettingMenu";
+interface Comment {
+  commentId: number;
+  user: {
+    profileImage: string | null;
+    nickName: string;
+  };
+  content: string;
+  createAt: string;
+}
+
+interface BoardDetail {
+  id: number;
+  user: {
+    nickName: string;
+    mbti: string;
+    profileImage: string | null;
+  };
+  createdAt: string;
+  content: string;
+  fileUrls: string[];
+  commentCnt: number;
+  commentResponseDtos: Comment[];
+}
 
 interface Props {
   content: {
@@ -14,42 +39,44 @@ interface Props {
     };
     createdAt: string;
     content: string;
-    fileUrls: any[];
+    fileUrls: string[];
     commentCnt: number;
+    commentResponseDtos: Comment[];
   };
-  selectedImageList: { id: number; imgUrl: string }[] | null;
+  selectedImageList: string[] | null;
   selectedImageListIndex: number;
-  setSelectedImageList: (selected: { id: number; imgUrl: string }[] | null) => void;
+  setSelectedImageList: (image: string[] | null) => void;
 }
 
 const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, setSelectedImageList }: Props) => {
+  const [commentContent, setCommentContent] = useState<string>("");
   const [currentSlideIndex, setCurrentSlideIndex] = useState(selectedImageListIndex);
-  const commentData = [
-    {
-      id: 1,
-      profileImgUrl: "/assets/profile/profile1.png",
-      user: "상상의 나무꾼",
-      content: "이참에 티라노 사우르스랑 싸워고 평생 안주감 어때 이참에 영웅놀이 해보자 진심 어때",
-      date: "2024-07-29 21:02",
-    },
-    {
-      id: 2,
-      profileImgUrl: "/assets/profile/profile2.png",
-      user: "만약핑인데",
-      content: "허허허..... 하루만 더 생각좀.. 생각이 많아지는 만약에 잘썼다",
-      date: "2024-07-29 21:02",
-    },
-    {
-      id: 3,
-      profileImgUrl: "/assets/profile/profile3.png",
-      user: "별이 빛나는 밤",
-      content: "혹시 무기 있음? 있으면 내가 영웅할게",
-      date: "2024-07-29 21:02",
-    },
-  ];
-  const userData = {
-    user: "근데 말약에",
-    profileImgUrl: "/assets/profile/profile4.png",
+  const boardId = String(content.id);
+  const [rowCount, setRowCount] = useState(0);
+  const [okDetail, setOkDetail] = useState<BoardDetail | null>(null);
+
+  useEffect(() => {
+    // 페이지 스크롤 비활성화
+    document.body.style.overflow = "hidden";
+    getOkDetail();
+
+    // 모달이 닫힐 때 페이지 스크롤 복원
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  const getOkDetail = async () => {
+    try {
+      if (boardId) {
+        const response = await boardApi.read(boardId);
+        const newList = response.data.data;
+        setOkDetail(newList);
+        console.log("괜찮아 게시판 상세 페이지", newList);
+      }
+    } catch (error) {
+      console.error("괜찮아 상세 조회 오류 발생", error);
+    }
   };
 
   const handleClose = () => {
@@ -62,6 +89,43 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
 
   const handleNext = () => {
     setCurrentSlideIndex((prev) => (selectedImageList ? (prev + 1) % selectedImageList.length : prev));
+  };
+
+  const handleTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    // const text = event.target.value.length;
+    // setTextCount(text);
+    const rows = event.target.value.split(/\r\n|\r|\n/).length;
+    setRowCount(rows);
+    const commentValue = event.target.value;
+    setCommentContent(commentValue);
+  };
+
+  const handleCommentAdd = async () => {
+    const formData = new FormData();
+
+    formData.append(
+      "request",
+      new Blob(
+        [
+          JSON.stringify({
+            content: commentContent,
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
+
+    try {
+      if (boardId) {
+        setCommentContent("")
+        const response = await commentApi.create(boardId, formData);
+        if (response.status === 200 && response.data) {
+          getOkDetail();
+        }
+      }
+    } catch (error) {
+      console.error("괜찮아 댓글 작성 오류: ", error);
+    }
   };
 
   return (
@@ -79,7 +143,7 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
               </button>
 
               <div className="p-5 ">
-                <img className="min-w-96" src={selectedImageList[currentSlideIndex].imgUrl} alt="" />
+                <img className="min-w-96 max-h-[30rem]" src={selectedImageList[currentSlideIndex]} alt="" />
               </div>
 
               <button className="p-1" onClick={handleNext} disabled={currentSlideIndex === selectedImageList.length - 1}>
@@ -90,41 +154,43 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
             <div className="bg-white overflow-y-auto hide-scrollbar">
               <div className="p-3 border-b grid gap-2">
                 <div className="grid grid-cols-[1fr_5fr]">
-                  <img className="w-11 h-11 rounded-[50%]" src={`${content.user.profileImage}`} alt="" />
+                  <img className="w-11 h-11 rounded-[50%]" src={`${okDetail?.user.profileImage}`} alt="" />
                   <div className="flex flex-col justify-around">
-                    <p className="font-bold">{content.user.nickName}</p>
+                    <p className="font-bold">{okDetail?.user.nickName}</p>
                     <p className="text-xs text-[#565656]">3일 전</p>
                   </div>
                 </div>
 
-                <p className="font-semibold text-[#565656] text-justify leading-snug">{content.content}</p>
+                <p className="font-semibold text-[#565656] text-justify leading-snug">{okDetail?.content}</p>
                 <div className="flex justify-between">
                   <div className="flex items-center">
                     <FaRegComment />
-                    {content.commentCnt === 0 ? <></> : <p className="px-1 text-sdm text-[#565656]">{content.commentCnt}</p>}
+                    {okDetail?.commentCnt === 0 ? <></> : <p className="px-1 text-sdm text-[#565656]">{okDetail?.commentCnt}</p>}
                   </div>
-                  <p className="text-sm text-[#565656] text-right">{content.createdAt}</p>
+                  <p className="text-sm text-[#565656] text-right">{okDetail?.createdAt}</p>
                 </div>
               </div>
 
               <div className="p-3 border-b">
                 <div className="grid grid-cols-[1fr_6fr]">
-                  <img className="w-9 h-9 rounded-[50%]" src={`${userData.profileImgUrl}`} alt="" />
-                  <textarea className="w-full p-1 text-lg text-left outline-none resize-none" placeholder="댓글을 작성해 주세요" />
+                  <img className="w-9 h-9 rounded-[50%]" src={`${okDetail?.user.profileImage}`} alt="" />
+                  <textarea onChange={(e) => handleTextareaChange(e)} className="w-full p-1 text-lg text-left outline-none resize-none" placeholder="댓글을 작성해 주세요" value={commentContent} />
                 </div>
                 <div className="flex justify-end">
-                  <button className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">등록</button>
+                  <button onClick={handleCommentAdd} className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
+                    등록
+                  </button>
                 </div>
               </div>
 
-              {commentData.map((comment) => (
-                <div className="p-3 border-b grid grid-cols-[1fr_6fr]" key={comment.id}>
-                  <img className="w-9 h-9 rounded-[50%]" src={`${comment.profileImgUrl}`} alt="" />
+              {okDetail?.commentResponseDtos.map((comment) => (
+                <div className="p-3 border-b grid grid-cols-[1fr_6fr]" key={comment.commentId}>
+                  <img className="w-9 h-9 rounded-[50%]" src={`${comment.user.profileImage}`} alt="" />
 
                   <div className="w-full grid gap-2">
                     <div className="grid grid-cols-[6fr_1fr]">
                       <div className="flex flex-col justify-around">
-                        <p className="text-sm font-semibold">{comment.user}</p>
+                        <p className="text-sm font-semibold">{comment.user.nickName}</p>
                         <p className="text-xs text-[#565656]">3일 전</p>
                       </div>
                       {/* <SettingsMenu /> */}
@@ -132,7 +198,7 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
 
                     <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
 
-                    <p className="text-sm text-[#565656] text-right">{comment.date}</p>
+                    <p className="text-sm text-[#565656] text-right">{comment.createAt}</p>
                   </div>
                 </div>
               ))}
