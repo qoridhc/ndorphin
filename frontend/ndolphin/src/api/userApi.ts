@@ -1,6 +1,6 @@
 import { request } from "./axiosConfig";
 
-const baseURL = ' http://i11d207.p.ssafy.io:8080';
+const baseURL = 'http://i11d207.p.ssafy.io:8080';
 
 interface NicknameCheckResponse {
   isDuplicate: boolean;
