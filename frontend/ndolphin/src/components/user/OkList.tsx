@@ -11,8 +11,12 @@ const OkList = () => {
   }
 
   return (
-    <div></div>
-  )
+    <div className="px-96">
+      {/* {okContentList.map((content, index) => (
+        <OkContent content={content} key={index} />
+      ))} */}
+    </div>
+  );
 };
 
 export default OkList;

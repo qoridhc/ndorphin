@@ -7,15 +7,15 @@ import SettingsMenu from "../if/CommentSettingMenu";
 interface Props {
   content: {
     id: number;
-    profileImgUrl: string;
-    user: string;
-    date: string;
+    user: {
+      nickName: string;
+      mbti: string;
+      profileImage: string | null;
+    };
+    createdAt: string;
     content: string;
-    imgList: {
-      id: number;
-      imgUrl: string;
-    }[];
-    joinCount: number;
+    fileUrls: any[];
+    commentCnt: number;
   };
   selectedImageList: { id: number; imgUrl: string }[] | null;
   selectedImageListIndex: number;
@@ -90,9 +90,9 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
             <div className="bg-white overflow-y-auto hide-scrollbar">
               <div className="p-3 border-b grid gap-2">
                 <div className="grid grid-cols-[1fr_5fr]">
-                  <img className="w-11 h-11 rounded-[50%]" src={`${content.profileImgUrl}`} alt="" />
+                  <img className="w-11 h-11 rounded-[50%]" src={`${content.user.profileImage}`} alt="" />
                   <div className="flex flex-col justify-around">
-                    <p className="font-bold">{content.user}</p>
+                    <p className="font-bold">{content.user.nickName}</p>
                     <p className="text-xs text-[#565656]">3일 전</p>
                   </div>
                 </div>
@@ -101,9 +101,9 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
                 <div className="flex justify-between">
                   <div className="flex items-center">
                     <FaRegComment />
-                    {content.joinCount === 0 ? <></> : <p className="px-1 text-sdm text-[#565656]">{content.joinCount}</p>}
+                    {content.commentCnt === 0 ? <></> : <p className="px-1 text-sdm text-[#565656]">{content.commentCnt}</p>}
                   </div>
-                  <p className="text-sm text-[#565656] text-right">{content.date}</p>
+                  <p className="text-sm text-[#565656] text-right">{content.createdAt}</p>
                 </div>
               </div>
 
