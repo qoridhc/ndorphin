@@ -4,6 +4,7 @@ import EndPage from "../EndPage";
 import "../../../css/RelayBook.css";
 import "../../../css/Notes.css";
 import "../../../css/InputPlaceHolder.css";
+import userApi from "../../../api/userApi";
 
 interface RelayBookLeftFormProps {
   handleRelayBookStart: (subject: string, content: string, endPage: number | undefined, dalleUrl?: string) => void;
@@ -27,6 +28,16 @@ const RelayBookLeftForm = ({ handleRelayBookStart, image }: RelayBookLeftFormPro
     const newValue = e.target.value;
     setContentValue(newValue);
   };
+
+  // 이야기 등록 시 팔로워들에게 알림 전송
+  const postAlarm = async () => {
+    const userId = localStorage.getItem('userId');
+    const response = await userApi.getFollower(userId as string)
+    const content = `${userId} 님이 새로운 릴레이북을 등록했습니다`
+    response.data.data.forEach((item: any) => {
+      userApi.postNotifications(item.followerId, content, Number(userId))
+    });
+  }
 
   return (
     <>
@@ -66,6 +77,7 @@ const RelayBookLeftForm = ({ handleRelayBookStart, image }: RelayBookLeftFormPro
             <button
               onClick={() => {
                 handleRelayBookStart(subjectValue, contentValue, endPageValue);
+                postAlarm();
               }}
               disabled={!isFormValid} // 모든 값이 있을 때만 버튼 활성화
               className={`w-16 mx-3 font-semibold border-solid border-2 rounded-md duration-200 ${isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] border-[#e0e0e0] cursor-not-allowed"}`}>

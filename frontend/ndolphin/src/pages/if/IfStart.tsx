@@ -6,6 +6,7 @@ import InsertionImage from "../../components/common/InsertionImage";
 import { useNavigate } from "react-router";
 import boardApi from "../../api/boardApi";
 import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
+import userApi from "../../api/userApi";
 
 const IfStart = () => {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ const IfStart = () => {
     if (file) {
       formData.append("files", file);
     }
-    
+
     try {
       const response = await boardApi.create(formData);
       if (response.status === 200) {
@@ -65,6 +66,16 @@ const IfStart = () => {
     } catch (error) {
       console.error("ifApi create : ", error);
     }
+  };
+
+  // 만약에 등록 시 팔로워들에게 알림 전송
+  const postAlarm = async () => {
+    const userId = localStorage.getItem("userId");
+    const response = await userApi.getFollower(userId as string);
+    const content = `${userId} 님이 새로운 만약에를 등록했습니다`;
+    response.data.data.forEach((item: any) => {
+      userApi.postNotifications(item.followerId, content, Number(userId));
+    });
   };
 
   return (
@@ -104,7 +115,12 @@ const IfStart = () => {
       </div>
 
       <div className="flex justify-end">
-        <button className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200" onClick={() => handleCreate()}>
+        <button className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200"
+          onClick={() => {
+          handleCreate();
+          postAlarm();
+        }
+        }>
           등록
         </button>
       </div>
