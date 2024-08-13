@@ -28,7 +28,7 @@ const BalanceList = () => {
   }, []);
 
   const goToDetail = (boardId: number) => {
-    navigate(`/ifdetail/${boardId}`);
+    navigate(`/balancedetail/${boardId}`);
   };
 
   if (isLoading) {
