@@ -41,10 +41,14 @@ const OkList = () => {
           <span>등록된 게시물이 없습니다</span>
         </div>
       ) : (
-        <div></div>
+        <div className="px-96">
+          {/* {okContentList.map((content, index) => (
+            <OkContent content={content} key={index} />
+          ))} */}
+        </div>
       )}
     </div>
-  )
+  );
 };
 
 export default OkList;

@@ -114,6 +114,7 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
         console.log("괜찮아 작성 성공");
         // const id = response.data.data.id;
         // navigate(`/relaybookdetail/${id}`);
+        window.location.reload();
       }
     } catch (error) {
       console.error("괜찮아 작성 실패: ", error);

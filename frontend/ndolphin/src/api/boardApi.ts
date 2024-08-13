@@ -13,6 +13,10 @@ const boardApi = {
     return request.get(`/api/v1/boards?type=${boardType}&page=${page}&size=12`);
   },
 
+  oklist: (boardType: string, page?: number) => {
+    return request.get(`/api/v1/boards?type=${boardType}&page=${page}&size=10`);
+  },
+
   relaylist: (boardType: string, isDone?: boolean, page?: number) => {
     return request.get(`/api/v1/boards?type=${boardType}&filter2=recent&isDone=${isDone}&page=${page}`);
   },
