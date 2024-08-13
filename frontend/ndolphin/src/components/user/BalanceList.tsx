@@ -38,7 +38,10 @@ const BalanceList = () => {
   return (
     <div>
       {myBalanceBoardList.length === 0 ? (
-        <div className="mt-40 text-center text-3xl font-bold">목록이 비어있습니다</div>
+        <div className="mt-40 text-center text-3xl font-bold">
+          <img className="w-32 h-32 mx-auto mb-4" src="/assets/user/noContents.png" alt="#" />
+          <span>등록된 게시물이 없습니다</span>
+        </div>
       ) : (
         <div className="px-44 py-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
           {myBalanceBoardList.map((item) => (
