@@ -376,7 +376,7 @@ public class BoardServiceImpl implements BoardService {
         List<Board> sideBoards = boardRepository.findTop3NotViewedByUserAndBoardType(
             userId, BoardType.VOTE_BOARD, PageRequest.of(0, 3));
 
-        // 3개 미만 이라면 최신순으로 3개 가져옴.
+        // 3개 미만 이라면 랜덤으로 3개 가져옴.
         if (sideBoards.size() < 3) {
             sideBoards = boardRepository.findRandomBoardsByType(BoardType.VOTE_BOARD,
                 PageRequest.of(0, 3));
@@ -406,7 +406,7 @@ public class BoardServiceImpl implements BoardService {
         List<Board> sideBoards = boardRepository.findTop3NotViewedByUserAndBoardType(userId,
             BoardType.OPINION_BOARD, PageRequest.of(0, 3));
 
-        // 3개 미만 이라면 최신순으로 3개 가져옴.
+        // 3개 미만 이라면 랜덤으로 3개 가져옴.
         if (sideBoards.size() < 3) {
             sideBoards = boardRepository.findRandomBoardsByType(BoardType.OPINION_BOARD,
                 PageRequest.of(0, 3));
