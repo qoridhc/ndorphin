@@ -96,6 +96,7 @@ const Header = () => {
     if (isNewUser) {
       setIsUserInfoEditModalOpen(true);
     }
+    localStorage.setItem("new", isNewUser.toString());
   };
 
   const handleNext = () => {
