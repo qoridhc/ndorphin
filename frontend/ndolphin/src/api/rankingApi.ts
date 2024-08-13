@@ -9,7 +9,7 @@ const rankingApi = {
     return request.get(`/api/v1/main/if?ifPeriod=${period}`);
   },
 
-  nlist: (period: string) => {
+  nlist: () => {
     return request.get(`/api/v1/main/bestN`);
   },
 

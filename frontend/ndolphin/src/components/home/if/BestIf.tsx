@@ -46,7 +46,7 @@ const BestIf = () => {
   useEffect(() => {
     getIfBoardList();
     if (swiperRef.current) {
-      swiperRef.current.swiper.slideTo(0); // Move to the first slide
+      swiperRef.current.swiper.slideTo(0);
     }
   }, [rankingType]);
 
@@ -72,22 +72,9 @@ const BestIf = () => {
       }
       const response = await rankingApi.iflist("weekly");
       setIfBoardList(response.data.data);
-      console.log(response.data.data);
     } catch (error) {
       console.error("rankingApi iflist : ", error);
     }
-  };
-
-  const handlePrevClick = () => {
-    setMainIndex((prevIndex) => (prevIndex === 0 ? cardListLength - 1 : prevIndex - 1));
-    setPreIndex((prevIndex) => (prevIndex === 0 ? cardListLength - 1 : prevIndex - 1));
-    setNextIndex((prevIndex) => (prevIndex === 0 ? cardListLength - 1 : prevIndex - 1));
-  };
-
-  const handleNextClick = () => {
-    setMainIndex((prevIndex) => (prevIndex + 1) % cardListLength);
-    setPreIndex((prevIndex) => (prevIndex + 1) % cardListLength);
-    setNextIndex((prevIndex) => (prevIndex + 1) % cardListLength);
   };
 
   return (
@@ -101,31 +88,17 @@ const BestIf = () => {
         <RankingDate type={rankingType} />
       </div>
 
-      {/* <div className="h-[75%] relative flex justify-around items-center">
-        <MainIfCard mainIndex={mainIndex} />
-        <ServeIfCard serveIndex={prevIndex} />
-        <ServeIfCard serveIndex={nextIndex} />
-      </div>
-      <div className="flex justify-center">
-        <IoMdArrowDropleft className="text-4xl text-[#565656]" onClick={handlePrevClick} />
-        <IoMdArrowDropright className="text-4xl text-[#565656]" onClick={handleNextClick} />
-      </div> */}
       {IfBoardList && (
         <Swiper
-          direction={"vertical"}
-          // pagination={{
-          //   clickable: true,
-          // }}
           loop={true}
           autoplay={{
-            delay: 2500,
+            delay: 4000,
             disableOnInteraction: false,
           }}
           navigation={true}
           modules={[Autoplay, Pagination, Navigation]}
           className="mySwiper"
-          ref={swiperRef} // Attach ref to Swiper
-        >
+          ref={swiperRef}>
           <SwiperSlide>
             <MainIfCard board={IfBoardList[0]} />
           </SwiperSlide>
