@@ -85,19 +85,16 @@ const Header = () => {
         setIsLoggedIn(true);
         closeLoginModal();
       })
-      // .then(() => {
-      //   window.location.href = window.location.href;
-      // })
       .catch((err) => {
         console.error("유저 정보 에러", err);
       });
 
 
     if (isNewUser) {
-      console.log('isNewUser가 true이면')
-      setIsUserInfoEditModalOpen(true);
+      openUserInfoEditModalOpen();
+    } else {
+      window.location.href = window.location.href;
     }
-    localStorage.setItem("new", isNewUser.toString());
   };
 
   const handleNext = () => {
@@ -127,7 +124,7 @@ const Header = () => {
     setProfileImage(null);
     setShowProfileDropdown(false);
     
-    window.location.href = window.location.href;
+    window.location.href = "/";
   };
 
   const handleProfileDropdownClick = (event: React.MouseEvent) => {
