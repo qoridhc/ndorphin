@@ -38,9 +38,9 @@ const BestRelay = () => {
         </button>
 
         <div className="relative grid grid-cols-[50%_5%_45%]">
-          <MainRelayBook mainIndex={mainIndex} />
+          <MainRelayBook mainIndex={mainIndex} rankingType={rankingType} />
           <div className="col-start-3">
-            <ServeRelayBook currentIndex={currentIndex} />
+            <ServeRelayBook currentIndex={currentIndex} rankingType={rankingType} />
           </div>
         </div>
 

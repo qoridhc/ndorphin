@@ -1,76 +1,71 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import rankingApi from "../../../api/rankingApi";
 
 interface Props {
   currentIndex: number;
+  rankingType: string;
 }
 
-const ServeRelayBook = (props: Props) => {
-  const bookList = [
-    {
-      id: 1,
-      title: "코딱지 대장 버티 1",
-      imgUrl: "https://image.yes24.com/Goods/72214794/L",
-    },
-    {
-      id: 2,
-      title: "코딱지 대장 버티 2",
-      imgUrl: "https://image.yes24.com/goods/33350436/L",
-    },
-    {
-      id: 3,
-      title: "코딱지 대장 버티 3",
-      imgUrl: "https://image.yes24.com/goods/36916976/L",
-    },
-    {
-      id: 4,
-      title: "코딱지 대장 버티 4",
-      imgUrl: "https://image.yes24.com/goods/96352123/L",
-    },
-    {
-      id: 5,
-      title: "수상한 편의점",
-      imgUrl: "https://image.yes24.com/goods/36917053/L",
-    },
-    {
-      id: 6,
-      title: "코딱지 대장 버티 1",
-      imgUrl: "https://image.yes24.com/goods/45370178/L",
-    },
-    {
-      id: 7,
-      title: "수상한 편의점",
-      imgUrl: "https://image.yes24.com/goods/45370179/L",
-    },
-    {
-      id: 8,
-      title: "코딱지 대장 버티 1",
-      imgUrl: "https://image.yes24.com/goods/101477745/L",
-    },
-    {
-      id: 9,
-      title: "수상한 편의점",
-      imgUrl: "https://image.yes24.com/goods/101477743/L",
-    },
-    {
-      id: 10,
-      title: "코딱지 대장 버티 1",
-      imgUrl: "https://image.yes24.com/goods/34151542/L",
-    },
-  ];
+interface Relay {
+  id: number;
+  hit: number;
+  content: string;
+  subject: string;
+  fileUrls: string;
+  reactionCount: number;
+  user: {
+    nickName: string;
+    profileImage: string;
+    mbti: string;
+    userId: number;
+  };
+}
 
-  const visibleBooks = bookList.concat(bookList).slice(props.currentIndex, props.currentIndex + 3);
+const ServeRelayBook = ({ currentIndex, rankingType }: Props) => {
+  const [relayBoardList, setRelayBoardList] = useState<Relay[] | null>(null);
+  const [visibleBooks, setVisibleBook] = useState<Relay[] | null>(null);
+
+  useEffect(() => {
+    getRelayBoardList();
+    if (relayBoardList) {
+      setVisibleBook(relayBoardList.concat(relayBoardList).slice(currentIndex, currentIndex + 3));
+    }
+  }, [rankingType, relayBoardList]);
+
+  const getRelayBoardList = async () => {
+    try {
+      let period = "";
+      switch (rankingType) {
+        case "일간":
+          period = "daily";
+          break;
+        case "주간":
+          period = "weekly";
+          break;
+        case "월간":
+          period = "monthly";
+          break;
+      }
+      const response = await rankingApi.relaylist(period);
+      setRelayBoardList(response.data.data);
+      console.log(response.data.data);
+    } catch (error) {
+      console.error("rankingApi relaylist : ", error);
+    }
+  };
 
   return (
     <div className="grid grid-cols-3 gap-x-2 ">
-      {visibleBooks.map((book) => (
-        <div key={book.id}>
-          <img className="rounded-xl" src={book.imgUrl} alt="" />
-          <div className="pt-1 flex font-semibold">
-            <p className="pr-1">{book.id}</p>
-            <p>{book.title}</p>
+      {visibleBooks &&
+        visibleBooks.map((book, index) => (
+          <div key={book.id}>
+            <img className="rounded-xl" src={book.fileUrls[0]} alt="" />
+            <div className="pt-1 flex font-semibold">
+              <p className="pr-1">{currentIndex + index + 1}</p>
+              <p>{book.subject}</p>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
     </div>
   );
 };
