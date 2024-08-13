@@ -27,11 +27,9 @@ interface Props {
     commentResponseDtos: Comment[];
   };
   getOkList: () => void;
-  isAdded: boolean;
-  setIsAdded: (isAdded: boolean) => void;
 }
 
-const OkContent = ({ content, getOkList, isAdded, setIsAdded }: Props) => {
+const OkContent = ({ content, getOkList }: Props) => {
   const navigate = useNavigate();
   const [selectedImageList, setSelectedImageList] = useState<string[] | null>(null);
   const [selectedImageListIndex, setSelectedImageListIndex] = useState(0);
