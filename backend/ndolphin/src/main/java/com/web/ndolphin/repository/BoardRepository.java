@@ -34,4 +34,6 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
     List<Board> findTop3NotViewedByUserAndBoardType(@Param("userId") Long userId,
         @Param("boardType") BoardType boardType, Pageable pageable);
 
+    @Query("SELECT b FROM Board b WHERE b.boardType = :boardType ORDER BY function('RAND')")
+    List<Board> findRandomBoardsByType(@Param("boardType") BoardType boardType, Pageable pageable);
 }
