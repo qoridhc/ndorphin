@@ -534,20 +534,29 @@ public class BoardServiceImpl implements BoardService {
         List<Board> boards = boardRepository.findRelayBoardsByPeriod(period);
 
         for (Board board : boards) {
-            String fileUrl = getFileUrl(board.getId(), EntityType.POST);
-            String fileName = getFileName(board.getId(), EntityType.POST);
+            // 댓글 수 계산
+            Long commentCount = commentRepository.countCommentsByBoardId(board.getId());
 
-            Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(board.getId());
-            Long reactionCount = reactionTypeCounts.values()
-                .stream()
-                .mapToLong(Long::longValue)
-                .sum();
+            // 완료된 이야기인지 판단
+            boolean isDone = commentCount != null && commentCount == (board.getMaxPage() - 1);
 
-            RelayBoardDetailResponseDto relayBoardDetailResponseDto = BoardMapper.toRelayBoardDetailResponseDto(
-                board, false, fileUrl, fileName, null, reactionTypeCounts,
-                null);
-            relayBoardDetailResponseDto.setReactionCount(reactionCount);
-            relayBoardDetailResponseDtos.add(relayBoardDetailResponseDto);
+            // 완료된 이야기만 처리
+            if (isDone) {
+                String fileUrl = getFileUrl(board.getId(), EntityType.POST);
+                String fileName = getFileName(board.getId(), EntityType.POST);
+
+                Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(board.getId());
+                Long reactionCount = reactionTypeCounts.values()
+                    .stream()
+                    .mapToLong(Long::longValue)
+                    .sum();
+
+                RelayBoardDetailResponseDto relayBoardDetailResponseDto = BoardMapper.toRelayBoardDetailResponseDto(
+                    board, false, fileUrl, fileName, null, reactionTypeCounts,
+                    null);
+                relayBoardDetailResponseDto.setReactionCount(reactionCount);
+                relayBoardDetailResponseDtos.add(relayBoardDetailResponseDto);
+            }
         }
 
         return relayBoardDetailResponseDtos;
