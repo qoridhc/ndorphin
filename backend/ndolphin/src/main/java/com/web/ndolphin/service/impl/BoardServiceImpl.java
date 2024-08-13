@@ -43,7 +43,6 @@ import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.OpenAIService;
 import com.web.ndolphin.service.interfaces.TokenService;
 import com.web.ndolphin.service.interfaces.VoteService;
-import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -60,6 +59,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -522,6 +522,7 @@ public class BoardServiceImpl implements BoardService {
         return reactionTypeCounts;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<RelayBoardDetailResponseDto> getRelayBoards(String period) {
 
@@ -548,6 +549,7 @@ public class BoardServiceImpl implements BoardService {
         return relayBoardDetailResponseDtos;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<VoteBoardDetailResponseDto> getVoteBoards(String period) {
 
@@ -573,6 +575,7 @@ public class BoardServiceImpl implements BoardService {
         return voteBoardDetailResponseDtos;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<OpinionBoardDetailResponseDto> getOpinionBoards(String period) {
 
