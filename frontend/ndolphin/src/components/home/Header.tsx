@@ -85,16 +85,16 @@ const Header = () => {
         setIsLoggedIn(true);
         closeLoginModal();
       })
+      .then(() => {
+        if (isNewUser) {
+          openUserInfoEditModalOpen();
+        } else {
+          window.location.href = window.location.href;
+        }
+      })
       .catch((err) => {
         console.error("유저 정보 에러", err);
       });
-
-
-    if (isNewUser) {
-      openUserInfoEditModalOpen();
-    } else {
-      window.location.href = window.location.href;
-    }
   };
 
   const handleNext = () => {
@@ -115,6 +115,7 @@ const Header = () => {
     localStorage.removeItem('userId');
     localStorage.removeItem('profileImage');
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('npoint');
     localStorage.removeItem('email');
     localStorage.removeItem('isNew');
