@@ -16,7 +16,6 @@ const WishList = () => {
     userApi.getFavorites(userId as string)
       .then((res) => {
         const getWishList = res.data.data.boardDtos;
-        console.log(getWishList)
         setWishList(getWishList);
       })
       .catch((err) => {
@@ -102,8 +101,8 @@ const WishList = () => {
                     <img className="hover:cursor-pointer w-[16rem] h-[20rem] rounded-md" src={item.fileUrls[0]} alt="#" />
                     <div>
                       <div className="ms-10 flex gap-4 items-center">
-                        <span className="hover:cursor-pointer font-bold text-lg">{item.subject}</span>
-                        {item.done ? <span className="text-gray-400">완성</span> : <span className="text-gray-400">미완성</span>}
+                        <span className="hover:cursor-pointer font-bold 2xl:text-3xl xl:text-2xl md:text-xl text-lg">{item.subject}</span>
+                        {item.done ? <span className="text-gray-400 text-sm xl:text-base">완성</span> : <span className="text-gray-400 text-sm xl:text-base">미완성</span>}
                       </div>
                       <div className="">
                         <img
@@ -119,10 +118,13 @@ const WishList = () => {
                         />
                       </div>
                       <div className="ms-10 mt-4 flex items-center gap-4">
-                        <img className="w-8 h-8 rounded-full" src={item.user.profileImage} alt="최초 작성자" />
-                        <span>{item.user.nickName}</span>
+                        <img className="w-6 h-6 lg:w-8 lg:h-8 xl:w-9 xl:h-9 rounded-full" src={item.user.profileImage} alt="최초 작성자" />
+                        <span className="text-xs lg:text-base xl:text-lg">{item.user.nickName}</span>
+                        {item.user.mbti === "N" && <img className="w-4 h-4 lg:w-6 lg:h-6 xl:w-7 xl:h-7" src="/assets/nBadget.png" alt="badge" />}
+                        {item.user.mbti === "S" && <img className="w-4 h-4 lg:w-6 lg:h-6 xl:w-7 xl:h-7" src="/assets/sBadget.png" alt="badge" />}
+                        {item.user.mbti === null && <img className="w-4 h-4 lg:w-6 lg:h-6 xl:w-7 xl:h-7" src="/assets/noBadget.png" alt="badge" />}
                       </div>
-                      <div className="ms-10 mt-40 text-wrap max-w-[300px] sm:max-w-[400px] md:max-w[450px] xl:max-w-[600px] 2xl:max-w-[900px]" style={{ wordWrap: "break-word", overflowWrap: "break-word", whiteSpace: "pre-wrap" }}>
+                      <div className="ms-10 mt-40 text-wrap max-w-[300px] sm:max-w-[400px] md:max-w[450px] xl:max-w-[600px] 2xl:max-w-[900px] text-xs lg:text-base xl:text-lg" style={{ wordWrap: "break-word", overflowWrap: "break-word", whiteSpace: "pre-wrap" }}>
                         {item.summary}
                       </div>
                     </div>
