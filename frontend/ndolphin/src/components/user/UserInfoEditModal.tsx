@@ -227,14 +227,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
     userApi
       .deleteUser(userId as string)
       .then(() => {
-        localStorage.removeItem("nickName");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("profileImage");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("npoint");
-        localStorage.removeItem("email");
-        localStorage.removeItem("isNew");
-        localStorage.removeItem("mbti");
+        localStorage.clear();
 
         if (onClose) {
           onClose();
