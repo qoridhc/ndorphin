@@ -3,6 +3,8 @@ package com.web.ndolphin.repository;
 import static com.web.ndolphin.domain.QVoteContent.voteContent;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.BoardType;
@@ -109,17 +111,38 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
             .fetch();
     }
 
+//    @Override
+//    public List<Board> findRelayBoardsByPeriod(String period) {
+//        LocalDateTime startDate = calculateStartDate(period);
+//        QBoard board = QBoard.board;
+//
+//        return queryFactory.selectFrom(board)
+//            .where(board.boardType.eq(BoardType.RELAY_BOARD)
+//                .and(board.createdAt.after(startDate)))
+//            .orderBy(board.reactions.size().desc()) // 반응 수 기준 정렬
+//            .limit(10) // 상위 10개만 조회
+//            .fetch();
+//    }
+
     @Override
     public List<Board> findRelayBoardsByPeriod(String period) {
         LocalDateTime startDate = calculateStartDate(period);
         QBoard board = QBoard.board;
 
+        // maxPage - 1 을 표현하는 NumberTemplate 생성
+        NumberTemplate<Integer> maxPageMinusOne = Expressions.numberTemplate(Integer.class, "{0} - 1", board.maxPage);
+
         return queryFactory.selectFrom(board)
             .where(board.boardType.eq(BoardType.RELAY_BOARD)
-                .and(board.createdAt.after(startDate)))
+                .and(board.createdAt.after(startDate))
+                .and(board.comments.size().eq(maxPageMinusOne))) // comment.size()가 maxPage - 1 인 것만 필터링
             .orderBy(board.reactions.size().desc()) // 반응 수 기준 정렬
+            .limit(10) // 상위 10개만 조회
             .fetch();
     }
+
+
+
 
     @Override
     public List<Board> findVoteBoardsByPeriod(String period) {
@@ -130,6 +153,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
             .where(board.boardType.eq(BoardType.VOTE_BOARD)
                 .and(board.createdAt.after(startDate)))
             .orderBy(board.voteContents.size().desc()) // 투표 수 기준 정렬
+            .limit(10) // 상위 10개만 조회
             .fetch();
     }
 
@@ -142,6 +166,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
             .where(board.boardType.eq(BoardType.OPINION_BOARD)
                 .and(board.createdAt.after(startDate)))
             .orderBy(board.comments.size().desc()) // 댓글 수 기준 정렬
+            .limit(10) // 상위 10개만 조회
             .fetch();
     }
 
