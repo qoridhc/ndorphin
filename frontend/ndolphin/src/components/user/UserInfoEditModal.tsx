@@ -169,17 +169,13 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
               setProfileImage(userInfo.profileImage);
             }
           })
-          .then(() => {
-            setTimeout(() => {
-              window.location.reload();
-            }, 50);
-          })
           .catch((error) => {
             console.error("Failed to fetch user info: ", error);
           });
 
         if (onClose) {
           onClose();
+          window.location.reload();
         } else {
           onNext();
         }
@@ -224,9 +220,10 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
 
   const deleteUser = () => {
     const userId = localStorage.getItem("userId");
+    console.log(userId)
     userApi
-      .deleteUser(userId as string)
-      .then(() => {
+    .deleteUser(userId as string)
+    .then(() => {
         localStorage.clear();
 
         if (onClose) {

@@ -86,16 +86,15 @@ const Header = () => {
         closeLoginModal();
       })
       .then(() => {
-        window.location.href = window.location.href;
+        if (isNewUser) {
+          openUserInfoEditModalOpen();
+        } else {
+          window.location.href = window.location.href;
+        }
       })
       .catch((err) => {
         console.error("유저 정보 에러", err);
       });
-
-
-    if (isNewUser) {
-      setIsUserInfoEditModalOpen(true);
-    }
   };
 
   const handleNext = () => {
@@ -116,6 +115,7 @@ const Header = () => {
     localStorage.removeItem('userId');
     localStorage.removeItem('profileImage');
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('npoint');
     localStorage.removeItem('email');
     localStorage.removeItem('isNew');
@@ -125,7 +125,7 @@ const Header = () => {
     setProfileImage(null);
     setShowProfileDropdown(false);
     
-    window.location.href = window.location.href;
+    window.location.href = "/";
   };
 
   const handleProfileDropdownClick = (event: React.MouseEvent) => {
@@ -160,42 +160,49 @@ const Header = () => {
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
-    if (userId) {
-      userApi
-        .checkNotifications(userId as string)
-        .then((response) => {
-          const responseNotificationsData = response.data.data.hasUnreadNotification;
-          if (responseNotificationsData) {
-            setIsNew(true);
-            localStorage.setItem('isNew', JSON.stringify(true));
-            userApi
-              .readNotifications(userId as string)
-              .then((response) => {
-                const notificationsData = response.data.data;
-                setNotifications(notificationsData);
-                localStorage.setItem("notifications", JSON.stringify(notificationsData));
-              })
-              .catch((error) => {
-              console.error('알림목록 불러오기 실패: ', error)
-            })
-          } else {
-            userApi
-              .readNotifications(userId as string)
-              .then((response) => {
-                const notificationsData = response.data.data;
-                setNotifications(notificationsData);
-                localStorage.setItem("notifications", JSON.stringify(notificationsData));
-              })
-              .catch((error) => {
-                console.error("알림목록 불러오기 실패: ", error);
-              });
-          }
-        })
-        .catch((error) => {
-        console.error("새로운 알림 체크 실패: ", error)
-      })
+    const checkNotifications = () => {
+      if (userId) {
+        userApi
+          .checkNotifications(userId as string)
+          .then((response) => {
+            const responseNotificationsData = response.data.data.hasUnreadNotification;
+            if (responseNotificationsData) {
+              setIsNew(true);
+              localStorage.setItem('isNew', JSON.stringify(true));
+              userApi
+                .readNotifications(userId as string)
+                .then((response) => {
+                  const notificationsData = response.data.data;
+                  setNotifications(notificationsData);
+                  localStorage.setItem("notifications", JSON.stringify(notificationsData));
+                })
+                .catch((error) => {
+                  console.error('알림목록 불러오기 실패: ', error)
+                })
+            } else {
+              userApi
+                .readNotifications(userId as string)
+                .then((response) => {
+                  const notificationsData = response.data.data;
+                  setNotifications(notificationsData);
+                  localStorage.setItem("notifications", JSON.stringify(notificationsData));
+                })
+                .catch((error) => {
+                  console.error("알림목록 불러오기 실패: ", error);
+                });
+            }
+          })
+          .catch((error) => {
+            console.error("새로운 알림 체크 실패: ", error)
+          })
+      }
     }
-  })
+    checkNotifications();
+    const intervalId = setInterval(checkNotifications, 5000);
+    return () => {
+      clearInterval(intervalId);
+    }
+  }, []);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");

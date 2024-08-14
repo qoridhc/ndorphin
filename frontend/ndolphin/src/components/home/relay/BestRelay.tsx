@@ -27,7 +27,7 @@ const BestRelay = () => {
   const [currentIndex, setCurrentIndex] = useState(1);
   const [mainIndex, setMainIndex] = useState(0);
   const [relayBoardList, setRelayBoardList] = useState<Relay[] | null>(null);
-  const [visibleBooks, setVisibleBook] = useState<Relay[] | null>(null);
+  const [visibleBooks, setVisibleBooks] = useState<Relay[] | null>(null);
   const [bookListLength, setBookListLength] = useState(0);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const BestRelay = () => {
 
   useEffect(() => {
     if (relayBoardList) {
-      setVisibleBook(relayBoardList.concat(relayBoardList).slice(currentIndex, currentIndex + 2));
+      setVisibleBooks(relayBoardList.concat(relayBoardList).slice(currentIndex, currentIndex + 2));
       setBookListLength(relayBoardList.length);
     }
   }, [relayBoardList, mainIndex, currentIndex]);
@@ -59,7 +59,6 @@ const BestRelay = () => {
       }
       const response = await rankingApi.relaylist(period);
       setRelayBoardList(response.data.data);
-      console.log("베스트 릴레이 : ", response.data.data);
     } catch (error) {
       console.error("rankingApi relaylist : ", error);
     }

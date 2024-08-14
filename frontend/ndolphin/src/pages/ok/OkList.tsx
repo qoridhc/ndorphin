@@ -10,6 +10,7 @@ const OkList = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef<IntersectionObserver | null>(null);
+
   const lastElementRef = useCallback(
     (node: HTMLDivElement | null) => {
       if (observer.current) observer.current.disconnect();
@@ -35,7 +36,6 @@ const OkList = () => {
         setOkList((prevList) => [...prevList, ...newList]);
       }
 
-      console.log("괜찮아 게시판 리스트", newList);
     } catch (error) {
       console.error("괜찮아 목록 조회 오류 발생", error);
     }
@@ -62,7 +62,7 @@ const OkList = () => {
           <div className="col-start-2">
             {OkList.map((content, index) => (
               <div key={content.id} ref={index === OkList.length - 1 ? lastElementRef : null}>
-                <OkContent content={content} />
+                <OkContent content={content} getOkList={getOkList}/>
               </div>
             ))}
           </div>
@@ -83,11 +83,7 @@ const OkList = () => {
 
       {isCreateModal && <OkStartModal setIsCreateModal={setIsCreateModal} />}
 
-      {hasMore && (
-        <div style={{ textAlign: "center" }}>
-          Loading more...
-        </div>
-      )}
+      {hasMore && <div style={{ textAlign: "center" }}>Loading more...</div>}
     </div>
   );
 };

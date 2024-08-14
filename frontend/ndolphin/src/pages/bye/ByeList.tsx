@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import boardApi from "../../api/boardApi";
 import MiniSearchBar from "../../components/ok/MiniSearchBar";
 import ByeContent from "./ByeContent";
 import ByeStartModal from "./ByeStartModal";
 
+interface ByeList {}
+
 const ByeList = () => {
   const [isCreateModal, setIsCreateModal] = useState(false);
+  const [byeList, setByeList] = useState<any[]>([]);
+  const [reactionTypeCounts, setReactionTypeCounts] = useState<number[]>([0, 0]);
+  const [userReactionType, setUserReactionType] = useState<string | null>(null);
+  const [userReactionId, setUserReactionId] = useState<string | null>(null);
 
   // switch가 0일 경우 N->S, 1일 경우 S->N
   const byeContentList = [
@@ -60,6 +67,30 @@ const ByeList = () => {
     },
   ];
 
+  const getByeList = async () => {
+    try {
+      const response = await boardApi.list("BYE_BOARD");
+      if (response.status === 200) {
+        const newList = response.data.data.content;
+
+        // if (newList.length === 0) {
+        //   setHasMore(false);
+        // } else {
+        //   setOkList((prevList) => [...prevList, ...newList]);
+        // }
+        console.log("작별 목록 조회", newList);
+        setByeList(newList);
+
+      }
+    } catch (error) {
+      console.error("작별 목록 조회 오류 발생", error);
+    }
+  };
+
+  useEffect(() => {
+    getByeList();
+  }, []);
+
   return (
     <div>
       <div className="flex flex-col justify-center">
@@ -75,8 +106,8 @@ const ByeList = () => {
       <div className="px-44">
         <div className="py-5 grid grid-cols-[1fr_2fr_1fr] gap-5">
           <div className="col-start-2">
-            {byeContentList.map((content, index) => (
-              <ByeContent content={content} key={index} />
+            {byeList.map((content, index) => (
+              <ByeContent content={content} key={index} getByeList={getByeList} />
             ))}
           </div>
 
@@ -85,7 +116,8 @@ const ByeList = () => {
               className="w-full my-3 px-7 py-2 shadow-md rounded-2xl font-bold bg-amber-300 text-black"
               onClick={() => {
                 setIsCreateModal(true);
-              }}>
+              }}
+            >
               작성하기
             </button>
           </div>

@@ -1,19 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-
 import "swiper/css";
 import "swiper/css/pagination";
-
 import "../../../css/home/BestBalance.css";
-
-import { Autoplay, Mousewheel, Pagination } from "swiper/modules";
+import { Autoplay, Pagination } from "swiper/modules";
 import rankingApi from "../../../api/rankingApi";
 import BalanceCard from "../../balance/BalanceCard";
 
 interface Props {
   rankingType: string;
-  startIndex: number;
-  delay: number;
 }
 
 interface Balance {
@@ -35,11 +30,15 @@ interface Balance {
   totalVoteCnt: number;
 }
 
-const SwiperBalance = ({ rankingType, startIndex, delay }: Props) => {
+const SwiperBalance = ({ rankingType }: Props) => {
   const [balanceBoardList, setBalanceBoardList] = useState<Balance[] | null>(null);
+  const swiperRef = useRef<any>(null);
 
   useEffect(() => {
     getBalanceBoardList();
+    if (swiperRef.current) {
+      swiperRef.current.swiper.slideTo(0); // Move to the first slide
+    }
   }, [rankingType]);
 
   const getBalanceBoardList = async () => {
@@ -64,21 +63,23 @@ const SwiperBalance = ({ rankingType, startIndex, delay }: Props) => {
   };
 
   return (
-    <div>
+    <div className="best-balance">
       {balanceBoardList ? (
         <Swiper
-          initialSlide={startIndex}
-          direction={"vertical"}
-          slidesPerView={1}
+          slidesPerView={3}
           spaceBetween={30}
-          mousewheel={true}
+          pagination={{
+            clickable: true,
+          }}
           loop={true}
           autoplay={{
-            delay: delay,
+            delay: 2500,
             disableOnInteraction: false,
           }}
-          modules={[Autoplay, Mousewheel, Pagination]}
-          className="mySwiper">
+          modules={[Autoplay, Pagination]}
+          className="mySwiper"
+          ref={swiperRef}
+        >
           {balanceBoardList.map((balance, index) => (
             <SwiperSlide key={index}>
               <BalanceCard balance={balance} />
