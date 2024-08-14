@@ -60,7 +60,7 @@ const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose, mode }) => {
   };
 
   const handleSubmit = async () => {
-    const nsValue = selectedItems.length >= 10 ? "N" : "S";
+    const nsValue = selectedItems.length >= 5 ? "N" : "S";
 
     if (userId) {
       const formData = new FormData();
