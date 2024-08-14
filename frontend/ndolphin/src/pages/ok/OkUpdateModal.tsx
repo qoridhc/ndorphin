@@ -41,6 +41,7 @@ interface Comment {
 
 const OkUpdateModal = ({ okDetail, isUpdate, setIsCreateModal, setIsUpdate }: Props) => {
   const params = useParams();
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [imageList, setImageList] = useState<string[]>([]);
   const [fileList, setFileList] = useState<File[]>([]);
   const [rowCount, setRowCount] = useState(0);
@@ -58,6 +59,8 @@ const OkUpdateModal = ({ okDetail, isUpdate, setIsCreateModal, setIsUpdate }: Pr
   const updateBoardContentRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    setProfileImage(localStorage.getItem("profileImage"));
+
     setUpdateBoardContent(okDetail.content);
     if (okDetail.fileUrls) {
       setImageList(okDetail.fileUrls);
@@ -228,7 +231,7 @@ const OkUpdateModal = ({ okDetail, isUpdate, setIsCreateModal, setIsUpdate }: Pr
         </button>
 
         <div className="grid grid-cols-[1fr_8fr]">
-          <img className="w-11 h-11 rounded-[50%]" src="/assets/profile/profile3.png" alt="" />
+          <img className="w-11 h-11 rounded-[50%]" src={`${profileImage}`} alt="" />
           <div className="max-h-[450px] grid gap-3 overflow-y-auto">
             <textarea
               className="w-full min-h-28 text-xl font-medium outline-none resize-none"
