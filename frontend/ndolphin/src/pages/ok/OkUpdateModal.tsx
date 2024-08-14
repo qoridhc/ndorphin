@@ -36,7 +36,7 @@ interface Comment {
     nickName: string;
   };
   content: string;
-  createAt: string;
+  createdAt: string;
 }
 
 const OkUpdateModal = ({ okDetail, isUpdate, setIsCreateModal, setIsUpdate }: Props) => {

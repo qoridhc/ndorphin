@@ -4,11 +4,11 @@ import boardApi from "../../api/boardApi";
 import commentApi from "../../api/commentApi";
 import OkDetailModal from "../../components/ok/OkDetailModal";
 import { FaArrowLeftLong, FaRegComment } from "react-icons/fa6";
-import SettingsMenu from "../../components/if/CommentSettingMenu";
 import { useNavigate } from "react-router";
 import OkSettingMenu from "../../components/ok/OkSettingMenu";
 import OkStartModal from "./OkStartModal";
 import OkUpdateModal from "./OkUpdateModal";
+import CommentSettingsMenu from "../../components/if/CommentSettingMenu";
 
 interface BoardDetail {
   id: number;
@@ -29,11 +29,12 @@ interface BoardDetail {
 interface Comment {
   commentId: number;
   user: {
+    userId: number;
     profileImage: string | null;
     nickName: string;
   };
   content: string;
-  createAt: string;
+  createdAt: string;
 }
 
 const OkDetail = () => {
@@ -44,6 +45,7 @@ const OkDetail = () => {
   const profileImage = localStorage.getItem("profileImage");
   const userId = localStorage.getItem("userId");
 
+  const [isCommentUpdate, setIsCommentUpdate] = useState(0);
   const [isUpdate, setIsUpdate] = useState(false);
   const [isCreateModal, setIsCreateModal] = useState(false);
 
@@ -53,6 +55,10 @@ const OkDetail = () => {
   const [commentContent, setCommentContent] = useState<string>("");
 
   const [okDetail, setOkDetail] = useState<BoardDetail | null>(null);
+
+  const [updateComment, setUpdateComment] = useState("");
+  const [updateCommentCount, setUpdateCommentCount] = useState(0);
+  const updateCommentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     getOkDetail();
@@ -65,6 +71,27 @@ const OkDetail = () => {
       setIsCreateModal(false);
     }
   }, [isUpdate]);
+
+  useEffect(() => {
+    if (updateComment !== "" && updateCommentTextareaRef.current) {
+      const textarea = updateCommentTextareaRef.current;
+      textarea.focus();
+      // 커서를 텍스트의 끝으로 이동
+      textarea.selectionStart = textarea.value.length;
+      textarea.selectionEnd = textarea.value.length;
+
+      setUpdateCommentCount(textarea.value.length);
+    }
+  }, [isCommentUpdate]);
+
+  useEffect(() => {
+    if (isCommentUpdate !== 0 && okDetail) {
+      const commentToUpdate = okDetail.commentResponseDtos.find((comment) => comment.commentId === isCommentUpdate);
+      if (commentToUpdate) {
+        setUpdateComment(commentToUpdate.content);
+      }
+    }
+  }, [isCommentUpdate, okDetail]);
 
   const getOkDetail = async () => {
     try {
@@ -99,6 +126,43 @@ const OkDetail = () => {
       targetTextarea.style.height = rowCount * 28 + "px";
     }
   }, [rowCount]);
+
+  // 댓글 textarea 관리
+  const handleCommentTextareaChange = (
+    setText: React.Dispatch<React.SetStateAction<string>>,
+    event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+    setTextCount: React.Dispatch<React.SetStateAction<number>>,
+    ref: React.RefObject<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    setText(event.target.value);
+
+    const textLength = event.target.value.length;
+    setTextCount(textLength);
+
+    if (ref.current) {
+      ref.current.style.height = "auto";
+      ref.current.style.height = ref.current.scrollHeight + "px";
+    }
+  };
+
+  // 댓글 수정
+  const handleUpdateComment = async (commentId: number) => {
+    const formData = new FormData();
+
+    if (params.boardId !== undefined && updateCommentTextareaRef.current) {
+      formData.append("content", updateCommentTextareaRef.current.value);
+
+      try {
+        const response = await commentApi.update(params.boardId, commentId, formData);
+        if (response.status === 200) {
+          getOkDetail();
+          setIsCommentUpdate(0);
+        }
+      } catch (error) {
+        console.log("commentApi update : ", error);
+      }
+    }
+  };
 
   const renderImages = () => {
     if (!okDetail || !okDetail.fileUrls.length) return null;
@@ -236,14 +300,40 @@ const OkDetail = () => {
                     <div className="grid grid-cols-[6fr_1fr]">
                       <div className="flex flex-col justify-around">
                         <p className="font-bold">{comment.user.nickName}</p>
-                        <p className="text-xs text-[#565656]">3일 전</p>
+                        <p className="text-xs text-[#565656]">{comment.createdAt}</p>
                       </div>
-                      {/* <SettingsMenu /> */}
+                      {userId && parseInt(userId) === comment.user.userId ? (
+                        <CommentSettingsMenu boardId={params.boardId} commentId={comment.commentId} commentContent={comment.content} setUpdateComment={setUpdateComment} setIsCommentUpdate={setIsCommentUpdate} readBoardData={getOkDetail} />
+                      ) : (
+                        <></>
+                      )}
                     </div>
 
-                    <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
-
-                    <p className="text-sm text-[#565656] text-right">{comment.createAt}</p>
+                    {isCommentUpdate !== comment.commentId ? (
+                      <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
+                    ) : (
+                      <div className="">
+                        <textarea
+                          className="w-full min-h-10 p-1 border border-[#9E9E9E] rounded-sm outline-none resize-none"
+                          placeholder="의견을 작성해 주세요"
+                          value={updateComment}
+                          id="target"
+                          ref={updateCommentTextareaRef}
+                          onChange={(e) => handleCommentTextareaChange(setUpdateComment, e, setUpdateCommentCount, updateCommentTextareaRef)}
+                        />
+                        <div className="flex justify-end">
+                          <button
+                            className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${updateCommentCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`}
+                            disabled={updateCommentCount === 0}
+                            onClick={() => handleUpdateComment(comment.commentId)}>
+                            수정
+                          </button>
+                          <button className="px-5 py-1 rounded-md text-sm text-[#565656] font-bold border-2 border-gray-300 duration-300 hover:bg-gray-300" onClick={() => setIsCommentUpdate(0)}>
+                            취소
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
