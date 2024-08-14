@@ -36,11 +36,12 @@ interface Comment {
     nickName: string;
   };
   content: string;
-  createAt: string;
+  createdAt: string;
 }
 
 const OkUpdateModal = ({ okDetail, isUpdate, setIsCreateModal, setIsUpdate }: Props) => {
   const params = useParams();
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [imageList, setImageList] = useState<string[]>([]);
   const [fileList, setFileList] = useState<File[]>([]);
   const [rowCount, setRowCount] = useState(0);
@@ -58,6 +59,8 @@ const OkUpdateModal = ({ okDetail, isUpdate, setIsCreateModal, setIsUpdate }: Pr
   const updateBoardContentRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    setProfileImage(localStorage.getItem("profileImage"));
+
     setUpdateBoardContent(okDetail.content);
     if (okDetail.fileUrls) {
       setImageList(okDetail.fileUrls);
@@ -185,12 +188,16 @@ const OkUpdateModal = ({ okDetail, isUpdate, setIsCreateModal, setIsUpdate }: Pr
       })
     );
 
-    if (fileList && okDetail.fileNames) {
-      formData.append("deleteFiles", JSON.stringify(okDetail.fileNames));
-    }
+    const urlToFileNameMap: { [url: string]: string } = {};
+    okDetail.fileUrls.forEach((url, index) => {
+      urlToFileNameMap[url] = okDetail.fileNames[index];
+    });
+
+    const deletedFiles = okDetail.fileUrls.filter((fileUrl) => !imageList.includes(fileUrl)).map((deletedUrl) => urlToFileNameMap[deletedUrl]);
+
+    formData.append("deleteFiles", JSON.stringify(deletedFiles));
 
     if (fileList) {
-      console.log("file: ", fileList);
       fileList.map((file) => formData.append("files", file));
     }
 
@@ -200,7 +207,6 @@ const OkUpdateModal = ({ okDetail, isUpdate, setIsCreateModal, setIsUpdate }: Pr
         if (response.status === 200 && response.data) {
           console.log("괜찮아 작성 성공");
           setIsUpdate(false);
-          // navigate(`/okdetail/${id}`);
           window.location.reload();
         }
       }
@@ -228,7 +234,7 @@ const OkUpdateModal = ({ okDetail, isUpdate, setIsCreateModal, setIsUpdate }: Pr
         </button>
 
         <div className="grid grid-cols-[1fr_8fr]">
-          <img className="w-11 h-11 rounded-[50%]" src="/assets/profile/profile3.png" alt="" />
+          <img className="w-11 h-11 rounded-[50%]" src={`${profileImage}`} alt="" />
           <div className="max-h-[450px] grid gap-3 overflow-y-auto">
             <textarea
               className="w-full min-h-28 text-xl font-medium outline-none resize-none"
