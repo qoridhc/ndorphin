@@ -51,6 +51,7 @@ const OkContent = ({ content }: Props) => {
 
   useEffect(() => {
     setUserId(`${localStorage.getItem("userId")}`);
+    console.log(content)
   }, []);
 
   const goToDetail = (id: number) => {
@@ -111,6 +112,7 @@ const OkContent = ({ content }: Props) => {
     }
   };
 
+
   return (
     <div className="transition-colors duration-300 hover:bg-gray-100 cursor-pointer" onClick={() => goToDetail(content.id)}>
       <div className="p-5 border-t border-x grid grid-cols-[1fr_9fr]">
@@ -123,7 +125,7 @@ const OkContent = ({ content }: Props) => {
             <div>
               <div className="flex items-center">
                 <p className="font-bold">{content.user.nickName}</p>
-                {<img className="w-5 h-5 ml-1" src={`/assets/${content.user.mbti === null ? "noBadget.png" : "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                {<img className="w-5 h-5 ml-1" src={`/assets/${content.user.mbti === null ? "noBadget.png" : content.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
               </div>
               <p className="text-sm font-semibold text-[#565656]">{content.createdAt}</p>
             </div>
