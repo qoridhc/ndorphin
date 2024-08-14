@@ -1,7 +1,13 @@
 import { request } from "./axiosConfig";
+import npointApi from "./npoint";
 
 const voteApi = {
   create: (boardId: string, data: { voteContentId: number }) => {
+    const npointData = {
+      pointRuleId: 3,
+    };
+    npointApi.create(npointData);
+
     return request.post(`/api/v1/boards/${boardId}/votes`, data, {
       headers: {
         'Content-Type': 'application/json'

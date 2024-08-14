@@ -1,7 +1,13 @@
 import { request } from "./axiosConfig";
+import npointApi from "./npoint";
 
 const boardApi = {
   create: (formData: FormData) => {
+    const data = {
+      pointRuleId: 1,
+    };
+    npointApi.create(data);
+
     return request.post(`/api/v1/boards`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -42,6 +48,11 @@ const boardApi = {
   },
 
   reaction: (boardId: string, reactionType: string) => {
+    const data = {
+      pointRuleId: 5,
+    };
+    npointApi.create(data);
+    
     return request.post(
       `api/v1/boards/${boardId}/reactions`,
       {
