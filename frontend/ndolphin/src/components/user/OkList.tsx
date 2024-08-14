@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaRegComment } from "react-icons/fa6";
-
+import TimeDifference from "../common/TimeDifference";
 import boardApi from "../../api/boardApi";
 
 const OkList = () => {
@@ -105,18 +105,12 @@ const OkList = () => {
                 <div className="grid gap-3">
                   <div>
                     <div className="flex items-center">
-                    <p className="font-bold">{item.user.nickName}</p>
-                    {item.user.mbti === 'N' && (
-                      <img className="w-5 h-5 ml-1" src="/assets/nBadget.png" alt="badget" />
-                    )}
-                    {item.user.mbti === 'S' && (
-                      <img className="w-5 h-5 ml-1" src="/assets/sBadget.png" alt="badget" />
-                    )}
-                    {item.user.mbti === null && (
-                      <img className="w-5 h-5 ml-1" src="/assets/noBadget.png" alt="badget" />
-                    )}
+                      <p className="font-bold">{item.user.nickName}</p>
+                      {item.user.mbti === "N" && <img className="w-5 h-5 ml-1" src="/assets/nBadget.png" alt="badget" />}
+                      {item.user.mbti === "S" && <img className="w-5 h-5 ml-1" src="/assets/sBadget.png" alt="badget" />}
+                      {item.user.mbti === null && <img className="w-5 h-5 ml-1" src="/assets/noBadget.png" alt="badget" />}
                     </div>
-                    <p className="text-sm font-semibold text-[#565656]">{item.createdAt}</p>
+                    <TimeDifference timestamp={new Date(item.createdAt)} />
                   </div>
 
                   <p className="font-medium text-justify leading-snug">{item.content}</p>
