@@ -1,15 +1,46 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import boardApi from "../../api/boardApi";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { IoMdClose } from "react-icons/io";
 import userApi from "../../api/userApi";
+import { useParams } from "react-router";
 
 interface Props {
+  okDetail: BoardDetail;
+  isUpdate: boolean;
   setIsCreateModal: (state: boolean) => void;
+  setIsUpdate: (state: boolean) => void;
 }
 
-const OkStartModal = ({ setIsCreateModal }: Props) => {
+interface BoardDetail {
+  id: number;
+  user: {
+    userId: number;
+    nickName: string;
+    mbti: string;
+    profileImage: string | null;
+  };
+  createdAt: string;
+  content: string;
+  fileNames: string[];
+  fileUrls: string[];
+  commentCnt: number;
+  commentResponseDtos: Comment[];
+}
+
+interface Comment {
+  commentId: number;
+  user: {
+    profileImage: string | null;
+    nickName: string;
+  };
+  content: string;
+  createAt: string;
+}
+
+const OkUpdateModal = ({ okDetail, isUpdate, setIsCreateModal, setIsUpdate }: Props) => {
+  const params = useParams();
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [imageList, setImageList] = useState<string[]>([]);
   const [fileList, setFileList] = useState<File[]>([]);
@@ -19,8 +50,72 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
   const [currentSlideList, setCurrentSlideList] = useState<string[]>([]);
   const [content, setContent] = useState("");
 
+  const [boardContentTextCount, setBoardContentTextCount] = useState(0);
+
+  const [updateBoardContent, setUpdateBoardContent] = useState("");
+
+  // const [file, setFile] = useState<File | null>(null);
+
+  const updateBoardContentRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    setProfileImage(localStorage.getItem("profileImage"));
+
+    setUpdateBoardContent(okDetail.content);
+    if (okDetail.fileUrls) {
+      setImageList(okDetail.fileUrls);
+
+      // 업데이트된 이미지 리스트를 바탕으로 currentSlideList 설정
+      if (okDetail.fileUrls.length > 2) {
+        setSlideState(0);
+        setCurrentSlideList(okDetail.fileUrls.slice(0, 2));
+      } else {
+        setCurrentSlideList(okDetail.fileUrls);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (updateBoardContentRef.current) {
+      updateBoardContentRef.current.focus();
+      setBoardContentTextCount(updateBoardContentRef.current.value.length);
+    }
+  }, [isUpdate]);
+
+  useEffect(() => {
+    const targetTextarea = document.querySelector(`#target`) as HTMLTextAreaElement | null;
+    if (targetTextarea) {
+      targetTextarea.style.height = rowCount * 28 + "px";
+    }
+  }, [rowCount]);
+
+  // 게시글 본문 textarea 관리
+  const handleTextareaChange = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    if (setUpdateBoardContent && setBoardContentTextCount) {
+      setUpdateBoardContent(event.target.value);
+
+      const textLength = event.target.value.length;
+      setBoardContentTextCount(textLength);
+
+      if (updateBoardContentRef.current) {
+        updateBoardContentRef.current.style.height = "auto";
+        updateBoardContentRef.current.style.height = updateBoardContentRef.current.scrollHeight + "px";
+      }
+    }
+
+    const text = event.target.value.length;
+    setTextCount(text);
+    const rows = event.target.value.split(/\r\n|\r|\n/).length;
+    setRowCount(rows);
+    const content = event.target.value;
+    setContent(content);
+  };
+
   const handleClose = () => {
     setIsCreateModal(false);
+    if (setIsUpdate) {
+      setIsUpdate(false);
+    }
   };
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -55,15 +150,6 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
     }
   };
 
-  const handleTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    const text = event.target.value.length;
-    setTextCount(text);
-    const rows = event.target.value.split(/\r\n|\r|\n/).length;
-    setRowCount(rows);
-    const content = event.target.value;
-    setContent(content);
-  };
-
   const handlePrev = () => {
     setSlideState(0);
     setCurrentSlideList(imageList.slice(0, 2));
@@ -90,49 +176,44 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
     setFileList((prev) => prev.filter((_, i) => i !== actualIndex));
   };
 
-  const handleOkConfirm = async () => {
+  // 게시글 수정
+  const handleUpdateOkBoard = async () => {
     const formData = new FormData();
-
-    fileList.forEach((file) => {
-      formData.append("files", file);
-    });
 
     formData.append(
       "request",
-      new Blob(
-        [
-          JSON.stringify({
-            content: content,
-            boardType: "OK_BOARD",
-          }),
-        ],
-        { type: "application/json" }
-      )
+      JSON.stringify({
+        content: content,
+        boardType: "OK_BOARD",
+      })
     );
 
+    const urlToFileNameMap: { [url: string]: string } = {};
+    okDetail.fileUrls.forEach((url, index) => {
+      urlToFileNameMap[url] = okDetail.fileNames[index];
+    });
+
+    const deletedFiles = okDetail.fileUrls.filter((fileUrl) => !imageList.includes(fileUrl)).map((deletedUrl) => urlToFileNameMap[deletedUrl]);
+
+    formData.append("deleteFiles", JSON.stringify(deletedFiles));
+
+    if (fileList) {
+      fileList.map((file) => formData.append("files", file));
+    }
+
     try {
-      const response = await boardApi.create(formData);
-      if (response.status === 200 && response.data) {
-        console.log("괜찮아 작성 성공");
-        // const id = response.data.data.id;
-        // navigate(`/relaybookdetail/${id}`);
-        window.location.reload();
+      if (params.boardId !== undefined) {
+        const response = await boardApi.update(formData, params.boardId);
+        if (response.status === 200 && response.data) {
+          console.log("괜찮아 작성 성공");
+          setIsUpdate(false);
+          window.location.reload();
+        }
       }
     } catch (error) {
       console.error("괜찮아 작성 실패: ", error);
     }
   };
-
-  useEffect(() => {
-    setProfileImage(localStorage.getItem("profileImage"));
-  }, []);
-
-  useEffect(() => {
-    const targetTextarea = document.querySelector(`#target`) as HTMLTextAreaElement | null;
-    if (targetTextarea) {
-      targetTextarea.style.height = rowCount * 28 + "px";
-    }
-  }, [rowCount]);
 
   // 괜찮아 등록 시 팔로워들에게 알림 전송
   const postAlarm = async () => {
@@ -155,7 +236,14 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
         <div className="grid grid-cols-[1fr_8fr]">
           <img className="w-11 h-11 rounded-[50%]" src={`${profileImage}`} alt="" />
           <div className="max-h-[450px] grid gap-3 overflow-y-auto">
-            <textarea className="w-full min-h-28 text-xl font-medium outline-none resize-none" placeholder="당신의 고민은?" name="" id="target" onChange={(e) => handleTextareaChange(e)}></textarea>
+            <textarea
+              className="w-full min-h-28 text-xl font-medium outline-none resize-none"
+              placeholder="당신의 고민은?"
+              value={updateBoardContent}
+              name=""
+              id="target"
+              ref={updateBoardContentRef}
+              onChange={(e) => handleTextareaChange(e)}></textarea>
 
             <div className="grid grid-cols-2 gap-2 relative">
               {imageList.length <= 2 || slideState === 0 ? (
@@ -165,6 +253,7 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
                   <SlArrowLeft className="text-4xl p-2 text-white bg-black rounded-[50%] opacity-85" />
                 </button>
               )}
+
               {currentSlideList.map((image, index) => (
                 <div className="relative">
                   <img key={index} className="w-full h-72 rounded-md object-cover" src={image} alt="" />
@@ -173,6 +262,7 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
                   </button>
                 </div>
               ))}
+
               {imageList.length <= 2 || slideState === 1 ? (
                 <></>
               ) : (
@@ -200,7 +290,7 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
           <button
             onClick={() => {
               postAlarm();
-              handleOkConfirm();
+              handleUpdateOkBoard();
             }}
             className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`}
             disabled={textCount === 0}>
@@ -212,4 +302,4 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
   );
 };
 
-export default OkStartModal;
+export default OkUpdateModal;
