@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 import boardApi from "../../api/boardApi";
 import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
 import userApi from "../../api/userApi";
+import "../../css/toolTip.css";
 
 const BalanceStart = () => {
   const navigate = useNavigate();
@@ -16,7 +17,6 @@ const BalanceStart = () => {
   const [aiImage, setAiImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [dalleUrl, setDalleUrl] = useState<string | null>(null);
 
   const [voteCategoryList, setVoteCategoryList] = useState(["", ""]);
 
@@ -25,6 +25,8 @@ const BalanceStart = () => {
   const inputClass = "w-full p-1 text-left border border-[#9E9E9E] rounded-sm outline-none";
   const titleClass = "text-lg font-bold";
   const hrClass = "h-[1px] mt-1 mb-4 bg-[#9E9E9E]";
+
+  const isFormValid = subject && content && (image || aiImage) && voteCategoryList.every((category) => category.trim() !== "");
 
   const addVoteCategoryList = () => {
     setVoteCategoryList([...voteCategoryList, ""]);
@@ -166,13 +168,25 @@ const BalanceStart = () => {
       </div>
 
       <div className="flex justify-end">
-        <button className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200"
-          onClick={() => {
-            handleCreate();
-            postAlarm();
-          }}>
-          등록
-        </button>
+        <div className="tooltip-top">
+          <button
+            className={`w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md ${
+              isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] border-[#e0e0e0] cursor-not-allowed"
+            }`}
+            onClick={() => {
+              handleCreate();
+              postAlarm();
+            }}
+            disabled={!isFormValid} // 모든 값이 있을 때만 버튼 활성화
+          >
+            등록
+          </button>
+          {!isFormValid && (
+            <span className="tooltiptext">
+              모든 칸을 필수로<br></br> 입력해주세요.
+            </span>
+          )}
+        </div>
       </div>
 
       <BookCoverAiPromptModal setFile={setFile} isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
