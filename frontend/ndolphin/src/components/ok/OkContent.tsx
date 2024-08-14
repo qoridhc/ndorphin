@@ -11,28 +11,30 @@ interface Comment {
     nickName: string;
   };
   content: string;
-  createAt: string;
+  createdAt: string;
+}
+
+interface BoardDetail {
+  id: number;
+  user: {
+    userId: number;
+    nickName: string;
+    mbti: string;
+    profileImage: string | null;
+  };
+  createdAt: string;
+  content: string;
+  fileNames: string[];
+  fileUrls: string[];
+  commentCnt: number;
+  commentResponseDtos: Comment[];
 }
 
 interface Props {
-  content: {
-    id: number;
-    user: {
-      nickName: string;
-      mbti: string;
-      profileImage: string | null;
-      userId: number;
-    };
-    createdAt: string;
-    content: string;
-    fileUrls: string[];
-    commentCnt: number;
-    commentResponseDtos: Comment[];
-  };
-  getOkList: () => void;
+  content: BoardDetail;
 }
 
-const OkContent = ({ content, getOkList }: Props) => {
+const OkContent = ({ content }: Props) => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState("");
 
@@ -121,12 +123,10 @@ const OkContent = ({ content, getOkList }: Props) => {
             <div>
               <div className="flex items-center">
                 <p className="font-bold">{content.user.nickName}</p>
-                {<img className="w-5 h-5 ml-1" src={`/assets/${content.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                {<img className="w-5 h-5 ml-1" src={`/assets/${content.user.mbti === null ? "noBadget.png" : "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
               </div>
               <p className="text-sm font-semibold text-[#565656]">{content.createdAt}</p>
             </div>
-
-            {isUpdate === false && `${content.user.userId}` === userId ? <OkSettingMenu boardId={content.id} setIsUpdate={setIsUpdate} /> : <></>}
           </div>
 
           <p className="font-medium text-justify leading-snug">{content.content}</p>

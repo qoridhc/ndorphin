@@ -18,7 +18,7 @@ interface IfBoard {
     likeCnt: number;
     likedByUser: boolean;
     nickName: string;
-    user: { nickName: string; profileImage: string; mbti: string | null };
+    user: { userId: number; nickName: string; profileImage: string; mbti: string | null };
   }[];
   content: string;
   fileNames: string[];
@@ -397,12 +397,12 @@ const IfDetail = () => {
 
                 <div>
                   <div className="p-5 border-y">
-                    {ifBoardData.hasParticipated ? (
+                    {ifBoardData.user.userId === parseInt(userId) || ifBoardData.hasParticipated ? (
                       <div role="alert" className="alert">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-info h-6 w-6 shrink-0">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <p className="text-sm font-medium">이미 의견이 제출되었습니다.</p>
+                        <p className="text-sm font-medium">{ifBoardData.user.userId === parseInt(userId) ? "작성자는 의견을 달 수 없습니다." : "이미 의견이 제출되었습니다."}</p>
                       </div>
                     ) : (
                       <>
@@ -432,7 +432,11 @@ const IfDetail = () => {
                             </div>
                             <p className="text-xs text-[#565656]">{comment.createdAt}</p>
                           </div>
-                          <CommentSettingsMenu boardId={params.boardId} commentId={comment.commentId} commentContent={comment.content} setUpdateComment={setUpdateComment} setIsCommentUpdate={setIsCommentUpdate} readBoardData={readBoardData} />
+                          {userId && parseInt(userId) === comment.user.userId ? (
+                            <CommentSettingsMenu boardId={params.boardId} commentId={comment.commentId} commentContent={comment.content} setUpdateComment={setUpdateComment} setIsCommentUpdate={setIsCommentUpdate} readBoardData={readBoardData} />
+                          ) : (
+                            <></>
+                          )}
                         </div>
 
                         {isCommentUpdate !== comment.commentId ? (

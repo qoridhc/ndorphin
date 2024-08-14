@@ -5,6 +5,7 @@ import UserInfoEditModal from "../user/UserInfoEditModal";
 import NSModal from "../user/NSModal";
 import TimeDifference from "../common/TimeDifference";
 import userApi from "../../api/userApi";
+import { setTokenExpirationTime } from "../../api/axiosConfig";
 
 interface notification {
   notificationId: number;
@@ -71,6 +72,7 @@ const Header = () => {
     localStorage.setItem("userId", userId);
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
+    setTokenExpirationTime(600);
 
     // 로그인 성공 시 유저 정보 조회하여 로컬 스토리지에 저장 로직 추가
     userApi

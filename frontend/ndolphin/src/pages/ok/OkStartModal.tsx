@@ -10,6 +10,7 @@ interface Props {
 }
 
 const OkStartModal = ({ setIsCreateModal }: Props) => {
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [imageList, setImageList] = useState<string[]>([]);
   const [fileList, setFileList] = useState<File[]>([]);
   const [rowCount, setRowCount] = useState(0);
@@ -123,6 +124,10 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
   };
 
   useEffect(() => {
+    setProfileImage(localStorage.getItem("profileImage"));
+  }, []);
+
+  useEffect(() => {
     const targetTextarea = document.querySelector(`#target`) as HTMLTextAreaElement | null;
     if (targetTextarea) {
       targetTextarea.style.height = rowCount * 28 + "px";
@@ -132,6 +137,7 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
   // 괜찮아 등록 시 팔로워들에게 알림 전송
   const postAlarm = async () => {
     const userId = localStorage.getItem("userId");
+    const userNickName = localStorage.getItem("nickName");
     const response = await userApi.getFollower(userId as string);
     const content = ' 님이 새로운 괜찮아를 등록했습니다';
     response.data.data.forEach((item: any) => {
@@ -147,7 +153,7 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
         </button>
 
         <div className="grid grid-cols-[1fr_8fr]">
-          <img className="w-11 h-11 rounded-[50%]" src="/assets/profile/profile3.png" alt="" />
+          <img className="w-11 h-11 rounded-[50%]" src={`${profileImage}`} alt="" />
           <div className="max-h-[450px] grid gap-3 overflow-y-auto">
             <textarea className="w-full min-h-28 text-xl font-medium outline-none resize-none" placeholder="당신의 고민은?" name="" id="target" onChange={(e) => handleTextareaChange(e)}></textarea>
 
@@ -191,10 +197,13 @@ const OkStartModal = ({ setIsCreateModal }: Props) => {
             <input className="hidden" id="image-input" type="file" accept="image/*" onChange={(e) => handleImageChange(e)} disabled={imageList.length === 4} multiple />
           </div>
 
-          <button onClick={() => {
-            postAlarm();
-            handleOkConfirm();
-          }} className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0}>
+          <button
+            onClick={() => {
+              postAlarm();
+              handleOkConfirm();
+            }}
+            className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`}
+            disabled={textCount === 0}>
             완료
           </button>
         </div>

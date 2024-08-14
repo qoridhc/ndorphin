@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import boardApi from "../../api/boardApi";
+import TimeDifference from "../common/TimeDifference";
 
 const IfCardList: React.FC = () => {
   const location = useLocation();
@@ -75,7 +76,7 @@ const IfCardList: React.FC = () => {
                       </div>
                     </div>
                     <div>
-                      <p className="text-xs text-left">{item.createdAt}</p>
+                      <TimeDifference timestamp={new Date(item.createdAt)} />
                     </div>
                   </div>
                 </div>
