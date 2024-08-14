@@ -112,7 +112,7 @@ const OkContent = ({ content }: Props) => {
   };
 
   return (
-    <div onClick={() => goToDetail(content.id)}>
+    <div className="transition-colors duration-300 hover:bg-gray-100 cursor-pointer" onClick={() => goToDetail(content.id)}>
       <div className="p-5 border-t border-x grid grid-cols-[1fr_9fr]">
         <div className="">
           <img className="w-9 h-9 rounded-[50%]" src={`${content.user.profileImage}`} alt="" />

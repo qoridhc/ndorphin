@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
-import { FaPlus } from "react-icons/fa6";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import "../../css/toolTip.css";
 import InsertionImage from "../../components/common/InsertionImage";
 import { useNavigate } from "react-router";
 import boardApi from "../../api/boardApi";
@@ -16,7 +15,7 @@ const IfStart = () => {
   const [aiImage, setAiImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [dalleUrl, setDalleUrl] = useState<string | null>(null);
+  const isFormValid = image && subject && content;
 
   const boxClass = "h-full mb-3 border border-[#9E9E9E]";
   const boxContentClass = "p-5";
@@ -71,6 +70,7 @@ const IfStart = () => {
   // 만약에 등록 시 팔로워들에게 알림 전송
   const postAlarm = async () => {
     const userId = localStorage.getItem("userId");
+    const userNickName = localStorage.getItem("nickName");
     const response = await userApi.getFollower(userId as string);
     const content = ' 님이 새로운 만약에를 등록했습니다';
     response.data.data.forEach((item: any) => {
@@ -115,14 +115,23 @@ const IfStart = () => {
       </div>
 
       <div className="flex justify-end">
-        <button className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200"
-          onClick={() => {
-          handleCreate();
-          postAlarm();
-        }
-        }>
-          등록
-        </button>
+        <div className="tooltip-top">
+          <button
+            className={`w-16 mx-3 font-semibold border-solid border-2 rounded-md duration-200 ${isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] border-[#e0e0e0] cursor-not-allowed"}`}
+            onClick={() => {
+              handleCreate();
+              postAlarm();
+            }}
+            disabled={!isFormValid} // 모든 값이 있을 때만 버튼 활성화
+          >
+            등록
+          </button>
+          {!isFormValid && (
+            <span className="tooltiptext">
+              모든 칸을 필수로<br></br> 입력해주세요.
+            </span>
+          )}
+        </div>
       </div>
 
       <BookCoverAiPromptModal setFile={setFile} isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
