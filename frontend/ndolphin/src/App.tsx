@@ -44,23 +44,23 @@ function App() {
       <BrowserRouter>
         <Header />
         <Routes>
-          <Route path="/" element={<Home />}></Route>
-          <Route path="/relaybooklist" element={<RelayBookList />}></Route>
-          <Route path="/relaybookstart" element={<RelayBookStart />}></Route>
-          <Route path="/relaybookupdate/:bookId" element={<RelayBookUpdate />}></Route>
-          <Route path="/relaybookdetail/:bookId" element={<RelayBookDetail />}></Route>
-          <Route path="/iflist" element={<IfList />}></Route>
-          <Route path="/ifstart" element={<IfStart />}></Route>
-          <Route path="/ifdetail/:boardId" element={<IfDetail />}></Route>
-          <Route path="/balancelist" element={<BalanceList />}></Route>
-          <Route path="/balancestart" element={<BalanceStart />}></Route>
-          <Route path="/balancedetail/:boardId" element={<BalanceDetail />}></Route>
-          <Route path="/profile/:userId" element={<Profile />}></Route>
-          <Route path="/oklist" element={<OkList />}></Route>
-          <Route path="/okdetail/:boardId" element={<OkDetail />}></Route>
-          <Route path="/bye" element={<ByeList />}></Route>
-          <Route path="/wishlist" element={<WishList />}></Route>
-          <Route path="/dalle" element={<DalleTest />}></Route>
+          <Route path="/" element={<Home />} />
+          <Route path="/relaybooklist" element={<ProtectedRoute element={<RelayBookList />} />} />
+          <Route path="/relaybookstart" element={<ProtectedRoute element={<RelayBookStart />} />} />
+          <Route path="/relaybookupdate/:bookId" element={<ProtectedRoute element={<RelayBookUpdate />} />} />
+          <Route path="/relaybookdetail/:bookId" element={<ProtectedRoute element={<RelayBookDetail />} />} />
+          <Route path="/iflist" element={<ProtectedRoute element={<IfList />} />} />
+          <Route path="/ifstart" element={<ProtectedRoute element={<IfStart />} />} />
+          <Route path="/ifdetail/:boardId" element={<ProtectedRoute element={<IfDetail />} />} />
+          <Route path="/balancelist" element={<ProtectedRoute element={<BalanceList />} />} />
+          <Route path="/balancestart" element={<ProtectedRoute element={<BalanceStart />} />} />
+          <Route path="/balancedetail/:boardId" element={<ProtectedRoute element={<BalanceDetail />} />} />
+          <Route path="/profile/:userId" element={<ProtectedRoute element={<Profile />} />} />
+          <Route path="/oklist" element={<ProtectedRoute element={<OkList />} />} />
+          <Route path="/okdetail/:boardId" element={<ProtectedRoute element={<OkDetail />} />} />
+          <Route path="/bye" element={<ProtectedRoute element={<ByeList />} />} />
+          <Route path="/wishlist" element={<ProtectedRoute element={<WishList />} />} />
+          <Route path="/dalle" element={<ProtectedRoute element={<DalleTest />} />} />
         </Routes>
       </BrowserRouter>
     </div>
