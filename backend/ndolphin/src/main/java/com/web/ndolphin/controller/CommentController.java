@@ -55,8 +55,9 @@ public class CommentController {
         @ApiResponse(responseCode = "500", description = "서버 오류입니다.",
             content = @Content(schema = @Schema()))
     })
-    @PutMapping("/{commentId}")
+    @PutMapping(value = "/{commentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDto> updateComment(
+        @Parameter(description = "게시판 ID", required = true) @PathVariable Long boardId,
         @Parameter(description = "댓글 ID", required = true) @PathVariable Long commentId,
         @Parameter(description = "수정할 댓글 정보", required = true) @RequestPart(name = "request") CommentRequestDto commentRequestDto,
         @Parameter(description = "첨부 파일 목록", required = false) @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
