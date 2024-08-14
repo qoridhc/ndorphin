@@ -12,7 +12,7 @@ interface Relay {
   hit: number;
   content: string;
   subject: string;
-  fileUrls: string;
+  fileUrls: string[] | null;
   reactionCount: number;
   summary: string;
   user: {
@@ -24,12 +24,16 @@ interface Relay {
 }
 
 const MainRelayBook = ({ mainIndex, relay }: Props) => {
+  if (!relay || !relay.fileUrls) {
+    return <div>Loading...</div>; // 또는 적절한 대체 UI
+  }
+
   return (
     <div className="relative">
       <TransitionGroup>
         <CSSTransition key={mainIndex} timeout={300} classNames="fade">
           <div className="w-full absolute grid grid-cols-[4fr_3fr] gap-10">
-            <img className="w-full bg-white border aspect-1 object-cover shadow-[5px_5px_5px_5px_rgba(150,150,150,0.3)]" src={relay.fileUrls[0]} alt="" />
+            <img className="w-full bg-white border aspect-1 object-cover shadow-[5px_5px_5px_5px_rgba(150,150,150,0.3)]" src={relay.fileUrls ? relay.fileUrls[0] : undefined} alt="" />
             <div className="flex flex-col justify-center">
               <div className="mb-4">
                 <p className="text-4xl font-bold mb-2">{mainIndex + 1}위 </p>

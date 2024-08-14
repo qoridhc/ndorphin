@@ -11,7 +11,7 @@ interface Relay {
   hit: number;
   content: string;
   subject: string;
-  fileUrls: string;
+  fileUrls: string[] | null;
   reactionCount: number;
   summary: string;
   user: {
