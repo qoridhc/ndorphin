@@ -221,20 +221,22 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
 
   const deleteUser = () => {
     const userId = localStorage.getItem("userId");
-    console.log(userId)
     userApi
     .deleteUser(userId as string)
     .then(() => {
-        localStorage.clear();
-
-        if (onClose) {
-          onClose();
-        }
-        window.location.href = "/";
-      })
-      .catch((error) => {
-        console.error("회원탈퇴 중 오류: ", error);
-      });
+      localStorage.clear();
+    })
+    .then(() => {
+      if (onClose) {
+        onClose();
+      }
+    })
+    .then(() => {
+      window.location.href = "/";
+    })
+    .catch((error) => {
+      console.error("회원탈퇴 중 오류: ", error);
+    });
   };
 
   const isNextButtonEnabled = isImageChecked || (isNicknameValid && isNicknameChecked);
