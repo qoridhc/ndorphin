@@ -52,20 +52,23 @@ const RelayBookList = () => {
   useEffect(() => {
     const userId = localStorage.getItem('userId');
 
-    userApi.getFavorites(userId as string)
-      .then((response) => {
-        const favoriteBoardIs = response.data.data.boardDtos.map((item: any) => item.id);
-        setLikeStatus((prevStatus) => {
-          const newStatus: { [key: number]: boolean } = {};
-          myRelayBoardList.forEach((board) => {
-            newStatus[board.id] = favoriteBoardIs.includes(board.id);
+    if (myRelayBoardList) {
+      userApi
+        .getFavorites(userId as string)
+        .then((response) => {
+          const favoriteBoardIs = response.data.data.boardDtos.map((item: any) => item.id);
+          setLikeStatus((prevStatus) => {
+            const newStatus: { [key: number]: boolean } = {};
+            myRelayBoardList.forEach((board) => {
+              newStatus[board.id] = favoriteBoardIs.includes(board.id);
+            });
+            return newStatus;
           });
-          return newStatus;
-        });
-      })
-      .catch((error) => {
-        console.error('좋아요 상태 불러오기 실패: ', error);
-      })
+        })
+        .catch((error) => {
+          console.error("좋아요 상태 불러오기 실패: ", error);
+      });
+    }
   }, [myRelayBoardList]);
 
   const handleAISummary = async (id: number) => {
