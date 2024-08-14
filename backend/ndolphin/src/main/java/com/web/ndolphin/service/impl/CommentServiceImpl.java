@@ -118,11 +118,15 @@ public class CommentServiceImpl implements CommentService {
             fileInfoService.deleteFiles(commentId, EntityType.COMMENT, fileNamesToDelete);
             fileInfoService.uploadFiles(commentId, EntityType.COMMENT, multipartFiles);
 
+            // 비동기 요약 작업 시작 (댓글 수정 시 요약 갱신)
+            summarizeBoardContentAsync(comment.getBoard().getId());
+
             return ResponseDto.success();
         } catch (Exception e) {
             return ResponseDto.databaseError(e.getMessage()); // 예외 발생 시 데이터베이스 에러 응답
         }
     }
+
 
     @Override
     public ResponseEntity<ResponseDto> deleteComment(Long commentId) {

@@ -7,6 +7,7 @@ import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.domain.BoardView;
+import com.web.ndolphin.domain.Comment;
 import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.Reaction;
 import com.web.ndolphin.domain.ReactionType;
@@ -479,6 +480,22 @@ public class BoardServiceImpl implements BoardService {
         board.setMaxPage(boardRequestDto.getMaxPage());
         board.setUpdatedAt(LocalDateTime.now());
 
+        // 릴레이 북 게시글일 경우
+        if (boardRequestDto.getBoardType() == BoardType.RELAY_BOARD) {
+            // 모든 댓글을 가져와서 합친다
+            List<Comment> comments = commentRepository.findByBoardId(boardId);
+            StringBuilder fullContent = new StringBuilder(board.getContent());
+
+            for (Comment comment : comments) {
+                fullContent.append("\n").append(comment.getContent());
+            }
+
+            // 전체 내용을 요약
+            String summary = openAIService.summarizeText(fullContent.toString());
+            board.setSummary(summary);
+        }
+
+        // 밸런스 게시글일 경우
         if (boardRequestDto.getBoardType() == BoardType.VOTE_BOARD) {
             board.getVoteContents().clear();
             setVoteContents(boardRequestDto, board);
@@ -491,6 +508,7 @@ public class BoardServiceImpl implements BoardService {
 
         return ResponseDto.success();
     }
+
 
     @Override
     public ResponseEntity<ResponseDto> deleteBoard(Long boardId) {
