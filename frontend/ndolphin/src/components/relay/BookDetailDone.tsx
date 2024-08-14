@@ -54,7 +54,6 @@ const BookDetailDone = ({ bookId }: BookDetailDoneProps) => {
     try {
       const response = await boardApi.reaction(bookId, reactionType);
       if (response.status === 200 && response.data) {
-        console.log("릴레이북 이모티콘 추천 추가 완료");
         setUserReactionType(reactionType);
       }
     } catch (error) {
@@ -67,11 +66,23 @@ const BookDetailDone = ({ bookId }: BookDetailDoneProps) => {
       try {
         const response = await boardApi.reactionDelete(userReactionId);
         if (response.status === 200) {
-          console.log("릴레이북 이모티콘 추천 삭제 완료");
           setUserReactionId(null);
         }
       } catch (error) {
         console.error("릴레이북 이모티콘 추천 삭제 오류: ", error);
+      }
+    }
+  };
+
+  const handleUpdateReaction = async (reactionType: string) => {
+    if (userReactionId && userReactionType) {
+      try {
+        const response = await boardApi.reactionUpdate(userReactionId, reactionType);
+        if (response.status === 200 && response.data) {
+          setUserReactionType(reactionType);
+        }
+      } catch (error) {
+        console.error("릴레이북 이모티콘 추천 수정 오류: ", error);
       }
     }
   };
@@ -85,8 +96,7 @@ const BookDetailDone = ({ bookId }: BookDetailDoneProps) => {
       handleAddImoge(reactionType);
       // user가 지금 누른 이모티콘과 다른 이모티콘을 누를 경우 삭제 후 추가
     } else if (userReactionId !== null && userReactionType !== reactionType) {
-      handleDeleteImoge();
-      handleAddImoge(reactionType);
+      handleUpdateReaction(reactionType);
     }
   };
 
