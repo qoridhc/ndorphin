@@ -31,6 +31,7 @@ const Header = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userNickName, setuserNickName] = useState<string | null>(null);
+  const [userMbti, setUserMbti] = useState<string | null>(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [isNew, setIsNew] = useState(() => {
     const storedIsNew = localStorage.getItem('isNew');
@@ -53,6 +54,8 @@ const Header = () => {
     const storedProfileImage = localStorage.getItem("profileImage");
     const storedEmail = localStorage.getItem("email");
     const storedNickName = localStorage.getItem("nickName");
+    const storedMbti = localStorage.getItem("mbti");
+    setUserMbti(storedMbti)
     setUserEmail(storedEmail);
     setuserNickName(storedNickName);
     setProfileImage(storedProfileImage === 'null' ? "/assets/user/profile.png" : storedProfileImage);
@@ -250,6 +253,16 @@ const Header = () => {
     localStorage.setItem("profileImage", newProfileImage || "");
   };
 
+  const checkMbti = () => {
+    if (userMbti === 'N') {
+      return "/assets/nBadget.png"
+    } else if (userMbti === 'S') {
+      return "/assets/sBadget.png"
+    } else {
+      return "/assets/noBadget.png"
+    }
+  }
+
   return (
     <>
       <div className="w-full h-20 px-44 relative z-50 shadow-[0_2px_5px_0_rgba(0,0,0,0.2)] flex justify-between items-center">
@@ -331,7 +344,12 @@ const Header = () => {
                   <div className="p-4 flex items-center">
                     <img className="w-12 h-12 rounded-full" src={profileImage || "/assets/user/profile.png"} alt="Profile" />
                     <div className="ml-3">
-                      <div className="font-semibold">{userNickName}</div>
+                      <div className="flex items-center">
+                        <div className="font-semibold">
+                          {userNickName}
+                        </div>
+                        <img className="ms-2 w-6 h-6" src={checkMbti()} alt="#" />
+                      </div>
                       <div className="text-sm text-gray-500">{userEmail}</div>
                     </div>
                   </div>

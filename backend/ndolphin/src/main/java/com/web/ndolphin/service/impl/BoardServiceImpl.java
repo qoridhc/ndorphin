@@ -7,6 +7,7 @@ import com.web.ndolphin.common.ResponseMessage;
 import com.web.ndolphin.domain.Board;
 import com.web.ndolphin.domain.BoardType;
 import com.web.ndolphin.domain.BoardView;
+import com.web.ndolphin.domain.Comment;
 import com.web.ndolphin.domain.EntityType;
 import com.web.ndolphin.domain.Reaction;
 import com.web.ndolphin.domain.ReactionType;
@@ -111,7 +112,7 @@ public class BoardServiceImpl implements BoardService {
 
             // 파일 업로드 처리
             fileInfoService.uploadFiles(board.getId(), EntityType.POST, multipartFiles);
-
+            System.out.println("ERROR = error!" );
             // Dall-E 처리
             if (boardRequestDto.getDalleUrl() != null) {
                 setDalle(boardRequestDto, board);
@@ -124,6 +125,7 @@ public class BoardServiceImpl implements BoardService {
 
             return getBoardById(board.getId());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseDto.databaseError(e.getMessage());
         }
     }
@@ -311,15 +313,16 @@ public class BoardServiceImpl implements BoardService {
 
     private List<ByeBoardDto> getByeBoardResponseDtos(List<Board> boards) {
 
-        return boards.stream()
-            .map(board -> {
-                Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(board.getId());
-                Reaction userReaction = reactionRepository.findByBoardIdAndUserId(board.getId(),
-                    board.getUser().getUserId());
+        Long currentUserId = tokenService.getUserIdFromToken(); // 현재 로그인한 사용자의 ID를 가져옵니다.
 
-                return BoardMapper.toByeBoardDto(board, reactionTypeCounts, userReaction);
-            })
-            .collect(toList());
+        return boards.stream()
+                .map(board -> {
+                    Map<ReactionType, Long> reactionTypeCounts = getReactionTypeCounts(board.getId());
+                    Reaction userReaction = reactionRepository.findByBoardIdAndUserId(board.getId(), currentUserId);
+
+                    return BoardMapper.toByeBoardDto(board, reactionTypeCounts, userReaction);
+                })
+                .collect(toList());
     }
 
     @Override
@@ -477,6 +480,22 @@ public class BoardServiceImpl implements BoardService {
         board.setMaxPage(boardRequestDto.getMaxPage());
         board.setUpdatedAt(LocalDateTime.now());
 
+        // 릴레이 북 게시글일 경우
+        if (boardRequestDto.getBoardType() == BoardType.RELAY_BOARD) {
+            // 모든 댓글을 가져와서 합친다
+            List<Comment> comments = commentRepository.findByBoardId(boardId);
+            StringBuilder fullContent = new StringBuilder(board.getContent());
+
+            for (Comment comment : comments) {
+                fullContent.append("\n").append(comment.getContent());
+            }
+
+            // 전체 내용을 요약
+            String summary = openAIService.summarizeText(fullContent.toString());
+            board.setSummary(summary);
+        }
+
+        // 밸런스 게시글일 경우
         if (boardRequestDto.getBoardType() == BoardType.VOTE_BOARD) {
             board.getVoteContents().clear();
             setVoteContents(boardRequestDto, board);
@@ -489,6 +508,7 @@ public class BoardServiceImpl implements BoardService {
 
         return ResponseDto.success();
     }
+
 
     @Override
     public ResponseEntity<ResponseDto> deleteBoard(Long boardId) {
