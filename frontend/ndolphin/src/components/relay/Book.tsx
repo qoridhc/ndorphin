@@ -142,7 +142,7 @@ function Book({ book }: BookProps) {
         <button
           type="button"
           onClick={handleAISummary}
-          className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800 mt-2 transition duration-200 ease-in-out hover:bg-yellow-100 "
+          className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800 mt-2 transition duration-200 ease-in-out hover:bg-teal-50 "
         >
           <img src="/assets/relay/aiSummaryChatIcon.png" className="w-5" alt="#" />
           <p className="text-xs">AI 요약하기</p>

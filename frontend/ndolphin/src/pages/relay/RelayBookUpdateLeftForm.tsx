@@ -4,6 +4,7 @@ import EndPage from "../../components/relay/EndPage";
 import "../../css/RelayBook.css";
 import "../../css/Notes.css";
 import "../../css/InputPlaceHolder.css";
+import "../../css/toolTip.css"
 
 interface RelayBookUpdateLeftFormProps {
   bookId: string | undefined;
@@ -83,16 +84,23 @@ const RelayBookUpdateLeftForm = ({ bookId, handleRelayBookUpdate, subject, conte
             </div>
           </div>
           <div className="absolute z-[99] flex justify-start w-full px-8 my-2 top-0 -left-2">
-            <button
-              onClick={() => {
-                if (endPageValue) {
-                  handleRelayBookUpdate(subjectValue, contentValue, endPageValue);
-                }
-              }}
-              disabled={!isFormValid} // 모든 값이 있을 때만 버튼 활성화
-              className={`w-16 mx-3 font-semibold border-solid border-2 rounded-md duration-200 ${isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] border-[#e0e0e0] cursor-not-allowed"}`}>
-              수정
-            </button>
+            <div className="tooltip-bottom">
+              <button
+                onClick={() => {
+                  if (endPageValue) {
+                    handleRelayBookUpdate(subjectValue, contentValue, endPageValue);
+                  }
+                }}
+                disabled={!isFormValid} // 모든 값이 있을 때만 버튼 활성화
+                className={`w-16 mx-3 font-semibold border-solid border-2 rounded-md duration-200 ${isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] border-[#e0e0e0] cursor-not-allowed"}`}>
+                수정
+              </button>
+              {!isFormValid && (
+                <span className="tooltiptext">
+                  모든 칸을 필수로<br></br> 입력해주세요.
+                </span>
+              )}
+            </div>
             <button
               onClick={() => {
                 navigate(`/relaybookdetail/${bookId}`);

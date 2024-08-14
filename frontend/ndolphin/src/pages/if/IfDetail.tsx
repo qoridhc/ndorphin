@@ -90,6 +90,8 @@ const IfDetail = () => {
   const updateBoardSubjectRef = useRef<HTMLInputElement>(null);
   const updateBoardContentRef = useRef<HTMLTextAreaElement>(null);
 
+  const isFormValid = updateBoardSubject && updateBoardContent && (image || aiImage);
+
   useEffect(() => {
     setUserId(`${localStorage.getItem("userId")}`);
   }, []);
@@ -335,12 +337,21 @@ const IfDetail = () => {
 
                   {isUpdate && `${ifBoardData.user.userId}` === userId ? (
                     <div>
-                      <button
-                        className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${boardSubjectTextCount === 0 || boardContentTextCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`}
-                        disabled={boardSubjectTextCount === 0 || boardContentTextCount === 0}
-                        onClick={() => handleUpdateIfBoard()}>
-                        수정
-                      </button>
+                      <div className="tooltip-top">
+                        <button
+                          className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${
+                            isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] cursor-not-allowed border-zinc-100"
+                          }`}
+                          disabled={!isFormValid} // 모든 값이 있을 때만 버튼 활성화
+                          onClick={() => handleUpdateIfBoard()}>
+                          수정
+                        </button>
+                        {!isFormValid && (
+                          <span className="tooltiptext">
+                            모든 칸을 필수로<br></br> 입력해주세요.
+                          </span>
+                        )}
+                      </div>
                       <button className="px-5 py-1 rounded-md text-sm text-[#565656] font-bold border-2 border-gray-300 duration-300" onClick={() => setIsUpdate(false)}>
                         취소
                       </button>
