@@ -54,6 +54,13 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    const userNickName = localStorage.getItem("nickName");
+    if (onClose && userNickName) {
+      setNicknamePlaceholder(userNickName);
+    }
+  }, [onClose]);
+
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -78,7 +85,12 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
 
   const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
     if (event.target.value === "") {
-      setNicknamePlaceholder("닉네임을 입력해 주세요(2~10글자)");
+      const userNickName = localStorage.getItem("nickName");
+      if (userNickName) {
+        setNicknamePlaceholder(userNickName);
+      } else {
+        setNicknamePlaceholder("닉네임을 입력해 주세요(2~10글자)");
+      }
     }
   };
 
@@ -240,6 +252,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
   };
 
   const isNextButtonEnabled = isImageChecked || (isNicknameValid && isNicknameChecked);
+  const isCheckNicknameButtonEnabled = nickname.trim().length > 0;
 
   if (!isOpen) return null;
 
@@ -288,7 +301,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
             />
             <div>
               <p>{isNicknameValid !== null && <span className={`text-xs ${isNicknameValid ? "text-green-500" : "text-red-500"}`}>{nicknameMessage}</span>}</p>
-              <button className="border rounded-lg mt-2 px-3 py-1 text-xs" onClick={checkNinameDuplicate}>
+              <button className={`border rounded-lg mt-2 px-3 py-1 text-xs ${isCheckNicknameButtonEnabled ? "hover:bg-gray-300 hover:text-white" : "bg-gray-200 cursor-not-allowed"}`} onClick={checkNinameDuplicate} disabled={!isCheckNicknameButtonEnabled}>
                 중복확인
               </button>
             </div>
