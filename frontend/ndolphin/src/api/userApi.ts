@@ -1,7 +1,5 @@
 import { request } from "./axiosConfig";
 
-const baseURL = 'http://i11d207.p.ssafy.io:8080';
-
 interface NicknameCheckResponse {
   isDuplicate: boolean;
 }
@@ -28,14 +26,14 @@ interface UserInfoResponse {
 
 const userApi = {
   login: (loginType: string) => {
-    const oauthUrl = `${baseURL}/api/v1/auth/oauth2/${loginType}`;
+    const oauthUrl = `/api/v1/auth/oauth2/${loginType}`;
     const newWindow = window.open(oauthUrl, "Login", "width=500,height=600");
 
     return newWindow;
   },
 
   checkNickname: async (nickName: string) => {
-    return request.get<NicknameCheckResponse>(`${baseURL}/api/v1/users/nickname-check`, { params: { nickName } });
+    return request.get<NicknameCheckResponse>(`/api/v1/users/nickname-check`, { params: { nickName } });
   },
 
   update: (userId: string, formData: FormData) => {
@@ -130,7 +128,6 @@ const userApi = {
   deleteNotifications: (userId: string) => {
     return request.delete(`/api/v1/notifications/${userId}`)
   },
-
 };
 
 export default userApi;
