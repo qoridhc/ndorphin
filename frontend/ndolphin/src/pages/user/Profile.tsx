@@ -247,9 +247,8 @@ const Profile = () => {
             const writerId = Number(userId)
             userApi
               .getUserInfo(userId)
-              .then((response) => {
-                const responseUserData = response.data.data.nickName;
-                const content = `${responseUserData}님이 회원님을 팔로우하기 시작했습니다`
+              .then(() => {
+                const content = ' 님이 회원님을 팔로우하기 시작했습니다'
                 userApi
                   .postNotifications(followingId, content, writerId)
                   .then(() => {
@@ -270,7 +269,6 @@ const Profile = () => {
         console.error('팔로우 에러: ', error)
       }
     }
-    // window.location.href = window.location.href;
   };
 
   const openFollowModal = (tab: string) => {

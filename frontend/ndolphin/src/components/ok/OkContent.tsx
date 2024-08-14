@@ -11,28 +11,30 @@ interface Comment {
     nickName: string;
   };
   content: string;
-  createAt: string;
+  createdAt: string;
+}
+
+interface BoardDetail {
+  id: number;
+  user: {
+    userId: number;
+    nickName: string;
+    mbti: string;
+    profileImage: string | null;
+  };
+  createdAt: string;
+  content: string;
+  fileNames: string[];
+  fileUrls: string[];
+  commentCnt: number;
+  commentResponseDtos: Comment[];
 }
 
 interface Props {
-  content: {
-    id: number;
-    user: {
-      nickName: string;
-      mbti: string;
-      profileImage: string | null;
-      userId: number;
-    };
-    createdAt: string;
-    content: string;
-    fileUrls: string[];
-    commentCnt: number;
-    commentResponseDtos: Comment[];
-  };
-  getOkList: () => void;
+  content: BoardDetail;
 }
 
-const OkContent = ({ content, getOkList }: Props) => {
+const OkContent = ({ content }: Props) => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState("");
 

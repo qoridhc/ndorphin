@@ -24,7 +24,6 @@ const OkList = () => {
     [hasMore]
   );
 
-
   const getOkList = useCallback(async () => {
     try {
       const response = await boardApi.oklist("OK_BOARD", page - 1);
@@ -35,7 +34,6 @@ const OkList = () => {
       } else {
         setOkList((prevList) => [...prevList, ...newList]);
       }
-
     } catch (error) {
       console.error("괜찮아 목록 조회 오류 발생", error);
     }
@@ -62,7 +60,7 @@ const OkList = () => {
           <div className="col-start-2">
             {OkList.map((content, index) => (
               <div key={content.id} ref={index === OkList.length - 1 ? lastElementRef : null}>
-                <OkContent content={content} getOkList={getOkList}/>
+                <OkContent content={content} />
               </div>
             ))}
           </div>

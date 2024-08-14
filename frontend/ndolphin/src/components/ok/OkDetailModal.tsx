@@ -5,6 +5,7 @@ import { FaRegComment } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import SettingsMenu from "../if/CommentSettingMenu";
+
 interface Comment {
   commentId: number;
   user: {
@@ -12,37 +13,27 @@ interface Comment {
     nickName: string;
   };
   content: string;
-  createAt: string;
+  createdAt: string;
 }
 
 interface BoardDetail {
   id: number;
   user: {
+    userId: number;
     nickName: string;
     mbti: string;
     profileImage: string | null;
   };
   createdAt: string;
   content: string;
+  fileNames: string[];
   fileUrls: string[];
   commentCnt: number;
   commentResponseDtos: Comment[];
 }
 
 interface Props {
-  content: {
-    id: number;
-    user: {
-      nickName: string;
-      mbti: string;
-      profileImage: string | null;
-    };
-    createdAt: string;
-    content: string;
-    fileUrls: string[];
-    commentCnt: number;
-    commentResponseDtos: Comment[];
-  };
+  content: BoardDetail;
   selectedImageList: string[] | null;
   selectedImageListIndex: number;
   setSelectedImageList: (image: string[] | null) => void;
@@ -117,7 +108,7 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
 
     try {
       if (boardId) {
-        setCommentContent("")
+        setCommentContent("");
         const response = await commentApi.create(boardId, formData);
         if (response.status === 200 && response.data) {
           getOkDetail();
@@ -198,7 +189,7 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
 
                     <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
 
-                    <p className="text-sm text-[#565656] text-right">{comment.createAt}</p>
+                    <p className="text-sm text-[#565656] text-right">{comment.createdAt}</p>
                   </div>
                 </div>
               ))}

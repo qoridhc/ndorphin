@@ -25,7 +25,7 @@ public class OpenAIServiceImpl implements OpenAIService {
     public String summarizeText(String text) throws IOException {
 
         // 한국어로 요약하도록 프롬프트 작성
-        String prompt = text + "위 내용을 100자 이내로 요약해줘";
+        String prompt = text + "의 내용을 요약해줘";
 
         // 요청 바디 구성
         Map<String, Object> requestBody = new HashMap<>();

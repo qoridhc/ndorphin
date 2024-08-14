@@ -41,7 +41,7 @@ const AddPage = ({ bookId, page, handleAiImage, image, setImage, file, setFile, 
 
   // 마지막장 추가 시 알림
   const postAlarm = async () => {
-    const content = "내가 참여한 이야기가 끝났습니다";
+    const content = " 님이 참여한 이야기가 끝났습니다";
 
     const response = await boardApi.read(bookId);
     userApi.postNotifications(response.data.data.user.userId.toString(), content, response.data.data.user.userId);
