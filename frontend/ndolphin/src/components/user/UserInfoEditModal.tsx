@@ -169,16 +169,17 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
               setProfileImage(userInfo.profileImage);
             }
           })
+          .then(() => {
+            if (onClose) {
+              onClose();
+              window.location.reload();
+            } else {
+              onNext();
+            }
+          })
           .catch((error) => {
             console.error("Failed to fetch user info: ", error);
           });
-
-        if (onClose) {
-          onClose();
-          window.location.reload();
-        } else {
-          onNext();
-        }
       }
     } catch (error) {
       console.log("회원정보 수정 오류: ", error);
