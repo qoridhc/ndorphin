@@ -87,8 +87,8 @@ const BalanceDetail = () => {
   const updateBoardSubjectRef = useRef<HTMLInputElement>(null);
   const updateBoardContentRef = useRef<HTMLTextAreaElement>(null);
 
-  const isFormValid = updateBoardSubject && updateBoardContent && (image || aiImage) && voteCategoryList;
-
+  const isFormValid = updateBoardSubject && updateBoardContent && (image || aiImage) && voteCategoryList && voteCategoryList.every((item) => item.trim() !== "");
+  
   useEffect(() => {
     setUserId(`${localStorage.getItem("userId")}`);
   }, []);
