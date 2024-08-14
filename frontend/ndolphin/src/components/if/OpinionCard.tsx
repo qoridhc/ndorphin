@@ -1,6 +1,7 @@
 import React from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import { useNavigate } from "react-router";
+import TimeDifference from "../common/TimeDifference";
 
 interface If {
   id: number;
@@ -45,7 +46,8 @@ const OpinionCard = ({ ifBoard }: Props) => {
               </div>
             </div>
             <div>
-              <p className="text-xs text-left">{ifBoard.createdAt}</p>
+              {/* <p className="text-xs text-left">{ifBoard.createdAt}</p> */}
+              <TimeDifference timestamp={new Date(ifBoard.createdAt)} />
             </div>
           </div>
         </div>

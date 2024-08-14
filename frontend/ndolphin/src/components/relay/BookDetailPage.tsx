@@ -6,6 +6,7 @@ import RelayBookPageUpdate from "./BookPageCRUD/RelayBookPageUpdate";
 import BookPageDeleteModal from "../relay/BookPageCRUD/BookPageDeleteModal";
 import BookDetailDone from "./BookDetailDone";
 import AddPage from "./BookPageCRUD/AddPage";
+import TimeDifference from "../common/TimeDifference";
 
 interface BookDetailPageProps {
   readPage: string;
@@ -165,12 +166,14 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(
                 {pageUpdateStates[index] || number === totalPage + 2 ? null : index % 2 === 1 ? (
                   <div>
                     <div className="absolute bottom-5 mx-5">{index + 2}</div>
-                    <p className="text-zinc-500 text-xs absolute bottom-6 left-12">{page.createdAt}</p>
+                    <TimeDifference timestamp={new Date(page.createdAt)} />
+                    {/* <p className="text-zinc-500 text-xs absolute bottom-6 left-12">{page.createdAt}</p> */}
                   </div>
                 ) : (
                   <div>
                     <div className="absolute bottom-5 right-0 mx-5">{index + 2}</div>
-                    <p className="text-zinc-500 text-xs absolute bottom-6 right-12">{page.createdAt}</p>
+                    <TimeDifference timestamp={new Date(page.createdAt)} />
+                    {/* <p className="text-zinc-500 text-xs absolute bottom-6 right-12">{page.createdAt}</p> */}
                   </div>
                 )}
                 <BookPageDeleteModal isOpen={isModalOpen === index} onClose={cancelDelete} onConfirm={confirmDelete} commentId={page.commentId} />
@@ -220,7 +223,8 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(
                 </div>
                 <div>
                   <div className="absolute bottom-5 mx-5">{index + 1}</div>
-                  <p className="text-zinc-500 text-xs absolute bottom-6 left-12">{page.createdAt}</p>
+                  <TimeDifference timestamp={new Date(page.createdAt)} />
+                  {/* <p className="text-zinc-500 text-xs absolute bottom-6 left-12">{page.createdAt}</p> */}
                 </div>
               </div>
             ))}

@@ -8,6 +8,7 @@ import BoardSettingMenu from "../../components/common/BoardSettingMenu";
 import InsertionImage from "../../components/common/InsertionImage";
 import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import TimeDifference from "../../components/common/TimeDifference";
 
 interface BalanceBoard {
   voteInfos: Vote[];
@@ -358,7 +359,8 @@ const BalanceDetail = () => {
                         </div>
                       </div>
                       <div>
-                        <p className="text-xs text-left">{balanceBoardData.createdAt}</p>
+                        <TimeDifference timestamp={new Date(balanceBoardData.createdAt)} />
+                        {/* <p className="text-xs text-left">{balanceBoardData.createdAt}</p> */}
                       </div>
                     </div>
                   </div>
