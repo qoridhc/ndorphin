@@ -121,12 +121,10 @@ const OkContent = ({ content, getOkList }: Props) => {
             <div>
               <div className="flex items-center">
                 <p className="font-bold">{content.user.nickName}</p>
-                {<img className="w-5 h-5 ml-1" src={`/assets/${content.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                {<img className="w-5 h-5 ml-1" src={`/assets/${content.user.mbti === null ? "noBadget.png" : "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
               </div>
               <p className="text-sm font-semibold text-[#565656]">{content.createdAt}</p>
             </div>
-
-            {isUpdate === false && `${content.user.userId}` === userId ? <OkSettingMenu boardId={content.id} setIsUpdate={setIsUpdate} /> : <></>}
           </div>
 
           <p className="font-medium text-justify leading-snug">{content.content}</p>
