@@ -1,4 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
+import { useNavigate } from "react-router";
 import commentApi from "../../api/commentApi";
 import boardApi from "../../api/boardApi";
 import { FaRegComment } from "react-icons/fa6";
@@ -11,6 +12,7 @@ interface Comment {
   user: {
     profileImage: string | null;
     nickName: string;
+    userId: number;
   };
   content: string;
   createdAt: string;
@@ -40,6 +42,7 @@ interface Props {
 }
 
 const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, setSelectedImageList }: Props) => {
+  const navigate = useNavigate();
   const [commentContent, setCommentContent] = useState<string>("");
   const [currentSlideIndex, setCurrentSlideIndex] = useState(selectedImageListIndex);
   const boardId = String(content.id);
@@ -119,6 +122,10 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
     }
   };
 
+  const handleUserClick = (userId: number) => {
+    navigate(`/profile/${userId}`);
+  };
+
   return (
     <>
       {selectedImageList && (
@@ -145,7 +152,14 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
             <div className="bg-white overflow-y-auto hide-scrollbar">
               <div className="p-3 border-b grid gap-2">
                 <div className="grid grid-cols-[1fr_5fr]">
-                  <img className="w-11 h-11 rounded-[50%]" src={`${okDetail?.user.profileImage}`} alt="" />
+                  <img
+                    onClick={() => {
+                      okDetail?.user.userId && handleUserClick(okDetail.user.userId);
+                    }}
+                    className="w-11 h-11 rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
+                    src={`${okDetail?.user.profileImage}`}
+                    alt=""
+                  />{" "}
                   <div className="flex flex-col justify-around">
                     <p className="font-bold">{okDetail?.user.nickName}</p>
                     <p className="text-xs text-[#565656]">3일 전</p>
@@ -176,7 +190,14 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
 
               {okDetail?.commentResponseDtos.map((comment) => (
                 <div className="p-3 border-b grid grid-cols-[1fr_6fr]" key={comment.commentId}>
-                  <img className="w-9 h-9 rounded-[50%]" src={`${comment.user.profileImage}`} alt="" />
+                  <img
+                    onClick={() => {
+                      handleUserClick(comment.user.userId);
+                    }}
+                    className="w-9 h-9 rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
+                    src={`${comment.user.profileImage}`}
+                    alt=""
+                  />
 
                   <div className="w-full grid gap-2">
                     <div className="grid grid-cols-[6fr_1fr]">

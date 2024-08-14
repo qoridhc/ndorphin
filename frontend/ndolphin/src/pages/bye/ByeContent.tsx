@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import boardApi from "../../api/boardApi";
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
       nickName: string;
       mbti: string;
       profileImage: string | null;
+      userId: number;
     };
     createdAt: string;
     content: string;
@@ -23,6 +25,7 @@ interface Props {
 }
 
 const ByeContent = ({ content, getByeList, updateContent }: Props) => {
+  const navigate = useNavigate();
   const reactionList = ["WELCOME", "GOODBYE"];
   const [reactionTypeCounts, setReactionTypeCounts] = useState<number[]>([0, 0]);
   const [userReactionType, setUserReactionType] = useState<string | null>(null);
@@ -128,11 +131,15 @@ useEffect(() => {
     }
   };
 
+    const handleUserClick = () => {
+      navigate(`/profile/${content.user.userId}`);
+    };
+
   return (
     <div>
       <div className="p-5 border-t border-x grid grid-cols-[1fr_9fr]">
         <div className="">
-          <img className="w-9 h-9 rounded-[50%]" src={`${content.user.profileImage}`} alt="" />
+          <img onClick={handleUserClick} className="w-9 h-9 rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" src={`${content.user.profileImage}`} alt="" />
         </div>
 
         <div className="grid gap-3">
@@ -162,7 +169,8 @@ useEffect(() => {
                   <button
                     key={index}
                     onClick={() => clickButton(reactionList[index], index)}
-                    className={`p-1 w-[5.9rem] flex justify-around border-[1.8px] rounded-2xl ${isActive[index] ? (index === 0 ? "bg-pink-400 border-pink-400" : "bg-blue-400 border-blue-400") : index === 0 ? "border-pink-400" : "border-blue-400"}`}>
+                    className={`p-1 w-[5.9rem] flex justify-around border-[1.8px] rounded-2xl ${isActive[index] ? (index === 0 ? "bg-pink-400 border-pink-400" : "bg-blue-400 border-blue-400") : index === 0 ? "border-pink-400" : "border-blue-400"}`}
+                  >
                     <p className={`font-bold text-sm ${isActive[index] ? "text-white" : index === 0 ? "text-pink-400" : "text-blue-400"}`}>{label}</p>
                     <p className={`font-bold text-sm ${isActive[index] ? "text-white" : index === 0 ? "text-pink-400" : "text-blue-400"}`}>{reactionTypeCounts[index]}</p>
                   </button>

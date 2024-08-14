@@ -9,6 +9,7 @@ interface Comment {
   user: {
     profileImage: string | null;
     nickName: string;
+    userId: number;
   };
   content: string;
   createdAt: string;
@@ -51,7 +52,7 @@ const OkContent = ({ content }: Props) => {
 
   useEffect(() => {
     setUserId(`${localStorage.getItem("userId")}`);
-    console.log(content)
+    console.log(content);
   }, []);
 
   const goToDetail = (id: number) => {
@@ -112,12 +113,16 @@ const OkContent = ({ content }: Props) => {
     }
   };
 
+  const handleUserClick = (e: React.MouseEvent<HTMLImageElement>) => {
+    e.stopPropagation();
+    navigate(`/profile/${content.user.userId}`);
+  };
 
   return (
-    <div className="transition-colors duration-300 hover:bg-gray-100 cursor-pointer" onClick={() => goToDetail(content.id)}>
-      <div className="p-5 border-t border-x grid grid-cols-[1fr_9fr]">
+    <div className="" onClick={() => goToDetail(content.id)}>
+      <div className="p-5 border-t border-x grid grid-cols-[1fr_9fr] transition-colors duration-300 hover:bg-gray-100 cursor-pointer">
         <div className="">
-          <img className="w-9 h-9 rounded-[50%]" src={`${content.user.profileImage}`} alt="" />
+          <img onClick={handleUserClick} className="w-9 h-9 rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" src={`${content.user.profileImage}`} alt="" />
         </div>
 
         <div className="grid gap-3">
