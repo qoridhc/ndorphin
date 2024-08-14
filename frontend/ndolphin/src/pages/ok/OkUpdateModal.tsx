@@ -188,12 +188,16 @@ const OkUpdateModal = ({ okDetail, isUpdate, setIsCreateModal, setIsUpdate }: Pr
       })
     );
 
-    if (fileList && okDetail.fileNames) {
-      formData.append("deleteFiles", JSON.stringify(okDetail.fileNames));
-    }
+    const urlToFileNameMap: { [url: string]: string } = {};
+    okDetail.fileUrls.forEach((url, index) => {
+      urlToFileNameMap[url] = okDetail.fileNames[index];
+    });
+
+    const deletedFiles = okDetail.fileUrls.filter((fileUrl) => !imageList.includes(fileUrl)).map((deletedUrl) => urlToFileNameMap[deletedUrl]);
+
+    formData.append("deleteFiles", JSON.stringify(deletedFiles));
 
     if (fileList) {
-      console.log("file: ", fileList);
       fileList.map((file) => formData.append("files", file));
     }
 
@@ -203,7 +207,6 @@ const OkUpdateModal = ({ okDetail, isUpdate, setIsCreateModal, setIsUpdate }: Pr
         if (response.status === 200 && response.data) {
           console.log("괜찮아 작성 성공");
           setIsUpdate(false);
-          // navigate(`/okdetail/${id}`);
           window.location.reload();
         }
       }
