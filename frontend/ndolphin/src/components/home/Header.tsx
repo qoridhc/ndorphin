@@ -1,40 +1,64 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import LoginModal from "../user/LoginModal";
 import UserInfoEditModal from "../user/UserInfoEditModal";
 import NSModal from "../user/NSModal";
 import TimeDifference from "../common/TimeDifference";
 import userApi from "../../api/userApi";
 
+interface notification {
+  notificationId: number;
+  userId: number;
+  content: string;
+  createdAt: string;
+  user: {
+    userId: number;
+    profileImage: string | null;
+    nickName: string;
+    mbti: string;
+  };
+  read: boolean;
+}
+
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [selectedMenu, setSelectedMenu] = useState<string>("");
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserInfoEditModalOpen, setIsUserInfoEditModalOpen] = useState(false);
   const [isNSModalOpen, setIsNSModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userNickName, setuserNickName] = useState<string | null>(null);
+  const [userMbti, setUserMbti] = useState<string | null>(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [isNew, setIsNew] = useState(true);
+  const [isNew, setIsNew] = useState(() => {
+    const storedIsNew = localStorage.getItem('isNew');
+    return storedIsNew ? JSON.parse(storedIsNew) : false;
+  });
   const [showAlarmDropdown, setShowAlarmDropdown] = useState(false);
-  const [notifications, setNotifications] = useState([
-    { id: 1, profileImage: "/assets/profile/profile1.png", userName: "근데 말야에", text: " 님이 새로운 게시물을 등록했습니다", timestamp: new Date() },
-    { id: 2, profileImage: "/assets/profile/profile2.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 5 * 60 * 1000) },
-    { id: 3, profileImage: "/assets/profile/profile3.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 20 * 60 * 1000) },
-    { id: 4, profileImage: "/assets/profile/profile4.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 60 * 60 * 1000) },
-    { id: 5, profileImage: "/assets/profile/profile5.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000) },
-    { id: 6, profileImage: "/assets/profile/profile1.png", userName: "꿈꾸는 여행자", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
-    { id: 7, profileImage: "/assets/profile/profile2.png", userName: "삶은 계란", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000) },
-    { id: 8, profileImage: "/assets/profile/profile3.png", userName: "근데 말야에", text: " 님이 참여한 릴레이북이 완성되었습니다.", timestamp: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) },
-    { id: 9, profileImage: "/assets/profile/profile4.png", userName: "", text: "내가 시작한 릴레이북이 베스트에 선정되었습니다", timestamp: new Date(Date.now() - 600000000000) },
-  ]);
+  const [notifications, setNotifications] = useState<notification[]>([]);
+  const [done, setDone] = useState([]);
 
   useEffect(() => {
+    const storedMenu = sessionStorage.getItem("selectedMenu");
+    if (storedMenu) {
+      setSelectedMenu(storedMenu);
+    }
+
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
       setIsLoggedIn(true);
     }
     const storedProfileImage = localStorage.getItem("profileImage");
-    setProfileImage(storedProfileImage);
+    const storedEmail = localStorage.getItem("email");
+    const storedNickName = localStorage.getItem("nickName");
+    const storedMbti = localStorage.getItem("mbti");
+    setUserMbti(storedMbti)
+    setUserEmail(storedEmail);
+    setuserNickName(storedNickName);
+    setProfileImage(storedProfileImage === 'null' ? "/assets/user/profile.png" : storedProfileImage);
   }, []);
 
   const openLoginModal = () => setIsLoginModalOpen(true);
@@ -47,12 +71,33 @@ const Header = () => {
     localStorage.setItem("userId", userId);
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
-    setIsLoggedIn(true);
-    closeLoginModal();
 
-    if (isNewUser) {
-      setIsUserInfoEditModalOpen(true);
-    }
+    // 로그인 성공 시 유저 정보 조회하여 로컬 스토리지에 저장 로직 추가
+    userApi
+      .getUserInfo(userId)
+      .then((res) => {
+        localStorage.setItem("email", res.data.data.email);
+        localStorage.setItem("mbti", res.data.data.mbti);
+        localStorage.setItem("nickName", res.data.data.nickName);
+        localStorage.setItem("npoint", res.data.data.npoint.toString());
+        localStorage.setItem("profileImage", res.data.data.profileImage);
+
+        setProfileImage(res.data.data.profileImage);
+      })
+      .then(() => {
+        setIsLoggedIn(true);
+        closeLoginModal();
+      })
+      .then(() => {
+        if (isNewUser) {
+          openUserInfoEditModalOpen();
+        } else {
+          window.location.href = window.location.href;
+        }
+      })
+      .catch((err) => {
+        console.error("유저 정보 에러", err);
+      });
   };
 
   const handleNext = () => {
@@ -64,16 +109,26 @@ const Header = () => {
     closeNSModal();
     setIsLoggedIn(true);
     localStorage.setItem("isLoggedIn", "true");
+
+    window.location.href = window.location.href
   };
 
   const handleLogout = () => {
-    localStorage.clear()
+    localStorage.removeItem('nickName');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('profileImage');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('npoint');
+    localStorage.removeItem('email');
+    localStorage.removeItem('isNew');
+    localStorage.removeItem('mbti');
 
     setIsLoggedIn(false);
     setProfileImage(null);
     setShowProfileDropdown(false);
-    navigate("/");
-
+    
+    window.location.href = "/";
   };
 
   const handleProfileDropdownClick = (event: React.MouseEvent) => {
@@ -99,14 +154,86 @@ const Header = () => {
     setShowAlarmDropdown(!showAlarmDropdown);
     if (isNew) {
       setIsNew(false);
+      localStorage.setItem('isNew', JSON.stringify(false));
     }
     if (showProfileDropdown) {
       setShowProfileDropdown(false);
     }
   };
 
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    const checkNotifications = () => {
+      if (userId) {
+        userApi
+          .checkNotifications(userId as string)
+          .then((response) => {
+            const responseNotificationsData = response.data.data.hasUnreadNotification;
+            if (responseNotificationsData) {
+              setIsNew(true);
+              localStorage.setItem('isNew', JSON.stringify(true));
+              userApi
+                .readNotifications(userId as string)
+                .then((response) => {
+                  const notificationsData = response.data.data;
+                  setNotifications(notificationsData);
+                  localStorage.setItem("notifications", JSON.stringify(notificationsData));
+                })
+                .catch((error) => {
+                  console.error('알림목록 불러오기 실패: ', error)
+                })
+            } else {
+              userApi
+                .readNotifications(userId as string)
+                .then((response) => {
+                  const notificationsData = response.data.data;
+                  setNotifications(notificationsData);
+                  localStorage.setItem("notifications", JSON.stringify(notificationsData));
+                })
+                .catch((error) => {
+                  console.error("알림목록 불러오기 실패: ", error);
+                });
+            }
+          })
+          .catch((error) => {
+            console.error("새로운 알림 체크 실패: ", error)
+          })
+      }
+    }
+    checkNotifications();
+    const intervalId = setInterval(checkNotifications, 5000);
+    return () => {
+      clearInterval(intervalId);
+    }
+  }, []);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      const storedNotifications = localStorage.getItem('notifications');
+      if (storedNotifications) {
+        setNotifications(JSON.parse(storedNotifications));
+      }
+    }
+  }, []);
+
   const clearNotifications = () => {
+    const userId = localStorage.getItem('userId');
+    userApi.deleteNotifications(userId as string)
     setNotifications([]);
+    localStorage.removeItem("notifications");
+  };
+
+  const handleMenuClick = (menu: string) => {
+    setSelectedMenu(menu);
+    sessionStorage.setItem("selectedMenu", menu); // 로컬 스토리지에 선택된 메뉴 저장
+    window.location.href = `/${menu}`;
+  };
+
+  const handleHomeClick = () => {
+    setSelectedMenu("home");
+    localStorage.setItem("selectedMenu", "home");
+    window.location.href = "/";
   };
 
   useEffect(() => {
@@ -126,6 +253,16 @@ const Header = () => {
     localStorage.setItem("profileImage", newProfileImage || "");
   };
 
+  const checkMbti = () => {
+    if (userMbti === 'N') {
+      return "/assets/nBadget.png"
+    } else if (userMbti === 'S') {
+      return "/assets/sBadget.png"
+    } else {
+      return "/assets/noBadget.png"
+    }
+  }
+
   return (
     <>
       <div className="w-full h-20 px-44 relative z-50 shadow-[0_2px_5px_0_rgba(0,0,0,0.2)] flex justify-between items-center">
@@ -135,53 +272,24 @@ const Header = () => {
             src="/assets/logo.PNG"
             alt="Logo"
             onClick={() => {
-              navigate("/");
+              handleHomeClick();
             }}
           />
 
           <div className="px-2 flex items-center text-[#6C6C6C] font-semibold">
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/relaybooklist");
-              }}>
-              릴레이북
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/iflist");
-              }}>
-              만약에
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/balancelist");
-              }}>
-              밸런스게임
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/oklist");
-              }}>
-              괜찮아
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/bye");
-              }}>
-              작별인사
-            </button>
-            <button
-              className="px-3 hover:pb-3 hover:underline decoration-[#FFDE2F] decoration-4 underline-offset-8 duration-300 hover:text-black"
-              onClick={() => {
-                navigate("/notice");
-              }}>
-              공지사항
-            </button>
+            {["relaybooklist", "iflist", "balancelist", "oklist", "bye", "notice"].map((menu) => (
+              <button
+                key={menu}
+                className={`px-3 hover:pb-3 decoration-[#FFDE2F] decoration-4 duration-300 underline-offset-8 ${selectedMenu === menu ? "underline text-black" : "hover:underline hover:text-black"}`}
+                onClick={() => handleMenuClick(menu)}>
+                {menu === "relaybooklist" && "릴레이북"}
+                {menu === "iflist" && "만약에"}
+                {menu === "balancelist" && "밸런스게임"}
+                {menu === "oklist" && "괜찮아"}
+                {menu === "bye" && "작별인사"}
+                {menu === "notice" && "공지사항"}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -203,15 +311,15 @@ const Header = () => {
                   </div>
                 </div>
                 {notifications.length > 0 ? (
-                  notifications.map((notification) => (
-                    <div className="py-2 px-6" key={notification.id}>
+                  [...notifications].reverse().map((notification) => (
+                    <div className="py-2 px-6" key={notification.notificationId}>
                       <div className="mt-2 flex items-center">
-                        <img className="w-10 h-10 mr-3 rounded-full" src={notification.profileImage} alt="프로필" />
+                        <img className="w-10 h-10 mr-3 rounded-full cursor-pointer" src={notification.user.profileImage || "/assets/user/profile.png"} alt="프로필" />
                         <p className="text-sm">
-                          <span className="font-bold">{notification.userName}</span>
-                          {notification.text}
-                          <span className="ms-4 text-gray-400">
-                            <TimeDifference timestamp={notification.timestamp} />
+                          <span className="font-bold cursor-pointer">{notification.user.nickName}</span>
+                          {notification.content}
+                          <span className="ms-4 text-gray-400 whitespace-nowrap">
+                            <TimeDifference timestamp={new Date(notification.createdAt)} />
                           </span>
                         </p>
                       </div>
@@ -234,20 +342,22 @@ const Header = () => {
               {showProfileDropdown && (
                 <div className="absolute right-0 mt-2 w-72 py-1 bg-white rounded-lg shadow-lg z-50" onClick={(e) => e.stopPropagation()}>
                   <div className="p-4 flex items-center">
-                    <img className="w-15 h-15 rounded-full" src={profileImage || "/assets/user/profile.png"} alt="Profile" />
+                    <img className="w-12 h-12 rounded-full" src={profileImage || "/assets/user/profile.png"} alt="Profile" />
                     <div className="ml-3">
-                      <div className="font-semibold">닉네임</div>
-                      <div className="text-sm text-gray-500">test@test.com</div>
+                      <div className="flex items-center">
+                        <div className="font-semibold">
+                          {userNickName}
+                        </div>
+                        <img className="ms-2 w-6 h-6" src={checkMbti()} alt="#" />
+                      </div>
+                      <div className="text-sm text-gray-500">{userEmail}</div>
                     </div>
                   </div>
                   <hr />
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate("/profile"))}>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => (window.location.href = `/profile/${localStorage.getItem("userId")}`))}>
                     프로필
                   </button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(openUserInfoEditModalOpen)}>
-                    계정 관리
-                  </button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => navigate("/wishlist"))}>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => handleDropdownbuttonClick(() => (window.location.href = "/wishlist"))}>
                     찜 목록
                   </button>
                   <hr />
@@ -267,7 +377,7 @@ const Header = () => {
 
       <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} onLoginSuccess={handleLoginSuccess} />
       <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onNext={handleNext} setProfileImage={updateProfileImage} />
-      <NSModal isOpen={isNSModalOpen} onClose={handleFinish} />
+      <NSModal isOpen={isNSModalOpen} onClose={handleFinish} mode={"survey"} />
     </>
   );
 };

@@ -10,4 +10,6 @@ public class BestNResponseDto {
     private Long rank;
     private String nickName;
     private Long nPoint;
+    private String mbti;
+    private String profileImage;
 }

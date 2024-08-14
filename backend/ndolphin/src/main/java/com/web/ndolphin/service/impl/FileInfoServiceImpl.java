@@ -8,10 +8,10 @@ import com.web.ndolphin.domain.FileInfo;
 import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.mapper.FileInfoMapper;
 import com.web.ndolphin.repository.FileInfoRepository;
+import com.web.ndolphin.service.CustomMultipartFile;
 import com.web.ndolphin.service.interfaces.FileInfoService;
 import com.web.ndolphin.service.interfaces.S3Service;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +31,8 @@ public class FileInfoServiceImpl implements FileInfoService {
     @Transactional(readOnly = true)
     public List<FileInfoResponseDto> getFileInfos(Long entityId, EntityType entityType) {
 
-        List<FileInfo> fileInfos = fileInfoRepository.findByEntityIdAndEntityType(entityId, entityType);
+        List<FileInfo> fileInfos = fileInfoRepository.findByEntityIdAndEntityType(entityId,
+            entityType);
         List<FileInfoResponseDto> fileInfoResponseDtos = new ArrayList<>();
         for (FileInfo fileInfo : fileInfos) {
             fileInfoResponseDtos.add(FileInfoMapper.toDto(fileInfo));
@@ -41,7 +42,7 @@ public class FileInfoServiceImpl implements FileInfoService {
     }
 
     @Transactional
-    public void uploadDallEFile(Long entityId, EntityType entityType, String url){
+    public void uploadDallEFile(Long entityId, EntityType entityType, String url) {
 
         FileInfo fileInfo = new FileInfo();
 
@@ -49,27 +50,46 @@ public class FileInfoServiceImpl implements FileInfoService {
         fileInfo.setFileUrl(url);
         fileInfo.setEntityType(entityType);
         fileInfo.setEntityId(entityId);
-        fileInfo.setUpdateAt(LocalDateTime.now());
 
         fileInfoRepository.save(fileInfo);
     }
 
     @Transactional
-    public void uploadAndSaveFiles(Long entityId, EntityType entityType,
-        List<MultipartFile> multipartFiles)
-        throws IOException {
+    public void uploadAndSaveFiles(Long entityId, EntityType entityType, List<MultipartFile> multipartFiles) throws IOException {
 
-        // upload to AWS S3
-        List<FileInfoResponseDto> fileInfoResponseDtos = s3Service.uploadMultipleFiles(entityId, entityType, multipartFiles);
+        // 중복된 파일명 체크를 위한 리스트
+        List<String> fileNames = new ArrayList<>();
+        List<MultipartFile> modifiedFiles = new ArrayList<>();
 
-        // save to MySQL
-        for (int i = 0; i < fileInfoResponseDtos.size(); i++) {
-            System.out.println("fileInfoResponseDtos.get(i) " + fileInfoResponseDtos);
+        // 파일명을 중복되지 않게 처리
+        for (MultipartFile file : multipartFiles) {
+            String originalFileName = file.getOriginalFilename();
+            String newFileName = originalFileName;
+            int count = 1;
 
-            FileInfo fileInfo = new FileInfo();
+            // 파일명이 중복되지 않도록 체크
+            while (fileNames.contains(newFileName)) {
+                String baseName = originalFileName.substring(0, originalFileName.lastIndexOf('.'));
+                String extension = originalFileName.substring(originalFileName.lastIndexOf('.'));
+                newFileName = baseName + "(" + count + ")" + extension;
+                count++;
+            }
 
-            fileInfo = FileInfoMapper.toEntity(fileInfoResponseDtos.get(i));
+            System.out.println("newFileName = " + newFileName);
 
+            // 중복이 없으면 최종 파일명을 리스트에 추가
+            fileNames.add(newFileName);
+
+            // 새로운 파일명을 가진 MultipartFile 생성
+            MultipartFile modifiedFile = new CustomMultipartFile(file.getBytes(), newFileName, file.getContentType());
+            modifiedFiles.add(modifiedFile);
+        }
+
+        // S3에 업로드 및 DB 저장
+        for (MultipartFile modifiedFile : modifiedFiles) {
+            FileInfoResponseDto fileInfoResponseDto = s3Service.uploadSingleFile(entityId, entityType, modifiedFile);
+            System.out.println("fileInfoResponseDto.getFileName() = " + fileInfoResponseDto.getFileName());
+            FileInfo fileInfo = FileInfoMapper.toEntity(fileInfoResponseDto);
             fileInfoRepository.save(fileInfo);
         }
     }
@@ -103,7 +123,7 @@ public class FileInfoServiceImpl implements FileInfoService {
         List<FileInfo> fileInfos = new ArrayList<>();
         // 파일 정보 검색
         for (String s : fileNamesToDelete) {
-            fileInfos.add(fileInfoRepository.findByFileName(s));
+            fileInfos.add(fileInfoRepository.findByEntityIdAndFileName(entityId, s));
         }
 
         // 파일 정보 삭제
@@ -117,19 +137,28 @@ public class FileInfoServiceImpl implements FileInfoService {
 
     public void deleteFiles(Long entityId, EntityType entityType, List<String> fileNamesToDelete)
         throws IOException {
+
         if (fileNamesToDelete != null && !fileNamesToDelete.isEmpty()) {
             deleteAndDeleteFiles(entityId, entityType, fileNamesToDelete);
         }
     }
 
+    public void deleteFiles(Long entityId, EntityType entityType)
+        throws IOException {
+
+        deleteAndDeleteFiles(entityId, entityType);
+    }
+
     public void uploadFiles(Long entityId, EntityType entityType,
         List<MultipartFile> multipartFiles) throws IOException {
+
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             uploadAndSaveFiles(entityId, entityType, multipartFiles);
         }
     }
 
     public List<String> parseDeleteFilesJson(String deleteFilesJson) {
+
         if (deleteFilesJson == null) {
             return Collections.emptyList();
         }
@@ -143,6 +172,7 @@ public class FileInfoServiceImpl implements FileInfoService {
     }
 
     public String getFileUrl(Long Id, EntityType entityType) {
+
         List<FileInfoResponseDto> file = getFileInfos(Id, entityType);
 
         String url = null;
@@ -151,5 +181,17 @@ public class FileInfoServiceImpl implements FileInfoService {
         }
 
         return url;
+    }
+
+    public String getFileName(Long Id, EntityType entityType) {
+
+        List<FileInfoResponseDto> file = getFileInfos(Id, entityType);
+
+        String name = null;
+        if (!file.isEmpty()) {
+            name = file.get(0).getFileName();
+        }
+
+        return name;
     }
 }

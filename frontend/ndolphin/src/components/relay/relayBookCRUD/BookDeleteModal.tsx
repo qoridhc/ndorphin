@@ -1,4 +1,5 @@
 interface DeleteModalProps {
+  bookId: string | undefined;
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;

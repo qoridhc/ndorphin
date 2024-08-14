@@ -1,65 +1,71 @@
-import React from "react";
-import ByeContent from "../../pages/bye/ByeContent";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import boardApi from "../../api/boardApi";
+import TimeDifference from "../common/TimeDifference";
 
 const ByeList = () => {
-  const byeContentList = [
-    {
-      id: 1,
-      switch: 0,
-      profileImgUrl: "/assets/profile/profile3.png",
-      user: "근데 말약에",
-      date: "2024-07-30 01:22",
-      content: "매일 5번 만약에 외치던 N입니다 요즘 만약에가 줄어서 검사해보니 아니나다를까 S 나왔네요 N으로 다시 돌아오는 날에는 기념으로 동화책 하나 쓰겠습니다 남은 N들아! 만약에 화이팅 ㅎㅎ (이젠 만약에 재미없..ㅓ)",
-      greetingCount: 10,
-      goodByeCount: 12,
-    },
-    {
-      id: 2,
-      switch: 1,
-      profileImgUrl: "/assets/profile/profile2.png",
-      user: "만약핑인데",
-      date: "2024-07-29 01:22",
-      content: "동화책이 재밌어서 읽으러 종종왔는데 만약에 보다보니 N으로 바꼈나봐요 ㅋㅋㅋㅋ 어제도 만약에로 토론하다 왔는데 이제 여기서 다 풀고 가겠습니다 선배님들, 만약에 많이 올려주세요 기대할게요",
-      greetingCount: 8,
-      goodByeCount: 2,
-    },
-    {
-      id: 3,
-      switch: 1,
-      profileImgUrl: "/assets/profile/profile5.png",
-      user: "코에촉촉",
-      date: "2024-06-29 01:22",
-      content: "옆에서 매일 만약에 만약에 하면서 저를 괴롭히던 친구가 있는데 저도 모르게 스며들었나봐요.... 제가 만약에를 하게 되는 날이 오다니 믿을 수가 없네요.. 저 사실 걔 좋아하는 걸까요? 요즘들어 혼란스러워요 아무튼 재밌게 즐겨볼게요",
-      greetingCount: 2,
-      goodByeCount: 1,
-    },
-    {
-      id: 4,
-      switch: 0,
-      profileImgUrl: "/assets/profile/profile3.png",
-      user: "별이 빛나는 밤",
-      date: "2024-07-30 14:00",
-      content: "취업하고나서 바쁜 회사 일에 신경쓰다보니 만약에 못한 지도 오래 됐네요. 학생 때는 만약에 참 많이도 했었는데, 역시 현실이라는 건 어쩔 수 없나봅니다. 그동안 즐거웠어요. 오랜만에 보니 추억이네요.",
-      greetingCount: 15,
-      goodByeCount: 19,
-    },
-    {
-      id: 5,
-      switch: 1,
-      profileImgUrl: "/assets/profile/profile1.png",
-      user: "제로만먹음",
-      date: "2024-07-30 14:00",
-      content: "요즘 인터넷 너무 많이 해서 그런가 갑자기 상상력 늘어남;; ㅋㅋㅋ 친구들은 귀찮다고 안 받아줘서 걍 여기서 놀아야겠음",
-      greetingCount: 6,
-      goodByeCount: 3,
-    },
-  ];
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [myByeBoardList, setMyByeBoardList] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isClicked, setIsClicked] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+    boardApi.list("BYE_BOARD")
+      .then((response) => {
+        const getByeBoardList = response.data.data.content;
+        const currentUserId = Number(location.pathname.split("/")[2]);
+        const filteredList = getByeBoardList.filter((item: any) => item.user.userId === currentUserId);
+        setMyByeBoardList(filteredList);
+      })
+      .catch((error) => {
+        console.error("작별인사 게시글 불러오기 실패: ", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      })
+  }, []);
+
+  const handleButtonClick = () => {
+    // 버튼 클릭 시 반응 수 증가 또는 감소
+    // 버튼 클릭 시의 반응
+  }
+  
+  if (isLoading) {
+    return <div className="mt-40 text-center text-3xl font-bold">로딩 중...</div>;
+  }
 
   return (
-    <div className="px-96">
-      {byeContentList.map((content, index) => (
-        <ByeContent content={content} key={index} />
-      ))}
+    <div>
+      {myByeBoardList.length === 0 ? (
+        <div className="mt-40 text-center text-3xl font-bold">
+          <img className="w-32 h-32 mx-auto mb-4" src="/assets/user/noContents.png" alt="#" />
+          <span>등록된 게시물이 없습니다</span>
+        </div>
+      ) : (
+        <div className="px-96 py-10">
+          {myByeBoardList.map((item) => (
+            <div className="p-5 border border-b-0" key={item.id}>
+              <img className="w-8 h-8" src={item.user.profileImage} alt="#" />
+              <div>
+                <p className="font-bold">{item.user.nickName}</p>
+                <TimeDifference timestamp={new Date(item.createdAt)} />
+              </div>
+              {item.user.mbti === 'S' ? (
+                <img className="w-14" src="/assets/bye/nToS.png" alt="#" />
+              ) : (
+                <img className="w-14" src="/assets/bye/sToN.png" alt="#" />
+              )}
+              <div>{item.content}</div>
+              <div>
+                <button className="border-pink-400 text-pink-400 hover:bg-pink-400 hover:text-white font-bold" onClick={handleButtonClick}>환영해요<span>{item.reactionTypeCounts.WELCOME}</span></button>
+                <button className="border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white font-bold" onClick={handleButtonClick}>잘 가요<span>{item.reactionTypeCounts.GOODBYE || 0}</span></button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

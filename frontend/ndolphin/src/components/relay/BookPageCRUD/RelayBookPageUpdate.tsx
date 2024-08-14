@@ -1,26 +1,44 @@
 import "../../../css/InputPlaceHolder.css";
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 
 interface RelayBookPageUpdateProps {
   page: {
-    id: number;
-    userId: number;
-    user: string;
+    commentId: number;
+    nickName: string;
     content: string;
-    pageImage: string;
+    likeCnt: number;
+    createdAt: string | null;
+    updatedAt: string | null;
+    avatarUrl: string | null;
+    fileUrl: string | null;
+    fileName: string | null;
+    likedByUser: boolean;
   };
   setPageUpdate: (type: boolean) => void;
   handleAiImage: any;
   image: string | null;
   setImage: any;
+  setFile: (file: File) => void;
+  confirmUpdate: (content: string) => void;
+  setPageId: (pageId: number | null) => void;
+  setCurrentFileName: (CurrentFileName: string | null) => void;
+  setIsChanged: (isChanged: boolean) => void;
 }
 
-const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ page, setPageUpdate, handleAiImage, image, setImage }) => {
+const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ page, setPageUpdate, handleAiImage, image, setImage, confirmUpdate, setPageId, setFile, setCurrentFileName, setIsChanged }) => {
   const [contentUpdate, setContentUpdate] = useState(page.content);
+  
+
+  useEffect(() => {
+    setCurrentFileName(page.fileName);
+    setPageId(page.commentId);
+  }, []);
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setFile(file);
+      setIsChanged(true);
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
@@ -45,11 +63,18 @@ const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ page, setPage
             <button
               onClick={() => {
                 setPageUpdate(false);
+                setImage(page.fileUrl);
               }}
               className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200">
               취소
             </button>
-            <button className="w-16 mr-12 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">완료</button>
+            <button
+              onClick={() => {
+                confirmUpdate(contentUpdate);
+              }}
+              className="w-16 mr-12 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
+              완료
+            </button>
           </div>
         </div>
         <div className="w-full mb-2">
@@ -80,7 +105,7 @@ const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ page, setPage
           <hr className="mx-3 my-1 border-zinc-900" />
           <div className="mt-2">
             <div className="flex justify-center items-center">
-              <img src={image || page.pageImage} alt="#" className="w-64 h-56 border rounded-md" />
+              {page.fileUrl ? <img src={image || page.fileUrl} alt="#" className="w-64 h-56 border rounded-md" /> : <img src="/assets/bookCoverDefault.png" alt="#" className="w-64 h-56 border rounded-md" />}
             </div>
 
             {/* 이미지 첨부 버튼 */}
@@ -105,7 +130,7 @@ const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ page, setPage
                     <p className="ml-5 text-xs">사진 첨부</p>
                   </div>
                 </label>
-                <input className="hidden" id="image-input" type="file" accept="image/*" onChange={handleImageChange} />
+                <input className="hidden" id="image-input" type="file" accept="image/jpeg, image/png, image/bmp" onChange={handleImageChange} />
               </div>
             </div>
           </div>

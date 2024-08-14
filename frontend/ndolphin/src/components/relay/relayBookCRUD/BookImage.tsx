@@ -1,16 +1,18 @@
 import React, { useState, ChangeEvent } from "react";
 
 interface BookImageProps {
+
   handleAiImage: () => void;
   image: string | null;
   setImage: any;
+  setFile: (file: File) => void;
 }
 
-const BookImage: React.FC<BookImageProps> = ({handleAiImage, image, setImage}) => {
-
+const BookImage: React.FC<BookImageProps> = ({ handleAiImage, image, setImage, setFile }) => {
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
@@ -58,7 +60,7 @@ const BookImage: React.FC<BookImageProps> = ({handleAiImage, image, setImage}) =
                   <p className="ml-5 text-xs">사진 첨부</p>
                 </div>
               </label>
-              <input className="hidden" id="image-input" type="file" accept="image/*" onChange={handleImageChange} />
+              <input className="hidden" id="image-input" type="file" accept="image/jpeg, image/png, image/bmp" onChange={handleImageChange} />
 
               <div className="my-5 flex flex-col items-center">
                 <span>
@@ -71,6 +73,6 @@ const BookImage: React.FC<BookImageProps> = ({handleAiImage, image, setImage}) =
       </div>
     </>
   );
-}
+};
 
 export default BookImage;

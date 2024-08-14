@@ -1,0 +1,16 @@
+.best-profile .swiper {
+  width: 100%;
+  height: 50px;
+}
+
+.best-profile .swiper-slide {
+  background-color: white;
+  background-position: center;
+  background-size: cover;
+  /* height: 300px; */
+}
+
+/* .best-profile .swiper-slide img {
+  display: block;
+  width: 100%;
+} */

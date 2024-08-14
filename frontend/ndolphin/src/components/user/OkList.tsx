@@ -1,99 +1,138 @@
-import React from "react";
-import OkContent from "../ok/OkContent";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { FaRegComment } from "react-icons/fa6";
+
+import boardApi from "../../api/boardApi";
 
 const OkList = () => {
-  const okContentList = [
-    {
-      id: 1,
-      profileImgUrl: "/assets/profile/profile3.png",
-      user: "상상의 나무꾼",
-      badget: "N",
-      date: "2024-07-30 01:22",
-      content: "5일 전에 사랑니 뺐는데 왜 안아프죠..? 만약에 갑자기 내일 죽을정도로 아프진 않겠죠?? 드라이소켓이라는 병도 있던데 ㅜㅜ 아직 아프진 않는데.. 하도 안아파서 만약에 아프면 엄청 아플거 같은데..",
-      imgList: [
-        {
-          id: 1,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3AwHJ2UrkzSv6PqPhCBZGRR8RrpQNCuDAxg&s",
-        },
-      ],
-      joinCount: 12,
-    },
-    {
-      id: 2,
-      profileImgUrl: "/assets/profile/profile2.png",
-      user: "삶은계란",
-      badget: "S",
-      date: "2024-07-29 01:22",
-      content: "어제 계란을 삶았는데 냉장고에 안넣었거든요 오늘 먹어도 되나요?? 만약에 배탈나면 어떡해요 ㅠ 요즘 날 더워서 조심해야되는데 만약에 배탈나서 맹장터지고!!",
-      imgList: [
-        {
-          id: 1,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1DZxbcaol1q-N-iA_jJkk95PssTlYXMobyA&s",
-        },
-        {
-          id: 2,
-          imgUrl: "https://img.freepik.com/premium-photo/burnt-hard-boiled-eggs-pot-eggs-burned-by-boiling-until-water-dries_45264-78.jpg",
-        },
-        {
-          id: 3,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQXLssi3iB0pd0cNqThGw-X1bg8WMPOaKCaQ&s",
-        },
-        {
-          id: 4,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYCPaPeFrnWYu9EYHBBDKcdOORiGhvosNZBg&s",
-        },
-      ],
-      joinCount: 0,
-    },
-    {
-      id: 3,
-      profileImgUrl: "/assets/profile/profile5.png",
-      user: "근데 말약에",
-      badget: "S",
-      date: "2024-06-29 01:22",
-      content: "오늘 일어났는데 다래끼 났어요 다래끼 너무 커지면 어떻게 돼요 ㅠㅠㅠ 수술해요?? 만약에 다래끼 안빠지면 어떡하지 ㅠ 저 내일 초등학교 졸업사진 찍어요",
-      imgList: [
-        {
-          id: 1,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUzn7lDyMA6kHGqAVj_Gd3p59vnhMwuvXb-g&s",
-        },
-        {
-          id: 2,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGa_e2SL0_u_Hb_SKanee1SDVSpUog7rdQMg&s",
-        },
-      ],
-      joinCount: 5,
-    },
-    {
-      id: 4,
-      profileImgUrl: "/assets/profile/profile2.png",
-      user: "만약핑인데",
-      badget: "N",
-      date: "2024-07-30 14:00",
-      content: "제가 어제 청소를 한다고 냉동실 문을 열었는데 오늘 출근할 때 냉동실 문을 닫았는지 기억이 안나요2박동안 집에 안들어 갈 예정인데 냉동실 문 열려있으면 어떡하죠 안에 있는 거 다 녹고 전기세도 만만치 않죠 ..o..",
-      imgList: [
-        {
-          id: 1,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRH6Fk1AXjnDQT9WZgqO_VPigAdxSQst7qvQ&s",
-        },
-        {
-          id: 2,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAxWBeSt1k9cOrUcNEvuOaBD2RMiLtmRX98g&s",
-        },
-        {
-          id: 3,
-          imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRH6Fk1AXjnDQT9WZgqO_VPigAdxSQst7qvQ&s",
-        },
-      ],
-      joinCount: 3,
-    },
-  ];
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [myOKBoardList, setMyOKBoardList] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+    boardApi.list("OK_BOARD")
+      .then((response) => {
+        const getOKBoardList = response.data.data.content;
+        const currentUserId = Number(location.pathname.split("/")[2]);
+        const filteredList = getOKBoardList.filter((item: any) => item.user.userId === currentUserId);
+        setMyOKBoardList(filteredList);
+      })
+      .catch((error) => {
+        console.error("괜찮아 게시글 불러오기 실패: ", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      })
+  }, []);
+
+  const renderImages = () => {
+    // if (!okDetail || !okDetail.fileUrls.length) return null;
+
+    // switch (okDetail && okDetail.fileUrls.length) {
+    //   case 1:
+    //     return <img className="w-full rounded-md object-cover cursor-pointer" src={okDetail.fileUrls[0]} alt="" onClick={() => handleselectedImageList(0)} />;
+
+    //   case 2:
+    //     return (
+    //       <div className="grid grid-cols-2 gap-1">
+    //         {okDetail.fileUrls.map((url, idx) => (
+    //           <img className={`w-full h-72 object-cover ${idx === 0 ? "rounded-tl-md rounded-bl-md" : "rounded-tr-md rounded-br-md"} cursor-pointer`} src={url} alt="" key={idx} onClick={() => handleselectedImageList(idx)} />
+    //         ))}
+    //       </div>
+    //     );
+
+    //   case 3:
+    //     return (
+    //       <div className="grid grid-rows-2 grid-cols-2 gap-1">
+    //         {okDetail.fileUrls.map((url, idx) => (
+    //           <img
+    //             className={`w-full h-${idx === 0 ? "full" : "36"} object-cover ${idx === 0 ? "row-span-2 rounded-tl-md rounded-bl-md" : idx === 1 ? "rounded-tr-md" : "rounded-br-md"} cursor-pointer`}
+    //             src={url}
+    //             alt=""
+    //             key={idx}
+    //             onClick={() => handleselectedImageList(idx)}
+    //           />
+    //         ))}
+    //       </div>
+    //     );
+
+    //   case 4:
+    //     return (
+    //       <div className="grid grid-cols-2 gap-1">
+    //         {okDetail.fileUrls.map((url, idx) => (
+    //           <img
+    //             className={`w-full h-36 object-cover ${idx === 0 ? "rounded-tl-md" : idx === 1 ? "rounded-tr-md" : idx === 2 ? "rounded-bl-md" : "rounded-br-md"} cursor-pointer`}
+    //             src={url}
+    //             alt=""
+    //             key={idx}
+    //             onClick={() => handleselectedImageList(idx)}
+    //           />
+    //         ))}
+    //       </div>
+    //     );
+
+    //   default:
+    //     return null;
+    // }
+  };
+
+  const goToDetail = (boardId: number) => {
+    navigate(`/okdetail/${boardId}`);
+  };
+
+  if (isLoading) {
+    return <div className="mt-40 text-center text-3xl font-bold">로딩 중...</div>;
+  }
 
   return (
-    <div className="px-96">
-      {okContentList.map((content, index) => (
-        <OkContent content={content} key={index} />
-      ))}
+    <div>
+      {myOKBoardList.length === 0 ? (
+        <div className="mt-40 text-center text-3xl font-bold">
+          <img className="w-32 h-32 mx-auto mb-4" src="/assets/user/noContents.png" alt="#" />
+          <span>등록된 게시물이 없습니다</span>
+        </div>
+      ) : (
+        <div className="px-96 py-10">
+          {myOKBoardList.map((item) => (
+            <div onClick={() => goToDetail(item.id)}>
+              <div className="p-5 border-t border-x grid grid-cols-[1fr_9fr]">
+                <div className="">
+                  <img className="w-9 h-9 rounded-[50%]" src={`${item.user.profileImage}`} alt="" />
+                </div>
+
+                <div className="grid gap-3">
+                  <div>
+                    <div className="flex items-center">
+                    <p className="font-bold">{item.user.nickName}</p>
+                    {item.user.mbti === 'N' && (
+                      <img className="w-5 h-5 ml-1" src="/assets/nBadget.png" alt="badget" />
+                    )}
+                    {item.user.mbti === 'S' && (
+                      <img className="w-5 h-5 ml-1" src="/assets/sBadget.png" alt="badget" />
+                    )}
+                    {item.user.mbti === null && (
+                      <img className="w-5 h-5 ml-1" src="/assets/noBadget.png" alt="badget" />
+                    )}
+                    </div>
+                    <p className="text-sm font-semibold text-[#565656]">{item.createdAt}</p>
+                  </div>
+
+                  <p className="font-medium text-justify leading-snug">{item.content}</p>
+
+                  {/* {renderImages()} */}
+
+                  <div className="flex items-center">
+                    <FaRegComment />
+                    {item.commentCnt === 0 ? <></> : <p className="px-1 text-[#565656] font-semibold">{item.commentCnt}</p>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -58,9 +58,9 @@ public class CommentController {
     @PutMapping("/{commentId}")
     public ResponseEntity<ResponseDto> updateComment(
         @Parameter(description = "댓글 ID", required = true) @PathVariable Long commentId,
-        @Parameter(description = "수정할 댓글 정보", required = true) @RequestBody CommentRequestDto commentRequestDto,
+        @Parameter(description = "수정할 댓글 정보", required = true) @RequestPart(name = "request") CommentRequestDto commentRequestDto,
         @Parameter(description = "첨부 파일 목록", required = false) @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
-        @Parameter(description = "삭제할 파일 목록 JSON", required = false) @RequestParam(name = "deleteFiles", required = false) String deleteFilesJson) {
+        @Parameter(description = "삭제할 파일 목록 JSON", required = false) @RequestPart(name = "deleteFiles", required = false) String deleteFilesJson) {
 
         ResponseEntity<ResponseDto> response = commentService.updateComment(commentId, commentRequestDto, multipartFiles, deleteFilesJson);
         return response;

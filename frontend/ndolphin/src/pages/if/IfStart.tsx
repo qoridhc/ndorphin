@@ -4,8 +4,9 @@ import { FaPlus } from "react-icons/fa6";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import InsertionImage from "../../components/common/InsertionImage";
 import { useNavigate } from "react-router";
-import ifApi from "../../api/ifApi";
+import boardApi from "../../api/boardApi";
 import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
+import userApi from "../../api/userApi";
 
 const IfStart = () => {
   const navigate = useNavigate();
@@ -13,8 +14,9 @@ const IfStart = () => {
   const [content, setContent] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [aiImage, setAiImage] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>();
+  const [file, setFile] = useState<File | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dalleUrl, setDalleUrl] = useState<string | null>(null);
 
   const boxClass = "h-full mb-3 border border-[#9E9E9E]";
   const boxContentClass = "p-5";
@@ -56,19 +58,24 @@ const IfStart = () => {
       formData.append("files", file);
     }
 
-    if (aiImage) {
-      console.log("생성형 : ", aiImage);
-    }
-
     try {
-      const response = await ifApi.create(formData);
+      const response = await boardApi.create(formData);
       if (response.status === 200) {
-        navigate("/ifdetail/1");
-        console.log(response);
+        navigate(`/ifdetail/${response.data.data.id}`);
       }
     } catch (error) {
       console.error("ifApi create : ", error);
     }
+  };
+
+  // 만약에 등록 시 팔로워들에게 알림 전송
+  const postAlarm = async () => {
+    const userId = localStorage.getItem("userId");
+    const response = await userApi.getFollower(userId as string);
+    const content = ' 님이 새로운 만약에를 등록했습니다';
+    response.data.data.forEach((item: any) => {
+      userApi.postNotifications(item.followerId, content, Number(userId));
+    });
   };
 
   return (
@@ -98,7 +105,7 @@ const IfStart = () => {
           <hr className={`${hrClass}`} />
           {image ? (
             <div className="py-3 flex justify-center">
-              <img className="max-w-full object-cover" src={image} alt="" />
+              <img className="max-w-full max-h-[400px] object-cover" src={image} alt="" />
             </div>
           ) : (
             <></>
@@ -108,12 +115,17 @@ const IfStart = () => {
       </div>
 
       <div className="flex justify-end">
-        <button className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200" onClick={() => handleCreate()}>
+        <button className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200"
+          onClick={() => {
+          handleCreate();
+          postAlarm();
+        }
+        }>
           등록
         </button>
       </div>
 
-      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
+      <BookCoverAiPromptModal setFile={setFile} isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
     </div>
   );
 };

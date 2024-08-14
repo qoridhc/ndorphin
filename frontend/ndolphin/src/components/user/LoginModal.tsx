@@ -27,9 +27,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
       const checkRedirect = setInterval(() => {
         try {
           const redirectedUrl = loginWindow.location.href;
-          // 배포시 주석 바꾸고 진행
-          if (redirectedUrl.includes("localhost:3000")) {
-            // if (redirectedUrl.includes("amazonaws.com")) {
+          if (redirectedUrl.includes("ssafy") || redirectedUrl.includes("localhost")) {
             clearInterval(checkRedirect);
             const urlParams = new URLSearchParams(redirectedUrl.split("?")[1]);
             const userId = urlParams.get("userId");
@@ -55,8 +53,32 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
   if (!isOpen) return null;
 
   const handleExternalLogin = (loginType: string) => {
-    const newWindow = userApi.login(loginType);
-    setLoginWindow(newWindow);
+    // 로컬 테스트와 배포 모두 가능
+    const nowURL = window.location.href;
+    if (nowURL.includes('localhost')) {
+      localStorage.setItem("accessToken", process.env.REACT_APP_ACCESS_TOKEN as string);
+      userApi.getUserInfo('20')
+        .then(response => {
+          if (response.data.code == 'SU') {
+            const userInfo = response.data.data;
+            localStorage.setItem("userId", userInfo.userId.toString());
+            localStorage.setItem('nickName', userInfo.nickName);
+            localStorage.setItem('mbti', userInfo.mbti);
+            localStorage.setItem('npoint', userInfo.npoint.toString());
+            localStorage.setItem('profileImage', userInfo.profileImage);
+            localStorage.setItem("email", userInfo.email);
+  
+            window.location.href = window.location.href
+          }
+        })
+        .catch(error => {
+          console.error('Failed to fetch user info: ', error);
+        });
+    } else {
+      const newWindow = userApi.login(loginType);
+      setLoginWindow(newWindow);
+    }
+
     }
 
   return (

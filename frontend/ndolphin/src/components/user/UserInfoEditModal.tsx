@@ -1,13 +1,17 @@
 import React, { useEffect, useState, ChangeEvent, FocusEvent, KeyboardEvent } from "react";
 import userApi from "../../api/userApi";
+import { IoMdClose, IoMdCloseCircleOutline, IoMdCloseCircle } from "react-icons/io";
+import { userInfo } from "os";
+import { error } from "console";
 
 interface UserInfoEditModalProps {
   isOpen: boolean;
   onNext: () => void;
   setProfileImage: (image: string | null) => void;
+  onClose?: () => void;
 }
 
-const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, setProfileImage }) => {
+const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, setProfileImage, onClose }) => {
   const [profileImage, localSetProfileImage] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [nicknamePlaceholder, setNicknamePlaceholder] = useState<string>("닉네임을 입력해 주세요(2~10글자)");
@@ -15,6 +19,10 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
   const [isNicknameValid, setIsNicknameValid] = useState<boolean | null>(null);
   const [nicknameMessage, setNicknameMessage] = useState<string>("");
   const [isNicknameChecked, setIsNicknameChecked] = useState<boolean>(false);
+  const [isImageChecked, setIsImageChecked] = useState<boolean>(false);
+  const [file, setFile] = useState<File | null>();
+  const [image, setImage] = useState<string | null>(null);
+  const [isCloseHovered, setIsCloseHovered] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -23,8 +31,19 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
 
       // localStorage에서 프로필 이미지 가져오기
       const storedProfileImage = localStorage.getItem("profileImage");
-      if (storedProfileImage) {
+      if (storedProfileImage === "null") {
+        localSetProfileImage("/assets/user/profile.png");
+        setImage(null);
+      } else {
         localSetProfileImage(storedProfileImage);
+        setImage(storedProfileImage);
+      }
+      const storedNickname = localStorage.getItem("nickname");
+      if (storedNickname) {
+        setNickname(storedNickname);
+        setIsNicknameChecked(true);
+        setIsNicknameValid(true);
+        setNicknameMessage("사용 가능한 닉네임입니다");
       }
     } else {
       document.body.style.overflow = "unset";
@@ -38,13 +57,16 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
+        setImage(null);
         localSetProfileImage(result);
-        setProfileImage(result);
 
-        localStorage.setItem("profileImage", result);
+        if (onClose) {
+          setIsImageChecked(true);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -61,10 +83,13 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
   };
 
   const handleNicknameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setNickname(event.target.value);
-    setIsNicknameValid(null);
-    setNicknameMessage("");
-    setIsNicknameChecked(false);
+    const value = event.target.value;
+    if (value.length <= 10) {
+      setNickname(value);
+      setIsNicknameValid(null);
+      setNicknameMessage("");
+      setIsNicknameChecked(false);
+    }
   };
 
   const checkNinameDuplicate = async () => {
@@ -76,63 +101,154 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
       return;
     }
 
+    if (trimNickname.includes(" ")) {
+      setIsNicknameValid(false);
+      setNicknameMessage("닉네임 사이의 공백은 허용되지 않습니다");
+      setIsNicknameChecked(false);
+      return;
+    }
+
     try {
       const response = await userApi.checkNickname(trimNickname);
-      const isValid = !response.data.isDuplicate;
-      setIsNicknameValid(isValid);
-      setNicknameMessage(isValid ? "사용 가능한 닉네임입니다" : "이미 사용 중인 닉네임입니다");
+      setIsNicknameValid(true);
+      setNicknameMessage("사용 가능한 닉네임입니다");
       setIsNicknameChecked(true);
     } catch (error) {
       console.error("닉네임 중복 확인 오류: ", error);
       setIsNicknameValid(false);
-      setNicknameMessage("중복 확인 중 오류가 발생했습니다");
+      setNicknameMessage("이미 사용 중인 닉네임입니다");
       setIsNicknameChecked(false);
     }
   };
 
   const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       event.preventDefault();
       checkNinameDuplicate();
     }
-  }
+  };
 
   const handleUserUpdate = async () => {
-    if (!isNicknameValid || !isNicknameChecked) {
-      alert("닉네임을 다시 확인해 주세요")
+    if (!isImageChecked && (!isNicknameValid || !isNicknameChecked)) {
+      alert("닉네임을 다시 확인해 주세요");
       return;
     }
 
+    const userId = localStorage.getItem("userId");
+    if (!userId) throw new Error("User ID not found");
+
+    const formData = new FormData();
+
+    const trimNickname = nickname.trim();
+    if (trimNickname) {
+      const requestBody = {
+        nickName: trimNickname,
+      };
+      formData.append("request", new Blob([JSON.stringify(requestBody)], { type: "application/json" }));
+    } else {
+      const requestBody = {
+        nickName: localStorage.getItem("nickName"),
+      };
+      formData.append("request", new Blob([JSON.stringify(requestBody)], { type: "application/json" }));
+    }
+
+    if (file) {
+      formData.append("file", file);
+    }
+
     try {
-      const userId = localStorage.getItem("userId");
-      if (!userId) throw new Error("User ID not found");
-
-      const formData = new FormData();
-      formData.append("nickname", nickname.trim());
-      if (profileImage) {
-        const imageBlob = await fetch(profileImage).then(res => res.blob());
-        formData.append("ProfileImage", imageBlob, "profile.jpg");
+      const response = await userApi.update(userId, formData);
+      if (response.status === 200) {
+        userApi
+          .getUserInfo(userId)
+          .then((response) => {
+            if (response.data.code == "SU") {
+              const userInfo = response.data.data;
+              localStorage.setItem("nickName", userInfo.nickName);
+              localStorage.setItem("profileImage", userInfo.profileImage);
+              setProfileImage(userInfo.profileImage);
+            }
+          })
+          .then(() => {
+            if (onClose) {
+              onClose();
+              window.location.reload();
+            } else {
+              onNext();
+            }
+          })
+          .catch((error) => {
+            console.error("Failed to fetch user info: ", error);
+          });
       }
-
-      await userApi.update(userId, formData);
-      setProfileImage(profileImage);
-      onNext();
     } catch (error) {
       console.log("회원정보 수정 오류: ", error);
-      alert("회원정보 수정 중 오류가 발생했습니다.")
+      alert("회원정보 수정 중 오류가 발생했습니다.");
     }
   };
 
-  const isNextButtonEnabled = isNicknameValid && isNicknameChecked;
+  const deleteProfileImage = () => {
+    const userId = localStorage.getItem("userId");
+    userApi
+      .deleteProfileImage(userId as string)
+      .then(() => {
+        setImage(null);
+        setProfileImage("/assets/user/profile.png");
+        localSetProfileImage("/assets/user/profile.png");
+        localStorage.setItem("profile", "null");
+      })
+      .then(() => {
+        userApi
+          .getUserInfo(userId as string)
+          .then((res) => {
+            localStorage.setItem("nickName", res.data.data.nickName);
+            localStorage.setItem("profileImage", res.data.data.profileImage);
+            setProfileImage(res.data.data.profileImage);
+          })
+          .catch((error) => {
+            console.error('이미지 삭제 시 유저 정보 불러오기 실패: ', error)
+          })
+      .then(() => {
+        setTimeout(() => {
+          window.location.reload();
+        }, 50);
+      })
+      })
+      .catch((error) => {
+        console.error("프로필 이미지 삭제 오류: ", error);
+      });
+  };
+
+  const deleteUser = () => {
+    const userId = localStorage.getItem("userId");
+    userApi
+    .deleteUser(userId as string)
+    .then(() => {
+      localStorage.clear();
+    })
+    .then(() => {
+      if (onClose) {
+        onClose();
+      }
+    })
+    .then(() => {
+      window.location.href = "/";
+    })
+    .catch((error) => {
+      console.error("회원탈퇴 중 오류: ", error);
+    });
+  };
+
+  const isNextButtonEnabled = isImageChecked || (isNicknameValid && isNicknameChecked);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={onClose}>
       <div className="w-100 bg-white rounded-lg shadow-lg" onClick={(e) => e.stopPropagation()}>
-        <div className="p-4 border-b shadow-lg flex justify-between items-center">
-          <div className="w-8"></div>
+        <div className="p-4 border-b shadow-lg flex justify-between items-center relative">
           <h2 className="text-lg font-semibold flex-grow text-center">프로필 이미지 및 닉네임 설정</h2>
+          {onClose && <IoMdClose className="absolute right-5" onClick={onClose} />}
         </div>
         <div className="p-6 text-center">
           <p className="mb-4 font-semibold">
@@ -145,7 +261,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
           </p>
           <div className="flex flex-col items-center space-y-2">
             <div className="relative" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-              <label htmlFor="profile-image-input">
+              <label htmlFor="image-input">
                 <img className="cursor-pointer w-32 h-32 object-cover rounded-full" src={profileImage || "/assets/user/profile.png"} alt="기본이미지" />
                 {isHovered && (
                   <div className="absolute inset-0 bg-gray-300 bg-opacity-50 flex justify-center items-center rounded-full">
@@ -153,8 +269,13 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
                   </div>
                 )}
               </label>
-              <input className="hidden" id="profile-image-input" type="file" accept="image/*" onChange={handleImageChange} />
+              <input className="hidden" id="image-input" type="file" accept="image/*" onChange={handleImageChange} />
             </div>
+
+            {onClose && image && (
+              <div className="py-1 text-red-200 hover:text-red-400 cursor-pointer" onClick={deleteProfileImage}>프로필 이미지 삭제</div>
+            )}
+
             <input
               className="w-72 border-b rounded-lg text-center text-sm focus:outline-none"
               type="text"
@@ -165,20 +286,41 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
               onBlur={handleBlur}
               onKeyPress={handleKeyPress}
             />
-            <div className="flex items-center">
-              {isNicknameValid !== null && <span className={`ml-2 text-xs ${isNicknameValid ? "text-green-500" : "text-red-500"}`}>{nicknameMessage}</span>}
-              <button className="border rounded-lg px-3 py-1 text-xs" onClick={checkNinameDuplicate}>
+            <div>
+              <p>{isNicknameValid !== null && <span className={`text-xs ${isNicknameValid ? "text-green-500" : "text-red-500"}`}>{nicknameMessage}</span>}</p>
+              <button className="border rounded-lg mt-2 px-3 py-1 text-xs" onClick={checkNinameDuplicate}>
                 중복확인
               </button>
             </div>
           </div>
-          <div className="mt-4 flex justify-center space-x-2">
-            <span className="bg-gray-400 w-2 h-2 rounded-full"></span>
-            <span className="bg-gray-300 w-2 h-2 rounded-full"></span>
+          <div className="relative">
+            {!onClose && (
+              <div className="mt-4 flex justify-center space-x-2">
+                <span className="bg-gray-400 w-2 h-2 rounded-full"></span>
+                <span className="bg-gray-300 w-2 h-2 rounded-full"></span>
+              </div>
+            )}
+            {onClose && (
+              <div className="flex justify-center gap-4">
+                <button className="mt-6 rounded-lg px-4 py-2 border border-gray-300 hover:bg-gray-300 hover:text-white" onClick={onClose}>
+                  취소
+                </button>
+                <button className={`mt-6 rounded-lg px-4 py-2 ${isNextButtonEnabled ? "bg-yellow-300 text-white cursor-pointer" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`} onClick={handleUserUpdate} disabled={!isNextButtonEnabled}>
+                  완료
+                </button>
+              </div>
+            )}
+            {onClose && (
+              <button className="absolute bottom-1 left-1 underline text-red-300 hover:text-red-500" onClick={deleteUser}>
+                회원탈퇴
+              </button>
+            )}
+            {!onClose && (
+              <button className={`mt-6 rounded-lg px-4 py-2 ${isNextButtonEnabled ? "bg-yellow-300 text-white cursor-pointer" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`} onClick={handleUserUpdate} disabled={!isNextButtonEnabled}>
+                다음
+              </button>
+            )}
           </div>
-          <button className={`mt-6 rounded-lg px-4 py-2 ${isNextButtonEnabled ? "bg-yellow-300 text-white cursor-pointer" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`} onClick={handleUserUpdate} disabled={!isNextButtonEnabled}>
-            다음
-          </button>
         </div>
       </div>
     </div>

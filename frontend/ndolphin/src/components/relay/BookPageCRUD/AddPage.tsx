@@ -1,32 +1,60 @@
 import "../../../css/Text.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddPageForm from "./AddPageForm";
 import AlreadyWrittenPage from "../relayBookCRUD/AlreadyWrittenPage";
 import AiImagePromptModal from "../AiImagePromptModal";
+import userApi from "../../../api/userApi";
+import boardApi from "../../../api/boardApi";
 
 interface Page {
-  id: number;
-  userId: number;
-  user: string;
+  commentId: number;
+  nickName: string;
   content: string;
-  pageImage: string;
+  likeCnt: number;
+  createdAt: string | null;
+  updatedAt: string | null;
+  avatarUrl: string | null;
+  contentFileUrl: string | null;
+  likedByUser: boolean;
 }
 
 interface AddPageProps {
-  PageList: Page[];
+  bookId: string;
+  page: {
+    maxPage: number;
+    commentResponseDtos: any[];
+  };
   handleAiImage: any;
   image: string | null;
   setImage: any;
+  file: File | null;
+  setFile: (file: File) => void;
+  hasParticipated: boolean;
 }
 
-const AddPage = ({ PageList, handleAiImage, image, setImage }: AddPageProps) => {
+const AddPage = ({ bookId, page, handleAiImage, image, setImage, file, setFile, hasParticipated }: AddPageProps) => {
   const [isPageAdd, setPageAdd] = useState(false);
-  const userName = "코에촉";
-  const userHasWritten = PageList.some((page) => page.user === userName);
+  const testParticipated = false;
+  const maxPage = page.maxPage;
+  const currentPages = page.commentResponseDtos.length;
+  const remainingPages = maxPage - (currentPages + 1);
+
+  // 마지막장 추가 시 알림
+  const postAlarm = async () => {
+    const content = " 님이 참여한 이야기가 끝났습니다";
+
+    const response = await boardApi.read(bookId);
+    userApi.postNotifications(response.data.data.user.userId.toString(), content, response.data.data.user.userId);
+
+    const participationList = page.commentResponseDtos;
+    participationList.map((item: any) => {
+      userApi.postNotifications(item.user.userId, content, item.user.userId)
+    })
+  };
 
   return (
     <>
-      {userHasWritten ? (
+      {testParticipated ? (
         <AlreadyWrittenPage />
       ) : isPageAdd === false ? (
         <div className="h-[90%] flex flex-col justify-center items-center gap-2">
@@ -36,18 +64,22 @@ const AddPage = ({ PageList, handleAiImage, image, setImage }: AddPageProps) => 
               onClick={() => {
                 setPageAdd(true);
               }}
-              className="w-[30%]"
-            >
+              className="w-[30%]">
               <img src="/assets/addPageButton.png" alt="#" />
             </button>
             <p className="text-outline text-2xl font-bold drop-shadow-md text-[#F4D325]">버튼을 눌러 페이지 추가</p>
           </div>
-          <p className="font-bold text-zinc-600">N돌핀이 넘치는 다음 이야기를 이어주세요</p>
+          {/* <p className="font-bold text-zinc-600">N돌핀이 넘치는 다음 이야기를 이어주세요</p> */}
+          <p className="">
+            이야기가 끝날 때까지 앞으로
+            <span className="font-bold text-zinc-900"> {remainingPages}장 </span>
+            남았어요
+          </p>
         </div>
       ) : (
         // 페이지 추가 버튼 클릭 후 form으로 전환
         <div>
-          <AddPageForm setPageAdd={setPageAdd} handleAiImage={handleAiImage} image={image} setImage={setImage} />
+          <AddPageForm bookId={bookId} setPageAdd={setPageAdd} handleAiImage={handleAiImage} image={image} setImage={setImage} file={file} setFile={setFile} onLastPageAdded={remainingPages === 1 ? postAlarm : undefined} />
         </div>
       )}
     </>

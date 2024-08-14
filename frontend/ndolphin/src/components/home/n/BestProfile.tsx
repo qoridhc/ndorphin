@@ -1,56 +1,58 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import rankingApi from "../../../api/rankingApi";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/effect-flip";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+
+import "../../../css/home/BestProfile.css";
+
+import { Autoplay, EffectFlip, Pagination, Navigation } from "swiper/modules";
+import SwiperProfile from "./SwiperProfile";
+
+interface User {
+  profileImage: string | null;
+  mbti: string | null;
+  nickName: string;
+  npoint: number;
+  rank: number;
+}
 
 const BestProfile = () => {
-  const userList = [
-    {
-      id: 1,
-      name: "삶은계란",
-      point: 142675,
-    },
-    {
-      id: 2,
-      name: "만약핑인데",
-      point: 14249,
-    },
-    {
-      id: 3,
-      name: "별이 빛나는 밤",
-      point: 13578,
-    },
-    {
-      id: 4,
-      name: "코에촉촉",
-      point: 13221,
-    },
-    {
-      id: 5,
-      name: "상상의 나무꾼",
-      point: 12776,
-    },
-  ];
+  const [userList, setUserList] = useState<User[] | null>(null);
+  const [userTempList, setUserTempList] = useState<User[][] | null>(null);
 
-  return (
-    <>
-      {userList.map((user) => (
-        <>
-          <div className="px-14 py-2 grid grid-cols-[10%_75%_15%] hover:scale-110 duration-200" key={user.id}>
-            <div className="flex items-center">
-              <p className="text-2xl font-bold">{user.id}</p>
-            </div>
-            <div className="flex items-center">
-              <img className="w-9 h-9 mr-3 rounded-[50%]" src={`/assets/profile/profile${user.id}.png`} alt="" />
-              <p className="font-semibold hover:underline hover:underline-offset-2">{user.name}</p>
-            </div>
-            <div className="flex justify-end items-center">
-              <p className="font-medium">{user.point}</p>
-              <p className="font-medium">P</p>
-            </div>
-          </div>
-          <hr className="bg-[#9E9E9E]" />
-        </>
-      ))}
-    </>
-  );
+  useEffect(() => {
+    getUserList();
+  }, []);
+
+  useEffect(() => {
+    if (userList && userList.length >= 10) {
+      const tempList: User[][] = [];
+
+      for (let i = 0; i < 5; i++) {
+        tempList.push([userList[i], userList[i + 5]]);
+      }
+
+      setUserTempList(tempList);
+    }
+  }, [userList]);
+
+  const getUserList = async () => {
+    try {
+      const response = await rankingApi.nlist();
+      setUserList(response.data.data);
+      console.log(response.data.data);
+    } catch (error) {
+      console.error("rankingApi nlist : ", error);
+    }
+  };
+
+  return <div className="best-profile">{userTempList && userTempList.map((userPair, index) => <SwiperProfile key={index} userList={userPair} delay={5000 + 50 * index} />)}</div>;
 };
 
 export default BestProfile;

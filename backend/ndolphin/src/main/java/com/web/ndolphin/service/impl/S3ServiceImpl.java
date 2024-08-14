@@ -96,7 +96,9 @@ public class S3ServiceImpl implements S3Service {
 
         FileInfoResponseDto fileInfoResponseDto = new FileInfoResponseDto();
         fileInfoResponseDto.setFileName(fileName);
+        log.info("fileName = {}", fileName);
         fileInfoResponseDto.setFileUrl(fileUrl);
+        log.info("fileUrl = {}", fileUrl);
         fileInfoResponseDto.setFileSize((int) multipartFile.getSize());
         fileInfoResponseDto.setFileType(contentType);
         fileInfoResponseDto.setEntityType(entityType);
@@ -137,6 +139,7 @@ public class S3ServiceImpl implements S3Service {
     public void deleteSingleFile(String fileName, String fileType) {
 
         try {
+
             // fileType에서 '/' 앞부분 추출
             String prefix = fileType.contains("/") ? fileType.substring(0, fileType.indexOf("/")) : fileType;
             // prefix와 fileName을 이어붙여 key 생성

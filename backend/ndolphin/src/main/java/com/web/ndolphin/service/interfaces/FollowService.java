@@ -12,6 +12,6 @@ public interface FollowService {
 
     ResponseEntity<ResponseDto> getFollowings(Long userId);
 
-    ResponseEntity<ResponseDto> deleteFollow(Long userId);
+    ResponseEntity<ResponseDto> deleteFollow(Long followerId, Long followingId);
 
 }
