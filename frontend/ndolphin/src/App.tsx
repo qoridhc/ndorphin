@@ -1,6 +1,6 @@
-// import React from "react";
+import React from "react";
 import "./App.css";
-import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useParams, useNavigate } from "react-router-dom";
 import Header from "./components/home/Header";
 import Home from "./pages/Home";
 import RelayBookList from "./pages/relay/RelayBookList";
@@ -19,6 +19,24 @@ import DalleTest from "./pages/DalleTest";
 import BalanceList from "./pages/balance/BalanceList";
 import BalanceDetail from "./pages/balance/BalanceDetail";
 import BalanceStart from "./pages/balance/BalanceStart";
+
+const useAuth = () => {
+  const auth = localStorage.getItem('accessToken');
+  return !!auth;
+};
+
+const ProtectedRoute: React.FC<{ element: JSX.Element }> = ({ element }) => {
+  const isAuthenticated = useAuth();
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      window.alert("로그인 후 이용 가능합니다");
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+  return isAuthenticated ? element : null;
+};
 
 function App() {
   return (
