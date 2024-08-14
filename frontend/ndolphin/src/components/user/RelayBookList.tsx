@@ -56,20 +56,14 @@ const RelayBookList = () => {
       userApi
         .getFavorites(userId as string)
         .then((response) => {
-          // 에러 이유를 찾기 위한 코드 추가
-          if (response.data.data.boardDtos) {
-            const favoriteBoardIs = response.data.data.boardDtos.map((item: any) => item.id);
-            console.log(response.data.data.boardDtos);
-            setLikeStatus((prevStatus) => {
-              const newStatus: { [key: number]: boolean } = {};
-              myRelayBoardList.forEach((board) => {
-                newStatus[board.id] = favoriteBoardIs.includes(board.id);
-              });
-              return newStatus;
+          const favoriteBoardIs = response.data.data.boardDtos.map((item: any) => item.id);
+          setLikeStatus((prevStatus) => {
+            const newStatus: { [key: number]: boolean } = {};
+            myRelayBoardList.forEach((board) => {
+              newStatus[board.id] = favoriteBoardIs.includes(board.id);
             });
-          } else {
-            console.log('boardDtos가 없음', response);
-          }
+            return newStatus;
+          });
         })
         .catch((error) => {
           console.error("좋아요 상태 불러오기 실패: ", error);
