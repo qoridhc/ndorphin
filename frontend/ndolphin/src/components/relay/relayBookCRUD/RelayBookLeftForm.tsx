@@ -62,7 +62,7 @@ const RelayBookLeftForm = ({ handleRelayBookStart, image }: RelayBookLeftFormPro
                 className="notes w-full h-[283px] resize-none focus:outline-none placeholder:text-zinc-400"
                 placeholder="이야기가 시작될 '만약에~' 내용을 입력해 주세요 (최대 글자수 100자)"
                 value={contentValue}
-                maxLength={100}
+                maxLength={115}
               ></textarea>
             </div>
 

@@ -97,7 +97,7 @@ const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ page, setPage
             placeholder="'만약에~' 내용을 입력해 이야기를 이어주세요"
             aria-label={contentUpdate}
             value={contentUpdate}
-            maxLength={100}
+            maxLength={115}
           ></textarea>
         </div>
       </div>

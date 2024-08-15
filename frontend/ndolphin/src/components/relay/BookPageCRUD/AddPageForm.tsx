@@ -111,7 +111,7 @@ const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiI
         <div className="w-[90%] border border-zinc-950">
           <p className="mx-2 my-1 font-bold flex">본문</p>
           <hr className="mx-3 my-1 border-zinc-900" />
-          <textarea onChange={onChangeContent} className="notes w-full h-[100px] resize-none focus:outline-none placeholder:text-zinc-400" placeholder="'만약에~' 내용을 입력해 이야기를 이어주세요" value={content} maxLength={100}></textarea>
+          <textarea onChange={onChangeContent} className="notes w-full h-[100px] resize-none focus:outline-none placeholder:text-zinc-400" placeholder="'만약에~' 내용을 입력해 이야기를 이어주세요" value={content} maxLength={115}></textarea>
         </div>
       </div>
 
