@@ -67,7 +67,7 @@ const ByeStartModal = ({ setIsCreateModal }: Props) => {
   const postAlarm = async () => {
     const userId = localStorage.getItem("userId");
     const response = await userApi.getFollower(userId as string);
-    const content = " 님이 새로운 괜찮아를 등록했습니다";
+    const content = " 님이 새로운 작별인사를 등록했습니다";
     response.data.data.forEach((item: any) => {
       userApi.postNotifications(item.followerId, content, Number(userId));
     });
@@ -101,8 +101,8 @@ const ByeStartModal = ({ setIsCreateModal }: Props) => {
             </label>
           </div>
           <button onClick={() => {
-            handleByeConfirm();
             postAlarm();
+            handleByeConfirm();
            }} className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0}>
             완료
           </button>
