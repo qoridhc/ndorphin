@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import boardApi from "../../api/boardApi";
 import ByeContent from "../../pages/bye/ByeContent";
+import Lottie from "lottie-react";
+import noSearch from "../../lottie/noSearch.json";
+import ListLoading from "../common/loading/ListLoading";
 
 interface BoardItem {
   id: number;
@@ -58,15 +61,17 @@ const ByeList: React.FC = () => {
     fetchBoards();
   }, [location.pathname]);
 
-  if (isLoading) {
-    return <div className="mt-40 text-center text-3xl font-bold">로딩 중...</div>;
-  }
-
   return (
     <div>
-      {myByeBoardList.length === 0 ? (
+      {isLoading ? (
+        <div className="px-96 py-10">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <ListLoading key={index} />
+          ))}
+        </div>
+      ) : myByeBoardList.length === 0 ? (
         <div className="mt-40 text-center text-3xl font-bold">
-          <img className="w-32 h-32 mx-auto mb-4" src="/assets/user/noContents.png" alt="게시물 없음" />
+          <Lottie className="w-1/4 mb-1" animationData={noSearch} />
           <span>등록된 게시물이 없습니다</span>
         </div>
       ) : (

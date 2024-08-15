@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import boardApi from "../../api/boardApi";
 import userApi from "../../api/userApi";
+import Lottie from "lottie-react";
+import noSearch from "../../lottie/noSearch.json";
+import RelayListLoading from "../common/loading/RelayListLoading";
 
 const RelayBookList = () => {
   const location = useLocation();
@@ -136,15 +139,17 @@ const RelayBookList = () => {
     navigate(`/relaybookdetail/${boardId}`);
   };
 
-  if (isLoading) {
-    return <div className="mt-40 text-center text-3xl font-bold">로딩 중...</div>;
-  }
-
   return (
     <div>
-      {myRelayBoardList.length === 0 ? (
-        <div className="mt-40 text-center text-3xl font-bold">
-          <img className="w-32 h-32 mx-auto mb-4" src="/assets/user/noContents.png" alt="#" />
+      {isLoading ? (
+        <div className="px-40 py-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <RelayListLoading key={index} />
+          ))}
+        </div>
+      ) : myRelayBoardList.length === 0 ? (
+        <div className="mt-5 text-center text-3xl font-bold flex flex-col items-center">
+          <Lottie className="w-1/4 mb-1" animationData={noSearch} />
           <span>등록된 게시물이 없습니다</span>
         </div>
       ) : (
