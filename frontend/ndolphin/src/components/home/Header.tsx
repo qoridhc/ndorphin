@@ -303,7 +303,7 @@ const Header = () => {
                   [...notifications].reverse().map((notification) => (
                     <div className="py-2 px-6" key={notification.notificationId}>
                       <div className="mt-2 flex items-center">
-                        <img className="w-10 h-10 mr-3 rounded-full cursor-pointer" src={notification.user.profileImage || "/assets/user/defaultProfile.png"} alt="프로필" onClick={() => navigate(`/profile/${notification.user.userId}`)} />
+                        <img className="w-10 h-10 mr-3 border rounded-full cursor-pointer" src={notification.user.profileImage || "/assets/user/defaultProfile.png"} alt="프로필" onClick={() => navigate(`/profile/${notification.user.userId}`)} />
                         <p className="text-sm">
                           <span className="font-bold cursor-pointer" onClick={() => navigate(`/profile/${notification.user.userId}`)}>
                             {notification.user.nickName}
