@@ -47,8 +47,7 @@ const SwiperProfile = ({ userList, delay }: Props) => {
       // pagination={true}
       // navigation={true}
       modules={[Autoplay, EffectFlip, Pagination, Navigation]}
-      className="mySwiper"
-    >
+      className="mySwiper">
       {userList.map((user) => (
         <SwiperSlide>
           <div
@@ -56,11 +55,10 @@ const SwiperProfile = ({ userList, delay }: Props) => {
               handleUserClick(user.userId);
             }}
             className="w-full px-10 py-2 grid grid-cols-[1fr_6fr_2fr] hover:scale-110 duration-200 cursor-pointer"
-            key={user.rank}
-          >
+            key={user.rank}>
             <div className="w-14 flex items-center">{user.rank < 4 ? <img className="w-8 h-8" src={`/assets/ranking/rank${user.rank}.png`} alt="" /> : <p className="w-8 text-center text-2xl font-bold">{user.rank}</p>}</div>
             <div className="flex items-center">
-              <img className="w-9 h-9 mr-3 border rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" src={user.profileImage === null ? "/assets/user/defaultProfile.png" : user.profileImage} alt="" />
+              <img className="w-9 h-9 mr-3 border rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out object-contain" src={user.profileImage === null ? "/assets/user/defaultProfile.png" : user.profileImage} alt="" />
               <p className="font-semibold hover:underline hover:underline-offset-2">{user.nickName}</p>
               {<img className="w-5 h-5 ml-1" src={`/assets/${user.mbti === null ? "noBadget.png" : user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
             </div>
