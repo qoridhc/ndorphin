@@ -83,7 +83,7 @@ const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, set
         <div className="px-44 py-10 grid grid-cols-4 gap-x-5 gap-y-10">
           {Array.from({ length: 12 }).map((_, index) => (
             <IfListLoading key={index} />
-          ))}{" "}
+          ))}
         </div>
       ) : (
         ifBoardList && (
