@@ -30,7 +30,7 @@ function Relaybooklist() {
             <SearchBar setSearchKeyword={setSearchKeyword} setSearchFilter1={setSearchFilter1} setIsSearch={setIsSearch} />
           </div>
           <div className="w-full flex justify-end items-center">
-            <div className="flex justify-center mr-[16rem]">
+            <div className="flex justify-center mr-[20rem]">
               <button
                 className={`px-10 py-3 pb-5 font-semibold transition-all duration-200 ease-in-out ${tabs === 0 ? underline : "text-[#6C6C6C]"} z-20 hover:text-black hover:font-bold`}
                 onClick={() => {
