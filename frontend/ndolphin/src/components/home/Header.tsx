@@ -25,7 +25,6 @@ interface notification {
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedMenu, setSelectedMenu] = useState<string>("");
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserInfoEditModalOpen, setIsUserInfoEditModalOpen] = useState(false);
   const [isNSModalOpen, setIsNSModalOpen] = useState(false);
@@ -36,7 +35,7 @@ const Header = () => {
   const [userMbti, setUserMbti] = useState<string | null>(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [isNew, setIsNew] = useState(() => {
-    const storedIsNew = localStorage.getItem('isNew');
+    const storedIsNew = localStorage.getItem("isNew");
     return storedIsNew ? JSON.parse(storedIsNew) : false;
   });
   const [showAlarmDropdown, setShowAlarmDropdown] = useState(false);
@@ -44,11 +43,6 @@ const Header = () => {
   const [done, setDone] = useState([]);
 
   useEffect(() => {
-    const storedMenu = sessionStorage.getItem("selectedMenu");
-    if (storedMenu) {
-      setSelectedMenu(storedMenu);
-    }
-
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
       setIsLoggedIn(true);
@@ -57,10 +51,10 @@ const Header = () => {
     const storedEmail = localStorage.getItem("email");
     const storedNickName = localStorage.getItem("nickName");
     const storedMbti = localStorage.getItem("mbti");
-    setUserMbti(storedMbti)
+    setUserMbti(storedMbti);
     setUserEmail(storedEmail);
     setuserNickName(storedNickName);
-    setProfileImage(storedProfileImage === 'null' ? "/assets/user/profile.png" : storedProfileImage);
+    setProfileImage(storedProfileImage === "null" ? "/assets/user/profile.png" : storedProfileImage);
   }, []);
 
   const openLoginModal = () => setIsLoginModalOpen(true);
@@ -113,24 +107,24 @@ const Header = () => {
     setIsLoggedIn(true);
     localStorage.setItem("isLoggedIn", "true");
 
-    window.location.href = window.location.href
+    window.location.href = window.location.href;
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('nickName');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('profileImage');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('npoint');
-    localStorage.removeItem('email');
-    localStorage.removeItem('isNew');
-    localStorage.removeItem('mbti');
+    localStorage.removeItem("nickName");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("profileImage");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("npoint");
+    localStorage.removeItem("email");
+    localStorage.removeItem("isNew");
+    localStorage.removeItem("mbti");
 
     setIsLoggedIn(false);
     setProfileImage(null);
     setShowProfileDropdown(false);
-    
+
     window.location.href = "/";
   };
 
@@ -157,7 +151,7 @@ const Header = () => {
     setShowAlarmDropdown(!showAlarmDropdown);
     if (isNew) {
       setIsNew(false);
-      localStorage.setItem('isNew', JSON.stringify(false));
+      localStorage.setItem("isNew", JSON.stringify(false));
     }
     if (showProfileDropdown) {
       setShowProfileDropdown(false);
@@ -165,7 +159,7 @@ const Header = () => {
   };
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem("userId");
     const checkNotifications = () => {
       if (userId) {
         userApi
@@ -174,7 +168,7 @@ const Header = () => {
             const responseNotificationsData = response.data.data.hasUnreadNotification;
             if (responseNotificationsData) {
               setIsNew(true);
-              localStorage.setItem('isNew', JSON.stringify(true));
+              localStorage.setItem("isNew", JSON.stringify(true));
               userApi
                 .readNotifications(userId as string)
                 .then((response) => {
@@ -183,8 +177,8 @@ const Header = () => {
                   localStorage.setItem("notifications", JSON.stringify(notificationsData));
                 })
                 .catch((error) => {
-                  console.error('알림목록 불러오기 실패: ', error)
-                })
+                  console.error("알림목록 불러오기 실패: ", error);
+                });
             } else {
               userApi
                 .readNotifications(userId as string)
@@ -199,21 +193,21 @@ const Header = () => {
             }
           })
           .catch((error) => {
-            console.error("새로운 알림 체크 실패: ", error)
-          })
+            console.error("새로운 알림 체크 실패: ", error);
+          });
       }
-    }
+    };
     checkNotifications();
     const intervalId = setInterval(checkNotifications, 5000);
     return () => {
       clearInterval(intervalId);
-    }
+    };
   }, []);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     if (userId) {
-      const storedNotifications = localStorage.getItem('notifications');
+      const storedNotifications = localStorage.getItem("notifications");
       if (storedNotifications) {
         setNotifications(JSON.parse(storedNotifications));
       }
@@ -221,21 +215,17 @@ const Header = () => {
   }, []);
 
   const clearNotifications = () => {
-    const userId = localStorage.getItem('userId');
-    userApi.deleteNotifications(userId as string)
+    const userId = localStorage.getItem("userId");
+    userApi.deleteNotifications(userId as string);
     setNotifications([]);
     localStorage.removeItem("notifications");
   };
 
   const handleMenuClick = (menu: string) => {
-    setSelectedMenu(menu);
-    sessionStorage.setItem("selectedMenu", menu); // 로컬 스토리지에 선택된 메뉴 저장
     window.location.href = `/${menu}`;
   };
 
   const handleHomeClick = () => {
-    setSelectedMenu("home");
-    localStorage.setItem("selectedMenu", "home");
     window.location.href = "/";
   };
 
@@ -257,14 +247,14 @@ const Header = () => {
   };
 
   const checkMbti = () => {
-    if (userMbti === 'N') {
-      return "/assets/nBadget.png"
-    } else if (userMbti === 'S') {
-      return "/assets/sBadget.png"
+    if (userMbti === "N") {
+      return "/assets/nBadget.png";
+    } else if (userMbti === "S") {
+      return "/assets/sBadget.png";
     } else {
-      return "/assets/noBadget.png"
+      return "/assets/noBadget.png";
     }
-  }
+  };
 
   return (
     <>
@@ -281,10 +271,7 @@ const Header = () => {
 
           <div className="px-2 flex items-center text-[#6C6C6C] font-semibold">
             {["relaybooklist", "iflist", "balancelist", "oklist", "bye", "notice"].map((menu) => (
-              <button
-                key={menu}
-                className={`px-3 hover:pb-3 decoration-[#FFDE2F] decoration-4 duration-300 underline-offset-8 ${selectedMenu === menu ? "underline text-black" : "hover:underline hover:text-black"}`}
-                onClick={() => handleMenuClick(menu)}>
+              <button key={menu} className={`px-3 hover:pb-3 hover:text-black hover:underline decoration-[#FFDE2F] decoration-4 duration-300 underline-offset-8`} onClick={() => handleMenuClick(menu)}>
                 {menu === "relaybooklist" && "릴레이북"}
                 {menu === "iflist" && "만약에"}
                 {menu === "balancelist" && "밸런스게임"}
