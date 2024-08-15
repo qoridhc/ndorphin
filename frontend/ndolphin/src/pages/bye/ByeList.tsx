@@ -3,6 +3,7 @@ import boardApi from "../../api/boardApi";
 import MiniSearchBar from "../../components/ok/MiniSearchBar";
 import ByeContent from "./ByeContent";
 import ByeStartModal from "./ByeStartModal";
+import ListLoading from "../../components/common/loading/ListLoading";
 
 interface ByeList {}
 
@@ -13,6 +14,7 @@ const ByeList = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef<IntersectionObserver | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const lastElementRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -28,6 +30,7 @@ const ByeList = () => {
   );
 
   const getByeList = useCallback(async () => {
+    setIsLoading(true);
     try {
       const response = await boardApi.oklist("BYE_BOARD", page - 1);
       if (response.status === 200) {
@@ -41,6 +44,8 @@ const ByeList = () => {
       }
     } catch (error) {
       console.error("작별 목록 조회 오류 발생", error);
+    } finally {
+      setIsLoading(false);
     }
   }, [page]);
 
@@ -65,7 +70,7 @@ const ByeList = () => {
 
   const handleCreateButtonClick = () => {
     if (userMbti === "null") {
-      alert("MBTI 정보가 없습니다. 프로필에서 N / S 설문조사를 진행해주세요.");
+      alert("변경된 MBTI 정보가 없습니다. 프로필에서 N / S 설문조사를 진행해주세요.");
     } else {
       setIsCreateModal(true);
     }
@@ -85,7 +90,14 @@ const ByeList = () => {
 
       <div className="px-44">
         <div className="py-5 grid grid-cols-[1fr_2fr_1fr] gap-5">
-          <div className="col-start-2">
+          <div className="border-b col-start-2">
+            {isLoading && (
+              <div className="grid gap-10">
+                <ListLoading />
+                <ListLoading />
+                <ListLoading />
+              </div>
+            )}
             {byeList.map((content, index) => {
               if (!content) return null; // content가 undefined일 경우 null 반환
               return (
@@ -106,7 +118,7 @@ const ByeList = () => {
 
       {isCreateModal && <ByeStartModal setIsCreateModal={setIsCreateModal} />}
 
-      {hasMore && <div style={{ textAlign: "center" }}>Loading more...</div>}
+      {!hasMore && <p className="pb-5 text-center font-semibold">모든 작별인사를 조회했습니다.</p>}
     </div>
   );
 };
