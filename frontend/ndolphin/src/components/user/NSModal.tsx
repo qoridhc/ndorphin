@@ -97,29 +97,25 @@ const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose, mode }) => {
       <div className="w-11/12 max-w-md bg-white rounded-lg shadow-lg" onClick={handleModalClick}>
         <div className="p-4 border-b flex justify-between items-center relative">
           <h2 className="text-lg font-semibold text-center flex-grow">N/S 선택 미니 설문조사</h2>
-          {mode === 'profile' && (
-            <IoMdClose className="absolute right-5" onClick={onClose} />
-          )}
+          {mode === "profile" && <IoMdClose className="absolute right-5 object-cover" onClick={onClose} />}
         </div>
         <div className="p-6 text-center">
-          {mode === 'survey' && (
-            <p className="mb-4 font-semibold">거의 다 됐어요!</p>
-          )}
+          {mode === "survey" && <p className="mb-4 font-semibold">거의 다 됐어요!</p>}
           <div className="grid grid-cols-4 gap-2">
             {nsItems.map((item) => (
-              <div className="relative w-full h-24 bg-blue-100 rounded-lg flex items-center justify-center cursor-pointer" key={item.id} style={{ whiteSpace: 'pre-wrap' }} onClick={() => handleItemClick(item.id)}>
+              <div className="relative w-full h-24 bg-blue-100 rounded-lg flex items-center justify-center cursor-pointer" key={item.id} style={{ whiteSpace: "pre-wrap" }} onClick={() => handleItemClick(item.id)}>
                 {selectedItems.includes(item.id) && <img className="absolute inset-0 w-full h-full" src="/assets/user/stamp.png" alt="도장" style={{ objectFit: "contain" }} />}
                 <span className="relative z-10">{item.text}</span>
               </div>
             ))}
           </div>
-          {mode === 'survey' && (
+          {mode === "survey" && (
             <div className="mt-4 flex justify-center space-x-1">
               <span className="w-2 h-2 bg-gray-300 rounded-full"></span>
               <span className="w-2 h-2 bg-gray-500 rounded-full"></span>
             </div>
           )}
-          {mode === 'survey' && (
+          {mode === "survey" && (
             <div className="mt-6 flex justify-between">
               <button className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg text-sm" onClick={handleSkip}>
                 건너뛰기
@@ -129,7 +125,7 @@ const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose, mode }) => {
               </button>
             </div>
           )}
-          {mode === 'profile' && (
+          {mode === "profile" && (
             <button className="mt-4 px-4 py-2 bg-yellow-400 text-white rounded-lg text-sm" onClick={handleSubmit}>
               완료
             </button>

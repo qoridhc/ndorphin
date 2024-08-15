@@ -59,11 +59,11 @@ const FollowListItem: React.FC<FollowListItemProps> = ({ follow, onFollowToggle,
 
   return (
     <div className="w-full px-8 py-2 flex items-center relative">
-      <img className="w-10 h-10 rounded-full cursor-pointer" src={follow.profileImage || "assets/user/profile.png"} alt="프로필 이미지" onClick={shiftProfile} />
+      <img className="w-10 h-10 rounded-full cursor-pointer object-cover" src={follow.profileImage || "assets/user/profile.png"} alt="프로필 이미지" onClick={shiftProfile} />
       <span className="ms-5 font-semibold cursor-pointer" onClick={shiftProfile}>
         {follow.nickName}
       </span>
-      <img className="w-7 h-7 ms-1 cursor-pointer" src={renderMbti()} alt="badge" onClick={shiftProfile} />
+      <img className="w-7 h-7 ms-1 cursor-pointer object-cover" src={renderMbti()} alt="badge" onClick={shiftProfile} />
       {renderButton && (
         <button
           className={`ms-14 absolute right-16 text-xs w-auto h-auto p-2 border-none rounded-lg shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 ${

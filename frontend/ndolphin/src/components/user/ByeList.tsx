@@ -71,7 +71,7 @@ const ByeList: React.FC = () => {
         </div>
       ) : myByeBoardList.length === 0 ? (
         <div className="mt-40 text-center text-3xl font-bold">
-          <Lottie className="w-1/4 mb-1" animationData={noSearch} />
+          <Lottie className="w-1/4 mb-1 object-cover" animationData={noSearch} />
           <span>등록된 게시물이 없습니다</span>
         </div>
       ) : (
