@@ -10,8 +10,8 @@ const TimeDifference: React.FC<TimeDifferenceProps> = ({ timestamp }) => {
     const diffInSeconds = (now.getTime() - timestamp.getTime()) / 1000;
     const diffInDays = Math.floor(diffInSeconds / 86400);
     const diffInMonths = Math.floor(diffInDays / 30);
-    const diffInYears = Math.floor(diffInDays / 365)
-    
+    const diffInYears = Math.floor(diffInDays / 365);
+
     if (diffInSeconds < 60) return "방금 전";
     if (diffInSeconds < 600) return `${Math.floor(diffInSeconds / 60)}분 전`;
     if (diffInSeconds < 3600) return `${Math.ceil(diffInSeconds / 60)}분 전`;
@@ -23,7 +23,7 @@ const TimeDifference: React.FC<TimeDifferenceProps> = ({ timestamp }) => {
     return "1년 전";
   };
 
-  return <span>{getTimeDifference(timestamp)}</span>;
+  return <span className="text-xs">{getTimeDifference(timestamp)}</span>;
 };
 
 export default TimeDifference;
