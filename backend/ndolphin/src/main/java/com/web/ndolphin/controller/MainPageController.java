@@ -74,8 +74,8 @@ public class MainPageController {
             ResponseMessage.SUCCESS, mainPageResponse);
 
         stopWatch.stop();
-        System.out.println(stopWatch.prettyPrint());
-        System.out.println("코드 실행 시간 (s): " + stopWatch.getTotalTimeSeconds());
+//        System.out.println(stopWatch.prettyPrint());
+//        System.out.println("코드 실행 시간 (s): " + stopWatch.getTotalTimeSeconds());
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }

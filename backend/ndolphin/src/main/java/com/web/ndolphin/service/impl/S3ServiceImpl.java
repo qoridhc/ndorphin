@@ -14,7 +14,6 @@ import com.web.ndolphin.dto.file.response.FileInfoResponseDto;
 import com.web.ndolphin.service.interfaces.S3Service;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -83,9 +82,9 @@ public class S3ServiceImpl implements S3Service {
             amazonS3.putObject(
                 new PutObjectRequest(bucket, fullFileName, multipartFile.getInputStream(), metadata).withCannedAcl(
                     CannedAccessControlList.PublicRead));
-
-            System.out.println("AWS S3 성공!!!");
-            System.out.println("fullFileName = " + fullFileName);
+//
+//            System.out.println("AWS S3 성공!!!");
+//            System.out.println("fullFileName = " + fullFileName);
         } catch (AmazonServiceException e) {
             e.printStackTrace();
         } catch (SdkClientException e) {
@@ -96,9 +95,9 @@ public class S3ServiceImpl implements S3Service {
 
         FileInfoResponseDto fileInfoResponseDto = new FileInfoResponseDto();
         fileInfoResponseDto.setFileName(fileName);
-        log.info("fileName = {}", fileName);
+//        log.info("fileName = {}", fileName);
         fileInfoResponseDto.setFileUrl(fileUrl);
-        log.info("fileUrl = {}", fileUrl);
+//        log.info("fileUrl = {}", fileUrl);
         fileInfoResponseDto.setFileSize((int) multipartFile.getSize());
         fileInfoResponseDto.setFileType(contentType);
         fileInfoResponseDto.setEntityType(entityType);
@@ -146,13 +145,13 @@ public class S3ServiceImpl implements S3Service {
             String key = prefix + "/" + fileName;
 
             // key를 로그로 출력
-            log.info("Generated key: {}", key);
+//            log.info("Generated key: {}", key);
             // 파일 키를 로그로 출력하여 확인
-            log.info("Deleting file with key: {}", key);
+//            log.info("Deleting file with key: {}", key);
 
             // S3에서 파일 삭제
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
-            log.info("File deleted successfully: {}", key);
+//            log.info("File deleted successfully: {}", key);
         } catch (AmazonServiceException e) {
             e.printStackTrace();
             throw e;

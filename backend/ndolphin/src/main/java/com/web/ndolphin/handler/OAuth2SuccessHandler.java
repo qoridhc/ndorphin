@@ -5,7 +5,6 @@ import com.web.ndolphin.domain.Token;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
-import com.web.ndolphin.util.LogUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,8 +30,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String userId = oAuth2User.getName();
 
-        LogUtil.info("onAuthenticationSuccess", userId);
-
         User user = null;
 
         try {
@@ -54,7 +51,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             targetUrl += "&isNewUser=" + URLEncoder.encode(isNewUser, "UTF-8");
 
             // URL 출력 (디버깅용)
-            System.out.println("Redirecting to: " + targetUrl);
+//            System.out.println("Redirecting to: " + targetUrl);
 
             setDefaultTargetUrl(targetUrl); // defaultTargetUrl 설정
 

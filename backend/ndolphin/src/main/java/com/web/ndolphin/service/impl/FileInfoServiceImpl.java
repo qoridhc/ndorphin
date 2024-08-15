@@ -55,7 +55,8 @@ public class FileInfoServiceImpl implements FileInfoService {
     }
 
     @Transactional
-    public void uploadAndSaveFiles(Long entityId, EntityType entityType, List<MultipartFile> multipartFiles) throws IOException {
+    public void uploadAndSaveFiles(Long entityId, EntityType entityType, List<MultipartFile> multipartFiles)
+        throws IOException {
 
         // 중복된 파일명 체크를 위한 리스트
         List<String> fileNames = new ArrayList<>();
@@ -75,7 +76,7 @@ public class FileInfoServiceImpl implements FileInfoService {
                 count++;
             }
 
-            System.out.println("newFileName = " + newFileName);
+//            System.out.println("newFileName = " + newFileName);
 
             // 중복이 없으면 최종 파일명을 리스트에 추가
             fileNames.add(newFileName);
@@ -88,7 +89,7 @@ public class FileInfoServiceImpl implements FileInfoService {
         // S3에 업로드 및 DB 저장
         for (MultipartFile modifiedFile : modifiedFiles) {
             FileInfoResponseDto fileInfoResponseDto = s3Service.uploadSingleFile(entityId, entityType, modifiedFile);
-            System.out.println("fileInfoResponseDto.getFileName() = " + fileInfoResponseDto.getFileName());
+//            System.out.println("fileInfoResponseDto.getFileName() = " + fileInfoResponseDto.getFileName());
             FileInfo fileInfo = FileInfoMapper.toEntity(fileInfoResponseDto);
             fileInfoRepository.save(fileInfo);
         }
@@ -104,9 +105,9 @@ public class FileInfoServiceImpl implements FileInfoService {
         // 파일 정보 삭제
         for (FileInfo fileInfo : fileInfos) {
             if (fileInfo.getFileName().contains("dalle-generated")) {
-                System.out.println("DALL-E URL이므로 S3에서 삭제하지 않음: " + fileInfo.getFileUrl());
+//                System.out.println("DALL-E URL이므로 S3에서 삭제하지 않음: " + fileInfo.getFileUrl());
             } else {
-                System.out.println("AWS S3 bucket에서 삭제");
+//                System.out.println("AWS S3 bucket에서 삭제");
                 // AWS S3 bucket에서 삭제
                 s3Service.deleteSingleFile(fileInfo.getFileName(), fileInfo.getFileType());
             }
