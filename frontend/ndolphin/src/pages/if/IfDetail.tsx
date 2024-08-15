@@ -9,6 +9,8 @@ import BoardSettingMenu from "../../components/common/BoardSettingMenu";
 import InsertionImage from "../../components/common/InsertionImage";
 import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
 import TimeDifference from "../../components/common/TimeDifference";
+import Lottie from "lottie-react";
+import detailLoading from "../../lottie/detailLoading.json";
 
 interface IfBoard {
   commentCount: number;
@@ -366,8 +368,7 @@ const IfDetail = () => {
                             isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] cursor-not-allowed border-zinc-100"
                           }`}
                           disabled={!isFormValid} // 모든 값이 있을 때만 버튼 활성화
-                          onClick={() => handleUpdateIfBoard()}
-                        >
+                          onClick={() => handleUpdateIfBoard()}>
                           수정
                         </button>
                         {!isFormValid && (
@@ -515,8 +516,7 @@ const IfDetail = () => {
                               <button
                                 className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${updateCommentCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`}
                                 disabled={updateCommentCount === 0}
-                                onClick={() => handleUpdateComment(comment.commentId)}
-                              >
+                                onClick={() => handleUpdateComment(comment.commentId)}>
                                 수정
                               </button>
                               <button className="px-5 py-1 rounded-md text-sm text-[#565656] font-bold border-2 border-gray-300 duration-300 hover:bg-gray-300" onClick={() => setIsCommentUpdate(0)}>
@@ -542,7 +542,9 @@ const IfDetail = () => {
           </div>
         </div>
       ) : (
-        <p>Loading...</p>
+        <p className="px-44 py-5 flex justify-center">
+          <Lottie className="w-36" animationData={detailLoading} />
+        </p>
       )}
 
       <BookCoverAiPromptModal setFile={setFile} isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} />
