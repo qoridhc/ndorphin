@@ -212,13 +212,23 @@ const IfDetail = () => {
 
   // 의견 수정
   const handleUpdateComment = async (commentId: number) => {
+    const formData = new FormData();
+
     if (params.boardId !== undefined && updateCommentTextareaRef.current) {
-      const data = {
-        content: updateCommentTextareaRef.current.value,
-      };
+      formData.append(
+        "request",
+        new Blob(
+          [
+            JSON.stringify({
+              content: updateCommentTextareaRef.current.value,
+            }),
+          ],
+          { type: "application/json" }
+        )
+      );
 
       try {
-        const response = await commentApi.update(params.boardId, commentId, data);
+        const response = await commentApi.update(params.boardId, commentId, formData);
         if (response.status === 200) {
           readBoardData(params.boardId);
           setIsCommentUpdate(0);
