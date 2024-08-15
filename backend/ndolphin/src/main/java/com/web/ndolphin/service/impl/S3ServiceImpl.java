@@ -47,7 +47,7 @@ public class S3ServiceImpl implements S3Service {
         // content type을 지정해서 올려주지 않으면 자동으로 "application/octet-stream"으로 고정이 되서 링크 클릭시 웹에서 열리는게 아니라 자동 다운이 시작됨.
         switch (ext) {
             case "jpeg":
-                contentType = "image/jpeg";
+                contentType = "imagex/jpeg";
                 folder = "image/";
                 break;
             case "jpg":
@@ -71,10 +71,10 @@ public class S3ServiceImpl implements S3Service {
                 break;
         }
 
-//        String fullFileName = folder + fileName;
-//        UUID를 생성하여 고유한 파일 이름을 생성합니다.
-        String uuid = UUID.randomUUID().toString();
-        String fullFileName = folder + uuid + "_" + fileName;
+//      고유한 파일 이름을 생성합니다.
+        String timeId = String.valueOf(System.currentTimeMillis());
+        String fullFileName = folder + timeId + "_" + fileName;
+
 
         try {
             ObjectMetadata metadata = new ObjectMetadata();

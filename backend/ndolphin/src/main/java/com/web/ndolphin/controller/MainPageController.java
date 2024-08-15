@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/main")
+@Slf4j
 public class MainPageController {
 
     private final UserService userService;
@@ -48,7 +50,7 @@ public class MainPageController {
     @Transactional(readOnly = true)
     @GetMapping
     public ResponseEntity<ResponseDto> getMainPageData() {
-
+        log.info("getMainPageData 들어옴");
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
