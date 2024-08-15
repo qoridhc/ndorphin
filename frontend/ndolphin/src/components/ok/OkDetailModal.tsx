@@ -49,6 +49,7 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
   const boardId = String(content.id);
   const [rowCount, setRowCount] = useState(0);
   const [okDetail, setOkDetail] = useState<BoardDetail | null>(null);
+  const profileImage = localStorage.getItem("profileImage");
 
   useEffect(() => {
     // 페이지 스크롤 비활성화
@@ -178,7 +179,7 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
 
               <div className="p-3 border-b">
                 <div className="grid grid-cols-[1fr_6fr]">
-                  <img className="w-9 h-9 rounded-[50%]" src={`${okDetail?.user.profileImage}`} alt="" />
+                  <img className="w-9 h-9 border rounded-[50%]" src={`${profileImage === "null" ? "/assets/user/defaultProfile.png" : profileImage}`} alt="" />
                   <textarea onChange={(e) => handleTextareaChange(e)} className="w-full p-1 text-lg text-left outline-none resize-none" placeholder="댓글을 작성해 주세요" value={commentContent} />
                 </div>
                 <div className="flex justify-end">
@@ -194,8 +195,8 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
                     onClick={() => {
                       handleUserClick(comment.user.userId);
                     }}
-                    className="w-9 h-9 rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
-                    src={`${comment.user.profileImage}`}
+                    className="w-9 h-9 border rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
+                    src={`${comment.user.profileImage ? comment.user.profileImage : "/assets/user/defaultProfile.png"}`}
                     alt=""
                   />
 
