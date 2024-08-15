@@ -1,0 +1,26 @@
+.best-if .swiper {
+  width: 100%;
+  height: 300px;
+}
+
+.best-if .swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.best-if .swiper-slide img {
+  /* display: block;
+  width: 100%; 
+  height: 100%; */
+  object-fit: cover;
+}
+
+.best-if .swiper-button-next,  .best-if .swiper-button-prev {
+  color: #9E9E9E;
+}

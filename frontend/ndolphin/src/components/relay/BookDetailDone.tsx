@@ -1,52 +1,103 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import boardApi from "../../api/boardApi";
 
-const BookDetailDone = () => {
-  const [imogeList, setImogeList] = useState<number[]>([10, 15, 8, 3]);
-  const [clicked, setClicked] = useState([false, false, false, false]);
-  const user = "새촉";
+interface BookDetailDoneProps {
+  bookId: string;
+}
+
+const BookDetailDone = ({ bookId }: BookDetailDoneProps) => {
   const [userImoge, setUserImoge] = useState<{ [key: string]: number }>({});
-  const [imogeUserList, setImogeUserList] = useState([
-    {
-      user: "코에촉촉",
-      imogeId: 1,
-    },
-    {
-      user: "나랑드사이다",
-      imogeId: 2,
-    },
-    {
-      user: "주문걸어아센디오",
-      imogeId: 0,
-    },
-  ]);
+  const [userReactionId, setUserReactionId] = useState<string | null>(null);
+  const [userReactionType, setUserReactionType] = useState<string | null>(null);
+  const [reactionTypeCounts, setReactionTypeCounts] = useState<number[]>([0, 0, 0, 0]);
 
-  const clickImoge = (user: string, id: number): void => {
-    let copy = [...imogeList];
-    let imogeUserListCopy = [...imogeUserList];
-    let clickedCopy = [...clicked];
-    const userExists = imogeUserList.find((imogeUser) => imogeUser.user === user);
-    if (userExists != undefined) {
-      const imogeId = userExists.imogeId;
-      const userIndex = imogeUserList.findIndex((imogeUser) => imogeUser.user === user);
-      if (id === imogeId) {
-        copy[id] -= 1;
-        imogeUserListCopy.splice(userIndex, 1);
-        clickedCopy[id] = false;
-      } else if (id != imogeId) {
-        copy[imogeId] -= 1;
-        copy[id] += 1;
-        clickedCopy[imogeId] = false;
-        clickedCopy[id] = true;
-        imogeUserListCopy[userIndex] = { ...imogeUserListCopy[userIndex], imogeId: id };
+  useEffect(() => {
+    let isMounted = true;
+    // axios GET
+    const getRelayDetail = async () => {
+      try {
+        if (bookId) {
+          const response = await boardApi.read(bookId);
+          if (response.status === 200 && isMounted) {
+            const lastPage = response.data.data;
+
+            const recentFun = lastPage.reactionTypeCounts.FUN;
+            const recentThink = lastPage.reactionTypeCounts.THINK;
+            const recentWow = lastPage.reactionTypeCounts.SURPRISE;
+            const recentSad = lastPage.reactionTypeCounts.SAD;
+            setReactionTypeCounts([recentFun || 0, recentThink || 0, recentWow || 0, recentSad || 0]);
+
+            const userReactionType = lastPage.userReactionType;
+            if (userReactionType) {
+              setUserReactionType(userReactionType);
+            }
+
+            const userReactionId = lastPage.userReactionId;
+            if (userReactionId) {
+              setUserReactionId(userReactionId);
+            }
+          }
+        }
+      } catch (error) {
+        console.log("릴레이북 상세 불러오기 오류: ", error);
       }
-    } else {
-      copy[id] += 1;
-      clickedCopy[id] = true;
-      imogeUserListCopy.push({ user: user, imogeId: id });
+    };
+
+    getRelayDetail();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userReactionType, userReactionId]);
+
+  const handleAddImoge = async (reactionType: string) => {
+    try {
+      const response = await boardApi.reaction(bookId, reactionType);
+      if (response.status === 200 && response.data) {
+        setUserReactionType(reactionType);
+      }
+    } catch (error) {
+      console.error("릴레이북 이모티콘 추천 추가 오류: ", error);
     }
-    setClicked(clickedCopy);
-    setImogeUserList(imogeUserListCopy);
-    setImogeList(copy);
+  };
+
+  const handleDeleteImoge = async () => {
+    if (userReactionId) {
+      try {
+        const response = await boardApi.reactionDelete(userReactionId);
+        if (response.status === 200) {
+          setUserReactionId(null);
+        }
+      } catch (error) {
+        console.error("릴레이북 이모티콘 추천 삭제 오류: ", error);
+      }
+    }
+  };
+
+  const handleUpdateReaction = async (reactionType: string) => {
+    if (userReactionId && userReactionType) {
+      try {
+        const response = await boardApi.reactionUpdate(userReactionId, reactionType);
+        if (response.status === 200 && response.data) {
+          setUserReactionType(reactionType);
+        }
+      } catch (error) {
+        console.error("릴레이북 이모티콘 추천 수정 오류: ", error);
+      }
+    }
+  };
+
+  const clickImoge = (reactionType: string): void => {
+    // user의 현재 이모티콘과 누른 이모티콘이 같을 시 삭제
+    if (userReactionType == reactionType) {
+      handleDeleteImoge();
+      // user가 아직 이모티콘을 누르지 않았을 시 추가
+    } else if (userReactionId === null) {
+      handleAddImoge(reactionType);
+      // user가 지금 누른 이모티콘과 다른 이모티콘을 누를 경우 삭제 후 추가
+    } else if (userReactionId !== null && userReactionType !== reactionType) {
+      handleUpdateReaction(reactionType);
+    }
   };
 
   return (
@@ -64,66 +115,66 @@ const BookDetailDone = () => {
         </div>
         <div className="pb-8 flex justify-around">
           <div className="flex flex-col items-center">
-            <button onClick={() => clickImoge(user, 0)} className="w-10 pb-2">
+            <button onClick={() => clickImoge("FUN")} className="w-10 pb-2">
               <img className="" src="/assets/relay/funImoge.png" alt="재밌어요" />
             </button>
-            {clicked[0] ? (
+            {userReactionType === "FUN" ? (
               <div className="w-full flex flex-col">
                 <p className="text-xs text-blue-600">재밌어요</p>
-                <span className="text-blue-600">{imogeList[0]}</span>
+                <span className="text-blue-600">{reactionTypeCounts[0]}</span>
               </div>
             ) : (
               <div className="w-full flex flex-col">
                 <span className="text-xs text-zinc-500">재밌어요</span>
-                <span>{imogeList[0]}</span>
+                <span>{reactionTypeCounts[0]}</span>
               </div>
             )}
           </div>
           <div className="flex flex-col items-center">
-            <button onClick={() => clickImoge(user, 1)} className="w-10 pb-2">
+            <button onClick={() => clickImoge("THINK")} className="w-10 pb-2">
               <img src="/assets/relay/thinkingImoge.png" alt="생각하게돼요" />
             </button>
-            {clicked[1] ? (
+            {userReactionType === "THINK" ? (
               <div className="w-full flex flex-col">
                 <p className="text-xs text-blue-600">생각하게 돼요</p>
-                <span className="text-blue-600">{imogeList[1]}</span>
+                <span className="text-blue-600">{reactionTypeCounts[1]}</span>
               </div>
             ) : (
               <div className="w-full flex flex-col">
                 <span className="text-xs text-zinc-500">생각하게 돼요</span>
-                <span>{imogeList[1]}</span>
+                <span>{reactionTypeCounts[1]}</span>
               </div>
             )}
           </div>
           <div className="flex flex-col items-center">
-            <button onClick={() => clickImoge(user, 2)} className="w-10 pb-2">
+            <button onClick={() => clickImoge("SURPRISE")} className="w-10 pb-2">
               <img src="/assets/relay/wowImoge.png" alt="놀라워요" />
             </button>
-            {clicked[2] ? (
+            {userReactionType === "SURPRISE" ? (
               <div className="w-full flex flex-col">
                 <p className="text-xs text-blue-600">놀라워요</p>
-                <span className="text-blue-600">{imogeList[2]}</span>
+                <span className="text-blue-600">{reactionTypeCounts[2]}</span>
               </div>
             ) : (
               <div className="w-full flex flex-col">
                 <span className="text-xs text-zinc-500">놀라워요</span>
-                <span>{imogeList[2]}</span>
+                <span>{reactionTypeCounts[2]}</span>
               </div>
             )}
           </div>
           <div className="flex flex-col items-center">
-            <button onClick={() => clickImoge(user, 3)} className="w-10 pb-2">
+            <button onClick={() => clickImoge("SAD")} className="w-10 pb-2">
               <img src="/assets/relay/sadImoge.png" alt="슬퍼요" />
             </button>
-            {clicked[3] ? (
+            {userReactionType === "SAD" ? (
               <div className="w-full flex flex-col">
                 <p className="text-xs text-blue-600">슬퍼요</p>
-                <span className="text-blue-600">{imogeList[3]}</span>
+                <span className="text-blue-600">{reactionTypeCounts[3]}</span>
               </div>
             ) : (
               <div className="w-full flex flex-col">
                 <span className="text-xs text-zinc-500">슬퍼요</span>
-                <span>{imogeList[3]}</span>
+                <span>{reactionTypeCounts[3]}</span>
               </div>
             )}
           </div>

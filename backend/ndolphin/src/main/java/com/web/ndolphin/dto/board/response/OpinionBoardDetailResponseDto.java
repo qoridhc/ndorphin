@@ -11,5 +11,6 @@ public class OpinionBoardDetailResponseDto extends BoardDto {
 
     private int commentCount;
     private boolean hasParticipated;
+    private List<? extends BoardDto> sideBoardDtos;
     private List<CommentResponseDto> commentResponseDtos;
 }

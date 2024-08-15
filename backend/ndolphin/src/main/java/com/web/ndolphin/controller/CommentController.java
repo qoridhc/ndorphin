@@ -55,12 +55,13 @@ public class CommentController {
         @ApiResponse(responseCode = "500", description = "서버 오류입니다.",
             content = @Content(schema = @Schema()))
     })
-    @PutMapping("/{commentId}")
+    @PutMapping(value = "/{commentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDto> updateComment(
+        @Parameter(description = "게시판 ID", required = true) @PathVariable Long boardId,
         @Parameter(description = "댓글 ID", required = true) @PathVariable Long commentId,
-        @Parameter(description = "수정할 댓글 정보", required = true) @RequestBody CommentRequestDto commentRequestDto,
+        @Parameter(description = "수정할 댓글 정보", required = true) @RequestPart(name = "request") CommentRequestDto commentRequestDto,
         @Parameter(description = "첨부 파일 목록", required = false) @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
-        @Parameter(description = "삭제할 파일 목록 JSON", required = false) @RequestParam(name = "deleteFiles", required = false) String deleteFilesJson) {
+        @Parameter(description = "삭제할 파일 목록 JSON", required = false) @RequestPart(name = "deleteFiles", required = false) String deleteFilesJson) {
 
         ResponseEntity<ResponseDto> response = commentService.updateComment(commentId, commentRequestDto, multipartFiles, deleteFilesJson);
         return response;

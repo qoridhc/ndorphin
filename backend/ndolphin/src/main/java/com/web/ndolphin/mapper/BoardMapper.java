@@ -78,25 +78,29 @@ public class BoardMapper {
     }
 
     public static VoteBoardResponseDto toVoteBoardResponseDto(Board board,
-        List<String> voteContents, long totalVoteCnt) {
+        List<String> voteContents, long totalVoteCnt, String fileUrl, String fileName) {
 
         VoteBoardResponseDto voteBoardResponseDto = new VoteBoardResponseDto();
 
         mapCommonFields(board, voteBoardResponseDto);
         voteBoardResponseDto.setVoteContents(voteContents);
         voteBoardResponseDto.setTotalVoteCnt(totalVoteCnt);
+        voteBoardResponseDto.getFileUrls().add(fileUrl);
+        voteBoardResponseDto.getFileNames().add(fileName);
 
         return voteBoardResponseDto;
     }
 
     public static VoteBoardDetailResponseDto toVoteBoardDetailResponseDto(Board board,
-        String fileUrl, String fileName, List<VoteInfo> voteInfos,
-        UserVoteContent userVoteContent) {
+        String fileUrl, String fileName, List<VoteInfo> voteInfos, long totalVoteCnt,
+        UserVoteContent userVoteContent, List<? extends BoardDto> sideBoardDtos) {
 
         VoteBoardDetailResponseDto voteBoardDetailResponseDto = new VoteBoardDetailResponseDto();
 
         mapCommonFields(board, voteBoardDetailResponseDto);
+        voteBoardDetailResponseDto.setTotalVoteCnt(totalVoteCnt);
         voteBoardDetailResponseDto.setVoteInfos(voteInfos);
+        voteBoardDetailResponseDto.setSideBoardDtos(sideBoardDtos);
         voteBoardDetailResponseDto.getFileUrls().add(fileUrl);
         voteBoardDetailResponseDto.getFileNames().add(fileName);
 
@@ -109,20 +113,22 @@ public class BoardMapper {
     }
 
     public static OpinionBoardResponseDto toOpinionBoardResponseDto(Board board,
-        String bestComment, Long commentCount) {
+        String bestComment, Long commentCount, String fileUrl, String fileName) {
 
         OpinionBoardResponseDto opinionBoardResponseDto = new OpinionBoardResponseDto();
 
         mapCommonFields(board, opinionBoardResponseDto);
         opinionBoardResponseDto.setBestComment(bestComment);
         opinionBoardResponseDto.setCommentCount(commentCount);
+        opinionBoardResponseDto.getFileUrls().add(fileUrl);
+        opinionBoardResponseDto.getFileNames().add(fileName);
 
         return opinionBoardResponseDto;
     }
 
     public static OpinionBoardDetailResponseDto toOpinionBoardDetailResponseDto(Board board,
         String fileUrl, String fileName, boolean hasParticipated, int commentCount,
-        List<CommentResponseDto> commentResponseDtos) {
+        List<CommentResponseDto> commentResponseDtos, List<? extends BoardDto> sideBoards) {
 
         OpinionBoardDetailResponseDto opinionBoardDetailResponseDto = new OpinionBoardDetailResponseDto();
 
@@ -130,6 +136,7 @@ public class BoardMapper {
         opinionBoardDetailResponseDto.setHasParticipated(hasParticipated);
         opinionBoardDetailResponseDto.setCommentCount(commentCount);
         opinionBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
+        opinionBoardDetailResponseDto.setSideBoardDtos(sideBoards);
         opinionBoardDetailResponseDto.getFileNames().add(fileName);
         opinionBoardDetailResponseDto.getFileUrls().add(fileUrl);
 
@@ -169,6 +176,7 @@ public class BoardMapper {
         relayBoardDetailResponseDto.setHasParticipated(hasParticipated);
         relayBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
         relayBoardDetailResponseDto.setReactionTypeCounts(reactionTypeCounts);
+        relayBoardDetailResponseDto.setSummary(board.getSummary());
         relayBoardDetailResponseDto.getFileUrls().add(fileUrl);
         relayBoardDetailResponseDto.getFileNames().add(fileName);
 
@@ -179,6 +187,13 @@ public class BoardMapper {
         } else {
             relayBoardDetailResponseDto.setUserReactionId(null); // 또는 0L 등의 기본값
             relayBoardDetailResponseDto.setUserReactionType(ReactionType.NONE); // 기본 반응 타입
+        }
+
+        if (commentResponseDtos != null
+            && board.getMaxPage() == commentResponseDtos.size() + 1) {
+            relayBoardDetailResponseDto.setDone(true);
+        } else {
+            relayBoardDetailResponseDto.setDone(false);
         }
 
         return relayBoardDetailResponseDto;

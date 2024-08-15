@@ -27,7 +27,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
       const checkRedirect = setInterval(() => {
         try {
           const redirectedUrl = loginWindow.location.href;
-          if (redirectedUrl.includes("amazonaws.com") || redirectedUrl.includes("localhost")) {
+          if (redirectedUrl.includes("ssafy") || redirectedUrl.includes("localhost")) {
             clearInterval(checkRedirect);
             const urlParams = new URLSearchParams(redirectedUrl.split("?")[1]);
             const userId = urlParams.get("userId");
@@ -57,7 +57,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
     const nowURL = window.location.href;
     if (nowURL.includes('localhost')) {
       localStorage.setItem("accessToken", process.env.REACT_APP_ACCESS_TOKEN as string);
-      userApi.getUserInfo('12')
+      userApi.getUserInfo('20')
         .then(response => {
           if (response.data.code == 'SU') {
             const userInfo = response.data.data;

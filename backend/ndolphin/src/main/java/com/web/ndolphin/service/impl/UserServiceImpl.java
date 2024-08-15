@@ -10,7 +10,7 @@ import com.web.ndolphin.domain.PointRule;
 import com.web.ndolphin.domain.Token;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.dto.ResponseDto;
-import com.web.ndolphin.dto.board.response.BoardDto;
+import com.web.ndolphin.dto.board.response.RelayBoardResponseDto;
 import com.web.ndolphin.dto.favorite.FavoriteRequestDto;
 import com.web.ndolphin.dto.favorite.FavoriteResponseDto;
 import com.web.ndolphin.dto.npoint.request.NPointDeleteRequestDto;
@@ -19,23 +19,24 @@ import com.web.ndolphin.dto.npoint.resopnse.NPointResponseDto;
 import com.web.ndolphin.dto.user.UserDto;
 import com.web.ndolphin.dto.user.request.UserUpdateRequestDto;
 import com.web.ndolphin.dto.user.response.BestNResponseDto;
+import com.web.ndolphin.dto.user.response.UserNRankResponseDto;
 import com.web.ndolphin.mapper.BoardMapper;
 import com.web.ndolphin.mapper.FavoriteMapper;
 import com.web.ndolphin.mapper.NPointMapper;
 import com.web.ndolphin.mapper.UserMapper;
 import com.web.ndolphin.repository.BoardRepository;
+import com.web.ndolphin.repository.CommentRepository;
 import com.web.ndolphin.repository.FavoriteRepository;
 import com.web.ndolphin.repository.NPointRepository;
 import com.web.ndolphin.repository.PointRuleRepository;
 import com.web.ndolphin.repository.TokenRepository;
 import com.web.ndolphin.repository.UserRepository;
 import com.web.ndolphin.service.interfaces.FileInfoService;
+import com.web.ndolphin.service.interfaces.TokenService;
 import com.web.ndolphin.service.interfaces.UserService;
-import com.web.ndolphin.util.LogUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -58,12 +60,13 @@ public class UserServiceImpl implements UserService {
     private final TokenRepository tokenRepository;
     private final NPointRepository nPointRepository;
     private final PointRuleRepository pointRuleRepository;
+    private final CommentRepository commentRepository;
+
+    private final TokenService tokenService;
     private final FileInfoService fileInfoService;
 
     @Override
     public void signIn(HttpServletRequest request, HttpServletResponse response, Long userId) {
-
-        LogUtil.info("signIn 실행");
 
         User user = null;
 
@@ -128,8 +131,6 @@ public class UserServiceImpl implements UserService {
 
             boolean existUser = userRepository.existsById(userId);
 
-            LogUtil.info("existUser" + existUser);
-
             int deleteCnt = userRepository.deleteUserByUserId(userId);
 
             // 삭제 실패
@@ -151,10 +152,6 @@ public class UserServiceImpl implements UserService {
 
         try {
             User existingUser = userRepository.findByUserId(userId);
-
-            if (dto.getEmail() != null) {
-                existingUser.setEmail(dto.getEmail());
-            }
 
             if (dto.getNickName() != null) {
                 existingUser.setNickName(dto.getNickName());
@@ -216,7 +213,8 @@ public class UserServiceImpl implements UserService {
 
         try {
             User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+                .orElseThrow(
+                    () -> new IllegalArgumentException("The userId does not exist: " + userId));
 
             if (user.getProfileImage() == null) {
                 throw new IllegalArgumentException("The Profile is not exist");
@@ -237,14 +235,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<ResponseDto> getFavorites(Long userId) {
+    public ResponseEntity<ResponseDto> getFavorites() {
 
+        Long userId = tokenService.getUserIdFromToken();
         List<Favorite> favorites = favoriteRepository.findByUserId(userId);
-        List<BoardDto> boardDtos = favorites.stream()
-            .map(favorite -> BoardMapper.toBoardDto(favorite.getBoard()))
+
+        List<RelayBoardResponseDto> relayBoardResponseDtos = favorites.stream()
+            .map(favorite -> {
+                    Board board = favorite.getBoard();
+                    Long boardId = board.getId();
+
+                    boolean hasParticipated = true;
+                    boolean isFavorite = true;
+                    String fileUrl = getFileUrl(boardId, EntityType.POST);
+                    String fileName = getFileName(boardId, EntityType.POST);
+
+                    Long commentCount = commentRepository.countCommentsByBoardId(boardId);
+                    boolean isDone = (commentCount + 1) == board.getMaxPage();
+
+                    return BoardMapper.toRelayBoardResponseDto(board, hasParticipated, isFavorite,
+                        fileUrl, fileName, commentCount, isDone);
+                }
+            )
             .toList();
 
-        FavoriteResponseDto favoriteResponseDto = FavoriteMapper.toDto(boardDtos);
+        FavoriteResponseDto favoriteResponseDto = FavoriteMapper.toDto(relayBoardResponseDtos);
 
         ResponseDto<FavoriteResponseDto> responseDto = new ResponseDto<>(
             ResponseCode.SUCCESS,
@@ -275,7 +290,9 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<ResponseDto> addFavorite(FavoriteRequestDto favoriteRequestDto) {
 
         try {
-            User user = userRepository.findById(favoriteRequestDto.getUserId())
+            Long userId = tokenService.getUserIdFromToken();
+
+            User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
             Board board = boardRepository.findById(favoriteRequestDto.getBoardId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
@@ -293,9 +310,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<ResponseDto> removeFavorite(Long userId, Long boardId) {
+    public ResponseEntity<ResponseDto> removeFavorite(Long boardId) {
 
         try {
+            Long userId = tokenService.getUserIdFromToken();
+
             Favorite favorite = favoriteRepository.findByUserIdAndBoardId(userId, boardId)
                 .orElseThrow(() -> new IllegalArgumentException("Favorite not found"));
 
@@ -378,15 +397,68 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ResponseEntity<ResponseDto> getNPointPercent(Long userId) {
+        try {
+
+            User user = userRepository.findById(userId)
+                .orElseThrow(
+                    () -> new IllegalArgumentException("The userId does not exist: " + userId));
+
+            List<Long> scores = userRepository.findAll().stream()
+                .map(User::getNPoint)
+                .sorted()
+                .toList();
+
+            // 나보다 높은 사람 수 
+            long higherCount = scores.stream()
+                .filter(score -> score > user.getNPoint())
+                .count();
+
+            double percentile = (double) (higherCount + 1) / scores.size() * 100;
+
+            int userPercent = (int) percentile;
+
+            UserNRankResponseDto responseDto = new UserNRankResponseDto();
+
+            responseDto.setUserNPercent(userPercent);
+
+            ResponseDto<UserNRankResponseDto> responseBody = new ResponseDto<>(
+                ResponseCode.SUCCESS,
+                ResponseMessage.SUCCESS,
+                responseDto
+            );
+
+            return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+        } catch (Exception e) {
+            return ResponseDto.databaseError(e.getMessage());
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public List<BestNResponseDto> getSortedUsersByNPoint(boolean flag) {
 
         List<User> users = flag
             ? userRepository.findAllUsersSortedByNPoint()
-            : userRepository.findTopUsersByNPoint(1);
+            : userRepository.findTopUsersByNPoint(10);
 
         return IntStream.range(0, users.size())
-            .mapToObj(i -> new BestNResponseDto((long) (i + 1), users.get(i).getNickName(),
-                users.get(i).getNPoint()))
+            .mapToObj(i -> new BestNResponseDto(
+                (long) (i + 1),
+                users.get(i).getUserId(),
+                users.get(i).getNickName(),
+                users.get(i).getNPoint(),
+                users.get(i).getMbti(),  // mbti 추가
+                users.get(i).getProfileImage() // profileUrl 추가
+            ))
             .collect(Collectors.toList());
+    }
+
+    private String getFileUrl(Long entityId, EntityType entityType) {
+        return fileInfoService.getFileUrl(entityId, entityType);
+    }
+
+    private String getFileName(Long entityId, EntityType entityType) {
+        return fileInfoService.getFileName(entityId, entityType);
     }
 }

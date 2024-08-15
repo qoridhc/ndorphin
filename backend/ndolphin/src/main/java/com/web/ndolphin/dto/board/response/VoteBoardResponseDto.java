@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 public class VoteBoardResponseDto extends BoardDto {
 
-    private long totalVoteCnt;
+    private Long totalVoteCnt;
     private List<String> voteContents;
 }

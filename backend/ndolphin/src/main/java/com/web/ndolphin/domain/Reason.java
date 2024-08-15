@@ -1,5 +1,5 @@
 package com.web.ndolphin.domain;
 
 public enum Reason {
-    POST, REACTION, LIKE
+    REACTION, LIKE, CREATE_BOARD, VOTE, COMMENT
 }

@@ -1,92 +1,157 @@
 import React, { useState, useEffect } from "react";
-import { FaRegComment } from "react-icons/fa";
+import { useNavigate } from "react-router";
+import boardApi from "../../api/boardApi";
+import TimeDifference from "../../components/common/TimeDifference";
 
 interface Props {
   content: {
     id: number;
-    switch: number;
-    profileImgUrl: string;
-    user: string;
-    date: string;
+    user: {
+      nickName: string;
+      mbti: string;
+      profileImage: string | null;
+      userId: number;
+    };
+    createdAt: string;
     content: string;
-    greetingCount: number;
-    goodByeCount: number;
+    userReactionId: string | null;
+    userReactionType: string;
+    reactionTypeCounts: {
+      WELCOME: number;
+      GOODBYE: number;
+    };
   };
+  getByeList: () => void;
+  updateContent: (id: number) => void;
 }
 
-const ByeContent = ({ content }: Props) => {
-  const [reactionList, setReactionList] = useState([content.greetingCount, content.goodByeCount]);
-  const [clicked, setClicked] = useState([false, false]);
-  const [hoveredButton, setHoveredButton] = useState<number | null>(null);
-  const user = "근데 말약에";
-  const [reactionUserList, setreactionUserList] = useState([
-    {
-      user: "근데 말약에",
-      reactionId: 0,
-    },
-    {
-      user: "만약핑인데",
-      reactionId: 1,
-    },
-    {
-      user: "제로",
-      reactionId: 1,
-    },
-  ]);
+const ByeContent = ({ content, getByeList, updateContent }: Props) => {
+  const navigate = useNavigate();
+  const reactionList = ["WELCOME", "GOODBYE"];
+  const [reactionTypeCounts, setReactionTypeCounts] = useState<number[]>([0, 0]);
+  const [userReactionType, setUserReactionType] = useState<string | null>(null);
+  const [userReactionId, setUserReactionId] = useState<string | null>(null);
+  const [isActive, setIsActive] = useState<boolean[]>([false, false]);
 
-  useEffect(() => {
-    const currentUserReaction = reactionUserList.find((reactionUser) => reactionUser.user === user);
-    if (currentUserReaction) {
-      const newClicked = [false, false];
-      newClicked[currentUserReaction.reactionId] = true;
-      setClicked(newClicked);
-    }
-  }, [reactionUserList, user]);
+useEffect(() => {
+  if (content) {
+    const recentWelcome = content?.reactionTypeCounts?.WELCOME || 0;
+    const recentGoodbye = content?.reactionTypeCounts?.GOODBYE || 0;
+    setReactionTypeCounts([recentWelcome, recentGoodbye]);
 
-  const clickButton = (user: string, id: number): void => {
-    let copy = [...reactionList];
-    let reactionUserListCopy = [...reactionUserList];
-    let clickedCopy = [...clicked];
-    const userExists = reactionUserList.find((reactionUser) => reactionUser.user === user);
-    if (userExists != undefined) {
-      const reactionId = userExists.reactionId;
-      const userIndex = reactionUserList.findIndex((reactionUser) => reactionUser.user === user);
-      if (id === reactionId) {
-        copy[id] -= 1;
-        reactionUserListCopy.splice(userIndex, 1);
-        clickedCopy[id] = false;
-      } else if (id != reactionId) {
-        copy[reactionId] -= 1;
-        copy[id] += 1;
-        clickedCopy[reactionId] = false;
-        clickedCopy[id] = true;
-        reactionUserListCopy[userIndex] = { ...reactionUserListCopy[userIndex], reactionId: id };
-      }
+    const userReactionType = content.userReactionType;
+    if (userReactionType === "WELCOME" || userReactionType === "GOODBYE") {
+      setUserReactionType(userReactionType);
+      setIsActive([userReactionType === "WELCOME", userReactionType === "GOODBYE"]);
     } else {
-      copy[id] += 1;
-      clickedCopy[id] = true;
-      reactionUserListCopy.push({ user: user, reactionId: id });
+      setIsActive([false, false]);
     }
-    setClicked(clickedCopy);
-    setreactionUserList(reactionUserListCopy);
-    setReactionList(copy);
+
+    const userReactionId = content.userReactionId;
+    if (userReactionId) {
+      setUserReactionId(userReactionId);
+    }
+  }
+}, [content]);
+
+  const handleAddReaction = async (reactionType: string, index: number) => {
+    try {
+      const response = await boardApi.reaction(String(content.id), reactionType);
+      if (response.status === 200 && response.data) {
+        setUserReactionType(reactionType);
+        setUserReactionId(response.data.reactionId);
+
+        const newReactionCounts = [...reactionTypeCounts];
+        newReactionCounts[index] += 1;
+        setReactionTypeCounts(newReactionCounts);
+
+        setIsActive(reactionType === "WELCOME" ? [true, false] : [false, true]);
+      }
+    } catch (error) {
+      console.error("작별 인사 반응 추가 오류: ", error);
+    }
   };
+
+  const handleDeleteReaction = async (index: number) => {
+    if (userReactionId) {
+      try {
+        const response = await boardApi.reactionDelete(userReactionId);
+        if (response.status === 200) {
+          const newReactionCounts = [...reactionTypeCounts];
+          const reactionIndex = userReactionType === "WELCOME" ? 0 : 1;
+          newReactionCounts[reactionIndex] -= 1;
+          setReactionTypeCounts(newReactionCounts);
+
+          setIsActive([false, false]);
+          setUserReactionType("NONE");
+          setUserReactionId(null);
+        }
+      } catch (error) {
+        console.error("작별 인사 반응 삭제 오류: ", error);
+      }
+    }
+  };
+
+  const handleUpdateReaction = async (reactionType: string) => {
+    if (userReactionId && userReactionType) {
+      try {
+        const response = await boardApi.reactionUpdate(userReactionId, reactionType);
+        if (response.status === 200 && response.data) {
+          const newReactionCounts = [...reactionTypeCounts];
+          const prevIndex = userReactionType === "WELCOME" ? 0 : 1;
+          const newIndex = reactionType === "WELCOME" ? 0 : 1;
+
+          newReactionCounts[prevIndex] -= 1;
+          newReactionCounts[newIndex] += 1;
+          setReactionTypeCounts(newReactionCounts);
+
+          setUserReactionType(reactionType);
+          setIsActive(reactionType === "WELCOME" ? [true, false] : [false, true]);
+        }
+      } catch (error) {
+        console.error("작별 인사 반응 수정 오류: ", error);
+      }
+    }
+  };
+
+  const clickButton = (reactionType: string, index: number): void => {
+    if (userReactionType === reactionType) {
+      // 동일한 반응을 다시 눌렀을 때 삭제
+      handleDeleteReaction(index);
+      setIsActive([false, false]);
+      setUserReactionType("NONE");
+      setUserReactionId(null);
+    } else if (userReactionId === null) {
+      // 처음 반응 추가 시
+      handleAddReaction(reactionType, index);
+      setIsActive(reactionType === "WELCOME" ? [true, false] : [false, true]);
+    } else if (userReactionId !== null && userReactionType !== reactionType) {
+      // 다른 반응을 누른 경우 반응 수정
+      handleUpdateReaction(reactionType);
+      setIsActive(reactionType === "WELCOME" ? [true, false] : [false, true]);
+    }
+  };
+
+    const handleUserClick = () => {
+      navigate(`/profile/${content.user.userId}`);
+    };
 
   return (
     <div>
       <div className="p-5 border-t border-x grid grid-cols-[1fr_9fr]">
         <div className="">
-          <img className="w-9 h-9 rounded-[50%]" src={`${content.profileImgUrl}`} alt="" />
+          <img onClick={handleUserClick} className="w-9 h-9 rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" src={`${content.user.profileImage}`} alt="" />
         </div>
 
         <div className="grid gap-3">
           <div>
-            <p className="font-bold">{content.user}</p>
-            <p className="text-sm font-semibold text-[#565656]">{content.date}</p>
+            <p className="font-bold">{content.user.nickName}</p>
+            <TimeDifference timestamp={new Date(content.createdAt)} />
+            {/* <p className="text-sm font-semibold text-[#565656]">{content.createdAt}</p> */}
           </div>
 
           {/* S->N or N->S 이미지 표시 */}
-          {content.switch === 0 ? (
+          {content.user.mbti === "S" ? (
             <div>
               <img className="w-16" src="/assets/bye/nToS.png" alt="#" />
             </div>
@@ -102,16 +167,14 @@ const ByeContent = ({ content }: Props) => {
           <div className="mt-3 flex justify-end">
             <div className="flex w-48 justify-between">
               {["환영해요", "잘 가요"].map((label, index) => {
-                const isActive = clicked[index] || hoveredButton === index;
                 return (
                   <button
                     key={index}
-                    onClick={() => clickButton(user, index)}
-                    onMouseEnter={() => setHoveredButton(index)}
-                    onMouseLeave={() => setHoveredButton(null)}
-                    className={`p-1 w-[5.9rem] flex justify-around border-[1.8px] rounded-2xl ${isActive ? (index === 0 ? "bg-pink-400 border-pink-400" : "bg-blue-400 border-blue-400") : index === 0 ? "border-pink-400" : "border-blue-400"}`}>
-                    <p className={`left-2 font-bold text-sm ${isActive ? "text-white" : index === 0 ? "text-pink-400" : "text-blue-400"}`}>{label}</p>
-                    <p className={`right-2 font-bold text-sm ${isActive ? "text-white" : index === 0 ? "text-pink-400" : "text-blue-400"}`}>{reactionList[index]}</p>
+                    onClick={() => clickButton(reactionList[index], index)}
+                    className={`p-1 w-[5.9rem] flex justify-around border-[1.8px] rounded-2xl ${isActive[index] ? (index === 0 ? "bg-pink-400 border-pink-400" : "bg-blue-400 border-blue-400") : index === 0 ? "border-pink-400" : "border-blue-400"}`}
+                  >
+                    <p className={`font-bold text-sm ${isActive[index] ? "text-white" : index === 0 ? "text-pink-400" : "text-blue-400"}`}>{label}</p>
+                    <p className={`font-bold text-sm ${isActive[index] ? "text-white" : index === 0 ? "text-pink-400" : "text-blue-400"}`}>{reactionTypeCounts[index]}</p>
                   </button>
                 );
               })}

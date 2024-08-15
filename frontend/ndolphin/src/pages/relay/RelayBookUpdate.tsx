@@ -67,7 +67,7 @@ const RelayBookUpdate: React.FC = () => {
   }, [bookId]);
 
   // axios PUT
-  const handleRelayBookUpdate = async (subject: string, content: string) => {
+  const handleRelayBookUpdate = async (subject: string, content: string, maxPage: number) => {
     const formData = new FormData();
 
     if (currentFileName !== null && isChanged && file) {
@@ -79,7 +79,6 @@ const RelayBookUpdate: React.FC = () => {
       console.log(file);
     } else if (currentFileName === null && file) {
       formData.append("files", file);
-      console.log("anjdi")
     }
     
     formData.append(
@@ -90,6 +89,7 @@ const RelayBookUpdate: React.FC = () => {
             subject: subject,
             content: content,
             boardType: "RELAY_BOARD",
+            maxPage: maxPage,
           }),
         ],
         { type: "application/json" }
@@ -105,7 +105,6 @@ const RelayBookUpdate: React.FC = () => {
         }
       } catch (error) {
         console.error("릴레이북 이야기 수정 오류: ", error);
-        console.log(formData)
       }
     }
   };
@@ -149,7 +148,7 @@ const RelayBookUpdate: React.FC = () => {
       <div className="">
         {/* @ts-ignore */}
         <HTMLFlipBook width={480} height={580} minWidth={315} maxWidth={1000} minHeight={420} maxHeight={1350} flippingTime={600} style={{ margin: "0 auto" }} maxShadowOpacity={0.5} useMouseEvents={false}>
-          <Page key="left-form">{<RelayBookUpdateLeftForm bookId={bookId} handleRelayBookUpdate={handleRelayBookUpdate} subject={subject} content={content} currentEndPage={currentEndPage} setCurrentEndPage={setCurrentEndPage} />}</Page>
+          <Page key="left-form">{<RelayBookUpdateLeftForm bookId={bookId} handleRelayBookUpdate={handleRelayBookUpdate} subject={subject} content={content} currentEndPage={currentEndPage} setCurrentEndPage={setCurrentEndPage} image={image} />}</Page>
           <Page key="right-form">
             {/* 표지 이미지 form */}
             <div className="mt-11 flex flex-col items-center justify-center">
@@ -207,7 +206,7 @@ const RelayBookUpdate: React.FC = () => {
           </Page>
         </HTMLFlipBook>
       </div>
-      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={image} setImage={setImage} setFile={setFile} />
+      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} coverImage={"/assets/relay/defaultImage.png"} setImage={setImage} setFile={setFile} />
     </div>
   );
 };

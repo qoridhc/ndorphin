@@ -5,9 +5,10 @@ import CommentSettingsMenu from "../../components/if/CommentSettingMenu";
 import OpinionCard from "../../components/if/OpinionCard";
 import boardApi from "../../api/boardApi";
 import commentApi from "../../api/commentApi";
-import IfBoardSettingMenu from "../../components/if/IfBoardSettingMenu";
+import BoardSettingMenu from "../../components/common/BoardSettingMenu";
 import InsertionImage from "../../components/common/InsertionImage";
 import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
+import TimeDifference from "../../components/common/TimeDifference";
 
 interface IfBoard {
   commentCount: number;
@@ -18,7 +19,7 @@ interface IfBoard {
     likeCnt: number;
     likedByUser: boolean;
     nickName: string;
-    user: { nickName: string; profileImage: string; mbti: string | null };
+    user: { userId: number; nickName: string; profileImage: string; mbti: string | null };
   }[];
   content: string;
   fileNames: string[];
@@ -35,6 +36,7 @@ interface IfBoard {
     profileImage: string | null;
     userId: number;
   };
+  sideBoardDtos: If[];
 }
 
 interface If {
@@ -89,6 +91,8 @@ const IfDetail = () => {
   const updateBoardSubjectRef = useRef<HTMLInputElement>(null);
   const updateBoardContentRef = useRef<HTMLTextAreaElement>(null);
 
+  const isFormValid = updateBoardSubject && updateBoardContent && (image || aiImage);
+
   useEffect(() => {
     setUserId(`${localStorage.getItem("userId")}`);
   }, []);
@@ -96,8 +100,6 @@ const IfDetail = () => {
   useEffect(() => {
     if (updateBoardSubjectRef.current && updateBoardContentRef.current) {
       updateBoardSubjectRef.current.focus();
-      console.log("제목 : ", boardSubjectTextCount);
-      console.log("내용 : ", boardContentTextCount);
       setBoardSubjectTextCount(updateBoardSubjectRef.current.value.length);
       setBoardContentTextCount(updateBoardContentRef.current.value.length);
     }
@@ -118,7 +120,6 @@ const IfDetail = () => {
   useEffect(() => {
     if (params.boardId !== undefined) {
       readBoardData(params.boardId);
-      getRecommendationList();
     }
     setIsUpdate(false);
   }, [params.boardId]);
@@ -129,6 +130,7 @@ const IfDetail = () => {
       const response = await boardApi.read(boardId);
       if (response.status === 200) {
         setIfBoardData(response.data.data);
+        setRecommendationList(response.data.data.sideBoardDtos);
         setUpdateBoardSubject(response.data.data.subject);
         setUpdateBoardContent(response.data.data.content);
         setImage(response.data.data.fileUrls[0]);
@@ -138,17 +140,6 @@ const IfDetail = () => {
       }
     } catch (error) {
       console.error("ifApi read : ", error);
-    }
-  };
-
-  const getRecommendationList = async () => {
-    try {
-      const response = await boardApi.list("OPINION_BOARD");
-      if (response.status === 200) {
-        setRecommendationList(response.data.data.content);
-      }
-    } catch (error) {
-      console.error("boardApi list : ", error);
     }
   };
 
@@ -267,12 +258,10 @@ const IfDetail = () => {
 
     if (file && ifBoardData?.fileNames) {
       formData.append("deleteFiles", JSON.stringify(ifBoardData.fileNames));
-      console.log("삭제할 : ", ifBoardData.fileNames);
     }
 
     if (file) {
       formData.append("files", file);
-      console.log("수정할 : ", file);
     }
 
     try {
@@ -329,6 +318,10 @@ const IfDetail = () => {
     }
   };
 
+  const handleUserClick = (userId: number) => {
+    navigate(`/profile/${userId}`);
+  };
+
   return (
     <>
       {ifBoardData && recommendationList ? (
@@ -343,7 +336,14 @@ const IfDetail = () => {
               <div className="grid gap-3">
                 <div className="flex justify-between">
                   <div className="flex">
-                    <img className="w-9 h-9 mr-3 border rounded-[50%]" src={`${ifBoardData.user.profileImage === null ? "/assets/user/defaultProfile.png" : ifBoardData.user.profileImage}`} alt="" />
+                    <img
+                      onClick={() => {
+                        handleUserClick(ifBoardData.user.userId);
+                      }}
+                      className="w-9 h-9 mr-3 border rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
+                      src={`${ifBoardData.user.profileImage === null ? "/assets/user/defaultProfile.png" : ifBoardData.user.profileImage}`}
+                      alt=""
+                    />
                     <div>
                       <div className="w-40 flex justify-between items-center">
                         <div className="flex items-center">
@@ -351,20 +351,31 @@ const IfDetail = () => {
                           {<img className="w-5 h-5 ml-1" src={`/assets/${ifBoardData.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
                         </div>
                       </div>
-                      <p className="text-xs text-left">{ifBoardData.createdAt}</p>
+                      <TimeDifference timestamp={new Date(ifBoardData.createdAt)} />
+                      {/* <p className="text-xs text-left">{ifBoardData.createdAt}</p> */}
                     </div>
                   </div>
 
-                  {isUpdate === false && `${ifBoardData.user.userId}` === userId ? <IfBoardSettingMenu boardId={ifBoardData.id} setIsUpdate={setIsUpdate} /> : <></>}
+                  {isUpdate === false && `${ifBoardData.user.userId}` === userId ? <BoardSettingMenu totalCount={ifBoardData.commentCount} boardType="if" boardId={ifBoardData.id} setIsUpdate={setIsUpdate} /> : <></>}
 
                   {isUpdate && `${ifBoardData.user.userId}` === userId ? (
                     <div>
-                      <button
-                        className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${boardSubjectTextCount === 0 || boardContentTextCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`}
-                        disabled={boardSubjectTextCount === 0 || boardContentTextCount === 0}
-                        onClick={() => handleUpdateIfBoard()}>
-                        수정
-                      </button>
+                      <div className="tooltip-top">
+                        <button
+                          className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${
+                            isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] cursor-not-allowed border-zinc-100"
+                          }`}
+                          disabled={!isFormValid} // 모든 값이 있을 때만 버튼 활성화
+                          onClick={() => handleUpdateIfBoard()}
+                        >
+                          수정
+                        </button>
+                        {!isFormValid && (
+                          <span className="tooltiptext">
+                            모든 칸을 필수로<br></br> 입력해주세요.
+                          </span>
+                        )}
+                      </div>
                       <button className="px-5 py-1 rounded-md text-sm text-[#565656] font-bold border-2 border-gray-300 duration-300" onClick={() => setIsUpdate(false)}>
                         취소
                       </button>
@@ -421,12 +432,12 @@ const IfDetail = () => {
 
                 <div>
                   <div className="p-5 border-y">
-                    {ifBoardData.hasParticipated ? (
+                    {ifBoardData.user.userId === parseInt(userId) || ifBoardData.hasParticipated ? (
                       <div role="alert" className="alert">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-info h-6 w-6 shrink-0">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <p className="text-sm font-medium">이미 의견이 제출되었습니다.</p>
+                        <p className="text-sm font-medium">{ifBoardData.user.userId === parseInt(userId) ? "작성자는 의견을 달 수 없습니다." : "이미 의견이 제출되었습니다."}</p>
                       </div>
                     ) : (
                       <>
@@ -445,7 +456,14 @@ const IfDetail = () => {
 
                   {ifBoardData.commentResponseDtos.map((comment) => (
                     <div className="p-5 border-b flex" key={comment.commentId}>
-                      <img className="w-9 h-9 mr-3 border rounded-[50%]" src={`${comment.user.profileImage}`} alt="" />
+                      <img
+                        onClick={() => {
+                          handleUserClick(comment.user.userId);
+                        }}
+                        className="w-9 h-9 mr-3 border rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
+                        src={`${comment.user.profileImage}`}
+                        alt=""
+                      />
 
                       <div className="w-full grid gap-2">
                         <div className="grid grid-cols-[6fr_1fr]">
@@ -454,9 +472,14 @@ const IfDetail = () => {
                               <p className="font-bold">{comment.user.nickName}</p>
                               {<img className="w-5 h-5 ml-1" src={`/assets/${comment.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
                             </div>
-                            <p className="text-xs text-[#565656]">{comment.createdAt}</p>
+                            <TimeDifference timestamp={new Date(comment.createdAt as string)} />
+                            {/* <p className="text-xs text-[#565656]">{comment.createdAt}</p> */}
                           </div>
-                          <CommentSettingsMenu boardId={params.boardId} commentId={comment.commentId} commentContent={comment.content} setUpdateComment={setUpdateComment} setIsCommentUpdate={setIsCommentUpdate} readBoardData={readBoardData} />
+                          {userId && parseInt(userId) === comment.user.userId ? (
+                            <CommentSettingsMenu boardId={params.boardId} commentId={comment.commentId} commentContent={comment.content} setUpdateComment={setUpdateComment} setIsCommentUpdate={setIsCommentUpdate} readBoardData={readBoardData} />
+                          ) : (
+                            <></>
+                          )}
                         </div>
 
                         {isCommentUpdate !== comment.commentId ? (
@@ -492,7 +515,8 @@ const IfDetail = () => {
                               <button
                                 className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${updateCommentCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`}
                                 disabled={updateCommentCount === 0}
-                                onClick={() => handleUpdateComment(comment.commentId)}>
+                                onClick={() => handleUpdateComment(comment.commentId)}
+                              >
                                 수정
                               </button>
                               <button className="px-5 py-1 rounded-md text-sm text-[#565656] font-bold border-2 border-gray-300 duration-300 hover:bg-gray-300" onClick={() => setIsCommentUpdate(0)}>

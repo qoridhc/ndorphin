@@ -1,267 +1,87 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Filter from "../common/Filter";
 import Paging from "../common/Paging";
 import BalanceCard from "./BalanceCard";
+import boardApi from "../../api/boardApi";
 
-const BalanceCardList = () => {
-  const balanceList = [
-    {
-      id: 1,
-      profileImgUrl: "profile1",
-      user: "코에촉촉",
-      badget: "S",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      date: "2024-07-30 01:22",
-      category: [
-        {
-          id: 1,
-          content: "Enter, 무게 1kg에 매일이 뷔폐 + 휴가비 Enter, 무게 1kg에 매일이 뷔폐 + 휴가비",
-        },
-        {
-          id: 2,
-          content: "Spacebar, 주 3일",
-        },
-        {
-          id: 3,
-          content: "enter, 연봉 1억",
-        },
-        {
-          id: 4,
-          content: "backspace, 대저택 제공",
-        },
-      ],
-    },
-    {
-      id: 2,
-      profileImgUrl: "profile1",
-      user: "코에촉촉",
-      badget: "N",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      date: "2024-07-22 01:22",
-      category: [
-        {
-          id: 1,
-          content: "Enter, 무게 1kg Enter, 무게 1kg Enter, 무게 1kg Enter, 무게 1kg Enter, 무게 1kg Enter, 무게 1kg",
-        },
-        {
-          id: 2,
-          content: "Spacebar, 주 3일 Enter, 무게 1kg Enter, 무게 1kg",
-        },
-      ],
-    },
-    {
-      id: 3,
-      profileImgUrl: "profile1",
-      user: "코에촉촉",
-      badget: "S",
-      title: "눈 앞에 공룡이 나타나면?",
-      joinCount: 12,
-      date: "2024-06-20 01:22",
-      category: [
-        {
-          id: 1,
-          content: "Enter, 무게 1kg",
-        },
-        {
-          id: 2,
-          content: "Spacebar, 주 3일",
-        },
-        {
-          id: 3,
-          content: "enter, 연봉 1억",
-        },
-        {
-          id: 4,
-          content: "backspace, 대저택 제공",
-        },
-      ],
-    },
-    {
-      id: 4,
-      profileImgUrl: "profile1",
-      user: "코에촉촉",
-      badget: "S",
-      title: "눈 앞에 공룡이 나타났는데 도망은 못가고 눈 앞에 공룡이 나타났는데 도망은 눈 앞에 공룡이 나타났는데 도망은 잡아먹지도 않는다 숨을 것이냐 싸울 것이냐? 어떻게 할 것이냐",
-      joinCount: 12,
-      date: "2024-07-18 13:22",
-      category: [
-        {
-          id: 1,
-          content: "Enter, 무게 1kg Enter, 무게 1kg Enter, 무게 1kg",
-        },
-        {
-          id: 2,
-          content: "Spacebar, 주 3일 Spacebar, 주 3일 Spacebar, 주 3일 Spacebar, 주 3일",
-        },
-        {
-          id: 3,
-          content: "enter, 연봉 1억 enter, 연봉 1억 enter, 연봉 1억",
-        },
-      ],
-    },
-    {
-      id: 5,
-      profileImgUrl: "profile1",
-      user: "코에촉촉",
-      badget: "N",
-      title: "키보드 밑에서 자판이 눌릴 때마다 앉았다 일어났다 일해야한다면?",
-      joinCount: 12,
-      date: "2023-10-30 09:22",
-      category: [
-        {
-          id: 1,
-          content: "Enter, 무게 1kg",
-        },
-        {
-          id: 2,
-          content: "Spacebar, 주 3일",
-        },
-        {
-          id: 3,
-          content: "enter, 연봉 1억",
-        },
-        {
-          id: 4,
-          content: "backspace, 대저택 제공",
-        },
-      ],
-    },
-    {
-      id: 6,
-      profileImgUrl: "profile1",
-      user: "코에촉촉",
-      badget: "S",
-      title: "키보드 밑에서 자판이 눌릴 때마다 앉았다 일어났다 일해야한다면?",
-      joinCount: 12,
-      date: "2024-07-30 01:22",
-      category: [
-        {
-          id: 1,
-          content: "Enter, 무게 1kg",
-        },
-        {
-          id: 2,
-          content: "Spacebar, 주 3일",
-        },
-        {
-          id: 3,
-          content: "enter, 연봉 1억",
-        },
-      ],
-    },
-    {
-      id: 7,
-      profileImgUrl: "profile1",
-      user: "코에촉촉",
-      badget: "N",
-      title: "키보드 밑에서 자판이 눌릴 때마다 앉았다 일어났다 일해야한다면?",
-      joinCount: 12,
-      date: "2024-07-30 01:22",
-      category: [
-        {
-          id: 1,
-          content: "Enter, 무게 1kg",
-        },
-        {
-          id: 2,
-          content: "Spacebar, 주 3일",
-        },
-        {
-          id: 3,
-          content: "enter, 연봉 1억",
-        },
-        {
-          id: 4,
-          content: "backspace, 대저택 제공",
-        },
-      ],
-    },
-    {
-      id: 8,
-      profileImgUrl: "profile1",
-      user: "코에촉촉",
-      badget: "N",
-      title: "키보드 밑에서 자판이 눌릴 때마다 앉았다 일어났다 일해야한다면?",
-      joinCount: 12,
-      date: "2024-07-30 01:22",
-      category: [
-        {
-          id: 1,
-          content: "Enter, 무게 1kg",
-        },
-        {
-          id: 2,
-          content: "Spacebar, 주 3일",
-        },
-      ],
-    },
-    {
-      id: 9,
-      profileImgUrl: "profile1",
-      user: "코에촉촉",
-      badget: "S",
-      title: "키보드 밑에서 자판이 눌릴 때마다 앉았다 일어났다 일해야한다면?",
-      joinCount: 12,
-      date: "2024-07-30 01:22",
-      category: [
-        {
-          id: 1,
-          content: "Enter, 무게 1kg",
-        },
-        {
-          id: 2,
-          content: "Spacebar, 주 3일",
-        },
-        {
-          id: 3,
-          content: "enter, 연봉 1억",
-        },
-        {
-          id: 4,
-          content: "backspace, 대저택 제공",
-        },
-      ],
-    },
-    {
-      id: 10,
-      profileImgUrl: "profile1",
-      user: "코에촉촉",
-      badget: "N",
-      title: "키보드 밑에서 자판이 눌릴 때마다 앉았다 일어났다 일해야한다면?",
-      joinCount: 12,
-      date: "2024-07-30 01:22",
-      category: [
-        {
-          id: 1,
-          content: "Enter, 무게 1kg",
-        },
-        {
-          id: 2,
-          content: "Spacebar, 주 3일",
-        },
-        {
-          id: 3,
-          content: "enter, 연봉 1억",
-        },
-        {
-          id: 4,
-          content: "backspace, 대저택 제공",
-        },
-      ],
-    },
-  ];
+interface Balance {
+  id: number;
+  user: {
+    userId: number;
+    profileImage: string | null;
+    mbti: string | null;
+    nickName: string;
+  };
+  content: string;
+  subject: string;
+  fileNames: string[];
+  fileUrls: string[];
+  hit: number;
+  createdAt: string;
+  updatedAt: string | null;
+  voteContents: string[];
+  totalVoteCnt: number;
+}
+
+interface Props {
+  searchKeyword: string;
+  searchFilter1: string;
+  searchFilter2: string;
+  isSearch: boolean;
+  setIsSearch: (state: boolean) => void;
+}
+
+const BalanceCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, setIsSearch }: Props) => {
+  const [balanceBoardList, setBalanceBoardList] = useState<Balance[] | null>(null);
+  const [page, setPage] = useState<number>(1);
+  const [totalElements, setTotalElements] = useState<number>(0);
+
+  const getBalanceBoardList = async () => {
+    try {
+      const response = await boardApi.list("VOTE_BOARD", page-1);
+      setBalanceBoardList(response.data.data.content);
+
+      const totalElements = response.data.data.totalElements;
+      setTotalElements(totalElements);
+    } catch (error) {
+      console.error("boardApi list : ", error);
+    }
+  };
+
+  const getSearchBalanceBoardList = async () => {
+    try {
+      const response = await boardApi.search("VOTE_BOARD", searchKeyword, searchFilter1, searchFilter2, page - 1, false);
+      setBalanceBoardList(response.data.data.content);
+      
+      const totalElements = response.data.data.totalElements;
+      setTotalElements(totalElements);
+    } catch (error) {
+      console.log("boardApi search : ", error);
+    }
+  };
+
+  useEffect(() => {
+    if (searchKeyword || searchFilter2 === "popularity") {
+      getSearchBalanceBoardList();
+      setIsSearch(false);
+    } else {
+      getBalanceBoardList();
+    }
+  }, [isSearch, searchFilter2, page]);
 
   return (
     <div>
-      <div className="px-44 py-10 grid grid-cols-3 gap-5">
-        {balanceList.map((balance) => (
-          <BalanceCard key={balance.id} balance={balance} />
-        ))}
-      </div>
+      {balanceBoardList ? (
+        <div className="px-44 py-10 grid grid-cols-3 gap-5">
+          {balanceBoardList.map((balance) => (
+            <BalanceCard key={balance.id} balance={balance} />
+          ))}
+        </div>
+      ) : (
+        <></>
+      )}
 
-      <Paging />
+      <Paging page={page} setPage={setPage} getBoardList={getBalanceBoardList} totalElements={totalElements} />
     </div>
   );
 };

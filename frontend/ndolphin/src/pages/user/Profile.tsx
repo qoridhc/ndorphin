@@ -41,6 +41,7 @@ const Profile = () => {
   const [nickName, setNickName] = useState<string | null>(null);
   const [mbti, setMbti] = useState<string | null>(null);
   const [npoint, setNpoint] = useState<number | null>(null);
+  const [rank, setRank] = useState<number>(100);
 
   const [isUserInfoEditModalOpen, setIsUserInfoEditModalOpen] = useState(false);
   const [isNSModalOpen, setIsNSModalOpen] = useState(false);
@@ -49,6 +50,7 @@ const Profile = () => {
   const [followers, setFollowers] = useState<number>(0);
   const [followingsList, setFollowingsList] = useState<UserInfo[]>([]);
   const [followersList, setFollowersList] = useState<UserInfo[]>([]);
+  const [myFollow, setMyFollow] = useState(false);
 
   const userId = String(localStorage.getItem('userId'))
 
@@ -59,26 +61,26 @@ const Profile = () => {
       userApi.getUserInfo(profileUserId)
       .then(response => {
         if (response.data.code == 'SU') {
-            const userInfo = response.data.data;
-            setNickName(userInfo.nickName);
-            setMbti(userInfo.mbti);
-            setNpoint(userInfo.npoint);
-            const getProfileImage = userInfo.profileImage
-            if (getProfileImage) {
-              setProfileImage(userInfo.profileImage);
-            } else {
-              setProfileImage("/assets/user/profile.png");
-            }
-
-            localStorage.setItem('nickName', userInfo.nickName);
-            localStorage.setItem('mbti', userInfo.mbti);
-            localStorage.setItem('npoint', userInfo.npoint.toString());
-            localStorage.setItem("profileImage", getProfileImage);
+          const userInfo = response.data.data;
+          setNickName(userInfo.nickName);
+          setMbti(userInfo.mbti);
+          setNpoint(userInfo.npoint);
+          const getProfileImage = userInfo.profileImage
+          if (getProfileImage) {
+            setProfileImage(userInfo.profileImage);
+          } else {
+            setProfileImage("/assets/user/profile.png");
           }
-        })
-        .catch(error => {
-          console.error('Failed to fetch user info: ', error);
-        });
+
+          localStorage.setItem('nickName', userInfo.nickName);
+          localStorage.setItem('mbti', userInfo.mbti);
+          localStorage.setItem('npoint', userInfo.npoint.toString());
+          localStorage.setItem("profileImage", getProfileImage);
+        }
+      })
+      .catch(error => {
+        console.error('Failed to fetch user info: ', error);
+      });
     } else {
       setIsOwnProfile(false);
       userApi.getUserInfo(profileUserId)
@@ -100,7 +102,7 @@ const Profile = () => {
           try {
             const followingList = await userApi.getFollowing(userId)
             const isFollowing = followingList.data.data.some((follow: any) => String(follow.followingId) === profileUserId);
-            setIsFollowing(isFollowing)
+            setMyFollow(isFollowing);
           } catch (error) {
             console.error('팔로잉 정보 조회 실패: ', error)
           }
@@ -157,10 +159,9 @@ const Profile = () => {
           const fetchUserFollowerInfos = async (list: Follow[]): Promise<UserInfo[]> => {
             return Promise.all(
               list.map(async (item) => {
-                console.log(item)
                 const userFollowerResponse = await userApi.getUserInfo(String(item.followerId));
                 const userFollowerResponseProfileImage = userFollowerResponse.data.data.profileImage;
-                const isFollowing = followingList.data.data.some((follow: any) => follow.followingId === item.followingId);
+                const isFollowing = followingList.data.data.some((follow: any) => follow.followingId === userFollowerResponse.data.data.userId);
 
                 if (userFollowerResponseProfileImage) {
                   return {
@@ -206,24 +207,64 @@ const Profile = () => {
     navigate({ search: `?tab=${selectedTab}` }, { replace: true });
   }, [selectedTab, navigate]);
 
+  // N 지수
+  useEffect(() => {
+    const profileUserId = String(location.pathname.split("/")[2]);
+
+    userApi.getNpointPercent(profileUserId as string)
+      .then((res) => {
+        const nPercent = res.data.data.userNPercent;
+        setRank(nPercent)
+      }).catch((err) => {
+      console.error('N지수 불러오기 실패: ', err)
+    })
+  })
+
   const buttonClass = (tabName: string) => `relative px-4 py-2 ${selectedTab === tabName ? "text-black underline underline-offset-8 decoration-[#FFDE2F] decoration-4 duration-300" : "text-gray-400"}`;
 
   const handleClick = async () => {
     const followingId = location.pathname.split("/")[2];
     
-    if (isFollowing) {
+    if (myFollow) {
       // 언팔로우 요청
       try {
         await userApi.unFollow(userId, followingId);
-        setIsFollowing(!isFollowing);
+        setFollowers(prev => prev - 1);
+        setMyFollow(!myFollow);
       } catch (error) {
         console.error('언팔로우 에러: ', error)
       }
     } else {
       // 팔로우 요청
       try {
-        await userApi.follow(userId, followingId);
-        setIsFollowing(!isFollowing);
+        await userApi
+          .follow(userId, followingId)
+          .then(() => {
+            setFollowers(prev => prev + 1);
+            setMyFollow(!myFollow);
+          })
+          .then(() => {
+            const writerId = Number(userId)
+            userApi
+              .getUserInfo(userId)
+              .then(() => {
+                const content = ' 님이 회원님을 팔로우하기 시작했습니다'
+                userApi
+                  .postNotifications(followingId, content, writerId)
+                  .then(() => {
+                    console.log("알림 보내기 성공");
+                  })
+                  .catch((error) => {
+                    console.error("알림 보내기 실패: ", error);
+                  });
+              })
+              .catch((error) => {
+              console.error('팔로우 알림 중 유저 정보 받아오기 실패: ', error)
+            })
+          })
+          .catch((error) => {
+            console.error('알림 실패: ', error)
+          })
       } catch (error) {
         console.error('팔로우 에러: ', error)
       }
@@ -254,14 +295,13 @@ const Profile = () => {
 
   const renderMbti = () => {
     if (!mbti) {
-      return undefined;
-    }
-    if (mbti === 'N') {
-      return "/assets/user/nbadge.png";
+      return "/assets/noBadget.png";
+    } else if (mbti === 'N') {
+      return "/assets/nBadget.png";
     } else if (mbti === 'S') {
-      return "/assets/user/sbadge.png";
+      return "/assets/sBadget.png";
     }
-    return undefined;
+    return "/assets/noBadget.png";
   };
 
   const handleEditProfileClick = () => {
@@ -274,7 +314,6 @@ const Profile = () => {
 
   const closeUserInfoEditModal = () => {
     setIsUserInfoEditModalOpen(false);
-    window.location.href = window.location.href;
   };
 
   const closeNSModal = () => {
@@ -288,8 +327,10 @@ const Profile = () => {
       const isFollowing = followingList.data.data.some((follow: any) => String(follow.followingId) === String(followUserId));
       if (isFollowing) {
         await userApi.unFollow(userId, followUserId.toString());
+        setFollowings(prev => prev - 1);
       } else {
         await userApi.follow(userId, followUserId.toString());
+        setFollowings(prev => prev + 1);
       }
   
       // 상태 업데이트
@@ -319,15 +360,15 @@ const Profile = () => {
         <div>
           <h2 className="text-xl font-bold flex items-center">
             {nickName}
-            {mbti && <img className="ml-2 w-8 h-8" src={renderMbti()} alt="badge" />}
+            <img className="ml-2 w-8 h-8" src={renderMbti()} alt="badge" />
             {/* 팔로우 버튼, 본인 일 땐 프로필 수정 버튼과 N/S 설문조사 버튼 */}
             {!isOwnProfile && (
               <button
                 className={`ms-10 text-xs w-auto h-auto p-2 rounded-lg border-none shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 ${
-                  isFollowing ? "bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-300" : "bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-300"
+                  myFollow ? "bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-300" : "bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-300"
                 }`}
                 onClick={handleClick}>
-                {isFollowing ? "팔로잉" : "팔로우"}
+                {myFollow ? "팔로잉" : "팔로우"}
               </button>
             )}
 
@@ -348,17 +389,17 @@ const Profile = () => {
           </h2>
           <div className="flex mt-2 items-center space-x-10">
             <div className="flex flex-col items-center">
-              <button onClick={() => openFollowModal("팔로워")}>{ followers } followers</button>
+              <button onClick={() => openFollowModal("팔로워")}>{followers} followers</button>
               <div className="flex flex-col items-center mt-2">
                 <p className="text-yellow-500 font-bold">N 포인트</p>
                 <p className="font-bold">{npoint}</p>
               </div>
             </div>
             <div className="flex flex-col items-center">
-              <button onClick={() => openFollowModal("팔로잉")}>{ followings } followings</button>
+              <button onClick={() => openFollowModal("팔로잉")}>{followings} followings</button>
               <div className="flex flex-col items-center mt-2">
                 <p className="text-yellow-500 font-bold">N 지수</p>
-                <p className="font-bold">상위 4%</p>
+                <p className="font-bold">상위 {rank}%</p>
               </div>
             </div>
           </div>
@@ -409,11 +450,18 @@ const Profile = () => {
       </div>
 
       {/* 콘텐츠 공간 */}
-      {/* 통신 예정, 이미지 안 뜨는게 정상 */}
-      <div>{renderContent()}</div>
+      <div className="">{renderContent()}</div>
 
       <TopButton />
-      <FollowList isOpen={isFollowModalOpen} onClose={() => setIsFollowModalOpen(false)} activeTab={activeFollowTab} setActiveTab={setActiveFollowTab} followingsList={followingsList} followersList={followersList} onFollowToggle={handleFollowToggle} />
+      <FollowList
+        isOpen={isFollowModalOpen}
+        onClose={() => setIsFollowModalOpen(false)}
+        activeTab={activeFollowTab}
+        setActiveTab={setActiveFollowTab}
+        followingsList={followingsList}
+        followersList={followersList}
+        onFollowToggle={handleFollowToggle}
+      />
       {isUserInfoEditModalOpen && <UserInfoEditModal isOpen={isUserInfoEditModalOpen} onNext={() => closeUserInfoEditModal()} setProfileImage={setProfileImage} onClose={closeUserInfoEditModal} />}
       {isNSModalOpen && <NSModal isOpen={isNSModalOpen} onClose={closeNSModal} mode={"profile"} />}
     </div>

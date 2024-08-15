@@ -1,6 +1,7 @@
 import React from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import { useNavigate } from "react-router";
+import TimeDifference from "../common/TimeDifference";
 
 interface If {
   id: number;
@@ -28,15 +29,26 @@ interface Props {
 
 const OpinionCard = ({ ifBoard }: Props) => {
   const navigate = useNavigate();
+
   const goToDetail = (boardId: number) => {
     navigate(`/ifdetail/${boardId}`);
+  };
+
+  const handleUserClick = (e: React.MouseEvent<HTMLImageElement>) => {
+    e.stopPropagation();
+    navigate(`/profile/${ifBoard.user.userId}`);
   };
 
   return (
     <div className="h-72 p-5 border-solid border-[#565656] border-[1px] rounded-lg grid grid-rows-[1fr_1fr_3fr] gap-3 cursor-pointer duration-300 ease-out hover:-translate-y-3 hover:shadow-lg" onClick={() => goToDetail(ifBoard.id)}>
       <div className="flex justify-between">
         <div className="flex items-center">
-          <img className="w-9 h-9 mr-3 border rounded-[50%]" src={ifBoard.user.profileImage === null ? "/assets/user/defaultProfile.png" : ifBoard.user.profileImage} alt="" />
+          <img
+            onClick={handleUserClick}
+            className="w-9 h-9 mr-3 border rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
+            src={ifBoard.user.profileImage === null ? "/assets/user/defaultProfile.png" : ifBoard.user.profileImage}
+            alt=""
+          />
           <div>
             <div className="w-40 flex justify-between items-center">
               <div className="flex items-center">
@@ -45,7 +57,8 @@ const OpinionCard = ({ ifBoard }: Props) => {
               </div>
             </div>
             <div>
-              <p className="text-xs text-left">{ifBoard.createdAt}</p>
+              {/* <p className="text-xs text-left">{ifBoard.createdAt}</p> */}
+              <TimeDifference timestamp={new Date(ifBoard.createdAt)} />
             </div>
           </div>
         </div>

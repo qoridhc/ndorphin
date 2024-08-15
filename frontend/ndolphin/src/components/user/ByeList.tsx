@@ -1,65 +1,145 @@
-import React from "react";
-import ByeContent from "../../pages/bye/ByeContent";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import boardApi from "../../api/boardApi";
+import TimeDifference from "../common/TimeDifference";
 
-const ByeList = () => {
-  const byeContentList = [
-    {
-      id: 1,
-      switch: 0,
-      profileImgUrl: "/assets/profile/profile3.png",
-      user: "근데 말약에",
-      date: "2024-07-30 01:22",
-      content: "매일 5번 만약에 외치던 N입니다 요즘 만약에가 줄어서 검사해보니 아니나다를까 S 나왔네요 N으로 다시 돌아오는 날에는 기념으로 동화책 하나 쓰겠습니다 남은 N들아! 만약에 화이팅 ㅎㅎ (이젠 만약에 재미없..ㅓ)",
-      greetingCount: 10,
-      goodByeCount: 12,
-    },
-    {
-      id: 2,
-      switch: 1,
-      profileImgUrl: "/assets/profile/profile2.png",
-      user: "만약핑인데",
-      date: "2024-07-29 01:22",
-      content: "동화책이 재밌어서 읽으러 종종왔는데 만약에 보다보니 N으로 바꼈나봐요 ㅋㅋㅋㅋ 어제도 만약에로 토론하다 왔는데 이제 여기서 다 풀고 가겠습니다 선배님들, 만약에 많이 올려주세요 기대할게요",
-      greetingCount: 8,
-      goodByeCount: 2,
-    },
-    {
-      id: 3,
-      switch: 1,
-      profileImgUrl: "/assets/profile/profile5.png",
-      user: "코에촉촉",
-      date: "2024-06-29 01:22",
-      content: "옆에서 매일 만약에 만약에 하면서 저를 괴롭히던 친구가 있는데 저도 모르게 스며들었나봐요.... 제가 만약에를 하게 되는 날이 오다니 믿을 수가 없네요.. 저 사실 걔 좋아하는 걸까요? 요즘들어 혼란스러워요 아무튼 재밌게 즐겨볼게요",
-      greetingCount: 2,
-      goodByeCount: 1,
-    },
-    {
-      id: 4,
-      switch: 0,
-      profileImgUrl: "/assets/profile/profile3.png",
-      user: "별이 빛나는 밤",
-      date: "2024-07-30 14:00",
-      content: "취업하고나서 바쁜 회사 일에 신경쓰다보니 만약에 못한 지도 오래 됐네요. 학생 때는 만약에 참 많이도 했었는데, 역시 현실이라는 건 어쩔 수 없나봅니다. 그동안 즐거웠어요. 오랜만에 보니 추억이네요.",
-      greetingCount: 15,
-      goodByeCount: 19,
-    },
-    {
-      id: 5,
-      switch: 1,
-      profileImgUrl: "/assets/profile/profile1.png",
-      user: "제로만먹음",
-      date: "2024-07-30 14:00",
-      content: "요즘 인터넷 너무 많이 해서 그런가 갑자기 상상력 늘어남;; ㅋㅋㅋ 친구들은 귀찮다고 안 받아줘서 걍 여기서 놀아야겠음",
-      greetingCount: 6,
-      goodByeCount: 3,
-    },
-  ];
+interface BoardItem {
+  id: string;
+  user: {
+    userId: number;
+    nickName: string;
+    profileImage: string;
+    mbti: string;
+  };
+  content: string;
+  createdAt: string;
+  reactionTypeCounts: {
+    WELCOME: number;
+    GOODBYE: number;
+  };
+}
+
+interface Reactions {
+  [key: string]: string | null;
+}
+
+const ByeList: React.FC = () => {
+  const location = useLocation();
+  const [myByeBoardList, setMyByeBoardList] = useState<BoardItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [reactions, setReactions] = useState<Reactions>({});
+
+  useEffect(() => {
+    setIsLoading(true);
+    setError(null);
+    boardApi
+      .list("BYE_BOARD")
+      .then((response) => {
+        const getByeBoardList = response.data.data.content as BoardItem[];
+        const currentUserId = Number(location.pathname.split("/")[2]);
+        const filteredList = getByeBoardList.filter((item) => item.user.userId === currentUserId);
+        setMyByeBoardList(filteredList);
+
+        const initialReactions: Reactions = {};
+        filteredList.forEach((item) => {
+          initialReactions[item.id] = null;
+        });
+        setReactions(initialReactions);
+      })
+      .catch((error) => {
+        console.error("작별인사 게시글 불러오기 실패: ", error);
+        setError("게시글을 불러오는 데 실패했습니다. 다시 시도해 주세요.");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [location.pathname]);
+
+  const handleReaction = (postId: string, reactionType: string) => {
+    const currentReaction = reactions[postId];
+    let newReaction = reactionType;
+
+    if (currentReaction === reactionType) {
+      newReaction = ""; // 같은 리액션을 다시 클릭하면 취소
+    }
+
+    console.log(`Sending reaction update for postId: ${postId}, newReaction: ${newReaction}`);
+
+    boardApi
+      .reactionUpdate(postId, newReaction)
+      .then((response) => {
+        console.log(`Reaction update response: ${response.data}`);
+        setReactions((prev) => ({ ...prev, [postId]: newReaction }));
+        updateReactionCount(postId, currentReaction, newReaction);
+      })
+      .catch((error) => {
+        console.error("리액션 업데이트 실패:", error);
+      });
+  };
+
+  const updateReactionCount = (postId: string, oldReaction: string | null, newReaction: string | null) => {
+    setMyByeBoardList((prevList) =>
+      prevList.map((item) => {
+        if (item.id === postId) {
+          const counts = { ...item.reactionTypeCounts };
+          if (oldReaction) counts[oldReaction as keyof typeof counts] = Math.max((counts[oldReaction as keyof typeof counts] || 0) - 1, 0);
+          if (newReaction) counts[newReaction as keyof typeof counts] = (counts[newReaction as keyof typeof counts] || 0) + 1;
+          return { ...item, reactionTypeCounts: counts };
+        }
+        return item;
+      })
+    );
+  };
+
+  if (isLoading) {
+    return <div className="mt-40 text-center text-3xl font-bold">로딩 중...</div>;
+  }
+
+  if (error) {
+    return <div className="mt-40 text-center text-3xl font-bold text-red-500">{error}</div>;
+  }
 
   return (
-    <div className="px-96">
-      {byeContentList.map((content, index) => (
-        <ByeContent content={content} key={index} />
-      ))}
+    <div>
+  {/* //     {myByeBoardList.length === 0 ? (
+  //       <div className="mt-40 text-center text-3xl font-bold">
+  //         <img className="w-32 h-32 mx-auto mb-4" src="/assets/user/noContents.png" alt="게시물 없음" />
+  //         <span>등록된 게시물이 없습니다</span>
+  //       </div>
+  //     ) : (
+  //       <div className="px-96">
+  //         {myByeBoardList.map((item) => (
+  //           <div className="p-5 border border-t-0 relative mb-8" key={item.id}>
+  //             <div className="flex">
+  //               <img className="w-8 h-8 mt-1 rounded-full" src={item.user.profileImage} alt={item.user.nickName} />
+  //               <div className="mx-4">
+  //                 <div className="mb-4">
+  //                   <p className="font-bold">{item.user.nickName}</p>
+  //                   <div className="text-sm text-gray-500">
+  //                     <TimeDifference timestamp={new Date(item.createdAt)} />
+  //                   </div>
+  //                 </div>
+  //                 {item.user.mbti === "S" ? <img className="w-14" src="/assets/bye/nToS.png" alt="MBTI S" /> : <img className="w-14" src="/assets/bye/sToN.png" alt="MBTI N" />}
+  //                 <div className="mt-5 mb-10">{item.content}</div>
+  //               </div>
+  //             </div>
+  //             <div className="absolute bottom-0 right-0 mr-2 mb-3 flex space-x-2">
+  //               <button
+  //                 className={`rounded-3xl px-3 py-1 border border-2 border-pink-400 hover:bg-pink-400 hover:text-white font-bold ${reactions[item.id] === "WELCOME" ? "text-white bg-pink-400" : "text-pink-400"}`}
+  //                 onClick={() => handleReaction(item.id, "WELCOME")}>
+  //                 환영해요 <span>{item.reactionTypeCounts.WELCOME || 0}</span>
+  //               </button>
+  //               <button
+  //                 className={`rounded-3xl px-3 py-1 border border-2 border-blue-400 hover:bg-blue-400 hover:text-white font-bold ${reactions[item.id] === "GOODBYE" ? "text-white bg-blue-400" : "text-blue-400"}`}
+  //                 onClick={() => handleReaction(item.id, "GOODBYE")}>
+  //                 잘 가요 <span>{item.reactionTypeCounts.GOODBYE || 0}</span>
+  //               </button>
+  //             </div>
+  //           </div>
+  //         ))}
+  //       </div>
+  //     )} */}
     </div>
   );
 };

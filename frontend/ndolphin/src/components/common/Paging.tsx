@@ -1,28 +1,30 @@
 import exp from "constants";
 import '../../css/Paging.css'
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Pagination from "react-js-pagination";
 
-const Paging: React.FC = () => {
-  const [page, setPage] = useState<number>(1)
+interface PagingProps {
+  page: number;
+  setPage: (page: number) => void;
+  getBoardList: () => void;
+  totalElements: number;
+}
+
+
+const Paging = ({ page, setPage, getBoardList, totalElements }: PagingProps) => {
+  useEffect(() => {
+    getBoardList();
+  }, [page]);
 
   const handlePageChange = (page: number) => {
-    setPage(page)
-  }
+    setPage(page);
+  };
 
   return (
     <div className="mt-24 pb-20">
-      <Pagination
-        activePage={page}
-        itemsCountPerPage={12}
-        totalItemsCount={300}
-        pageRangeDisplayed={8}
-        prevPageText={"‹"}
-        nextPageText={"›"}
-        onChange={handlePageChange}
-      />
+      <Pagination activePage={page} itemsCountPerPage={12} totalItemsCount={totalElements} pageRangeDisplayed={8} prevPageText={"‹"} nextPageText={"›"} onChange={handlePageChange} />
     </div>
-  )
-}
+  );
+};
 
 export default Paging

@@ -30,8 +30,6 @@ const MyAlbum: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [bookId, setBookId] = useState<number | null>(null)
-  const [dalleUrl, setDalleUrl] = useState<string | null>(null);
 
   const handleAiImage = () => {
     setIsModalOpen(true);
@@ -40,22 +38,9 @@ const MyAlbum: React.FC = () => {
   const confirmAiImage = async (image: string) => {
     setIsModalOpen(false);
     setImage(image);
-
-    // const response = await fetch(image);
-    // const data = await response.blob();
-    // const ext = image.split(".").pop(); // url 구조에 맞게 수정할 것
-    // const filename = image.split("/").pop(); // url 구조에 맞게 수정할 것
-    // const metadata = { type: `image/${ext}` };
-    // const file = new File([data], filename!, metadata);
-    // console.log(file);
-    // setFile(file);
   };
 
   const cancelAiImage = () => {
-    // if (dalleUrl) {
-    //   setDalleUrl(null);
-    // }
-
     setIsModalOpen(false);
   };
 
@@ -100,40 +85,22 @@ const MyAlbum: React.FC = () => {
         {/* @ts-ignore */}
         <HTMLFlipBook width={480} height={580} minWidth={315} maxWidth={1000} minHeight={420} maxHeight={1350} flippingTime={600} style={{ margin: "0 auto" }} maxShadowOpacity={0.5} useMouseEvents={false}>
           <Page>
-            <RelayBookLeftForm dalleUrl={dalleUrl} handleRelayBookStart={handleRelayBookStart} />
+            <RelayBookLeftForm handleRelayBookStart={handleRelayBookStart} image={image} />
           </Page>
           <Page>
             <div className="flex flex-col items-center justify-center">
-              <div className="flex justify-end w-full px-8 my-[1.37rem]">
-                {/* {file ? (
-                  <button
-                    onClick={() => {
-                      handleRelayBookStart("파일 업로드 테스트 제목", "파일 업로드 테스트 내용");
-                    }}
-                    className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
-                    등록
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      handleRelayBookStart("파일 업로드 테스트 제목", "파일 업로드 테스트 내용");
-                    }}
-                    className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
-                    등록
-                  </button>
-                )} */}
-              </div>
+              <div className="flex justify-end w-full px-8 my-[1.37rem]"></div>
               <div className="w-full">
                 <div className="flex flex-col items-center">
                   <hr className="flex justify-center w-[88%] border-zinc-950" />
                 </div>
               </div>
-              <BookImage handleAiImage={handleAiImage} image={image} setImage={setImage} setFile={setFile} dalleUrl={dalleUrl} setDalleUrl={setDalleUrl} />
+              <BookImage handleAiImage={handleAiImage} image={image} setImage={setImage} setFile={setFile} />
             </div>
           </Page>
         </HTMLFlipBook>
       </div>
-      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} setImage={setImage} coverImage={"/assets/relay/bookCoverDefault.png"} setFile={setFile}/>
+      <BookCoverAiPromptModal isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={image} setImage={setImage} coverImage={"/assets/relay/bookCoverDefault.png"} setFile={setFile} />
     </div>
   );
 };

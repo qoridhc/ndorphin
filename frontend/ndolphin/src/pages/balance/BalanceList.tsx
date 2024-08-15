@@ -6,6 +6,10 @@ import Filter from "../../components/common/Filter";
 
 const BalanceList = () => {
   const navigate = useNavigate();
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchFilter1, setSearchFilter1] = useState("");
+  const [searchFilter2, setSearchFilter2] = useState("");
+  const [isSearch, setIsSearch] = useState(false);
 
   return (
     <div>
@@ -15,24 +19,26 @@ const BalanceList = () => {
             <p className="text-2xl font-bold">밸런스게임</p>
             <p className="pl-3 text-md">‘만약에~’ 밸런스게임</p>
           </div>
-          <div className="py-6 pb-10 flex flex-col justify-around">{/* <SearchBar /> */}</div>
           <hr className="w-full" />
+          <div className="py-6 pb-10 flex flex-col justify-around">
+            <SearchBar setSearchKeyword={setSearchKeyword} setSearchFilter1={setSearchFilter1} setIsSearch={setIsSearch} />
+          </div>
         </div>
       </div>
 
-      <div className="">
+      <div>
         <div className="px-44 text-right flex justify-between items-center">
-          {/* <Filter /> */}
+          <Filter setSearchFilter2={setSearchFilter2} />
           <button
             className="px-7 py-1 shadow-md rounded-xl font-bold bg-amber-300 text-white"
             onClick={() => {
-              navigate("/ifstart");
+              navigate("/balancestart");
             }}>
             밸런스게임 등록
           </button>
         </div>
 
-        <BalanceCardList />
+        <BalanceCardList searchKeyword={searchKeyword} searchFilter1={searchFilter1} searchFilter2={searchFilter2} isSearch={isSearch} setIsSearch={setIsSearch} />
       </div>
     </div>
   );
