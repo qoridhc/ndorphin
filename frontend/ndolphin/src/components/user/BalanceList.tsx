@@ -25,12 +25,12 @@ const BalanceList = () => {
           const response = await boardApi.list("VOTE_BOARD", page);
           const responseData = response.data.data.content;
 
-          if (responseData.length === 0) {
-            hasMore = false;
-          } else {
+          if (responseData.id) {
             const filteredList = responseData.filter((item: any) => item.user.userId == currentUserId);
             newMyBalanceList.push(...filteredList);
             page++;
+          } else {
+            hasMore = false;
           }
         } catch (error) {
           console.error('프로필 밸런스 불러오기 실패: ', error);

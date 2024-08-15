@@ -42,12 +42,12 @@ const ByeList: React.FC = () => {
           const response = await boardApi.list("BYE_BOARD", page);
           const responseData = response.data.data.content;
 
-          if (responseData.length === 0) {
-            hasMore = false;
-          } else {
+          if (responseData.id) {
             const filteredList = responseData.filter((item: any) => item.user.userId === currentUserId);
             newMyByeBoardList.push(...filteredList);
             page++;
+          } else {
+            hasMore = false;
           }
         } catch (error) {
           console.error('프로필 작별인사 불러오기 실패: ', error);

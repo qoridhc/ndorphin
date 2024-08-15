@@ -32,12 +32,12 @@ const RelayBookList = () => {
           const response = await boardApi.list("RELAY_BOARD", page);
           const responseData = response.data.data.content;
 
-          if (responseData.length === 0) {
-            hasMore = false;
-          } else {
+          if (responseData.id) {
             const filteredList = responseData.filter((item: any) => item.user.userId === currentUserId);
             newMyRelayBoardList.push(...filteredList);
             page++;
+          } else {
+            hasMore = false;
           }
         } catch (error) {
           console.error('프로필 릴레이 불러오기 실패: ', error);
@@ -85,7 +85,7 @@ const RelayBookList = () => {
       while (hasMore) {
         try {
           const response = await boardApi.list("RELAY_BOARD", page);
-          if (response && response.data.data.content.length > 0) {
+          if (response && response.data.data.content.id) {
             allContent.push(...response.data.data.content);
             page++;
           } else {
