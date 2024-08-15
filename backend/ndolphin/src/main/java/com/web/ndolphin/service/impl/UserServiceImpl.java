@@ -37,6 +37,7 @@ import com.web.ndolphin.service.interfaces.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -438,8 +438,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional
     public List<BestNResponseDto> getSortedUsersByNPoint(boolean flag) {
 
         List<User> users = flag
