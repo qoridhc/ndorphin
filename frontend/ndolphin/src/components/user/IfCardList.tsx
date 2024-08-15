@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import boardApi from "../../api/boardApi";
 import TimeDifference from "../common/TimeDifference";
+import Lottie from "lottie-react";
+import noSearch from "../../lottie/noSearch.json";
+import IfListLoading from "../common/loading/IfListLoading";
 
 const IfCardList: React.FC = () => {
   const location = useLocation();
@@ -47,16 +50,20 @@ const IfCardList: React.FC = () => {
     navigate(`/ifdetail/${boardId}`);
   };
 
-  if (isLoading) {
-    return <div className="mt-40 text-center text-3xl font-bold">로딩 중...</div>;
-  }
-
   return (
     <div>
-      {myIfBoardList.length === 0 ? (
-        <div className="mt-40 text-center text-3xl font-bold">
-          <img className="w-32 h-32 mx-auto mb-4" src="/assets/user/noContents.png" alt="#" />
-          <span>등록된 게시물이 없습니다</span>
+      {isLoading ? (
+        <div className="px-40 py-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <IfListLoading key={index} />
+          ))}
+        </div>
+      ) : myIfBoardList.length === 0 ? (
+        <div className="mt-5 text-center text-3xl font-bold">
+          <div className="mt-5 text-center text-3xl font-bold flex flex-col items-center">
+            <Lottie className="w-1/4 mb-1 object-cover" animationData={noSearch} />
+            <span>등록된 게시물이 없습니다</span>
+          </div>
         </div>
       ) : (
         <div className="px-44 py-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
@@ -67,12 +74,12 @@ const IfCardList: React.FC = () => {
               onClick={() => goToDetail(item.id)}>
               <div className="flex justify-between">
                 <div className="flex items-center">
-                  <img className="w-9 h-9 mr-3 border rounded-[50%]" src={item.user.profileImage === null ? "/assets/user/defaultProfile.png" : item.user.profileImage} alt="" />
+                  <img className="w-9 h-9 mr-3 border rounded-[50%] object-cover" src={item.user.profileImage === null ? "/assets/user/defaultProfile.png" : item.user.profileImage} alt="" />
                   <div>
                     <div className="w-40 flex justify-between items-center">
                       <div className="flex items-center">
                         <p className="font-bold">{item.user.nickName}</p>
-                        {<img className="w-5 h-5 ml-1" src={`/assets/${item.user.mbti === null ? "noBadget.png" : item.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                        {<img className="w-5 h-5 ml-1 object-cover" src={`/assets/${item.user.mbti === null ? "noBadget.png" : item.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
                       </div>
                     </div>
                     <div>

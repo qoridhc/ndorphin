@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import userApi from "../../api/userApi";
+import { IoMdClose } from "react-icons/io";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -84,12 +85,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={onClose}>
       <div className="w-96 bg-white rounded-lg shadow-lg" onClick={(e) => e.stopPropagation()}>
-        <div className="p-4 border-b shadow-lg flex justify-between items-center">
-          <div className="w-8"></div>
+        <div className="p-4 border-b shadow-lg flex justify-between items-center relative">
           <h2 className="text-lg font-semibold flex-grow text-center">로그인</h2>
-          <button className="w-8 text-gray-500 hover:text-gray-700 text-xl" onClick={onClose}>
-            ×
-          </button>
+          <IoMdClose className="absolute right-5 object-cover" onClick={onClose} />
         </div>
         <div className="p-6">
           <p className="text-center mb-6">
@@ -102,15 +100,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
           </p>
           <div className="space-y-1">
             <button className="w-72 px-4 py-1 ms-5 bg-white border border-gray-300 rounded-md flex items-center hover:bg-gray-200" onClick={() => handleExternalLogin("google")}>
-              <img className="w-8 h-8" src="/assets/user/googleLoginButton.png" alt="구글로 로그인" />
+              <img className="w-8 h-8 object-cover" src="/assets/user/googleLoginButton.png" alt="구글로 로그인" />
               <span className="flex-grow text-center text-sm font-semibold">구글 계정으로 로그인</span>
             </button>
             <button className="w-72 px-4 py-1 ms-5 bg-[#03C75A] border border-[#03C75A] rounded-md flex items-center text-white" onClick={() => handleExternalLogin("naver")}>
-              <img className="w-8 h-8" src="/assets/user/naverLoginButton.png" alt="네이버로 로그인" />
+              <img className="w-8 h-8 object-cover" src="/assets/user/naverLoginButton.png" alt="네이버로 로그인" />
               <span className="flex-grow text-center text-sm font-semibold">네이버로 로그인</span>
             </button>
             <button className="w-72 ps-5 px-4 py-2 ms-5 bg-[#FFEB00] border border-[#FFEB00] rounded-md flex items-center" onClick={() => handleExternalLogin("kakao")}>
-              <img className="w-6 h-6" src="/assets/user/kakaoLoginButton.png" alt="카카오로 로그인" />
+              <img className="w-6 h-6 object-cover" src="/assets/user/kakaoLoginButton.png" alt="카카오로 로그인" />
               <span className="flex-grow text-center text-sm font-semibold">카카오 로그인</span>
             </button>
           </div>

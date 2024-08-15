@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import boardApi from "../../api/boardApi";
 import userApi from "../../api/userApi";
+import Lottie from "lottie-react";
+import noSearch from "../../lottie/noSearch.json";
+import RelayListLoading from "../common/loading/RelayListLoading";
 
 const RelayBookList = () => {
   const location = useLocation();
@@ -136,15 +139,17 @@ const RelayBookList = () => {
     navigate(`/relaybookdetail/${boardId}`);
   };
 
-  if (isLoading) {
-    return <div className="mt-40 text-center text-3xl font-bold">로딩 중...</div>;
-  }
-
   return (
     <div>
-      {myRelayBoardList.length === 0 ? (
-        <div className="mt-40 text-center text-3xl font-bold">
-          <img className="w-32 h-32 mx-auto mb-4" src="/assets/user/noContents.png" alt="#" />
+      {isLoading ? (
+        <div className="px-40 py-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <RelayListLoading key={index} />
+          ))}
+        </div>
+      ) : myRelayBoardList.length === 0 ? (
+        <div className="mt-5 text-center text-3xl font-bold flex flex-col items-center">
+          <Lottie className="w-1/4 mb-1 object-cover" animationData={noSearch} />
           <span>등록된 게시물이 없습니다</span>
         </div>
       ) : (
@@ -154,22 +159,22 @@ const RelayBookList = () => {
               <div className="pt-2">
                 <div className="relative">
                   <img
-                    className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer"
+                    className="w-10 absolute top-3 right-2 z-10 hover:cursor-pointer object-cover"
                     src={likeStatus[item.id] ? fullHeart : isHovered === item.id ? fullHeart : emptyHeart}
                     alt="#"
                     onClick={() => handleLikeToggle(item.id)}
                     onMouseEnter={() => setIsHovered(item.id)}
                     onMouseLeave={() => setIsHovered(null)}
                   />
-                  <img className="hover:cursor-pointer w-full h-[20rem] rounded-md" src={item.fileUrls[0]} alt="#" onClick={() => goToDetail(item.id)} />
+                  <img className="hover:cursor-pointer w-full h-[20rem] rounded-md object-cover" src={item.fileUrls[0]} alt="#" onClick={() => goToDetail(item.id)} />
                 </div>
                 <span onClick={() => goToDetail(item.id)} className="hover:cursor-pointer font-bold text-lg">
                   {item.subject}
                 </span>
                 <button onClick={() => handleAISummary(item.id)} className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border-2 border-solid border-zinc-300 font-bold text-zinc-800 mt-2">
-                  <img src="/assets/aiSummaryButton.png" className="w-5" alt="#" />
+                  <img src="/assets/aiSummaryButton.png object-cover" className="w-5" alt="#" />
                   <p className="text-xs">AI 요약하기</p>
-                  <img src="/assets/arrow_right.png" className="w-2" alt="#" />
+                  <img src="/assets/arrow_right.png object-cover" className="w-2" alt="#" />
                 </button>
               </div>
 
@@ -181,7 +186,7 @@ const RelayBookList = () => {
 
                   <div className="absolute top-1 transform z-50 bg-[#eff1f1] rounded-md w-72 p-4 max-h-64 overflow-y-auto">
                     <div className="mb-3 flex items-center">
-                      <img className="w-5 mr-1" src="/assets/relay/aiSummaryChatIcon.png" alt="" />
+                      <img className="w-5 mr-1 object-cover" src="/assets/relay/aiSummaryChatIcon.png" alt="" />
                       <h3 className="font-bold text-xs text-zinc-600">AI로 지금까지의 이야기를 요약했어요</h3>
                     </div>
                     <p className="text-[0.73rem] text-justify">{summary}</p>
