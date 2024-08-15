@@ -71,7 +71,7 @@ const BalanceList = () => {
 
               <div className="grid gap-1">
                 <div className="flex items-center">
-                  <img className="w-5 h-5 mr-2 rounded-[50%] object-cover" src={`${item.user.profileImage}`} alt="" />
+                  <img className="w-5 h-5 mr-2 rounded-[50%] object-cover" src={item.user.profileImage === null ? "/assets/user/defaultProfile.png" : item.user.profileImage} alt="#" />
                   <div className="flex justify-between items-center">
                     <div className="flex items-center">
                       <p className="text-sm font-medium">{item.user.nickName}</p>

@@ -356,11 +356,11 @@ const Profile = () => {
     <div className="container mx-auto px-4 hide-scrollbar">
       <div className="mt-12 gap-10 flex justify-center items-center">
         {/* 타입 단언하였지만 오류 나면 바꿀 예정(api로 가져올 때 null이면 에러날 듯) */}
-        <img className="w-36 h-36 mr-6 border rounded-full object-cover" src={profileImage as string} alt="Profile" />
+        <img className="w-36 h-36 mr-6 border rounded-full object-contain" src={profileImage as string} alt="Profile" />
         <div>
           <h2 className="text-xl font-bold flex items-center">
             {nickName}
-            <img className="ml-2 w-8 h-8 object-cover" src={renderMbti()} alt="badge" />
+            <img className="ml-2 w-8 h-8 object-contain" src={renderMbti()} alt="badge" />
             {/* 팔로우 버튼, 본인 일 땐 프로필 수정 버튼과 N/S 설문조사 버튼 */}
             {!isOwnProfile && (
               <button
