@@ -127,7 +127,7 @@ const WishList = () => {
                         />
                       </div>
                       <div className="ms-10 mt-4 flex items-center gap-4">
-                        <img className="w-6 h-6 lg:w-8 lg:h-8 xl:w-9 xl:h-9 rounded-full" src={item.user.profileImage === null ? "/assets/user/defaultProfile.png" : item.user.profileImage} alt="최초 작성자" />
+                        <img className="w-6 h-6 lg:w-8 lg:h-8 xl:w-9 xl:h-9 rounded-full" src={item.user.profileImage == null ? "/assets/user/defaultProfile.png" : item.user.profileImage} alt="최초 작성자" />
                         <span className="text-xs lg:text-base xl:text-lg">{item.user.nickName}</span>
                         {item.user.mbti === "N" && <img className="w-4 h-4 lg:w-6 lg:h-6 xl:w-7 xl:h-7" src="/assets/nBadget.png" alt="badge" />}
                         {item.user.mbti === "S" && <img className="w-4 h-4 lg:w-6 lg:h-6 xl:w-7 xl:h-7" src="/assets/sBadget.png" alt="badge" />}
