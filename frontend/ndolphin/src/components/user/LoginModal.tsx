@@ -66,7 +66,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
             localStorage.setItem('nickName', userInfo.nickName);
             localStorage.setItem('mbti', userInfo.mbti);
             localStorage.setItem('npoint', userInfo.npoint.toString());
-            // localStorage.setItem('profileImage', userInfo.profileImage);
+            localStorage.setItem('profileImage', userInfo.profileImage);
             localStorage.setItem("email", userInfo.email);
   
             window.location.href = window.location.href
