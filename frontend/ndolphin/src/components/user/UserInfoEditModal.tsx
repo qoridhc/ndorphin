@@ -65,7 +65,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
     const file = event.target.files?.[0];
     if (file) {
       if (file.name.length > 30) {
-        window.alert("파일명은 10글자를 초과할 수 없습니다");
+        window.alert("파일명은 30글자를 초과할 수 없습니다");
         return;
       }
       
