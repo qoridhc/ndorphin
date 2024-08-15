@@ -202,7 +202,7 @@ const RelayBookDetail = () => {
   };
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden relay-book">
       {/* 배경 음악 오디오 요소 */}
       <audio ref={audioRef} src="/bgms/relayBookBGM.mp3" loop />
 
