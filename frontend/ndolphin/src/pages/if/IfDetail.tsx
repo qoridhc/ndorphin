@@ -322,6 +322,7 @@ const IfDetail = () => {
 
   const handleUserClick = (userId: number) => {
     navigate(`/profile/${userId}`);
+    window.scrollTo(0, 0);
   };
 
   return (

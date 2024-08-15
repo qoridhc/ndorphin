@@ -32,11 +32,13 @@ const OpinionCard = ({ ifBoard }: Props) => {
 
   const goToDetail = (boardId: number) => {
     navigate(`/ifdetail/${boardId}`);
+    window.scrollTo(0, 0);
   };
 
   const handleUserClick = (e: React.MouseEvent<HTMLImageElement>) => {
     e.stopPropagation();
     navigate(`/profile/${ifBoard.user.userId}`);
+    window.scrollTo(0, 0);
   };
 
   return (
