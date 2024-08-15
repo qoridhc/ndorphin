@@ -4,6 +4,8 @@ import Paging from "../common/Paging";
 import BalanceCard from "./BalanceCard";
 import boardApi from "../../api/boardApi";
 import IfListLoading from "../common/loading/IfListLoading";
+import Lottie from "lottie-react";
+import noSearch from "../../lottie/noSearch.json";
 
 interface Balance {
   id: number;
@@ -86,16 +88,23 @@ const BalanceCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch
           ))}
         </div>
       ) : balanceBoardList ? (
-        <div className="px-44 py-10 grid grid-cols-3 gap-5">
-          {balanceBoardList.map((balance) => (
-            <BalanceCard key={balance.id} balance={balance} />
-          ))}
-        </div>
+        balanceBoardList.length === 0 ? (
+          <div className="flex flex-col items-center">
+            <Lottie className="w-1/4" animationData={noSearch} />
+            <p className="py-5 text-center font-semibold">검색 결과가 없습니다</p>
+          </div>
+        ) : (
+          <div className="px-44 py-10 grid grid-cols-3 gap-5">
+            {balanceBoardList.map((balance) => (
+              <BalanceCard key={balance.id} balance={balance} />
+            ))}
+          </div>
+        )
       ) : (
         <></>
       )}
 
-      <Paging page={page} setPage={setPage} getBoardList={getBalanceBoardList} totalElements={totalElements} />
+      {balanceBoardList?.length === 0 ? <></> : <Paging page={page} setPage={setPage} getBoardList={getBalanceBoardList} totalElements={totalElements} />}
     </div>
   );
 };

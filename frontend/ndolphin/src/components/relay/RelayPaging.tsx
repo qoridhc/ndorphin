@@ -70,6 +70,7 @@ const RelayPaging = ({ setIsLoading, setBookList, tabs, searchKeyword, searchFil
       try {
         const response = await boardApi.search("RELAY_BOARD", searchKeyword, searchFilter1, searchFilter2, page - 1, false);
         setBookList(response.data.data.content);
+        console.log(response.data.data.content);
 
         const totalElements = response.data.data.totalElements;
         setTotalElements(totalElements);

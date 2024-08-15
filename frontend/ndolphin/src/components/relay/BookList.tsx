@@ -4,6 +4,8 @@ import Book from "./Book";
 import RelayPaging from "./RelayPaging";
 import { tab } from "@testing-library/user-event/dist/tab";
 import IfListLoading from "../common/loading/IfListLoading";
+import Lottie from "lottie-react";
+import noSearch from "../../lottie/noSearch.json";
 
 interface BookListProps {
   tabs: number;
@@ -29,6 +31,11 @@ const BookList = ({ tabs, bookList, setBookList, searchKeyword, searchFilter1, s
                 <IfListLoading key={index} />
               ))}
             </div>
+          ) : bookList.length === 0 ? (
+            <div className="flex flex-col items-center">
+              <Lottie className="w-1/4" animationData={noSearch} />
+              <p className="py-5 text-center font-semibold">검색 결과가 없습니다</p>
+            </div>
           ) : (
             <div className="px-44 py-10 grid grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-20">{bookList.map((book) => book.done === false && <Book key={book.id} book={book} />)}</div>
           )}
@@ -41,6 +48,11 @@ const BookList = ({ tabs, bookList, setBookList, searchKeyword, searchFilter1, s
               {Array.from({ length: 12 }).map((_, index) => (
                 <IfListLoading key={index} />
               ))}
+            </div>
+          ) : bookList.length === 0 ? (
+            <div className="flex flex-col items-center">
+              <Lottie className="w-1/4" animationData={noSearch} />
+              <p className="py-5 text-center font-semibold">검색 결과가 없습니다</p>
             </div>
           ) : (
             <div className="px-44 py-10 grid grid-cols-2 lg:grid-cols-4 gap-x-14 gap-y-20">{bookList.map((book) => book.done === true && <Book key={book.id} book={book} />)}</div>

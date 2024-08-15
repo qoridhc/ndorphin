@@ -3,6 +3,8 @@ import Paging from "../common/Paging";
 import boardApi from "../../api/boardApi";
 import OpinionCard from "./OpinionCard";
 import IfListLoading from "../common/loading/IfListLoading";
+import Lottie from "lottie-react";
+import noSearch from "../../lottie/noSearch.json";
 
 interface If {
   id: number;
@@ -85,16 +87,23 @@ const IfCardList = ({ searchKeyword, searchFilter1, searchFilter2, isSearch, set
             <IfListLoading key={index} />
           ))}
         </div>
-      ) : (
-        ifBoardList && (
+      ) : ifBoardList ? (
+        ifBoardList.length === 0 ? (
+          <div className="flex flex-col items-center">
+            <Lottie className="w-1/4" animationData={noSearch} />
+            <p className="py-5 text-center font-semibold">검색 결과가 없습니다</p>
+          </div>
+        ) : (
           <div className="px-44 py-10 grid grid-cols-4 gap-5">
             {ifBoardList.map((ifBoard) => (
               <OpinionCard key={ifBoard.id} ifBoard={ifBoard} />
             ))}
           </div>
         )
+      ) : (
+        <></>
       )}
-      <Paging page={page} setPage={setPage} getBoardList={getIfBoardList} totalElements={totalElements} />
+      {ifBoardList?.length === 0 ? <></> : <Paging page={page} setPage={setPage} getBoardList={getIfBoardList} totalElements={totalElements} />}
     </div>
   );
 };
