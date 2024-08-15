@@ -9,6 +9,8 @@ import InsertionImage from "../../components/common/InsertionImage";
 import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import "../../css/toolTip.css";
+import Lottie from "lottie-react";
+import detailLoading from "../../lottie/detailLoading.json";
 import TimeDifference from "../../components/common/TimeDifference";
 
 interface BalanceBoard {
@@ -380,8 +382,7 @@ const BalanceDetail = () => {
                         <button
                           className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 ${isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] border-[#f1f1f1] cursor-not-allowed"}`}
                           disabled={!isFormValid}
-                          onClick={() => handleUpdateBalanceBoard()}
-                        >
+                          onClick={() => handleUpdateBalanceBoard()}>
                           수정
                         </button>
                         {!isFormValid && (
@@ -477,8 +478,7 @@ const BalanceDetail = () => {
                             key={vote.voteContentId}
                             onClick={() => {
                               balanceBoardData.userVoteContentId === vote.voteContentId ? handleVoteDelete() : handleVoteUpdate(vote.voteContentId);
-                            }}
-                          >
+                            }}>
                             <div className="h-full w-full absolute bg-gray-100 rounded-lg overflow-hidden">
                               <div className="h-full opacity-75 transition-none" ref={(el) => (progressRefs.current[index] = el)}></div>
                             </div>
@@ -497,8 +497,7 @@ const BalanceDetail = () => {
                           <button
                             className={`h-12 border-solid border-2 rounded-[30px] flex justify-center items-center transition-colors duration-150 ease-in-out hover:bg-opacity-15 border-${voteColors[index]} hover:bg-${voteColors[index]}`}
                             key={vote.voteContentId}
-                            onClick={() => handleVoteCreate(vote.voteContentId)}
-                          >
+                            onClick={() => handleVoteCreate(vote.voteContentId)}>
                             <p className={`w-full px-5 py-2 font-bold text-${voteColors[index]}`}>{vote.voteContent}</p>
                           </button>
                         ))}
@@ -524,7 +523,9 @@ const BalanceDetail = () => {
           </div>
         </div>
       ) : (
-        <p>Loading...</p>
+        <p className="px-44 py-5 flex justify-center">
+          <Lottie className="w-36" animationData={detailLoading} />
+        </p>
       )}
 
       <BookCoverAiPromptModal setFile={setFile} isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} />

@@ -41,9 +41,9 @@ const BalanceCard = ({ balance }: Props) => {
       <img className="w-full aspect-[5/3] object-cover" src={`${balance.fileUrls[0]}`} alt="" />
 
       <div className="grid gap-1">
-        <div onClick={handleUserClick} className="flex items-center">
-          <img className="w-5 h-5 mr-2 rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" src={`${balance.user.profileImage}`} alt="" />
-          <div className="flex justify-between items-center">
+        <div className="flex items-center">
+          <img className="w-5 h-5 mr-2 rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" onClick={handleUserClick} src={`${balance.user.profileImage}`} alt="" />
+          <div className="flex justify-between items-center" onClick={handleUserClick}>
             <div className="flex items-center">
               <p className="text-sm font-medium">{balance.user.nickName}</p>
               {<img className="w-5 h-5 ml-1" src={`/assets/${balance.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
