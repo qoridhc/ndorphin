@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 @Tag(name = "게시판 컨트롤러", description = "게시판 API입니다")
 @RestController
 @RequiredArgsConstructor
@@ -53,13 +54,16 @@ public class BoardController {
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDto> createBoard(
+            @Parameter(description = "생성할 게시글의 정보", required = true)
             @RequestPart(name = "request") BoardRequestDto boardRequestDto,
+            @Parameter(description = "첨부 파일 목록", required = false)
             @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles)
             throws IOException {
 
         ResponseEntity<ResponseDto> response = boardService.createBoard(boardRequestDto, multipartFiles);
         return response;
     }
+
 
     @Operation(
             summary = "게시글 목록 조회",
@@ -82,25 +86,32 @@ public class BoardController {
                     content = @Content(schema = @Schema())
             )
     })
+
     @GetMapping
     public ResponseEntity<ResponseDto<Page<BoardDto>>> getBoardsByType(
+            @Parameter(description = "게시판 유형", required = true)
             @RequestParam("type") BoardType boardType,
+
+            @Parameter(description = "첫 번째 필터", required = false)
             @RequestParam(value = "filter1", required = false) String filter1,
+
+            @Parameter(description = "두 번째 필터", required = false, example = "recent")
             @RequestParam(value = "filter2", required = false, defaultValue = "recent") String filter2,
+
+            @Parameter(description = "검색어", required = false)
             @RequestParam(value = "search", required = false) String search,
+
+            @Parameter(description = "페이징 정보", required = false)
             @PageableDefault(size = 12) Pageable pageable,
+
+            @Parameter(description = "완료 여부 (true: 완료된 게시글, false: 진행 중인 게시글)", required = false)
             @RequestParam(value = "isDone", required = false) Boolean isDone) {
 
         ResponseEntity<ResponseDto<Page<BoardDto>>> responseEntity = boardService.getBoardsByType(boardType, filter1,
                 filter2, search, pageable, isDone);
-
-        // 게시글 목록은 5분 동안 캐시하도록 설정
-        return ResponseEntity
-                .status(responseEntity.getStatusCode())
-                .headers(responseEntity.getHeaders())
-                .header("Cache-Control", "public, max-age=300")  // 5분 동안 캐시
-                .body(responseEntity.getBody());
+        return responseEntity;
     }
+
 
     @Operation(summary = "게시글 조회", description = "특정 게시글을 조회합니다.")
     @ApiResponses(value = {
@@ -113,16 +124,11 @@ public class BoardController {
     })
     @GetMapping("/{boardId}")
     public ResponseEntity<ResponseDto> getBoardById(
+            @Parameter(description = "조회할 게시글 ID", required = true)
             @PathVariable Long boardId) {
 
         ResponseEntity<ResponseDto> response = boardService.getBoardById(boardId);
-
-        // 특정 게시글은 10분 동안 캐시하도록 설정
-        return ResponseEntity
-                .status(response.getStatusCode())
-                .headers(response.getHeaders())
-                .header("Cache-Control", "public, max-age=600")  // 10분 동안 캐시
-                .body(response.getBody());
+        return response;
     }
 
     @Operation(summary = "게시글 수정", description = "기존 게시글을 수정합니다.")
@@ -136,16 +142,24 @@ public class BoardController {
             @ApiResponse(responseCode = "500", description = "서버 오류입니다.",
                     content = @Content(schema = @Schema()))
     })
+
     @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDto> updateBoard(
+            @Parameter(description = "수정할 게시글 ID", required = true)
             @PathVariable("boardId") Long boardId,
+            @Parameter(description = "수정할 게시글 정보", required = true)
             @RequestPart(name = "request") BoardRequestDto boardRequestDto,
+            @Parameter(description = "첨부 파일 목록", required = false)
             @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles,
-            @RequestPart(name = "deleteFiles", required = false) List<String> deleteFiles)
+            @Parameter(description = "삭제할 파일 목록 JSON", required = false)
+            @RequestPart(name = "deleteFiles", required = false) List<String> deleteFiles) // 변경된 부분
             throws IOException {
 
+        // @RequestPart로 변경하면, deleteFilesJson 변수를 JSON 리스트로 바로 받을 수 있습니다.
+        // ObjectMapper로 변환 작업이 필요 없습니다.
         List<String> fileNamesToDelete = deleteFiles;
 
+        // 기존 로직 유지
         ResponseEntity<ResponseDto> response = boardService.updateBoard(boardId, boardRequestDto, multipartFiles,
                 fileNamesToDelete);
         return response;
@@ -162,6 +176,7 @@ public class BoardController {
     })
     @DeleteMapping("/{boardId}")
     public ResponseEntity<ResponseDto> deleteBoard(
+            @Parameter(description = "삭제할 게시글 ID", required = true)
             @PathVariable("boardId") Long boardId) {
 
         ResponseEntity<ResponseDto> response = boardService.deleteBoard(boardId);
@@ -179,8 +194,12 @@ public class BoardController {
     })
     @PostMapping("/{boardId}/reactions")
     public ResponseEntity<ResponseDto> addReaction(
+            @Parameter(description = "게시글 ID", required = true)
             @PathVariable("boardId") Long boardId,
+            @Parameter(description = "추가할 반응 정보", required = true)
             @RequestBody ReactionRequestDto reactionRequestDto) {
+
+//        System.out.println("HERE " + reactionRequestDto.getReactionType());
 
         ResponseEntity<ResponseDto> response = reactionService.addReaction(boardId, reactionRequestDto);
         return response;
@@ -199,7 +218,9 @@ public class BoardController {
     })
     @PutMapping("/{reactionId}/reactions")
     public ResponseEntity<ResponseDto> updateReaction(
+            @Parameter(description = "수정할 반응 ID", required = true)
             @PathVariable Long reactionId,
+            @Parameter(description = "수정할 반응 정보", required = true)
             @RequestBody ReactionRequestDto reactionRequestDto) {
 
         ResponseEntity<ResponseDto> response = reactionService.updateReaction(reactionId, reactionRequestDto);
@@ -217,6 +238,7 @@ public class BoardController {
     })
     @DeleteMapping("/{reactionId}/reactions")
     public ResponseEntity<ResponseDto> deleteReaction(
+            @Parameter(description = "삭제할 반응 ID", required = true)
             @PathVariable Long reactionId) {
 
         ResponseEntity<ResponseDto> response = reactionService.deleteReaction(reactionId);

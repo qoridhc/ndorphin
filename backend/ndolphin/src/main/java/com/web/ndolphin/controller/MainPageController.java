@@ -76,12 +76,10 @@ public class MainPageController {
                 ResponseMessage.SUCCESS, mainPageResponse);
 
         stopWatch.stop();
+//        System.out.println(stopWatch.prettyPrint());
+//        System.out.println("코드 실행 시간 (s): " + stopWatch.getTotalTimeSeconds());
 
-        // 메인 페이지 데이터는 5분 동안 캐시하도록 설정
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .header("Cache-Control", "public, max-age=300")  // 5분 동안 캐시
-                .body(responseBody);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
     @Operation(summary = "릴레이 데이터 조회", description = "지정된 기간 동안의 릴레이 게시판 데이터를 조회합니다.")
@@ -103,11 +101,7 @@ public class MainPageController {
         ResponseDto<?> responseBody = new ResponseDto<>(ResponseCode.SUCCESS,
                 ResponseMessage.SUCCESS, relayBoards);
 
-        // 릴레이 데이터는 10분 동안 캐시하도록 설정
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .header("Cache-Control", "public, max-age=600")  // 10분 동안 캐시
-                .body(responseBody);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
     @Operation(summary = "밸런스 데이터 조회", description = "지정된 기간 동안의 밸런스 게시판 데이터를 조회합니다.")
@@ -129,11 +123,7 @@ public class MainPageController {
         ResponseDto<?> responseBody = new ResponseDto<>(ResponseCode.SUCCESS,
                 ResponseMessage.SUCCESS, voteBoards);
 
-        // 밸런스 데이터는 10분 동안 캐시하도록 설정
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .header("Cache-Control", "public, max-age=600")  // 10분 동안 캐시
-                .body(responseBody);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
     @Operation(summary = "만약에 데이터 조회", description = "지정된 기간 동안의 '만약에' 게시판 데이터를 조회합니다.")
@@ -155,11 +145,7 @@ public class MainPageController {
         ResponseDto<?> responseBody = new ResponseDto<>(ResponseCode.SUCCESS,
                 ResponseMessage.SUCCESS, opinionBoards);
 
-        // '만약에' 데이터는 10분 동안 캐시하도록 설정
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .header("Cache-Control", "public, max-age=600")  // 10분 동안 캐시
-                .body(responseBody);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
     @Operation(summary = "베스트N 데이터 조회", description = "베스트N 사용자 목록을 조회합니다.")
@@ -181,10 +167,6 @@ public class MainPageController {
         ResponseDto<?> responseBody = new ResponseDto<>(ResponseCode.SUCCESS,
                 ResponseMessage.SUCCESS, bestNs);
 
-        // 베스트N 데이터는 10분 동안 캐시하도록 설정
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .header("Cache-Control", "public, max-age=600")  // 10분 동안 캐시
-                .body(responseBody);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 }
