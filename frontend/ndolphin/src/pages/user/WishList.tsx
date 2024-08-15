@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import userApi from "../../api/userApi";
+import WishListLoading from "../../components/common/loading/WishListLoading";
 
 const WishList = () => {
   const navigate = useNavigate();
@@ -9,14 +10,17 @@ const WishList = () => {
   const [isHovered, setIsHovered] = useState<number | null>(null);
   const fullHeart = "/assets/relay/fullHeart.png";
   const emptyHeart = "/assets/relay/emptyHeart.png";
+  const [isLoading, setIsLoading] = useState(true);
 
   const userId = localStorage.getItem('userId')
 
   useEffect(() => {
+    setIsLoading(true);
     userApi.getFavorites(userId as string)
       .then((res) => {
         const getWishList = res.data.data.boardDtos;
         setWishList(getWishList);
+        setIsLoading(false);
       })
       .catch((err) => {
         console.error('찜 목록 불러오기 실패: ', err)
@@ -83,8 +87,13 @@ const WishList = () => {
         <div className="w-full mb-4 border-b border-black flex flex-col items-center">
           <h1 className="my-12 text-center text-4xl font-semibold">내가 찜한 목록</h1>
         </div>
-        {/* 찜 목록이 비어있을 때 */}
-        {WishList.length === 0 ? (
+        {isLoading ? (
+          <div className="w-full px-40 py-10">
+            {Array.from({ length: 12 }).map((_, index) => (
+              <WishListLoading key={index} />
+            ))}
+          </div>
+        ) : WishList.length === 0 ? (
           <div className="w-full mt-32 flex flex-col items-center justify-center">
             <img className="w-36 h-36" src="/assets/user/emptyList.png" alt="Empty List" />
             <p className="mt-8 text-center text-3xl">목록이 비어있어요</p>
@@ -93,7 +102,7 @@ const WishList = () => {
             </button>
           </div>
         ) : (
-          <div className="w-full px-40 py-10">
+          <div className="w-full px-44 py-10">
             {WishList.map((item) => (
               <div className="" key={item.id}>
                 <div className="pt-2 relative">
@@ -118,13 +127,15 @@ const WishList = () => {
                         />
                       </div>
                       <div className="ms-10 mt-4 flex items-center gap-4">
-                        <img className="w-6 h-6 lg:w-8 lg:h-8 xl:w-9 xl:h-9 rounded-full" src={item.user.profileImage} alt="최초 작성자" />
+                        <img className="w-6 h-6 lg:w-8 lg:h-8 xl:w-9 xl:h-9 rounded-full" src={item.user.profileImage == null ? "/assets/user/defaultProfile.png" : item.user.profileImage} alt="최초 작성자" />
                         <span className="text-xs lg:text-base xl:text-lg">{item.user.nickName}</span>
                         {item.user.mbti === "N" && <img className="w-4 h-4 lg:w-6 lg:h-6 xl:w-7 xl:h-7" src="/assets/nBadget.png" alt="badge" />}
                         {item.user.mbti === "S" && <img className="w-4 h-4 lg:w-6 lg:h-6 xl:w-7 xl:h-7" src="/assets/sBadget.png" alt="badge" />}
                         {item.user.mbti === null && <img className="w-4 h-4 lg:w-6 lg:h-6 xl:w-7 xl:h-7" src="/assets/noBadget.png" alt="badge" />}
                       </div>
-                      <div className="ms-10 mt-40 text-wrap max-w-[300px] sm:max-w-[400px] md:max-w[450px] xl:max-w-[600px] 2xl:max-w-[900px] text-xs lg:text-base xl:text-lg" style={{ wordWrap: "break-word", overflowWrap: "break-word", whiteSpace: "pre-wrap" }}>
+                      <div
+                        className="ms-10 mt-40 text-wrap max-w-[300px] sm:max-w-[400px] md:max-w[450px] xl:max-w-[600px] 2xl:max-w-[900px] text-xs lg:text-base xl:text-lg"
+                        style={{ wordWrap: "break-word", overflowWrap: "break-word", whiteSpace: "pre-wrap" }}>
                         {item.summary}
                       </div>
                     </div>

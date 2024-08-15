@@ -74,7 +74,7 @@ const IfCardList: React.FC = () => {
               onClick={() => goToDetail(item.id)}>
               <div className="flex justify-between">
                 <div className="flex items-center">
-                  <img className="w-9 h-9 mr-3 border rounded-[50%] object-cover" src={item.user.profileImage === null ? "/assets/user/defaultProfile.png" : item.user.profileImage} alt="" />
+                  <img className="w-9 h-9 mr-3 border rounded-[50%] object-cover" src={item.user.profileImage === null ? "/assets/user/defaultProfile.png" : item.user.profileImage} alt="#" />
                   <div>
                     <div className="w-40 flex justify-between items-center">
                       <div className="flex items-center">
