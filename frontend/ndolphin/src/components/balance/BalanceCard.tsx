@@ -31,13 +31,18 @@ const BalanceCard = ({ balance }: Props) => {
     navigate(`/balancedetail/${id}`);
   };
 
+  const handleUserClick = (e: React.MouseEvent<HTMLImageElement>) => {
+    e.stopPropagation();
+    navigate(`/profile/${balance.user.userId}`);
+  };
+
   return (
     <div className="w-full p-5 border-solid border-[#565656] border-[1px] rounded-lg grid gap-3 cursor-pointer" onClick={() => goToDetail(balance.id)}>
       <img className="w-full aspect-[5/3] object-cover" src={`${balance.fileUrls[0]}`} alt="" />
 
       <div className="grid gap-1">
-        <div className="flex items-center">
-          <img className="w-5 h-5 mr-2 rounded-[50%]" src={`${balance.user.profileImage}`} alt="" />
+        <div onClick={handleUserClick} className="flex items-center">
+          <img className="w-5 h-5 mr-2 rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" src={`${balance.user.profileImage}`} alt="" />
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <p className="text-sm font-medium">{balance.user.nickName}</p>

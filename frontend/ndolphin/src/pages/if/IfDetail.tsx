@@ -307,6 +307,10 @@ const IfDetail = () => {
     }
   };
 
+  const handleUserClick = (userId: number) => {
+    navigate(`/profile/${userId}`);
+  };
+
   return (
     <>
       {ifBoardData && recommendationList ? (
@@ -321,7 +325,14 @@ const IfDetail = () => {
               <div className="grid gap-3">
                 <div className="flex justify-between">
                   <div className="flex">
-                    <img className="w-9 h-9 mr-3 border rounded-[50%]" src={`${ifBoardData.user.profileImage === null ? "/assets/user/defaultProfile.png" : ifBoardData.user.profileImage}`} alt="" />
+                    <img
+                      onClick={() => {
+                        handleUserClick(ifBoardData.user.userId);
+                      }}
+                      className="w-9 h-9 mr-3 border rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
+                      src={`${ifBoardData.user.profileImage === null ? "/assets/user/defaultProfile.png" : ifBoardData.user.profileImage}`}
+                      alt=""
+                    />
                     <div>
                       <div className="w-40 flex justify-between items-center">
                         <div className="flex items-center">
@@ -343,7 +354,8 @@ const IfDetail = () => {
                             isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] cursor-not-allowed border-zinc-100"
                           }`}
                           disabled={!isFormValid} // 모든 값이 있을 때만 버튼 활성화
-                          onClick={() => handleUpdateIfBoard()}>
+                          onClick={() => handleUpdateIfBoard()}
+                        >
                           수정
                         </button>
                         {!isFormValid && (
@@ -432,7 +444,14 @@ const IfDetail = () => {
 
                   {ifBoardData.commentResponseDtos.map((comment) => (
                     <div className="p-5 border-b flex" key={comment.commentId}>
-                      <img className="w-9 h-9 mr-3 border rounded-[50%]" src={`${comment.user.profileImage}`} alt="" />
+                      <img
+                        onClick={() => {
+                          handleUserClick(comment.user.userId);
+                        }}
+                        className="w-9 h-9 mr-3 border rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
+                        src={`${comment.user.profileImage}`}
+                        alt=""
+                      />
 
                       <div className="w-full grid gap-2">
                         <div className="grid grid-cols-[6fr_1fr]">
@@ -483,7 +502,8 @@ const IfDetail = () => {
                               <button
                                 className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${updateCommentCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`}
                                 disabled={updateCommentCount === 0}
-                                onClick={() => handleUpdateComment(comment.commentId)}>
+                                onClick={() => handleUpdateComment(comment.commentId)}
+                              >
                                 수정
                               </button>
                               <button className="px-5 py-1 rounded-md text-sm text-[#565656] font-bold border-2 border-gray-300 duration-300 hover:bg-gray-300" onClick={() => setIsCommentUpdate(0)}>

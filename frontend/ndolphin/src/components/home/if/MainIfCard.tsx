@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "../../../css/home/MainRelayBook.css";
 import { IoIosArrowForward } from "react-icons/io";
@@ -22,11 +23,17 @@ interface Props {
 }
 
 const BestIfCard = ({ board }: Props) => {
+  const navigate = useNavigate();
+
+  const handleUserClick = () => {
+    navigate(`/profile/${board.user.userId}`);
+  };
+
   return (
     <div className="w-[40%] h-64 p-5 absolute z-10 bg-white border-solid border-[1px] border-[#565656] rounded-[10px] shadow-[2px_5px_8px_rgb(0,0,0,0.2)] grid grid-rows-[25%_auto_20%]">
       <div className="flex justify-between items-start">
         <div className="w-full flex items-center">
-          <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${board.user.profileImage}`} alt="" />
+          <img onClick={handleUserClick} className="w-9 h-9 mr-3 rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" src={`${board.user.profileImage}`} alt="" />
           <div className="w-full flex justify-between">
             <p className="font-semibold">{board.user.nickName}</p>
             <IoIosArrowForward className="text-2xl" />

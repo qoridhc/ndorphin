@@ -243,6 +243,10 @@ const OkDetail = () => {
     }
   };
 
+  const handleUserClick = (userId: number) => {
+    navigate(`/profile/${userId}`);
+  };
+
   return (
     <div className="px-44 py-5 grid grid-cols-[1fr_2fr_1fr] gap-5">
       {okDetail ? (
@@ -253,7 +257,16 @@ const OkDetail = () => {
           </button>
           <div className="border-t border-x">
             <div className="p-5 border-b flex">
-              {okDetail.user.profileImage && <img className="w-9 h-9 mr-3 rounded-full" src={okDetail.user.profileImage} alt="" />}
+              {okDetail.user.profileImage && (
+                <img
+                  onClick={() => {
+                    handleUserClick(okDetail.user.userId);
+                  }}
+                  className="w-9 h-9 mr-3 rounded-full cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
+                  src={okDetail.user.profileImage}
+                  alt=""
+                />
+              )}
 
               <div className="grid gap-3">
                 <div className="grid grid-cols-[9fr_2fr]">
@@ -294,7 +307,14 @@ const OkDetail = () => {
             {okDetail.commentResponseDtos &&
               okDetail.commentResponseDtos.map((comment) => (
                 <div className="p-5 border-b flex" key={comment.commentId}>
-                  <img className="w-9 h-9 mr-3 rounded-[50%]" src={`${comment.user.profileImage}`} alt="" />
+                  <img
+                    onClick={() => {
+                      handleUserClick(comment.user.userId);
+                    }}
+                    className="w-9 h-9 mr-3 rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
+                    src={`${comment.user.profileImage}`}
+                    alt=""
+                  />
 
                   <div className="w-full grid gap-2">
                     <div className="grid grid-cols-[6fr_1fr]">
@@ -325,7 +345,8 @@ const OkDetail = () => {
                           <button
                             className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${updateCommentCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`}
                             disabled={updateCommentCount === 0}
-                            onClick={() => handleUpdateComment(comment.commentId)}>
+                            onClick={() => handleUpdateComment(comment.commentId)}
+                          >
                             수정
                           </button>
                           <button className="px-5 py-1 rounded-md text-sm text-[#565656] font-bold border-2 border-gray-300 duration-300 hover:bg-gray-300" onClick={() => setIsCommentUpdate(0)}>

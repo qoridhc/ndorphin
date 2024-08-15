@@ -20,6 +20,7 @@ interface User {
   nickName: string;
   npoint: number;
   rank: number;
+  userId: string;
 }
 
 const BestProfile = () => {
