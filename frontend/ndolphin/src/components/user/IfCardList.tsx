@@ -26,12 +26,12 @@ const IfCardList: React.FC = () => {
           const response = await boardApi.list("OPINION_BOARD", page);
           const responseData = response.data.data.content;
 
-          if (responseData.length === 0) {
-            hasMore = false;
-          } else {
+          if (responseData.id) {
             const filteredList = responseData.filter((item: any) => item.user.userId === currentUserId);
             newMyIfBoardList.push(...filteredList);
             page++;
+          } else {
+            hasMore = false;
           }
         } catch (error) {
           console.error('프로필 만약에 불러오기 실패: ', error);
