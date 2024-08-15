@@ -33,6 +33,7 @@ interface Comment {
     userId: number;
     profileImage: string | null;
     nickName: string;
+    mbti: string | null;
   };
   content: string;
   createdAt: string;
@@ -43,7 +44,7 @@ const OkDetail = () => {
   const params = useParams();
   const { boardId } = useParams();
 
-  const profileImage = localStorage.getItem("profileImage");
+  const profileImage = localStorage.getItem("profileImage") ?? undefined;
   const userId = localStorage.getItem("userId");
 
   const [isCommentUpdate, setIsCommentUpdate] = useState(0);
@@ -273,7 +274,7 @@ const OkDetail = () => {
                   onClick={() => {
                     handleUserClick(okDetail.user.userId);
                   }}
-                  className="w-9 h-9 mr-3 rounded-full cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
+                  className="w-9 h-9 border mr-3 rounded-full cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
                   src={okDetail.user.profileImage}
                   alt=""
                 />
@@ -306,7 +307,7 @@ const OkDetail = () => {
 
             <div className="p-5 border-b">
               <div className="flex">
-                <img className="w-11 h-11 mr-3 rounded-[50%]" src={profileImage || undefined} alt="" />
+                <img className="w-11 h-11 mr-3 border rounded-[50%]" src={profileImage === "null" ? "/assets/user/defaultProfile.png" : profileImage} alt="" />
                 <textarea className="w-full min-h-10 text-xl outline-none resize-none" placeholder="댓글을 작성해 주세요" id="target" onChange={(e) => handleTextareaChange(e)} value={commentContent} />
               </div>
               <div className="flex justify-end">
@@ -323,15 +324,19 @@ const OkDetail = () => {
                     onClick={() => {
                       handleUserClick(comment.user.userId);
                     }}
-                    className="w-9 h-9 mr-3 rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
-                    src={`${comment.user.profileImage}`}
+                    className="w-9 h-9 mr-3 border rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
+                    src={`${comment.user.profileImage ? comment.user.profileImage : "/assets/user/defaultProfile.png"}`}
                     alt=""
                   />
 
                   <div className="w-full grid gap-2">
                     <div className="grid grid-cols-[6fr_1fr]">
                       <div className="flex flex-col justify-around">
-                        <p className="font-bold">{comment.user.nickName}</p>
+                        <div className="flex items-center">
+                          <p className="font-bold">{comment.user.nickName}</p>
+                          {<img className="w-5 h-5 ml-1" src={`/assets/${comment.user.mbti === null ? "noBadget.png" : comment.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
+                        </div>
+
                         <TimeDifference timestamp={new Date(comment.createdAt)} />
                       </div>
                       {userId && parseInt(userId) === comment.user.userId ? (

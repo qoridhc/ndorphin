@@ -123,7 +123,7 @@ const OkContent = ({ content }: Props) => {
     <div className="" onClick={() => goToDetail(content.id)}>
       <div className="p-5 border-t border-x grid grid-cols-[1fr_9fr] transition-colors duration-300 hover:bg-gray-100 cursor-pointer">
         <div className="">
-          <img onClick={handleUserClick} className="w-9 h-9 rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" src={`${content.user.profileImage}`} alt="" />
+          <img onClick={handleUserClick} className="w-9 h-9 border rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" src={`${content.user.profileImage}`} alt="" />
         </div>
 
         <div className="grid gap-3">

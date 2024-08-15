@@ -33,26 +33,26 @@ const ByeContent = ({ content, getByeList, updateContent }: Props) => {
   const [userReactionId, setUserReactionId] = useState<string | null>(null);
   const [isActive, setIsActive] = useState<boolean[]>([false, false]);
 
-useEffect(() => {
-  if (content) {
-    const recentWelcome = content?.reactionTypeCounts?.WELCOME || 0;
-    const recentGoodbye = content?.reactionTypeCounts?.GOODBYE || 0;
-    setReactionTypeCounts([recentWelcome, recentGoodbye]);
+  useEffect(() => {
+    if (content) {
+      const recentWelcome = content?.reactionTypeCounts?.WELCOME || 0;
+      const recentGoodbye = content?.reactionTypeCounts?.GOODBYE || 0;
+      setReactionTypeCounts([recentWelcome, recentGoodbye]);
 
-    const userReactionType = content.userReactionType;
-    if (userReactionType === "WELCOME" || userReactionType === "GOODBYE") {
-      setUserReactionType(userReactionType);
-      setIsActive([userReactionType === "WELCOME", userReactionType === "GOODBYE"]);
-    } else {
-      setIsActive([false, false]);
-    }
+      const userReactionType = content.userReactionType;
+      if (userReactionType === "WELCOME" || userReactionType === "GOODBYE") {
+        setUserReactionType(userReactionType);
+        setIsActive([userReactionType === "WELCOME", userReactionType === "GOODBYE"]);
+      } else {
+        setIsActive([false, false]);
+      }
 
-    const userReactionId = content.userReactionId;
-    if (userReactionId) {
-      setUserReactionId(userReactionId);
+      const userReactionId = content.userReactionId;
+      if (userReactionId) {
+        setUserReactionId(userReactionId);
+      }
     }
-  }
-}, [content]);
+  }, [content]);
 
   const handleAddReaction = async (reactionType: string, index: number) => {
     try {
@@ -132,22 +132,26 @@ useEffect(() => {
     }
   };
 
-    const handleUserClick = () => {
-      navigate(`/profile/${content.user.userId}`);
-    };
+  const handleUserClick = () => {
+    navigate(`/profile/${content.user.userId}`);
+  };
 
   return (
     <div>
       <div className="p-5 border-t border-x grid grid-cols-[1fr_9fr]">
         <div className="">
-          <img onClick={handleUserClick} className="w-9 h-9 rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" src={`${content.user.profileImage}`} alt="" />
+          <img
+            onClick={handleUserClick}
+            className="w-9 h-9 border rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
+            src={`${content.user.profileImage ? content.user.profileImage : "/assets/user/defaultProfile.png"}`}
+            alt=""
+          />
         </div>
 
         <div className="grid gap-3">
           <div>
             <p className="font-bold">{content.user.nickName}</p>
             <TimeDifference timestamp={new Date(content.createdAt)} />
-            {/* <p className="text-sm font-semibold text-[#565656]">{content.createdAt}</p> */}
           </div>
 
           {/* S->N or N->S 이미지 표시 */}
@@ -171,8 +175,7 @@ useEffect(() => {
                   <button
                     key={index}
                     onClick={() => clickButton(reactionList[index], index)}
-                    className={`p-1 w-[5.9rem] flex justify-around border-[1.8px] rounded-2xl ${isActive[index] ? (index === 0 ? "bg-pink-400 border-pink-400" : "bg-blue-400 border-blue-400") : index === 0 ? "border-pink-400" : "border-blue-400"}`}
-                  >
+                    className={`p-1 w-[5.9rem] flex justify-around border-[1.8px] rounded-2xl ${isActive[index] ? (index === 0 ? "bg-pink-400 border-pink-400" : "bg-blue-400 border-blue-400") : index === 0 ? "border-pink-400" : "border-blue-400"}`}>
                     <p className={`font-bold text-sm ${isActive[index] ? "text-white" : index === 0 ? "text-pink-400" : "text-blue-400"}`}>{label}</p>
                     <p className={`font-bold text-sm ${isActive[index] ? "text-white" : index === 0 ? "text-pink-400" : "text-blue-400"}`}>{reactionTypeCounts[index]}</p>
                   </button>
