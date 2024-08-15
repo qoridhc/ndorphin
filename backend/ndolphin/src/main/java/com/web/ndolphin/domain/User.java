@@ -16,6 +16,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -72,8 +73,8 @@ public class User extends DateEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Likes> likes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BoardView> boardViews = new ArrayList<>();
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<BoardView> boardViews = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Token token;
@@ -87,4 +88,17 @@ public class User extends DateEntity {
     @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> notificationWriter = new ArrayList<>();
 
+    @Override
+    public String toString() {
+        return "User{" +
+            "userId=" + userId +
+            ", email='" + email + '\'' +
+            ", profileImage='" + profileImage + '\'' +
+            ", nickName='" + nickName + '\'' +
+            ", mbti='" + mbti + '\'' +
+            ", nPoint=" + nPoint +
+            ", type=" + type +
+            ", role=" + role +
+            '}';
+    }
 }

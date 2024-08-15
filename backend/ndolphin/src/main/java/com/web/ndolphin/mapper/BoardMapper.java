@@ -27,7 +27,10 @@ public class BoardMapper {
     // 공통된 Entity -> DTO 변환 로직
     private static void mapCommonFields(Board board, BoardDto dto) {
 
-        dto.setUser(UserMapper.toDto(board.getUser()));
+        User user = board.getUser();
+        System.out.println(user.toString());
+
+        dto.setUser(UserMapper.toDto(user));
         dto.setId(board.getId());
         dto.setSubject(board.getSubject());
         dto.setContent(board.getContent());
@@ -93,14 +96,16 @@ public class BoardMapper {
 
     public static VoteBoardDetailResponseDto toVoteBoardDetailResponseDto(Board board,
         String fileUrl, String fileName, List<VoteInfo> voteInfos, long totalVoteCnt,
-        UserVoteContent userVoteContent, List<? extends BoardDto> sideBoardDtos) {
+        UserVoteContent userVoteContent) {
+
+        // List<? extends BoardDto> sideBoardDtos
 
         VoteBoardDetailResponseDto voteBoardDetailResponseDto = new VoteBoardDetailResponseDto();
 
         mapCommonFields(board, voteBoardDetailResponseDto);
         voteBoardDetailResponseDto.setTotalVoteCnt(totalVoteCnt);
         voteBoardDetailResponseDto.setVoteInfos(voteInfos);
-        voteBoardDetailResponseDto.setSideBoardDtos(sideBoardDtos);
+//        voteBoardDetailResponseDto.setSideBoardDtos(sideBoardDtos);
         voteBoardDetailResponseDto.getFileUrls().add(fileUrl);
         voteBoardDetailResponseDto.getFileNames().add(fileName);
 
@@ -128,7 +133,7 @@ public class BoardMapper {
 
     public static OpinionBoardDetailResponseDto toOpinionBoardDetailResponseDto(Board board,
         String fileUrl, String fileName, boolean hasParticipated, int commentCount,
-        List<CommentResponseDto> commentResponseDtos, List<? extends BoardDto> sideBoards) {
+        List<CommentResponseDto> commentResponseDtos) {
 
         OpinionBoardDetailResponseDto opinionBoardDetailResponseDto = new OpinionBoardDetailResponseDto();
 
@@ -136,7 +141,7 @@ public class BoardMapper {
         opinionBoardDetailResponseDto.setHasParticipated(hasParticipated);
         opinionBoardDetailResponseDto.setCommentCount(commentCount);
         opinionBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
-        opinionBoardDetailResponseDto.setSideBoardDtos(sideBoards);
+//        opinionBoardDetailResponseDto.setSideBoardDtos(sideBoards);
         opinionBoardDetailResponseDto.getFileNames().add(fileName);
         opinionBoardDetailResponseDto.getFileUrls().add(fileUrl);
 

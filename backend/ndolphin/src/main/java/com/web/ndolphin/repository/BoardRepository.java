@@ -27,12 +27,12 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
 //    Page<Board> findByTypeAndFilters(BoardType boardType, String filter1, String filter2,
 //        String search, Pageable pageable);
 
-    @Query("SELECT b FROM Board b " +
-        "WHERE b.boardType = :boardType AND " +
-        "b.id NOT IN (SELECT bv.board.id FROM BoardView bv WHERE bv.user.userId = :userId) " +
-        "ORDER BY b.createdAt DESC")
-    List<Board> findTop3NotViewedByUserAndBoardType(@Param("userId") Long userId,
-        @Param("boardType") BoardType boardType, Pageable pageable);
+//    @Query("SELECT b FROM Board b " +
+//        "WHERE b.boardType = :boardType AND " +
+//        "b.id NOT IN (SELECT bv.board.id FROM BoardView bv WHERE bv.user.userId = :userId) " +
+//        "ORDER BY b.createdAt DESC")
+//    List<Board> findTop3NotViewedByUserAndBoardType(@Param("userId") Long userId,
+//        @Param("boardType") BoardType boardType, Pageable pageable);
 
     @Query("SELECT b FROM Board b WHERE b.boardType = :boardType ORDER BY function('RAND')")
     List<Board> findRandomBoardsByType(@Param("boardType") BoardType boardType, Pageable pageable);
