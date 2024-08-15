@@ -47,14 +47,14 @@ const Header = () => {
     if (accessToken) {
       setIsLoggedIn(true);
     }
-    const storedProfileImage = localStorage.getItem("profileImage");
+    // const storedProfileImage = localStorage.getItem("profileImage");
     const storedEmail = localStorage.getItem("email");
     const storedNickName = localStorage.getItem("nickName");
     const storedMbti = localStorage.getItem("mbti");
     setUserMbti(storedMbti);
     setUserEmail(storedEmail);
     setuserNickName(storedNickName);
-    setProfileImage(storedProfileImage === "null" ? "/assets/user/defaultProfile.png" : storedProfileImage);
+    // setProfileImage(storedProfileImage === "null" ? "/assets/user/defaultProfile.png" : storedProfileImage);
   }, []);
 
   const openLoginModal = () => setIsLoginModalOpen(true);
@@ -77,7 +77,7 @@ const Header = () => {
         localStorage.setItem("mbti", res.data.data.mbti);
         localStorage.setItem("nickName", res.data.data.nickName);
         localStorage.setItem("npoint", res.data.data.npoint.toString());
-        localStorage.setItem("profileImage", res.data.data.profileImage);
+        // localStorage.setItem("profileImage", res.data.data.profileImage);
 
         setProfileImage(res.data.data.profileImage);
       })
@@ -243,7 +243,7 @@ const Header = () => {
 
   const updateProfileImage = (newProfileImage: string | null) => {
     setProfileImage(newProfileImage);
-    localStorage.setItem("profileImage", newProfileImage || "");
+    // localStorage.setItem("profileImage", newProfileImage || "");
   };
 
   const checkMbti = () => {
