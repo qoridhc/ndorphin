@@ -240,7 +240,7 @@ const RelayBookDetail = () => {
           </button>
         </div>
         <div className="h-full w-1/6 absolute top-0 right-0 hover:cursor-pointer hover:bg-zinc-300 hover:opacity-40">
-          <button className="mt-[18rem] absolute right-5" onClick={(e) => onNext("Y")}>
+          <button className="mt-[18rem] absolute right-5" onClick={(e) => onNext("Y")} disabled={pages.length % 2 === 0 ? inputPage === pages.length + 1 : inputPage === pages.length + 2}>
             <img className="w-16" src="/assets/relay/nextButton.png" alt="next" />
           </button>
         </div>
