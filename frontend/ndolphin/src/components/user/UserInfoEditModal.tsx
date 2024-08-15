@@ -275,7 +275,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
           <div className="flex flex-col items-center space-y-2">
             <div className="relative" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
               <label htmlFor="image-input">
-                <img className="cursor-pointer w-32 h-32 object-cover rounded-full" src={profileImage || "/assets/user/profile.png"} alt="기본이미지" />
+                <img className="cursor-pointer w-32 h-32 object-cover rounded-full border" src={profileImage || "/assets/user/profile.png"} alt="기본이미지" />
                 {isHovered && (
                   <div className="absolute inset-0 bg-gray-300 bg-opacity-50 flex justify-center items-center rounded-full">
                     <img src="/assets/user/upload_icon.png" alt="업로드 아이콘" className="w-8 h-8" />
@@ -286,7 +286,9 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
             </div>
 
             {onClose && image && (
-              <div className="py-1 text-red-200 hover:text-red-400 cursor-pointer" onClick={deleteProfileImage}>프로필 이미지 삭제</div>
+              <div className="py-1 text-red-200 hover:text-red-400 cursor-pointer" onClick={deleteProfileImage}>
+                프로필 이미지 삭제
+              </div>
             )}
 
             <input
@@ -301,7 +303,10 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
             />
             <div>
               <p>{isNicknameValid !== null && <span className={`text-xs ${isNicknameValid ? "text-green-500" : "text-red-500"}`}>{nicknameMessage}</span>}</p>
-              <button className={`border rounded-lg mt-2 px-3 py-1 text-xs ${isCheckNicknameButtonEnabled ? "hover:bg-gray-300 hover:text-white" : "bg-gray-200 cursor-not-allowed"}`} onClick={checkNinameDuplicate} disabled={!isCheckNicknameButtonEnabled}>
+              <button
+                className={`border rounded-lg mt-2 px-3 py-1 text-xs ${isCheckNicknameButtonEnabled ? "hover:bg-gray-300 hover:text-white" : "bg-gray-200 cursor-not-allowed"}`}
+                onClick={checkNinameDuplicate}
+                disabled={!isCheckNicknameButtonEnabled}>
                 중복확인
               </button>
             </div>
