@@ -42,12 +42,12 @@ const ByeList: React.FC = () => {
           const response = await boardApi.list("BYE_BOARD", page);
           const responseData = response.data.data.content;
 
-          if (responseData.length === 0) {
-            hasMore = false;
-          } else {
+          if (responseData.id) {
             const filteredList = responseData.filter((item: any) => item.user.userId === currentUserId);
             newMyByeBoardList.push(...filteredList);
             page++;
+          } else {
+            hasMore = false;
           }
         } catch (error) {
           console.error('프로필 작별인사 불러오기 실패: ', error);
@@ -70,7 +70,7 @@ const ByeList: React.FC = () => {
           ))}
         </div>
       ) : myByeBoardList.length === 0 ? (
-        <div className="mt-40 text-center text-3xl font-bold">
+        <div className="mt-5 text-center text-3xl font-bold flex flex-col items-center">
           <Lottie className="w-1/4 mb-1 object-cover" animationData={noSearch} />
           <span>등록된 게시물이 없습니다</span>
         </div>

@@ -26,8 +26,7 @@ interface RelayBookDropDownProps {
 const RelayBookDropDown: React.FC<RelayBookDropDownProps> = ({ firstPage, handleDelete, bookId }) => {
   const navigate = useNavigate();
   const [currentBookId, setCurrentBookId] = useState(0);
-  const [pagesCount, setPagesCount] = useState(firstPage[0].commentResponseDtos.length);
-
+  const [pagesCount, setPagesCount] = useState(firstPage && firstPage.length > 0 && firstPage[0].commentResponseDtos ? firstPage[0].commentResponseDtos.length : 0);  
   return (
     <>
       <div className="w-full flex justify-end dropdown dropdown-end">

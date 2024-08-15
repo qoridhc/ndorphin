@@ -158,51 +158,51 @@ const Header = () => {
     }
   };
 
-  useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    const checkNotifications = () => {
-      if (userId) {
-        userApi
-          .checkNotifications(userId as string)
-          .then((response) => {
-            const responseNotificationsData = response.data.data.hasUnreadNotification;
-            if (responseNotificationsData) {
-              setIsNew(true);
-              localStorage.setItem("isNew", JSON.stringify(true));
-              userApi
-                .readNotifications(userId as string)
-                .then((response) => {
-                  const notificationsData = response.data.data;
-                  setNotifications(notificationsData);
-                  localStorage.setItem("notifications", JSON.stringify(notificationsData));
-                })
-                .catch((error) => {
-                  console.error("알림목록 불러오기 실패: ", error);
-                });
-            } else {
-              userApi
-                .readNotifications(userId as string)
-                .then((response) => {
-                  const notificationsData = response.data.data;
-                  setNotifications(notificationsData);
-                  localStorage.setItem("notifications", JSON.stringify(notificationsData));
-                })
-                .catch((error) => {
-                  console.error("알림목록 불러오기 실패: ", error);
-                });
-            }
-          })
-          .catch((error) => {
-            console.error("새로운 알림 체크 실패: ", error);
-          });
-      }
-    };
-    checkNotifications();
-    const intervalId = setInterval(checkNotifications, 5000);
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const userId = localStorage.getItem("userId");
+  //   const checkNotifications = () => {
+  //     if (userId) {
+  //       userApi
+  //         .checkNotifications(userId as string)
+  //         .then((response) => {
+  //           const responseNotificationsData = response.data.data.hasUnreadNotification;
+  //           if (responseNotificationsData) {
+  //             setIsNew(true);
+  //             localStorage.setItem("isNew", JSON.stringify(true));
+  //             userApi
+  //               .readNotifications(userId as string)
+  //               .then((response) => {
+  //                 const notificationsData = response.data.data;
+  //                 setNotifications(notificationsData);
+  //                 localStorage.setItem("notifications", JSON.stringify(notificationsData));
+  //               })
+  //               .catch((error) => {
+  //                 console.error("알림목록 불러오기 실패: ", error);
+  //               });
+  //           } else {
+  //             userApi
+  //               .readNotifications(userId as string)
+  //               .then((response) => {
+  //                 const notificationsData = response.data.data;
+  //                 setNotifications(notificationsData);
+  //                 localStorage.setItem("notifications", JSON.stringify(notificationsData));
+  //               })
+  //               .catch((error) => {
+  //                 console.error("알림목록 불러오기 실패: ", error);
+  //               });
+  //           }
+  //         })
+  //         .catch((error) => {
+  //           console.error("새로운 알림 체크 실패: ", error);
+  //         });
+  //     }
+  //   };
+  //   checkNotifications();
+  //   const intervalId = setInterval(checkNotifications, 5000);
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  // }, []);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");

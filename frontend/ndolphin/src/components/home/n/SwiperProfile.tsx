@@ -32,6 +32,7 @@ const SwiperProfile = ({ userList, delay }: Props) => {
 
   const handleUserClick = (userId: string) => {
     navigate(`/profile/${userId}`);
+    window.scrollTo(0, 0);
   };
 
   return (
