@@ -8,6 +8,12 @@ interface Props {
 }
 
 function SearchBar({ setSearchKeyword, setSearchFilter1, setIsSearch }: Props) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setIsSearch(true);
+    }
+  };
+
   return (
     <div className="flex justify-center">
       <div className="relative h-12">
@@ -24,7 +30,7 @@ function SearchBar({ setSearchKeyword, setSearchFilter1, setIsSearch }: Props) {
         </button>
       </div>
       <div className="w-[60%] h-12 pl-10 flex items-center border-y-2 border-r-2 rounded-r-3xl border-amber-400">
-        <input id="search" placeholder="검색어를 입력해 주세요" className="w-[95%] pl-8 text-left bg-transparent focus:outline-none" onChange={(e) => setSearchKeyword(e.target.value)}></input>
+        <input id="search" placeholder="검색어를 입력해 주세요" className="w-[95%] pl-8 text-left bg-transparent focus:outline-none" onChange={(e) => setSearchKeyword(e.target.value)} onKeyDown={handleKeyDown} autoComplete="off"></input>
       </div>
     </div>
   );
