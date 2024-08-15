@@ -4,6 +4,8 @@ import MiniSearchBar from "../../components/ok/MiniSearchBar";
 import OkContent from "../../components/ok/OkContent";
 import OkStartModal from "./OkStartModal";
 import ListLoading from "../../components/common/loading/ListLoading";
+import Lottie from "lottie-react";
+import noSearch from "../../lottie/noSearch.json"
 
 const OkList = () => {
   const [isCreateModal, setIsCreateModal] = useState(false);
@@ -12,6 +14,10 @@ const OkList = () => {
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef<IntersectionObserver | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [isSearch, setIsSearch] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
 
   const lastElementRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -45,8 +51,29 @@ const OkList = () => {
   }, [page]);
 
   useEffect(() => {
-    getOkList();
-  }, [getOkList]);
+    if (isEmpty) {
+      getOkList();
+    } else if (searchKeyword) {
+      getSearchOkList();
+    } else {
+      getOkList();
+    }
+  }, [getOkList, isSearch]);
+
+  const getSearchOkList = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await boardApi.oksearch("OK_BOARD", searchKeyword);
+      setHasMore(false);
+      setOkList(response.data.data.content);
+      setIsSearch(false);
+    } catch (error) {
+      console.log("boardApi search : ", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -63,28 +90,35 @@ const OkList = () => {
       <div className="px-44">
         <div className="py-5 grid grid-cols-[1fr_2fr_1fr] gap-5">
           <div className="border-b col-start-2">
-            {isLoading && (
+            {isLoading ? (
               <div className="grid gap-10">
                 <ListLoading />
                 <ListLoading />
                 <ListLoading />
               </div>
-            )}
-            {OkList.map((content, index) => (
-              <div key={content.id} ref={index === OkList.length - 1 ? lastElementRef : null}>
-                <OkContent content={content} />
+            ) : OkList.length === 0 ? (
+              <div className="flex flex-col items-center">
+                <Lottie className="w-1/4" animationData={noSearch} />
+                <p className="py-5 text-center font-semibold">검색 결과가 없습니다</p>
               </div>
-            ))}
+            ) : (
+              OkList.map((content, index) => (
+                <div key={content.id} ref={index === OkList.length - 1 ? lastElementRef : null}>
+                  <OkContent content={content} />
+                </div>
+              ))
+            )}
           </div>
 
           <div className="">
-            <MiniSearchBar />
+            <MiniSearchBar setSearchKeyword={setSearchKeyword} setIsSearch={setIsSearch} setIsEmpty={setIsEmpty} />
 
             <button
               className="w-full my-3 px-7 py-2 shadow-md rounded-2xl font-bold bg-amber-300 text-black"
               onClick={() => {
                 setIsCreateModal(true);
-              }}>
+              }}
+            >
               고민 작성하기
             </button>
           </div>
@@ -93,7 +127,7 @@ const OkList = () => {
 
       {isCreateModal && <OkStartModal setIsCreateModal={setIsCreateModal} />}
 
-      {!hasMore && <p className="pb-5 text-center font-semibold">모든 괜찮아를 조회했습니다.</p>}
+      {!hasMore && isSearch && <p className="pb-5 text-center font-semibold">모든 괜찮아를 조회했습니다.</p>}
     </div>
   );
 };

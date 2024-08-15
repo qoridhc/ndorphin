@@ -47,6 +47,10 @@ const boardApi = {
     return request.get(`/api/v1/boards?type=${boardType}&filter1=${filter1}&filter2=${filter2}&search=${keyword}&page=${page}&isDone=${isDone}`);
   },
 
+  oksearch: (boardType: string, keyword: string) => {
+    return request.get(`/api/v1/boards?type=${boardType}&search=${keyword}`);
+  },
+
   reaction: (boardId: string, reactionType: string) => {
     const data = {
       pointRuleId: 5,
