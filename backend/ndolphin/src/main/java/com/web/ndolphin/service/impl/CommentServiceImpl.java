@@ -69,7 +69,7 @@ public class CommentServiceImpl implements CommentService {
             board.setSummary(summary);
             boardRepository.save(board);
         } catch (Exception e) {
-            log.info("Error summarizing board content", e);
+//            log.info("Error summarizing board content", e);
         }
     }
 
