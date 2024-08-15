@@ -7,6 +7,8 @@ import BookPageDeleteModal from "../relay/BookPageCRUD/BookPageDeleteModal";
 import BookDetailDone from "./BookDetailDone";
 import AddPage from "./BookPageCRUD/AddPage";
 import TimeDifference from "../common/TimeDifference";
+import Lottie from "lottie-react";
+import detailLoading from "../../lottie/detailLoading.json";
 
 interface BookDetailPageProps {
   readPage: string;
@@ -26,7 +28,6 @@ interface BookDetailPageProps {
   isChanged: boolean;
   setIsChanged: (isChanged: boolean) => void;
 }
-
 
 const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(
   ({ readPage, hasParticipated, number, pages, pageId, totalPage, bookId, handleAiImage, image, file, setImage, setFile, isFinished, setPageId, setIsChanged, isChanged }, ref: ForwardedRef<HTMLDivElement>) => {
@@ -109,8 +110,7 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(
       }
     };
 
-
-    console.log("페이지 내용", pages)
+    console.log("페이지 내용", pages);
     return (
       <div>
         {/* readPage = content 일 경우 페이지 매핑 */}
@@ -150,7 +150,7 @@ const BookDetailPage = React.forwardRef<HTMLDivElement, BookDetailPageProps>(
                       {(index + 1) % 2 === 0 ? (
                         <div className="p-2 grid grid-rows-[6.8fr_3.2fr]">
                           {/* 홀수쪽일 경우 그림, 글 순서 */}
-                          <div className="w-full h-72 flex justify-center">{page.fileUrl && <img className="w-[78%] object-cover" src={page.fileUrl} alt="" />}</div>
+                          <div className="w-full h-72 flex justify-center">{page.fileUrl ? <img className="w-[78%] object-cover" src={page.fileUrl} alt="" /> : <Lottie className="w-36" animationData={detailLoading} />}</div>
                           <p className="h-full mx-10 relaybookpagenotes text-sm text-justify word-break: break-all">{page.content}</p>
                         </div>
                       ) : (
