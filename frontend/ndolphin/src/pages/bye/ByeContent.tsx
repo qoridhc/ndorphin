@@ -21,8 +21,8 @@ interface Props {
       GOODBYE: number;
     };
   };
-  getByeList: () => void;
-  updateContent: (id: number) => void;
+  getByeList?: () => void;
+  updateContent?: (id: number) => void;
 }
 
 const ByeContent = ({ content, getByeList, updateContent }: Props) => {
