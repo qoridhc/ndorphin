@@ -242,13 +242,6 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
     .deleteUser(userId as string)
     .then(() => {
       localStorage.clear();
-    })
-    .then(() => {
-      if (onClose) {
-        onClose();
-      }
-    })
-    .then(() => {
       window.location.href = "/";
     })
     .catch((error) => {
