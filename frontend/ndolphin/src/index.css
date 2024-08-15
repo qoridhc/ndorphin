@@ -23,3 +23,23 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@font-face {
+  font-family: "Pretendard-Medium";
+  font-weight: normal;
+  src: url("./fonts/Pretendard-Medium.otf") format("truetype");
+}
+
+@font-face {
+  font-family: "KoPubWorld Dotum_Pro Medium";
+  font-weight: normal;
+  src: url("./fonts/KoPubWorld Dotum_Pro Medium.otf") format("truetype");
+}
+
+body {
+  font-family: "Pretendard-Medium";
+}
+
+.relay-book {
+  font-family: "KoPubWorld Dotum_Pro Medium";
+}
