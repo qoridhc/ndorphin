@@ -2,11 +2,10 @@ import React, { useState, useEffect, MouseEvent } from "react";
 import userApi from "../../api/userApi";
 import { IoMdClose } from "react-icons/io";
 
-
 interface NSModalProps {
   isOpen: boolean;
   onClose: () => void;
-  mode: 'profile' | 'survey';
+  mode: "profile" | "survey";
 }
 
 interface NSItem {
@@ -37,22 +36,22 @@ const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose, mode }) => {
   }, [isOpen]);
 
   const nsItems: NSItem[] = [
-    { id: 1, text: "창의력이\n좋다" },
-    { id: 2, text: "새로운 경험\n중시" },
-    { id: 3, text: "분위기\n중시" },
-    { id: 4, text: "미래 중시" },
-    { id: 5, text: "추상 예술\n선호" },
-    { id: 6, text: "부분보다\n전체" },
-    { id: 7, text: "상상을\n자주 함" },
-    { id: 8, text: "SF 장르\n선호" },
-    { id: 9, text: "분석 관심" },
-    { id: 10, text: "변화 선호" },
-    { id: 11, text: "지적 호기심\n강함" },
-    { id: 12, text: "새로운 관점\n제시" },
-    { id: 13, text: "창작 활동\n선호" },
-    { id: 14, text: "10년 후\n상상" },
-    { id: 15, text: "만약에가\n재밌음" },
-    { id: 16, text: "이야기\n좋아함" },
+    { id: 1, text: "내가 게임\n캐릭터가\n된다면?" },
+    { id: 2, text: "공룡이 내 눈\n앞에 있다면?" },
+    { id: 3, text: "갑자기\n싸우는 상상" },
+    { id: 4, text: "갑자기\n투명인간이\n된다면?" },
+    { id: 5, text: "엄청난\n초능력을\n가진다면?" },
+    { id: 6, text: "내가 대머리가\n되는 상상" },
+    { id: 7, text: "비행기가\n갑자기 추락하면\n어떡하지?" },
+    { id: 8, text: "무인도에\n갇힌다면?" },
+    { id: 9, text: "좀비가 생기면\n어떻게\n생존할까?" },
+    { id: 10, text: "다른 사람이랑\n몸이 바뀐다면?" },
+    { id: 11, text: "풍선들고\n날아간다면?" },
+    { id: 12, text: "샤워하다가\n귀신이 나타나면 어떡하지?" },
+    { id: 13, text: "동물이랑 대화할 수 있으면?" },
+    { id: 14, text: "길 가다가\n범죄자를\n잡는 나" },
+    { id: 15, text: "내가 연예인이\n된다면?" },
+    { id: 16, text: "내가\n거인/소인이\n된다면?" },
   ];
 
   const handleItemClick = (id: number) => {
@@ -60,7 +59,7 @@ const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose, mode }) => {
   };
 
   const handleSubmit = async () => {
-    const nsValue = selectedItems.length >= 5 ? "N" : "S";
+    const nsValue = selectedItems.length >= 6 ? "N" : "S";
 
     if (userId) {
       const formData = new FormData();
@@ -96,16 +95,24 @@ const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose, mode }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center" onClick={onClose}>
       <div className="w-11/12 max-w-md bg-white rounded-lg shadow-lg" onClick={handleModalClick}>
         <div className="p-4 border-b flex justify-between items-center relative">
-          <h2 className="text-lg font-semibold text-center flex-grow">N/S 선택 미니 설문조사</h2>
+          <h2 className="text-lg font-semibold text-center flex-grow">N/S 선택</h2>
           {mode === "profile" && <IoMdClose className="absolute right-5 object-cover" onClick={onClose} />}
         </div>
         <div className="p-6 text-center">
-          {mode === "survey" && <p className="mb-4 font-semibold">거의 다 됐어요!</p>}
+          {mode === "survey" ? (
+            <p className="mb-4 font-semibold">
+              거의 다 됐어요!
+              <br />
+              해당되거나 흥미 가는 것을 골라주세요!
+            </p>
+          ) : (
+            <p className="mb-4 font-semibold">해본 적이 있는 만약에를 골라주세요!</p>
+          )}
           <div className="grid grid-cols-4 gap-2">
             {nsItems.map((item) => (
-              <div className="relative w-full h-24 bg-blue-100 rounded-lg flex items-center justify-center cursor-pointer" key={item.id} style={{ whiteSpace: "pre-wrap" }} onClick={() => handleItemClick(item.id)}>
-                {selectedItems.includes(item.id) && <img className="absolute inset-0 w-full h-full" src="/assets/user/stamp.png" alt="도장" style={{ objectFit: "contain" }} />}
-                <span className="relative z-10">{item.text}</span>
+              <div className="relative w-full h-24 border border-[#9E9E9E] rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-100" key={item.id} style={{ whiteSpace: "pre-wrap" }} onClick={() => handleItemClick(item.id)}>
+                {selectedItems.includes(item.id) && <img className="absolute inset-0 w-full h-full" src="/assets/favicon.png" alt="선택" style={{ objectFit: "contain" }} />}
+                <span className="relative z-10 text-sm">{item.text}</span>
               </div>
             ))}
           </div>
@@ -120,13 +127,13 @@ const NSModal: React.FC<NSModalProps> = ({ isOpen, onClose, mode }) => {
               <button className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg text-sm" onClick={handleSkip}>
                 건너뛰기
               </button>
-              <button className="px-4 py-2 bg-yellow-400 text-white rounded-lg text-sm" onClick={handleSubmit}>
+              <button className="px-4 py-2 bg-yellow-400 text-white rounded-lg text-sm hover:bg-yellow-500" onClick={handleSubmit}>
                 완료
               </button>
             </div>
           )}
           {mode === "profile" && (
-            <button className="mt-4 px-4 py-2 bg-yellow-400 text-white rounded-lg text-sm" onClick={handleSubmit}>
+            <button className="mt-4 px-4 py-2 bg-yellow-400 text-white rounded-lg text-sm hover:bg-yellow-500" onClick={handleSubmit}>
               완료
             </button>
           )}
