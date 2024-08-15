@@ -5,6 +5,7 @@ import boardApi from "../../api/boardApi";
 import Pagination from "react-js-pagination";
 
 interface RelayPagingProps {
+  setIsLoading: (state: boolean) => void;
   setBookList: (bookList: any[]) => void;
   tabs: number;
   searchKeyword: string;
@@ -18,11 +19,12 @@ interface Book {
   done: boolean;
 }
 
-const RelayPaging = ({ setBookList, tabs, searchKeyword, searchFilter1, searchFilter2, isSearch, setIsSearch }: RelayPagingProps) => {
+const RelayPaging = ({ setIsLoading, setBookList, tabs, searchKeyword, searchFilter1, searchFilter2, isSearch, setIsSearch }: RelayPagingProps) => {
   const [page, setPage] = useState<number>(1);
   const [totalElements, setTotalElements] = useState<number>(0);
 
   const getRelayBoardList = async () => {
+    setIsLoading(true);
     if (tabs === 0) {
       try {
         const response = await boardApi.relaylist("RELAY_BOARD", false, page - 1);
@@ -34,6 +36,8 @@ const RelayPaging = ({ setBookList, tabs, searchKeyword, searchFilter1, searchFi
         console.log("릴레이북 진행 중 목록 조회 성공", bookList);
       } catch (error) {
         console.error("릴레이북 목록 진행 중 조회 오류 발생", error);
+      } finally {
+        setIsLoading(false);
       }
     } else {
       try {
@@ -46,6 +50,8 @@ const RelayPaging = ({ setBookList, tabs, searchKeyword, searchFilter1, searchFi
         console.log("릴레이북 완료 목록 조회 성공", bookList);
       } catch (error) {
         console.error("릴레이북 목록 완료 조회 오류 발생", error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -59,6 +65,7 @@ const RelayPaging = ({ setBookList, tabs, searchKeyword, searchFilter1, searchFi
   };
 
   const getSearchRelayBoardList = async () => {
+    setIsLoading(true);
     if (tabs === 0) {
       try {
         const response = await boardApi.search("RELAY_BOARD", searchKeyword, searchFilter1, searchFilter2, page - 1, false);
@@ -68,6 +75,9 @@ const RelayPaging = ({ setBookList, tabs, searchKeyword, searchFilter1, searchFi
         setTotalElements(totalElements);
       } catch (error) {
         console.log("boardApi search : ", error);
+      } finally {
+        setIsLoading(false);
+        setIsSearch(false);
       }
     } else {
       try {
@@ -78,6 +88,9 @@ const RelayPaging = ({ setBookList, tabs, searchKeyword, searchFilter1, searchFi
         setTotalElements(totalElements);
       } catch (error) {
         console.log("boardApi search : ", error);
+      } finally {
+        setIsLoading(false);
+        setIsSearch(false);
       }
     }
   };
@@ -85,7 +98,6 @@ const RelayPaging = ({ setBookList, tabs, searchKeyword, searchFilter1, searchFi
   useEffect(() => {
     if (searchKeyword || searchFilter2 === "popularity") {
       getSearchRelayBoardList();
-      setIsSearch(false);
     } else {
       getRelayBoardList();
     }
