@@ -270,14 +270,13 @@ const Header = () => {
           />
 
           <div className="px-2 flex items-center text-[#6C6C6C] font-semibold">
-            {["relaybooklist", "iflist", "balancelist", "oklist", "bye", "notice"].map((menu) => (
+            {["relaybooklist", "iflist", "balancelist", "oklist", "bye"].map((menu) => (
               <button key={menu} className={`px-3 hover:pb-3 hover:text-black hover:underline decoration-[#FFDE2F] decoration-4 duration-300 underline-offset-8`} onClick={() => handleMenuClick(menu)}>
                 {menu === "relaybooklist" && "릴레이북"}
                 {menu === "iflist" && "만약에"}
                 {menu === "balancelist" && "밸런스게임"}
                 {menu === "oklist" && "괜찮아"}
                 {menu === "bye" && "작별인사"}
-                {menu === "notice" && "공지사항"}
               </button>
             ))}
           </div>
