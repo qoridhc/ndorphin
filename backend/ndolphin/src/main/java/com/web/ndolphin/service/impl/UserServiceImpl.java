@@ -434,20 +434,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    @Transactional(readOnly = true)
-//    @Override
-//    public List<BestNResponseDto> getSortedUsersByNPoint(boolean flag) {
-//
-//        List<User> users = flag
-//            ? userRepository.findAllUsersSortedByNPoint()
-//            : userRepository.findTopUsersByNPoint(10);
-//
-//        return IntStream.range(0, users.size())
-//            .mapToObj(i -> new BestNResponseDto((long) (i + 1), users.get(i).getNickName(),
-//                users.get(i).getNPoint()))
-//            .collect(Collectors.toList());
-//    }
-
     @Transactional(readOnly = true)
     @Override
     public List<BestNResponseDto> getSortedUsersByNPoint(boolean flag) {
@@ -459,6 +445,7 @@ public class UserServiceImpl implements UserService {
         return IntStream.range(0, users.size())
             .mapToObj(i -> new BestNResponseDto(
                 (long) (i + 1),
+                users.get(i).getUserId(),
                 users.get(i).getNickName(),
                 users.get(i).getNPoint(),
                 users.get(i).getMbti(),  // mbti 추가
