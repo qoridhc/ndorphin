@@ -7,7 +7,6 @@ import com.web.ndolphin.domain.Token;
 import com.web.ndolphin.domain.User;
 import com.web.ndolphin.provider.JwtProvider;
 import com.web.ndolphin.repository.UserRepository;
-import com.web.ndolphin.util.LogUtil;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,11 +32,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
         String oauthClientName = request.getClientRegistration()
             .getClientName(); // 어떤 OAuth 요청인지 naver, kakao...
 
-        LogUtil.info("request", request);
-
         User user = new User();
-
-        LogUtil.info("oauthClientName", oauthClientName);
 
         try {
 
