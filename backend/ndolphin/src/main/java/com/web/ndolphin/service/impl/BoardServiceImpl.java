@@ -380,6 +380,10 @@ public class BoardServiceImpl implements BoardService {
         UserVoteContent userVoteContent = voteRepository.findVoteByBoardIdAndUserId(
             board.getId(), userId).orElse(null);
 
+                // 3개 미만 이라면 랜덤으로 3개 가져옴.
+        List<Board> sideBoards = boardRepository.findRandomBoardsByType(BoardType.VOTE_BOARD,
+            PageRequest.of(0, 1));
+
 //        // side에 띄울 보드 3개를 가져 옴.
 //        List<Board> sideBoards = boardRepository.findTop3NotViewedByUserAndBoardType(
 //            userId, BoardType.VOTE_BOARD, PageRequest.of(0, 3));
@@ -390,14 +394,14 @@ public class BoardServiceImpl implements BoardService {
 //                PageRequest.of(0, 1));
 //        }
 //
-//        // BoardDto로 반환해서 가져 옴.
-//        List<? extends BoardDto> sideBoardDtos = getBoardDtos(BoardType.VOTE_BOARD, sideBoards,
-//            false);
-//
-//        return BoardMapper.toVoteBoardDetailResponseDto(board, fileUrl, fileName, voteInfos,
-//            totalVotes, userVoteContent, sideBoardDtos);
+        // BoardDto로 반환해서 가져 옴.
+        List<? extends BoardDto> sideBoardDtos = getBoardDtos(BoardType.VOTE_BOARD, sideBoards,
+            false);
+
         return BoardMapper.toVoteBoardDetailResponseDto(board, fileUrl, fileName, voteInfos,
-            totalVotes, userVoteContent);
+            totalVotes, userVoteContent, sideBoardDtos);
+//        return BoardMapper.toVoteBoardDetailResponseDto(board, fileUrl, fileName, voteInfos,
+//            totalVotes, userVoteContent);
     }
 
     private OpinionBoardDetailResponseDto getOpinionBoardDetail(Board board, Long userId,
@@ -412,6 +416,9 @@ public class BoardServiceImpl implements BoardService {
         List<CommentResponseDto> commentResponseDtos = commentService.getBoardDetail(board.getId());
         int commentCount = commentResponseDtos.size();
 
+        List<Board> sideBoards = boardRepository.findRandomBoardsByType(BoardType.OPINION_BOARD,
+            PageRequest.of(0, 3));
+
 //        // side에 띄울 보드 3개를 가져 옴.
 //        List<Board> sideBoards = boardRepository.findTop3NotViewedByUserAndBoardType(userId,
 //            BoardType.OPINION_BOARD, PageRequest.of(0, 3));
@@ -422,15 +429,15 @@ public class BoardServiceImpl implements BoardService {
 //                PageRequest.of(0, 3));
 //        }
 //
-//        // BoardDto로 반환해서 가져 옴.
-//        List<? extends BoardDto> sideBoardDtos = getBoardDtos(BoardType.OPINION_BOARD, sideBoards,
-//            false);
-//
-//        return BoardMapper.toOpinionBoardDetailResponseDto(board, fileUrl, fileName,
-//            hasParticipated, commentCount, commentResponseDtos, sideBoardDtos);
+        // BoardDto로 반환해서 가져 옴.
+        List<? extends BoardDto> sideBoardDtos = getBoardDtos(BoardType.OPINION_BOARD, sideBoards,
+            false);
 
         return BoardMapper.toOpinionBoardDetailResponseDto(board, fileUrl, fileName,
-            hasParticipated, commentCount, commentResponseDtos);
+            hasParticipated, commentCount, commentResponseDtos, sideBoardDtos);
+
+//        return BoardMapper.toOpinionBoardDetailResponseDto(board, fileUrl, fileName,
+//            hasParticipated, commentCount, commentResponseDtos);
     }
 
     private RelayBoardDetailResponseDto getRelayBoardDetail(Board board, Long userId,
@@ -606,7 +613,7 @@ public class BoardServiceImpl implements BoardService {
                 .sum();
 
             VoteBoardDetailResponseDto voteBoardDetailResponseDto = BoardMapper.toVoteBoardDetailResponseDto(
-                board, fileUrl, fileName, null, totalVotes, null);
+                board, fileUrl, fileName, null, totalVotes, null, null);
 
             voteBoardDetailResponseDtos.add(voteBoardDetailResponseDto);
         }
@@ -627,7 +634,7 @@ public class BoardServiceImpl implements BoardService {
             int commentCount = board.getComments().size();
 
             OpinionBoardDetailResponseDto opinionBoardDetailResponseDto = BoardMapper.toOpinionBoardDetailResponseDto(
-                board, fileUrl, fileName, false, commentCount, null);
+                board, fileUrl, fileName, false, commentCount, null, null);
 
             OpinionBoardDetailResponseDtos.add(opinionBoardDetailResponseDto);
         }

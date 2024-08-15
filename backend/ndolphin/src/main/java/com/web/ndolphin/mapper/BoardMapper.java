@@ -96,16 +96,14 @@ public class BoardMapper {
 
     public static VoteBoardDetailResponseDto toVoteBoardDetailResponseDto(Board board,
         String fileUrl, String fileName, List<VoteInfo> voteInfos, long totalVoteCnt,
-        UserVoteContent userVoteContent) {
-
-        // List<? extends BoardDto> sideBoardDtos
+        UserVoteContent userVoteContent, List<? extends BoardDto> sideBoardDtos) {
 
         VoteBoardDetailResponseDto voteBoardDetailResponseDto = new VoteBoardDetailResponseDto();
 
         mapCommonFields(board, voteBoardDetailResponseDto);
         voteBoardDetailResponseDto.setTotalVoteCnt(totalVoteCnt);
         voteBoardDetailResponseDto.setVoteInfos(voteInfos);
-//        voteBoardDetailResponseDto.setSideBoardDtos(sideBoardDtos);
+        voteBoardDetailResponseDto.setSideBoardDtos(sideBoardDtos);
         voteBoardDetailResponseDto.getFileUrls().add(fileUrl);
         voteBoardDetailResponseDto.getFileNames().add(fileName);
 
@@ -133,7 +131,7 @@ public class BoardMapper {
 
     public static OpinionBoardDetailResponseDto toOpinionBoardDetailResponseDto(Board board,
         String fileUrl, String fileName, boolean hasParticipated, int commentCount,
-        List<CommentResponseDto> commentResponseDtos) {
+        List<CommentResponseDto> commentResponseDtos, List<? extends BoardDto> sideBoardDtos) {
 
         OpinionBoardDetailResponseDto opinionBoardDetailResponseDto = new OpinionBoardDetailResponseDto();
 
@@ -141,7 +139,7 @@ public class BoardMapper {
         opinionBoardDetailResponseDto.setHasParticipated(hasParticipated);
         opinionBoardDetailResponseDto.setCommentCount(commentCount);
         opinionBoardDetailResponseDto.setCommentResponseDtos(commentResponseDtos);
-//        opinionBoardDetailResponseDto.setSideBoardDtos(sideBoards);
+        opinionBoardDetailResponseDto.setSideBoardDtos(sideBoardDtos);
         opinionBoardDetailResponseDto.getFileNames().add(fileName);
         opinionBoardDetailResponseDto.getFileUrls().add(fileUrl);
 
