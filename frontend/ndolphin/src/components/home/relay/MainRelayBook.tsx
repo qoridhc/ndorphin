@@ -48,7 +48,7 @@ const MainRelayBook = ({ mainIndex, relay }: Props) => {
               </div>
 
               <div className="flex items-center mb-4">
-                <img onClick={handleUserClick} className="w-10 h-10 rounded-full mr-4 cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" src={`${relay.user.profileImage}`} alt="" />
+                <img onClick={handleUserClick} className="w-10 h-10 rounded-full mr-4 cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" src={relay.user.profileImage === null ? "/assets/user/defaultProfile.png" : relay.user.profileImage} alt="" />
                 <p className="font-semibold text-[#565656]">{relay.user.nickName}</p>
               </div>
 
