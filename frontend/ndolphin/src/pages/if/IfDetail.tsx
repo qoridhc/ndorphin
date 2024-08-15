@@ -394,6 +394,7 @@ const IfDetail = () => {
                       value={updateBoardSubject}
                       ref={updateBoardSubjectRef}
                       onChange={(e) => handleUpdateBoardSubjectTextareaChange(e)}
+                      maxLength={28}
                     />
                     <hr className="h-[1px] bg-[#9E9E9E]" />
                     <textarea

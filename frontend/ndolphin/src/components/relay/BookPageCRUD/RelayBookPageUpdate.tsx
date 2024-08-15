@@ -65,14 +65,16 @@ const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ page, setPage
                 setPageUpdate(false);
                 setImage(page.fileUrl);
               }}
-              className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200">
+              className="w-16 mx-3 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200"
+            >
               취소
             </button>
             <button
               onClick={() => {
                 confirmUpdate(contentUpdate);
               }}
-              className="w-16 mr-12 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200">
+              className="w-16 mr-12 text-[#6C6C6C] font-semibold border-solid border-2 border-[#FFDE2F] rounded-md hover:text-white hover:bg-[#FFDE2F] duration-200"
+            >
               완료
             </button>
           </div>
@@ -94,7 +96,9 @@ const RelayBookPageUpdate: React.FC<RelayBookPageUpdateProps> = ({ page, setPage
             className="notes w-full h-[100px] resize-none focus:outline-none placeholder:text-zinc-400"
             placeholder="'만약에~' 내용을 입력해 이야기를 이어주세요"
             aria-label={contentUpdate}
-            value={contentUpdate}></textarea>
+            value={contentUpdate}
+            maxLength={100}
+          ></textarea>
         </div>
       </div>
 

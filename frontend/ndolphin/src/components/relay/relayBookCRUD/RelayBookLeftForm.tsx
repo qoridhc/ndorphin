@@ -49,7 +49,7 @@ const RelayBookLeftForm = ({ handleRelayBookStart, image }: RelayBookLeftFormPro
             <div className="w-[95%]">
               <div className="flex flex-col items-center">
                 <hr className="w-full border-zinc-950" />
-                <input onChange={onChangeSubject} className="w-full my-3 p-1 rounded-lg focus:outline-none bg-yellow-200 text-left" type="text" placeholder="제목을 입력해 주세요 (최대 30자)" value={subjectValue} />
+                <input onChange={onChangeSubject} className="w-full my-3 p-1 rounded-lg focus:outline-none bg-yellow-200 text-left" type="text" placeholder="제목을 입력해 주세요 (최대 28자)" value={subjectValue} maxLength={28} />
               </div>
             </div>
 
@@ -60,8 +60,10 @@ const RelayBookLeftForm = ({ handleRelayBookStart, image }: RelayBookLeftFormPro
               <textarea
                 onChange={onChangeContent}
                 className="notes w-full h-[283px] resize-none focus:outline-none placeholder:text-zinc-400"
-                placeholder="이야기가 시작될 '만약에~' 내용을 입력해 주세요 (최소 글자수 100자 이상)"
-                value={contentValue}></textarea>
+                placeholder="이야기가 시작될 '만약에~' 내용을 입력해 주세요 (최대 글자수 100자)"
+                value={contentValue}
+                maxLength={100}
+              ></textarea>
             </div>
 
             {/* 종료 장수 선택 form */}
@@ -83,16 +85,22 @@ const RelayBookLeftForm = ({ handleRelayBookStart, image }: RelayBookLeftFormPro
                   postAlarm();
                 }}
                 disabled={!isFormValid} // 모든 값이 있을 때만 버튼 활성화
-                className={`w-16 mx-3 font-semibold border-solid border-2 rounded-md duration-200 ${isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] border-[#e0e0e0] cursor-not-allowed"}`}>
+                className={`w-16 mx-3 font-semibold border-solid border-2 rounded-md duration-200 ${isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] border-[#e0e0e0] cursor-not-allowed"}`}
+              >
                 등록
               </button>
-              {!isFormValid && <span className="tooltiptext">모든 칸을 필수로<br></br> 입력해주세요.</span>}
+              {!isFormValid && (
+                <span className="tooltiptext">
+                  모든 칸을 필수로<br></br> 입력해주세요.
+                </span>
+              )}
             </div>
             <button
               onClick={() => {
                 navigate(`/relaybooklist/`);
               }}
-              className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200">
+              className="w-16 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200"
+            >
               취소
             </button>
           </div>
