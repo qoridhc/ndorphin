@@ -9,7 +9,7 @@ import java.util.Arrays;
 public class LogUtil {
 
     public static void info(String message, Object... args) {
-        log.info(format(message, args));
+//        log.info(format(message, args));
     }
 
     public static void debug(String message, Object... args) {

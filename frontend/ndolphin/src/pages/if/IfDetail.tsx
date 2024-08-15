@@ -206,7 +206,17 @@ const IfDetail = () => {
     const formData = new FormData();
 
     if (params.boardId !== undefined && updateCommentTextareaRef.current) {
-      formData.append("content", updateCommentTextareaRef.current.value);
+      formData.append(
+        "request",
+        new Blob(
+          [
+            JSON.stringify({
+              content: updateCommentTextareaRef.current.value,
+            }),
+          ],
+          { type: "application/json" }
+        )
+      );
 
       try {
         const response = await commentApi.update(params.boardId, commentId, formData);
@@ -384,6 +394,7 @@ const IfDetail = () => {
                       value={updateBoardSubject}
                       ref={updateBoardSubjectRef}
                       onChange={(e) => handleUpdateBoardSubjectTextareaChange(e)}
+                      maxLength={28}
                     />
                     <hr className="h-[1px] bg-[#9E9E9E]" />
                     <textarea

@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +53,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -149,7 +151,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public ResponseEntity<ResponseDto> updateUser(Long userId, UserUpdateRequestDto dto,
         MultipartFile profileImage) {
-
+        log.info("updateUser 들어옴;");
         try {
             User existingUser = userRepository.findByUserId(userId);
 
@@ -202,8 +204,10 @@ public class UserServiceImpl implements UserService {
 
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         } catch (IllegalArgumentException e) {
+            e.printStackTrace();
             return ResponseDto.databaseError(e.getMessage());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseDto.databaseError();
         }
     }

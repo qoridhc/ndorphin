@@ -151,7 +151,17 @@ const OkDetail = () => {
     const formData = new FormData();
 
     if (params.boardId !== undefined && updateCommentTextareaRef.current) {
-      formData.append("content", updateCommentTextareaRef.current.value);
+      formData.append(
+        "request",
+        new Blob(
+          [
+            JSON.stringify({
+              content: updateCommentTextareaRef.current.value,
+            }),
+          ],
+          { type: "application/json" }
+        )
+      );
 
       try {
         const response = await commentApi.update(params.boardId, commentId, formData);
@@ -347,8 +357,7 @@ const OkDetail = () => {
                           <button
                             className={`px-5 py-1 mr-1 rounded-md text-sm text-[#565656] font-bold border-2 border-amber-300 duration-300 ${updateCommentCount === 0 ? "opacity-50" : "hover:bg-amber-300"}`}
                             disabled={updateCommentCount === 0}
-                            onClick={() => handleUpdateComment(comment.commentId)}
-                          >
+                            onClick={() => handleUpdateComment(comment.commentId)}>
                             수정
                           </button>
                           <button className="px-5 py-1 rounded-md text-sm text-[#565656] font-bold border-2 border-gray-300 duration-300 hover:bg-gray-300" onClick={() => setIsCommentUpdate(0)}>

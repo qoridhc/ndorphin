@@ -89,7 +89,7 @@ const IfStart = () => {
         <div className={`${boxContentClass}`}>
           <p className={`${titleClass}`}>제목</p>
           <hr className={`${hrClass}`} />
-          <input className={`${inputClass}`} type="text" onChange={(e) => setSubject(e.target.value)} />
+          <input className={`${inputClass}`} type="text" onChange={(e) => setSubject(e.target.value)} maxLength={28} />
         </div>
 
         <div className={`${boxContentClass}`}>

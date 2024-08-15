@@ -140,8 +140,6 @@ public class BoardMapper {
         opinionBoardDetailResponseDto.getFileNames().add(fileName);
         opinionBoardDetailResponseDto.getFileUrls().add(fileUrl);
 
-        log.info("opinionBoardDetailResponseDto = {}", opinionBoardDetailResponseDto);
-
         return opinionBoardDetailResponseDto;
     }
 

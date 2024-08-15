@@ -48,7 +48,7 @@ const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiI
         if (onLastPageAdded) {
           onLastPageAdded();
         }
-        
+
         window.location.reload();
       }
     } catch (error) {
@@ -86,13 +86,15 @@ const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiI
                 setPageAdd(false);
                 setImage(null);
               }}
-              className="w-16 mx-2 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200">
+              className="w-16 mx-2 text-[#6C6C6C] font-semibold border-solid border-2 border-[#c2c2c2] rounded-md hover:text-white hover:bg-[#c2c2c2] duration-200"
+            >
               취소
             </button>
             <button
               onClick={handlePageAdd}
               disabled={!isFormValid}
-              className={`w-16 mr-10 font-semibold border-solid border-2 rounded-md duration-200 ${isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] border-[#e0e0e0] cursor-not-allowed"}`}>
+              className={`w-16 mr-10 font-semibold border-solid border-2 rounded-md duration-200 ${isFormValid ? "text-[#6C6C6C] border-[#FFDE2F] hover:text-white hover:bg-[#FFDE2F]" : "text-[#c2c2c2] border-[#e0e0e0] cursor-not-allowed"}`}
+            >
               등록
             </button>
           </div>
@@ -109,7 +111,7 @@ const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiI
         <div className="w-[90%] border border-zinc-950">
           <p className="mx-2 my-1 font-bold flex">본문</p>
           <hr className="mx-3 my-1 border-zinc-900" />
-          <textarea onChange={onChangeContent} className="notes w-full h-[100px] resize-none focus:outline-none placeholder:text-zinc-400" placeholder="'만약에~' 내용을 입력해 이야기를 이어주세요" value={content}></textarea>
+          <textarea onChange={onChangeContent} className="notes w-full h-[100px] resize-none focus:outline-none placeholder:text-zinc-400" placeholder="'만약에~' 내용을 입력해 이야기를 이어주세요" value={content} maxLength={100}></textarea>
         </div>
       </div>
 
@@ -131,7 +133,8 @@ const AddPageForm: React.FC<AddPageFormProps> = ({ bookId, setPageAdd, handleAiI
                   onClick={() => {
                     handleAiImage();
                   }}
-                  className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800">
+                  className="w-32 px-2 py-1 flex justify-between items-center rounded-3xl border border-solid border-zinc-300 font-bold text-zinc-800"
+                >
                   <img src="/assets/aiImageIcon.png" className="w-5" alt="#"></img>
                   <p className="text-xs">AI 이미지 생성</p>
                 </button>

@@ -109,7 +109,7 @@ const BalanceStart = () => {
         <div className={`${boxContentClass}`}>
           <p className={`${titleClass}`}>제목</p>
           <hr className={`${hrClass}`} />
-          <input className={`${inputClass}`} type="text" placeholder="제목을 입력해 주세요" onChange={(e) => setSubject(e.target.value)} />
+          <input className={`${inputClass}`} type="text" placeholder="제목을 입력해 주세요" onChange={(e) => setSubject(e.target.value)} maxLength={32} />
         </div>
 
         <div className={`${boxContentClass}`}>
