@@ -45,6 +45,14 @@ const BestRelay = () => {
     }
   }, [relayBoardList, mainIndex, currentIndex]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      handleNextClick();
+    }, 5000); // 5초마다 슬라이드 변경
+
+    return () => clearInterval(interval); // 컴포넌트가 언마운트될 때 클리어
+  }, [mainIndex, currentIndex, bookListLength]);
+
   const getRelayBoardList = async () => {
     try {
       let period = "";
@@ -96,7 +104,7 @@ const BestRelay = () => {
           {relayBoardList && visibleBooks ? (
             <>
               <MainRelayBook mainIndex={mainIndex} relay={relayBoardList[mainIndex]} />
-              <ServeRelayBook currentIndex={currentIndex} visibleBooks={visibleBooks} />
+              <ServeRelayBook bookListLength={bookListLength} currentIndex={currentIndex} visibleBooks={visibleBooks} />
             </>
           ) : (
             <div className="col-span-2 flex justify-center">

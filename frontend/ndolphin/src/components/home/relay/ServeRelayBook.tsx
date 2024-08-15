@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 interface Props {
   currentIndex: number;
   visibleBooks: Relay[];
+  bookListLength: number;
 }
 
 interface Relay {
@@ -22,7 +23,7 @@ interface Relay {
   };
 }
 
-const ServeRelayBook = ({ currentIndex, visibleBooks }: Props) => {
+const ServeRelayBook = ({ currentIndex, visibleBooks, bookListLength }: Props) => {
   const navigate = useNavigate();
 
   const goToDetail = (boardId: number) => {
@@ -36,7 +37,7 @@ const ServeRelayBook = ({ currentIndex, visibleBooks }: Props) => {
           <div key={book.id} className="flex flex-col justify-center">
             <img className="w-full bg-white border aspect-1 object-cover cursor-pointer" src={book.fileUrls ? book.fileUrls[0] : undefined} onClick={() => goToDetail(book.id)} alt="" />
             <div className="pt-1 flex font-semibold">
-              <p className="pr-1 text-[#565656]">{currentIndex + index + 1}</p>
+              <p className="pr-1 text-[#565656]">{((currentIndex + index) % bookListLength) + 1}</p>
               <p className="text-[#565656] line-clamp-1 hover:underline underline-[#565656] underline-offset-2 cursor-pointer" onClick={() => goToDetail(book.id)}>
                 {book.subject}
               </p>

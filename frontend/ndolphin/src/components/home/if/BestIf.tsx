@@ -36,12 +36,8 @@ interface If {
 
 const BestIf = () => {
   const [rankingType, setRankingType] = useState("일간");
-  const [mainIndex, setMainIndex] = useState(0);
-  const [prevIndex, setPreIndex] = useState(4);
-  const [nextIndex, setNextIndex] = useState(1);
   const [IfBoardList, setIfBoardList] = useState<If[] | null>(null);
   const swiperRef = useRef<any>(null);
-  const [cardListLength, setCardListLength] = useState(0);
 
   useEffect(() => {
     getIfBoardList();
@@ -49,12 +45,6 @@ const BestIf = () => {
       swiperRef.current.swiper.slideTo(0);
     }
   }, [rankingType]);
-
-  useEffect(() => {
-    if (IfBoardList) {
-      setCardListLength(IfBoardList.length);
-    }
-  }, [IfBoardList]);
 
   const getIfBoardList = async () => {
     try {
@@ -88,7 +78,7 @@ const BestIf = () => {
         <RankingDate type={rankingType} />
       </div>
 
-      {IfBoardList && (
+      {IfBoardList && IfBoardList?.length !== 0 && (
         <Swiper
           loop={true}
           autoplay={{
