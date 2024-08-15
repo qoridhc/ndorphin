@@ -3,7 +3,7 @@ import boardApi from "../../api/boardApi";
 import MiniSearchBar from "../../components/ok/MiniSearchBar";
 import OkContent from "../../components/ok/OkContent";
 import OkStartModal from "./OkStartModal";
-import ListLoading from "../../components/common/ListLoading";
+import ListLoading from "../../components/common/loading/ListLoading";
 
 const OkList = () => {
   const [isCreateModal, setIsCreateModal] = useState(false);
