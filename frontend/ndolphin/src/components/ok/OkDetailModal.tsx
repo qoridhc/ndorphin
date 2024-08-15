@@ -163,7 +163,7 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
                   />{" "}
                   <div className="flex flex-col justify-around">
                     <p className="font-bold">{okDetail?.user.nickName}</p>
-                    <p className="text-xs text-[#565656]">3일 전</p>
+                    {okDetail && <TimeDifference timestamp={new Date(okDetail.createdAt)} />}
                   </div>
                 </div>
 
@@ -173,10 +173,6 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
                     <FaRegComment />
                     {okDetail?.commentCnt === 0 ? <></> : <p className="px-1 text-sdm text-[#565656]">{okDetail?.commentCnt}</p>}
                   </div>
-                  {/* <p className="text-sm text-[#565656] text-right">{okDetail?.createdAt}</p> */}
-                  {okDetail && (
-                    <TimeDifference timestamp={new Date(okDetail.createdAt)} />
-                  )}
                 </div>
               </div>
 
@@ -207,15 +203,12 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
                     <div className="grid grid-cols-[6fr_1fr]">
                       <div className="flex flex-col justify-around">
                         <p className="text-sm font-semibold">{comment.user.nickName}</p>
-                        <p className="text-xs text-[#565656]">3일 전</p>
+                        <TimeDifference timestamp={new Date(comment.createdAt)} />
                       </div>
                       {/* <SettingsMenu /> */}
                     </div>
 
                     <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
-
-                    {/* <p className="text-sm text-[#565656] text-right">{comment.createdAt}</p> */}
-                    <TimeDifference timestamp={new Date(comment.createdAt)} />
                   </div>
                 </div>
               ))}
