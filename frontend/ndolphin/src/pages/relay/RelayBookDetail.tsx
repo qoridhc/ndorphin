@@ -36,6 +36,10 @@ const RelayBookDetail = () => {
   const [hasParticipated, setHasParticipated] = useState<boolean>(false);
   const [isChanged, setIsChanged] = useState<boolean>(false);
 
+  // BGM 제어를 위한 상태와 ref 사용
+  const [isPlaying, setIsPlaying] = useState(false); // 음악이 재생 중인지 여부
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
   // useEffect -> 렌더링이 다 되고나서 실행 (html부터 다 그려준 뒤 실행)
   useEffect(() => {
     let isMounted = true;
@@ -61,10 +65,43 @@ const RelayBookDetail = () => {
 
     getRelayDetail();
 
+    // 페이지가 로드되면 BGM 자동 재생 시도
+    const playAudio = () => {
+      if (audioRef.current) {
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setIsPlaying(true); // 재생 성공
+            })
+            .catch((error) => {
+              console.log("자동 재생 실패: 사용자가 상호작용하지 않음");
+            });
+        }
+      }
+    };
+
+    // 브라우저 정책에 따라 자동 재생이 실패할 수 있으므로 시도
+    playAudio();
+
     return () => {
       isMounted = false;
     };
   }, [bookId]);
+
+  // 음악 재생/정지 제어
+  const toggleAudio = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch((error) => {
+          console.log("재생 실패: ", error);
+        });
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
 
   // 페이지 넘어갈 시 page를 현재 페이지 쪽수로 업데이트
   const onFlip = useCallback((e: { data: number }) => {
@@ -132,7 +169,6 @@ const RelayBookDetail = () => {
     setDeleteAIModalOpen(false);
   };
 
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (!isNaN(Number(value)) && Number(value) >= 1 && Number(value) <= pages.length + 1) {
@@ -165,10 +201,17 @@ const RelayBookDetail = () => {
     setIsAiModalOpen(false);
   };
 
-
   return (
     <div className="overflow-hidden">
+      {/* 배경 음악 오디오 요소 */}
+      <audio ref={audioRef} src="/bgms/relayBookBGM.mp3" loop />
+
       <div className="relative grid grid-rows-[93%_7%]" style={{ backgroundColor: "white" }}>
+        {/* BGM 제어 버튼 */}
+        <button onClick={toggleAudio} className="absolute z-50 right-5 top-5   border-2 border-zinc-200 rounded-full px-2 py-2 bg-amber-50 hover:bg-amber-200 transition duration-200 ease-in-out">
+          <img className="w-7" src={isPlaying ? "/assets/playMusic.png" : "/assets/silentMusic.png"} alt="음악 재생 버튼" />
+        </button>
+
         {/* 좌우 이동 버튼 */}
         <div className="h-full w-1/6 absolute top-0 hover:cursor-pointer hover:bg-zinc-300 hover:opacity-40" onClick={(e) => onPrev("Y")}>
           <button className="mt-[18rem] absolute left-5 ">
@@ -199,7 +242,8 @@ const RelayBookDetail = () => {
             maxShadowOpacity={0.5}
             className="album-web"
             onFlip={onFlip}
-            useMouseEvents={false}>
+            useMouseEvents={false}
+          >
             {/* 책 표지 */}
             <BookPageCover firstPage={firstPage} bookId={bookId} isDeleteOpen={isDeleteModalOpen} isAiOpen={isAiModalOpen} onClose={cancelDelete} onConfirm={confirmDelete} handleDelete={handleDelete}></BookPageCover>
 
@@ -220,7 +264,8 @@ const RelayBookDetail = () => {
               isFinished={isFinished}
               setPageId={setPageId}
               isChanged={isChanged}
-              setIsChanged={setIsChanged}></BookDetailPage>
+              setIsChanged={setIsChanged}
+            ></BookDetailPage>
             {/* 내부 상세 페이지 */}
             <BookDetailPage
               readPage={"content"}
@@ -238,7 +283,8 @@ const RelayBookDetail = () => {
               isFinished={isFinished}
               setPageId={setPageId}
               isChanged={isChanged}
-              setIsChanged={setIsChanged}></BookDetailPage>
+              setIsChanged={setIsChanged}
+            ></BookDetailPage>
             {/* 마지막 페이지 (이모티콘 반응 or 페이지 추가) */}
             <BookDetailPage
               readPage={"last"}
@@ -256,7 +302,8 @@ const RelayBookDetail = () => {
               isFinished={isFinished}
               setPageId={setPageId}
               isChanged={isChanged}
-              setIsChanged={setIsChanged}></BookDetailPage>
+              setIsChanged={setIsChanged}
+            ></BookDetailPage>
 
             {/* 페이지가 짝수일 경우 마지막 커버 표시 */}
             <PageEndCover totalPage={pages.length + 2} />
@@ -273,7 +320,8 @@ const RelayBookDetail = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-blue-500 rounded-sm ">
+              className="border-2 border-blue-500 rounded-sm "
+            >
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           ) : (
@@ -284,7 +332,8 @@ const RelayBookDetail = () => {
               onMouseLeave={() => {
                 setIsHoverd(false);
               }}
-              className="border-2 border-stone-500 rounded-sm ">
+              className="border-2 border-stone-500 rounded-sm "
+            >
               <input className="w-8 bg-slate-100 text-center focus:outline-none font-bold text-zinc-600" type="text" value={inputPage} onChange={handleInputChange} onKeyDown={handleInputKeyPress} />
             </div>
           )}
