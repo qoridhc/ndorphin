@@ -382,7 +382,7 @@ public class BoardServiceImpl implements BoardService {
 
                 // 3개 미만 이라면 랜덤으로 3개 가져옴.
         List<Board> sideBoards = boardRepository.findRandomBoardsByType(BoardType.VOTE_BOARD,
-            PageRequest.of(0, 1));
+            PageRequest.of(0, 3));
 
 //        // side에 띄울 보드 3개를 가져 옴.
 //        List<Board> sideBoards = boardRepository.findTop3NotViewedByUserAndBoardType(
