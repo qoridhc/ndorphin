@@ -138,7 +138,6 @@ const OkContent = ({ content }: Props) => {
                 <p className="font-bold">{content.user.nickName}</p>
                 {<img className="w-5 h-5 ml-1" src={`/assets/${content.user.mbti === null ? "noBadget.png" : content.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
               </div>
-              {/* <p className="text-sm font-semibold text-[#565656]">{content.createdAt}</p> */}
               <TimeDifference timestamp={new Date(content.createdAt)} />
             </div>
           </div>

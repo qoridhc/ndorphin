@@ -25,7 +25,7 @@ const BalanceList = () => {
           const response = await boardApi.list("VOTE_BOARD", page);
           const responseData = response.data.data.content;
 
-          if (responseData.id) {
+          if (responseData.length !== 0) {
             const filteredList = responseData.filter((item: any) => item.user.userId == currentUserId);
             newMyBalanceList.push(...filteredList);
             page++;

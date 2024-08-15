@@ -32,7 +32,7 @@ const RelayBookList = () => {
           const response = await boardApi.list("RELAY_BOARD", page);
           const responseData = response.data.data.content;
 
-          if (responseData.id) {
+          if (responseData.length !== 0) {
             const filteredList = responseData.filter((item: any) => item.user.userId === currentUserId);
             newMyRelayBoardList.push(...filteredList);
             page++;
@@ -78,30 +78,11 @@ const RelayBookList = () => {
     if (showSummary === id) {
       setShowSummary(null);
     } else {
-      let page = 0;
-      let hasMore = true;
-      const allContent: string[] = [];
-
-      while (hasMore) {
-        try {
-          const response = await boardApi.list("RELAY_BOARD", page);
-          if (response && response.data.data.content.id) {
-            allContent.push(...response.data.data.content);
-            page++;
-          } else {
-            hasMore = false;
-          }
-        } catch (error) {
-          console.error("AI 요약 찾기 중 리스트 불러오기 실패: ", error);
-          hasMore = false;
-        }
-      }
-      
-      allContent.map((item: any) => {
+      myRelayBoardList.map((item: any) => {
         if (item.id === id) {
           setSummary(item.summary);
         }
-      })
+      });
       setShowSummary(id);
     }
   };
