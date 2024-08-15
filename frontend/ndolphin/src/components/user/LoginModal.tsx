@@ -58,7 +58,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
     const nowURL = window.location.href;
     if (nowURL.includes('localhost')) {
       localStorage.setItem("accessToken", process.env.REACT_APP_ACCESS_TOKEN as string);
-      userApi.getUserInfo('20')
+      userApi.getUserInfo('5')
         .then(response => {
           if (response.data.code == 'SU') {
             const userInfo = response.data.data;
