@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import boardApi from "../../api/boardApi";
+import TimeDifference from "../../components/common/TimeDifference";
 
 interface Props {
   content: {
@@ -145,7 +146,8 @@ useEffect(() => {
         <div className="grid gap-3">
           <div>
             <p className="font-bold">{content.user.nickName}</p>
-            <p className="text-sm font-semibold text-[#565656]">{content.createdAt}</p>
+            <TimeDifference timestamp={new Date(content.createdAt)} />
+            {/* <p className="text-sm font-semibold text-[#565656]">{content.createdAt}</p> */}
           </div>
 
           {/* S->N or N->S 이미지 표시 */}

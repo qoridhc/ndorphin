@@ -9,6 +9,7 @@ import OkSettingMenu from "../../components/ok/OkSettingMenu";
 import OkStartModal from "./OkStartModal";
 import OkUpdateModal from "./OkUpdateModal";
 import CommentSettingsMenu from "../../components/if/CommentSettingMenu";
+import TimeDifference from "../../components/common/TimeDifference";
 
 interface BoardDetail {
   id: number;
@@ -275,7 +276,8 @@ const OkDetail = () => {
                       <p className="font-bold">{okDetail && okDetail.user.nickName}</p>
                       {<img className="w-5 h-5 ml-1" src={`/assets/${okDetail.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
                     </div>
-                    <p className="text-sm font-semibold text-[#565656]">{okDetail && okDetail.createdAt}</p>
+                    <TimeDifference timestamp={new Date(okDetail.createdAt)} />
+                    {/* <p className="text-sm font-semibold text-[#565656]">{okDetail && okDetail.createdAt}</p> */}
                   </div>
 
                   {isUpdate === false && `${okDetail.user.userId}` === userId ? <OkSettingMenu boardId={okDetail.id} setIsUpdate={setIsUpdate} /> : <></>}
@@ -320,7 +322,7 @@ const OkDetail = () => {
                     <div className="grid grid-cols-[6fr_1fr]">
                       <div className="flex flex-col justify-around">
                         <p className="font-bold">{comment.user.nickName}</p>
-                        <p className="text-xs text-[#565656]">{comment.createdAt}</p>
+                        <TimeDifference timestamp={new Date(comment.createdAt)} />
                       </div>
                       {userId && parseInt(userId) === comment.user.userId ? (
                         <CommentSettingsMenu boardId={params.boardId} commentId={comment.commentId} commentContent={comment.content} setUpdateComment={setUpdateComment} setIsCommentUpdate={setIsCommentUpdate} readBoardData={getOkDetail} />

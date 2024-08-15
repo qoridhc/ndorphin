@@ -6,6 +6,7 @@ import { FaRegComment } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import SettingsMenu from "../if/CommentSettingMenu";
+import TimeDifference from "../common/TimeDifference";
 
 interface Comment {
   commentId: number;
@@ -172,7 +173,10 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
                     <FaRegComment />
                     {okDetail?.commentCnt === 0 ? <></> : <p className="px-1 text-sdm text-[#565656]">{okDetail?.commentCnt}</p>}
                   </div>
-                  <p className="text-sm text-[#565656] text-right">{okDetail?.createdAt}</p>
+                  {/* <p className="text-sm text-[#565656] text-right">{okDetail?.createdAt}</p> */}
+                  {okDetail && (
+                    <TimeDifference timestamp={new Date(okDetail.createdAt)} />
+                  )}
                 </div>
               </div>
 
@@ -210,7 +214,8 @@ const OkDetailModal = ({ content, selectedImageList, selectedImageListIndex, set
 
                     <p className="text-[#565656] font-medium text-justify">{comment.content}</p>
 
-                    <p className="text-sm text-[#565656] text-right">{comment.createdAt}</p>
+                    {/* <p className="text-sm text-[#565656] text-right">{comment.createdAt}</p> */}
+                    <TimeDifference timestamp={new Date(comment.createdAt)} />
                   </div>
                 </div>
               ))}

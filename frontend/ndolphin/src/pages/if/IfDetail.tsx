@@ -8,6 +8,7 @@ import commentApi from "../../api/commentApi";
 import BoardSettingMenu from "../../components/common/BoardSettingMenu";
 import InsertionImage from "../../components/common/InsertionImage";
 import BookCoverAiPromptModal from "../../components/relay/AiImagePromptModal";
+import TimeDifference from "../../components/common/TimeDifference";
 
 interface IfBoard {
   commentCount: number;
@@ -340,7 +341,8 @@ const IfDetail = () => {
                           {<img className="w-5 h-5 ml-1" src={`/assets/${ifBoardData.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
                         </div>
                       </div>
-                      <p className="text-xs text-left">{ifBoardData.createdAt}</p>
+                      <TimeDifference timestamp={new Date(ifBoardData.createdAt)} />
+                      {/* <p className="text-xs text-left">{ifBoardData.createdAt}</p> */}
                     </div>
                   </div>
 
@@ -460,7 +462,8 @@ const IfDetail = () => {
                               <p className="font-bold">{comment.user.nickName}</p>
                               {<img className="w-5 h-5 ml-1" src={`/assets/${comment.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
                             </div>
-                            <p className="text-xs text-[#565656]">{comment.createdAt}</p>
+                            <TimeDifference timestamp={new Date(comment.createdAt as string)} />
+                            {/* <p className="text-xs text-[#565656]">{comment.createdAt}</p> */}
                           </div>
                           {userId && parseInt(userId) === comment.user.userId ? (
                             <CommentSettingsMenu boardId={params.boardId} commentId={comment.commentId} commentContent={comment.content} setUpdateComment={setUpdateComment} setIsCommentUpdate={setIsCommentUpdate} readBoardData={readBoardData} />

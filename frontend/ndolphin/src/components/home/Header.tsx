@@ -6,6 +6,7 @@ import NSModal from "../user/NSModal";
 import TimeDifference from "../common/TimeDifference";
 import userApi from "../../api/userApi";
 import { setTokenExpirationTime } from "../../api/axiosConfig";
+import { CiBellOn } from "react-icons/ci";
 
 interface notification {
   notificationId: number;
@@ -299,11 +300,11 @@ const Header = () => {
           {/* 알림 기능 */}
           <div className="relative">
             <div className="w-8 h-8 cursor-pointer" onClick={handleAlarmDropdown}>
-              <img className="w-full h-full" src="/assets/user/alarm.png" alt="알람" />
+              <CiBellOn className="w-8 h-8" />
               {isNew && <span className="w-2 h-2 absolute top-0 right-0 bg-red-500 rounded-full"></span>}
             </div>
             {showAlarmDropdown && (
-              <div className="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto hide-scrollbar bg-white rounded-lg shadow-lg z-50" onClick={(e) => e.stopPropagation()}>
+              <div className="absolute right-0 mt-2 w-80 max-h-96 pt-1 pb-4 border border-gray-400 overflow-y-auto hide-scrollbar bg-white rounded-lg shadow-lg z-50" onClick={(e) => e.stopPropagation()}>
                 <div className="mb-1 py-1 sticky top-0 z-10 bg-white border-b border-black">
                   <div className="px-6 py-2 flex justify-between items-center">
                     <h3 className="font-semibold">알림</h3>
@@ -316,9 +317,11 @@ const Header = () => {
                   [...notifications].reverse().map((notification) => (
                     <div className="py-2 px-6" key={notification.notificationId}>
                       <div className="mt-2 flex items-center">
-                        <img className="w-10 h-10 mr-3 rounded-full cursor-pointer" src={notification.user.profileImage || "/assets/user/profile.png"} alt="프로필" />
+                        <img className="w-10 h-10 mr-3 rounded-full cursor-pointer" src={notification.user.profileImage || "/assets/user/profile.png"} alt="프로필" onClick={() => navigate(`/profile/${notification.user.userId}`)} />
                         <p className="text-sm">
-                          <span className="font-bold cursor-pointer">{notification.user.nickName}</span>
+                          <span className="font-bold cursor-pointer" onClick={() => navigate(`/profile/${notification.user.userId}`)}>
+                            {notification.user.nickName}
+                          </span>
                           {notification.content}
                           <span className="ms-4 text-gray-400 whitespace-nowrap">
                             <TimeDifference timestamp={new Date(notification.createdAt)} />
@@ -340,16 +343,14 @@ const Header = () => {
           {/* 로그인 버튼 및 프로필 사진(프로필, 계정 관리, 찜 목록, 로그아웃) */}
           {isLoggedIn ? (
             <div className="relative">
-              <img className="w-10 h-10 rounded-full cursor-pointer" src={profileImage || "/assets/user/profile.png"} alt="Profile" onClick={handleProfileDropdownClick} />
+              <img className="w-10 h-10 rounded-full border cursor-pointer" src={profileImage || "/assets/user/profile.png"} alt="Profile" onClick={handleProfileDropdownClick} />
               {showProfileDropdown && (
                 <div className="absolute right-0 mt-2 w-72 py-1 bg-white rounded-lg shadow-lg z-50" onClick={(e) => e.stopPropagation()}>
                   <div className="p-4 flex items-center">
-                    <img className="w-12 h-12 rounded-full" src={profileImage || "/assets/user/profile.png"} alt="Profile" />
+                    <img className="w-12 h-12 rounded-full border" src={profileImage || "/assets/user/profile.png"} alt="Profile" />
                     <div className="ml-3">
                       <div className="flex items-center">
-                        <div className="font-semibold">
-                          {userNickName}
-                        </div>
+                        <div className="font-semibold">{userNickName}</div>
                         <img className="ms-2 w-6 h-6" src={checkMbti()} alt="#" />
                       </div>
                       <div className="text-sm text-gray-500">{userEmail}</div>

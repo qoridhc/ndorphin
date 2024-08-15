@@ -3,6 +3,7 @@ import boardApi from "../../api/boardApi";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { IoMdClose } from "react-icons/io";
+import userApi from "../../api/userApi";
 
 interface Props {
   setIsCreateModal: (state: boolean) => void;
@@ -10,7 +11,7 @@ interface Props {
 
 const ByeStartModal = ({ setIsCreateModal }: Props) => {
   const userProfileImage = localStorage.getItem("profileImage");
-  const userMbti = localStorage.getItem("mbti")
+  const userMbti = localStorage.getItem("mbti");
   const [rowCount, setRowCount] = useState(0);
   const [textCount, setTextCount] = useState(0);
   const [switched, setswitched] = useState(0);
@@ -62,6 +63,16 @@ const ByeStartModal = ({ setIsCreateModal }: Props) => {
     }
   }, [rowCount]);
 
+  // 작별인사 등록 시 팔로워들에게 알림 전송
+  const postAlarm = async () => {
+    const userId = localStorage.getItem("userId");
+    const response = await userApi.getFollower(userId as string);
+    const content = " 님이 새로운 괜찮아를 등록했습니다";
+    response.data.data.forEach((item: any) => {
+      userApi.postNotifications(item.followerId, content, Number(userId));
+    });
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="w-[40%] max-h-[90%] p-5 bg-white rounded-2xl grid gap-3">
@@ -89,7 +100,10 @@ const ByeStartModal = ({ setIsCreateModal }: Props) => {
               <img className={`mx-2 w-[5rem] ${switched === 1 ? "opacity-30" : ""}`} src="/assets/bye/sToN.png" alt="sToN" />
             </label>
           </div>
-          <button onClick={handleByeConfirm} className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0}>
+          <button onClick={() => {
+            handleByeConfirm();
+            postAlarm();
+           }} className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`} disabled={textCount === 0}>
             완료
           </button>
         </div>

@@ -215,17 +215,6 @@ const OkUpdateModal = ({ okDetail, isUpdate, setIsCreateModal, setIsUpdate }: Pr
     }
   };
 
-  // 괜찮아 등록 시 팔로워들에게 알림 전송
-  const postAlarm = async () => {
-    const userId = localStorage.getItem("userId");
-    const userNickName = localStorage.getItem("nickName");
-    const response = await userApi.getFollower(userId as string);
-    const content = `${userNickName} 님이 새로운 괜찮아를 등록했습니다`;
-    response.data.data.forEach((item: any) => {
-      userApi.postNotifications(item.followerId, content, Number(userId));
-    });
-  };
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="w-[40%] max-h-[90%] p-5 bg-white rounded-2xl grid gap-3">
@@ -289,7 +278,6 @@ const OkUpdateModal = ({ okDetail, isUpdate, setIsCreateModal, setIsUpdate }: Pr
 
           <button
             onClick={() => {
-              postAlarm();
               handleUpdateOkBoard();
             }}
             className={`px-7 py-1 shadow-md rounded-3xl font-bold bg-amber-300 text-white ${textCount === 0 ? "opacity-50" : ""}`}
