@@ -523,9 +523,9 @@ const BalanceDetail = () => {
           </div>
         </div>
       ) : (
-        <p className="px-44 py-5 flex justify-center">
+        <div className="px-44 py-5 flex justify-center">
           <Lottie className="w-36" animationData={detailLoading} />
-        </p>
+        </div>
       )}
 
       <BookCoverAiPromptModal setFile={setFile} isOpen={isModalOpen} onClose={cancelAiImage} onConfirm={confirmAiImage} image={aiImage} setImage={setAiImage} coverImage={"/assets/relay/bookCoverDefault.png"} />

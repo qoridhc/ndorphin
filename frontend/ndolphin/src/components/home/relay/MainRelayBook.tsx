@@ -54,11 +54,17 @@ const MainRelayBook = ({ mainIndex, relay }: Props) => {
               </div>
 
               <div className="flex items-center mb-4">
-                <img onClick={handleUserClick} className="w-10 h-10 rounded-full mr-4 cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" src={`${relay.user.profileImage}`} alt="" />
+                <img
+                  onClick={handleUserClick}
+                  className="w-10 h-10 border rounded-full mr-4 cursor-pointer hover:brightness-90 transition duration-200 ease-in-out"
+                  src={`${relay.user.profileImage ? relay.user.profileImage : "/assets/user/defaultProfile.png"}`}
+                  alt=""
+                />
                 <p className="font-semibold text-[#565656]">{relay.user.nickName}</p>
+                {<img className="w-5 h-5 ml-1" src={`/assets/${relay.user.mbti === null ? "noBadget.png" : relay.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
               </div>
 
-              <p className="mb-4 text-justify line-clamp-3">{relay.summary}</p>
+              <p className="mb-4 text-justify line-clamp-3 leading-5">{relay.summary}</p>
 
               <div className="flex justify-between">
                 <div className="flex items-center">

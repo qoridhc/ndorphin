@@ -5,6 +5,8 @@ import RankingDate from "../RankingDate";
 import MainRelayBook from "./MainRelayBook";
 import ServeRelayBook from "./ServeRelayBook";
 import rankingApi from "../../../api/rankingApi";
+import Lottie from "lottie-react";
+import detailLoading from "../../../lottie/detailLoading.json";
 
 interface Relay {
   id: number;
@@ -97,7 +99,9 @@ const BestRelay = () => {
               <ServeRelayBook currentIndex={currentIndex} visibleBooks={visibleBooks} />
             </>
           ) : (
-            <></>
+            <div className="col-span-2 flex justify-center">
+              <Lottie className="w-36" animationData={detailLoading} />
+            </div>
           )}
         </div>
 
