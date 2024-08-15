@@ -4,33 +4,27 @@ import boardApi from "../../api/boardApi";
 import ByeContent from "../../pages/bye/ByeContent";
 
 interface BoardItem {
-  content: {
-    id: number;
-    user: {
-      nickName: string;
-      mbti: string;
-      profileImage: string | null;
-      userId: number;
-    };
-    createdAt: string;
-    content: string;
-    userReactionId: string | null;
-    userReactionType: string;
-    reactionTypeCounts: {
-      WELCOME: number;
-      GOODBYE: number;
-    };
+  id: number;
+  user: {
+    nickName: string;
+    mbti: string;
+    profileImage: string | null;
+    userId: number;
   };
-  getByeList: () => void;
-  updateContent: (id: number) => void;
+  createdAt: string;
+  content: string;
+  userReactionId: string | null;
+  userReactionType: string;
+  reactionTypeCounts: {
+    WELCOME: number;
+    GOODBYE: number;
+  };
 }
 
 const ByeList: React.FC = () => {
   const location = useLocation();
   const [myByeBoardList, setMyByeBoardList] = useState<BoardItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     setIsLoading(true);
@@ -43,12 +37,12 @@ const ByeList: React.FC = () => {
       while (hasMore) {
         try {
           const response = await boardApi.list("BYE_BOARD", page);
-          const responseData = response.data.data;
+          const responseData = response.data.data.content;
 
           if (responseData.length === 0) {
             hasMore = false;
           } else {
-            const filteredList = responseData.filter((item: any) => item.content.user.userId === currentUserId);
+            const filteredList = responseData.filter((item: any) => item.user.userId === currentUserId);
             newMyByeBoardList.push(...filteredList);
             page++;
           }
@@ -76,11 +70,11 @@ const ByeList: React.FC = () => {
           <span>등록된 게시물이 없습니다</span>
         </div>
       ) : (
-        <div className="px-96">
-            {myByeBoardList.map((item) => (
-            item && item.content && item.content.user && item.content.user.profileImage !== undefined ? (
-              <ByeContent content={item.content} key={item.content.id} />
-            ) : '왜'
+        <div className="px-96 py-10">
+          {myByeBoardList.map((item) => (
+            <div key={item.id}>
+              <ByeContent content={item} />
+            </div>
           ))}
         </div>
       )}
