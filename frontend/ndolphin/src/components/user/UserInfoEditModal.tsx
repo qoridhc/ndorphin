@@ -64,6 +64,11 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (file.name.length > 10) {
+        window.alert("파일명은 10글자를 초과할 수 없습니다");
+        return;
+      }
+      
       setFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
