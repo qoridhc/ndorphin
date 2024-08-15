@@ -64,7 +64,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.name.length > 10) {
+      if (file.name.length > 30) {
         window.alert("파일명은 10글자를 초과할 수 없습니다");
         return;
       }
@@ -259,7 +259,7 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
       <div className="w-100 bg-white rounded-lg shadow-lg" onClick={(e) => e.stopPropagation()}>
         <div className="p-4 border-b shadow-lg flex justify-between items-center relative">
           <h2 className="text-lg font-semibold flex-grow text-center">프로필 이미지 및 닉네임 설정</h2>
-          {onClose && <IoMdClose className="absolute right-5 object-cover" onClick={onClose} />}
+          {onClose && <IoMdClose className="absolute right-5 object-contain" onClick={onClose} />}
         </div>
         <div className="p-6 text-center">
           <p className="mb-4 font-semibold">
@@ -273,14 +273,14 @@ const UserInfoEditModal: React.FC<UserInfoEditModalProps> = ({ isOpen, onNext, s
           <div className="flex flex-col items-center space-y-2">
             <div className="relative" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
               <label htmlFor="image-input">
-                <img className="cursor-pointer w-32 h-32 object-cover rounded-full border" src={profileImage || "/assets/user/defaultProfile.png"} alt="기본이미지" />
+                <img className="cursor-pointer w-32 h-32 object-contain rounded-full border" src={profileImage || "/assets/user/defaultProfile.png"} alt="기본이미지" />
                 {isHovered && (
                   <div className="absolute inset-0 bg-gray-300 bg-opacity-50 flex justify-center items-center rounded-full">
-                    <img src="/assets/user/upload_icon.png" alt="업로드 아이콘" className="w-8 h-8 object-cover" />
+                    <img src="/assets/user/upload_icon.png" alt="업로드 아이콘" className="w-8 h-8 object-contain" />
                   </div>
                 )}
               </label>
-              <input className="hidden object-cover" id="image-input" type="file" accept="image/*" onChange={handleImageChange} />
+              <input className="hidden object-contain" id="image-input" type="file" accept="image/*" onChange={handleImageChange} />
             </div>
 
             {onClose && image && (

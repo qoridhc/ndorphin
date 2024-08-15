@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import userApi from "../../api/userApi";
+import WishListLoading from "../../components/common/loading/WishListLoading";
 
 const WishList = () => {
   const navigate = useNavigate();
@@ -9,14 +10,17 @@ const WishList = () => {
   const [isHovered, setIsHovered] = useState<number | null>(null);
   const fullHeart = "/assets/relay/fullHeart.png";
   const emptyHeart = "/assets/relay/emptyHeart.png";
+  const [isLoading, setIsLoading] = useState(true);
 
   const userId = localStorage.getItem('userId')
 
   useEffect(() => {
+    setIsLoading(true);
     userApi.getFavorites(userId as string)
       .then((res) => {
         const getWishList = res.data.data.boardDtos;
         setWishList(getWishList);
+        setIsLoading(false);
       })
       .catch((err) => {
         console.error('찜 목록 불러오기 실패: ', err)
@@ -83,8 +87,13 @@ const WishList = () => {
         <div className="w-full mb-4 border-b border-black flex flex-col items-center">
           <h1 className="my-12 text-center text-4xl font-semibold">내가 찜한 목록</h1>
         </div>
-        {/* 찜 목록이 비어있을 때 */}
-        {WishList.length === 0 ? (
+        {isLoading ? (
+          <div className="w-full px-40 py-10">
+            {Array.from({ length: 12 }).map((_, index) => (
+              <WishListLoading key={index} />
+            ))}
+          </div>
+        ) : WishList.length === 0 ? (
           <div className="w-full mt-32 flex flex-col items-center justify-center">
             <img className="w-36 h-36" src="/assets/user/emptyList.png" alt="Empty List" />
             <p className="mt-8 text-center text-3xl">목록이 비어있어요</p>

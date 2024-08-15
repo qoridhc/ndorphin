@@ -27,7 +27,7 @@ const TopButton = () => {
   return (
     <div className="fixed bottom-10 right-10 z-50">
       {isVisible && (
-        <button className="w-12 h-12 bg-yellow-500 text-white rounded-full shadow-md hover:bg-yellow-600 transition duration-200 ease-in-out" onClick={scrollToTop}>
+        <button className="w-12 h-12 bg-yellow-500 text-white rounded-full shadow-md hover:bg-yellow-600 transition duration-200 ease-in-out flex items-center justify-center" onClick={scrollToTop}>
           <GoMoveToTop />
         </button>
       )}

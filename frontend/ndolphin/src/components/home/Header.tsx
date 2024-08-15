@@ -329,11 +329,11 @@ const Header = () => {
           {/* 로그인 버튼 및 프로필 사진(프로필, 계정 관리, 찜 목록, 로그아웃) */}
           {isLoggedIn ? (
             <div className="relative">
-              <img className="w-10 h-10 rounded-full border cursor-pointer object-cover" src={profileImage || "/assets/user/defaultProfile.png"} alt="Profile" onClick={handleProfileDropdownClick} />
+              <img className="w-10 h-10 rounded-full border cursor-pointer object-contain" src={profileImage || "/assets/user/defaultProfile.png"} alt="Profile" onClick={handleProfileDropdownClick} />
               {showProfileDropdown && (
                 <div className="absolute right-0 mt-2 w-72 py-1 bg-white rounded-lg shadow-lg z-50" onClick={(e) => e.stopPropagation()}>
                   <div className="p-4 flex items-center">
-                    <img className="w-12 h-12 rounded-full border object-cover" src={profileImage || "/assets/user/defaultProfile.png"} alt="Profile" />
+                    <img className="w-12 h-12 rounded-full border object-contain" src={profileImage || "/assets/user/defaultProfile.png"} alt="Profile" />
                     <div className="ml-3">
                       <div className="flex items-center">
                         <div className="font-semibold">{userNickName}</div>
