@@ -52,7 +52,9 @@ const userApi = {
     return request.delete(`/api/v1/users/${userId}`)
   },
 
-  getUserInfo: (userId: string) => request.get<ApiResponse<UserInfoResponse>>(`/api/v1/users/${userId}`),
+  getUserInfo: (userId: string) => {
+    return request.get<ApiResponse<UserInfoResponse>>(`/api/v1/users/${userId}`)
+  },
 
   follow: (userId: string, followUserId: string) => {
     return request.post(`/api/v1/follows/${userId}`, { followingId: followUserId }, { headers: { "Content-Type": "application/json" } });
