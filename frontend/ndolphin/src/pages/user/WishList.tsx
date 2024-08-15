@@ -102,7 +102,7 @@ const WishList = () => {
             </button>
           </div>
         ) : (
-          <div className="w-full px-40 py-10">
+          <div className="w-full px-44 py-10">
             {WishList.map((item) => (
               <div className="" key={item.id}>
                 <div className="pt-2 relative">
@@ -127,13 +127,15 @@ const WishList = () => {
                         />
                       </div>
                       <div className="ms-10 mt-4 flex items-center gap-4">
-                        <img className="w-6 h-6 lg:w-8 lg:h-8 xl:w-9 xl:h-9 rounded-full" src={item.user.profileImage} alt="최초 작성자" />
+                        <img className="w-6 h-6 lg:w-8 lg:h-8 xl:w-9 xl:h-9 rounded-full" src={item.user.profileImage === null ? "/assets/user/defaultProfile.png" : item.user.profileImage} alt="최초 작성자" />
                         <span className="text-xs lg:text-base xl:text-lg">{item.user.nickName}</span>
                         {item.user.mbti === "N" && <img className="w-4 h-4 lg:w-6 lg:h-6 xl:w-7 xl:h-7" src="/assets/nBadget.png" alt="badge" />}
                         {item.user.mbti === "S" && <img className="w-4 h-4 lg:w-6 lg:h-6 xl:w-7 xl:h-7" src="/assets/sBadget.png" alt="badge" />}
                         {item.user.mbti === null && <img className="w-4 h-4 lg:w-6 lg:h-6 xl:w-7 xl:h-7" src="/assets/noBadget.png" alt="badge" />}
                       </div>
-                      <div className="ms-10 mt-40 text-wrap max-w-[300px] sm:max-w-[400px] md:max-w[450px] xl:max-w-[600px] 2xl:max-w-[900px] text-xs lg:text-base xl:text-lg" style={{ wordWrap: "break-word", overflowWrap: "break-word", whiteSpace: "pre-wrap" }}>
+                      <div
+                        className="ms-10 mt-40 text-wrap max-w-[300px] sm:max-w-[400px] md:max-w[450px] xl:max-w-[600px] 2xl:max-w-[900px] text-xs lg:text-base xl:text-lg"
+                        style={{ wordWrap: "break-word", overflowWrap: "break-word", whiteSpace: "pre-wrap" }}>
                         {item.summary}
                       </div>
                     </div>
