@@ -30,8 +30,8 @@ const BestIfCard = ({ board }: Props) => {
   };
 
   const goToDetail = () => {
-      navigate(`/ifdetail/${board.id}`);
-  }
+    navigate(`/ifdetail/${board.id}`);
+  };
 
   return (
     <div className="w-[40%] h-64 p-5 absolute z-10 bg-white border-solid border-[1px] border-[#565656] rounded-[10px] shadow-[2px_5px_8px_rgb(0,0,0,0.2)] grid grid-rows-[25%_auto_20%]" onClick={() => goToDetail()}>
@@ -49,7 +49,7 @@ const BestIfCard = ({ board }: Props) => {
           </div>
         </div>
       </div>
-      <p className="font-medium text-justify line-clamp-5 hover:underline hover:underline-offset-2">{board.content}</p>
+      <p className="font-medium text-justify line-clamp-5 hover:underline hover:underline-offset-2">{board.subject}</p>
       <div className="flex justify-end items-end">
         <p className="text-sm text-[#F07676] font-semibold">의견수 {board.commentCount}회</p>
       </div>
