@@ -288,7 +288,6 @@ const OkDetail = () => {
                       {<img className="w-5 h-5 ml-1" src={`/assets/${okDetail.user.mbti === "N" ? "nBadget.png" : "sBadget.png"}`} alt="badget" />}
                     </div>
                     <TimeDifference timestamp={new Date(okDetail.createdAt)} />
-                    {/* <p className="text-sm font-semibold text-[#565656]">{okDetail && okDetail.createdAt}</p> */}
                   </div>
 
                   {isUpdate === false && `${okDetail.user.userId}` === userId ? <OkSettingMenu boardId={okDetail.id} setIsUpdate={setIsUpdate} /> : <></>}

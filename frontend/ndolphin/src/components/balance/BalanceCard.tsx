@@ -42,7 +42,7 @@ const BalanceCard = ({ balance }: Props) => {
 
       <div className="grid gap-1">
         <div className="flex items-center">
-          <img className="w-5 h-5 mr-2 border rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" onClick={handleUserClick} src={`${balance.user.profileImage}`} alt="" />
+          <img className="w-5 h-5 mr-2 border rounded-[50%] cursor-pointer hover:brightness-90 transition duration-200 ease-in-out" onClick={handleUserClick} src={balance.user.profileImage ? balance.user.profileImage : "/assets/user/defaultProfile.png"} alt="" />
           <div className="flex justify-between items-center" onClick={handleUserClick}>
             <div className="flex items-center">
               <p className="text-sm font-medium">{balance.user.nickName}</p>
